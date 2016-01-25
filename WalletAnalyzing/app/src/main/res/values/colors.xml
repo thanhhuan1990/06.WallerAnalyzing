@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_gray">#E1E1E1</color>
+    <color name="background_main_frame">#E1E1E1</color>
     <color name="light_gray">#FFE0E0E0</color>
     <color name="imagecolor">#85b2e7</color>
 
@@ -26,5 +26,21 @@
     <color name="background_spinner">#1CB8B5</color>
 
     <color name="background_button_pressed">#C8D8D5</color>
+
+
+    <color name="stroke">#909090</color>
+    <color name="divider">#aaaaaa</color>
+
+    <color name="progress_time">#ff6c00</color>
+
+    <color name="background_button_save">#248a62</color>
+    <color name="background_button_save_pressed">#134934</color>
+
+    <color name="budget_background_progress_used_money">#aaaaaa</color>
+    <color name="budget_background_progress_over">#ad1a1a</color>
+    <color name="budget_background_date">#edd3d1</color>
+    <color name="budget_border">#909090</color>
+
+    <color name="textcolor_hint">#c7c7cd</color>
 
 </resources>

@@ -98,5 +98,7 @@
     <string name="title_budget">Budget</string>
     <string name="title_budget_add">Add budget</string>
     <string name="title_utility">Utilities</string>
+    <string name="title_description">Description</string>
+    <string name="title_payee">Payee</string>
 
 </resources>

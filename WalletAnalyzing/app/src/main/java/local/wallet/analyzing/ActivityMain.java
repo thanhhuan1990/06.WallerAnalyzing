@@ -32,9 +32,9 @@ public class ActivityMain extends AppCompatActivity {
 
     private String fragmentAccountAdd;
     private String fragmentAccountEdit;
-    private String fragmentNewTransaction;
     private String fragmentNewTransactionSelectCategory;
     private String fragmentCategoryAdd;
+    private String fragmentNewTransactionSelectAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,18 +173,6 @@ public class ActivityMain extends AppCompatActivity {
         return fragmentAccountEdit;
     }
 
-    public void setFragmentNewTransaction(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentNewTransaction = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentNewTransaction() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentNewTransaction);
-        return fragmentNewTransaction;
-    }
-
     public void setFragmentCategoryAdd(String tag) {
         LogUtils.logEnterFunction(TAG, "tag = " + tag);
         fragmentCategoryAdd = tag;
@@ -207,6 +195,18 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentNewTransactionSelectCategory);
         return fragmentNewTransactionSelectCategory;
+    }
+
+    public void setFragmentNewTransactionSelectAccount(String tag) {
+        LogUtils.logEnterFunction(TAG, "tag = " + tag);
+        fragmentNewTransactionSelectAccount = tag;
+        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
+    }
+
+    public String getFragmentNewTransactionSelectAccount() {
+        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logLeaveFunction(TAG, null, fragmentNewTransactionSelectAccount);
+        return fragmentNewTransactionSelectAccount;
     }
 
     public void updateTabs(int hide, int show) {

@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.List;
@@ -73,41 +74,44 @@ public class FragmentDescription extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(TAG, null);
         super.onCreateOptionsMenu(menu, inflater);
-//        menu.findItem(R.id.action_account_edit).setVisible(false);
-//        getActivity().getMenuInflater().inflate(R.menu.menu_done, menu);
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        LogUtils.logEnterFunction(TAG, null);
-        int id = item.getItemId();
+        /* Todo: Update ActionBar: Spinner TransactionType */
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_description, null);
+        ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
+        ivDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtils.trace(TAG, "Click Menu Action Done.");
 
-        if (id == R.id.action_done) {
+                if(mTagOfSource == null) {
+                    LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
+                    // Set input string for Account's description in FragmentAccountEdit, and then return.
+                    FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    fragmentNewTransaction.updateDescription(etDescription.getText().toString());
+                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
 
-            LogUtils.trace(TAG, "Click Menu Action Done.");
+                    LogUtils.trace(TAG, "Setup for FragmentAccountAdd");
+                    // Set input string for Account's description in FragmentAccountAdd, and then return.
+                    String TagOfFragmentAccountAdd = ((ActivityMain)getActivity()).getFragmentAccountAdd();
+                    FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd) getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountAdd);
+                    fragmentAccountAdd.updateDescription(etDescription.getText().toString());
 
-            if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
+                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountEdit())) {
+                    LogUtils.trace(TAG, "Setup for FragmentAccountEdit");
+                    // Set input string for Account's description in FragmentAccountEdit, and then return.
+                    String TabOfFragmentAccountEdit = ((ActivityMain)getActivity()).getFragmentAccountEdit();
+                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit)getActivity().getSupportFragmentManager().findFragmentByTag(TabOfFragmentAccountEdit);
+                    fragmentAccountEdit.updateDescription(etDescription.getText().toString());
+                }
 
-                LogUtils.trace(TAG, "Setup for FragmentAccountAdd");
-
-                // Set input string for Account's description in FragmentAccountAdd, and then return.
-                String TagOfFragmentAccountAdd = ((ActivityMain)getActivity()).getFragmentAccountAdd();
-                FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd) getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountAdd);
-                fragmentAccountAdd.updateDescription(etDescription.getText().toString());
-
-            } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountEdit())) {
-                LogUtils.trace(TAG, "Setup for FragmentAccountEdit");
-                // Return Type's Id to FragmentAccountAdd
-                String TabOfFragmentAccountEdit = ((ActivityMain)getActivity()).getFragmentAccountEdit();
-                FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit)getActivity().getSupportFragmentManager().findFragmentByTag(TabOfFragmentAccountEdit);
-                fragmentAccountEdit.updateDescription(etDescription.getText().toString());
-
+                // Back
+                getFragmentManager().popBackStackImmediate();
             }
+        });
 
-            getFragmentManager().popBackStackImmediate();
-        }
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
         LogUtils.logLeaveFunction(TAG, null, null);
-        return super.onOptionsItemSelected(item);
     }
+
 }
