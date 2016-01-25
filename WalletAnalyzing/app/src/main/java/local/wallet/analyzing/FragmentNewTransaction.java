@@ -1,11 +1,13 @@
 package local.wallet.analyzing;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,28 +15,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentNewTransaction extends Fragment {
-    private static final String TAG = "FragmentNewTransaction";
+public class FragmentNewTransaction extends Fragment implements  View.OnClickListener {
+    private static final String Tag = "FragmentNewTransaction";
 
     private DatabaseHelper db;
 
     private Category    mCategory;
+    private Account     mAccount;
     private Spinner spTransactionType;
 
     /* Layout Expense */
@@ -101,34 +110,30 @@ public class FragmentNewTransaction extends Fragment {
     private TextView        tvAdjustmentDate;
     private LinearLayout    llAdjustmentPayee;
     private TextView        tvAdjustmentPayee;
-    private LinearLayout    llTransferEvent;
-    private TextView        tvTransferEvent;
+    private LinearLayout    llAdjustmentEvent;
+    private TextView        tvAdjustmentEvent;
 
+    private int mYear, mMonth, mDay, mHour, mMinute;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentNewTransaction(myTag);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_new_transaction, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
@@ -136,45 +141,109 @@ public class FragmentNewTransaction extends Fragment {
 
         db = new DatabaseHelper(getActivity());
 
-        llExpense           = (LinearLayout) getView().findViewById(R.id.llExpense);
-        llIncome            = (LinearLayout) getView().findViewById(R.id.llIncome);
-        llTransfer          = (LinearLayout) getView().findViewById(R.id.llTransfer);
-        llAdjustment        = (LinearLayout) getView().findViewById(R.id.llAdjustment);
+        initViewExpense();
+        initViewIncome();
+        initViewTransfer();
+        initViewAdjustment();
 
-        llExpenseCategory   = (LinearLayout) getView().findViewById(R.id.llExpenseCategory);
-        llExpenseCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentNewTransactionSelectCategory nextFrag = new FragmentNewTransactionSelectCategory();
-                Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentNewTransaction());
-                bundle.putInt("TransactionType", spTransactionType.getSelectedItemPosition());
-                bundle.putInt("CategoryID", mCategory != null ? mCategory.getId() : 0);
-                nextFrag.setArguments(bundle);
-                FragmentNewTransaction.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_new_transaction, nextFrag, "FragmentNewTransactionSelectCategory")
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        tvExpenseCategory   = (TextView) getView().findViewById(R.id.tvExpenseCategory);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onResume() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onResume();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
+
+        initActionBar();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.llExpenseCategory:
+                FragmentNewTransactionSelectCategory nextFrag = new FragmentNewTransactionSelectCategory();
+                Bundle bundleSelectCategory = new Bundle();
+                bundleSelectCategory.putInt("TransactionType", spTransactionType.getSelectedItemPosition());
+                bundleSelectCategory.putInt("CategoryID", mCategory != null ? mCategory.getId() : 0);
+                nextFrag.setArguments(bundleSelectCategory);
+                FragmentNewTransaction.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, nextFrag, "FragmentNewTransactionSelectCategory")
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case R.id.llExpenseDescription:
+                FragmentDescription fragmentDescription = new FragmentDescription();
+                Bundle bundleExpenseDescription = new Bundle();
+                bundleExpenseDescription.putString("Description", tvExpenseDescription.getText().toString());
+                fragmentDescription.setArguments(bundleExpenseDescription);
+                FragmentNewTransaction.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, fragmentDescription, "FragmentDescription")
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case R.id.llExpenseAccount:
+                FragmentNewTransactionSelectAccount fragmentAccount = new FragmentNewTransactionSelectAccount();
+                Bundle bundleExpenseAccount = new Bundle();
+                bundleExpenseAccount.putInt("AccountID", mAccount != null ? mAccount.getId() : 0);
+                fragmentAccount.setArguments(bundleExpenseAccount);
+                FragmentNewTransaction.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, fragmentAccount, "FragmentNewTransactionSelectAccount")
+                        .addToBackStack(null)
+                        .commit();
+
+                break;
+            case R.id.llExpenseDate:
+                // Get Current Date
+                final Calendar c = Calendar.getInstance();
+                mYear = c.get(Calendar.YEAR);
+                mMonth = c.get(Calendar.MONTH);
+                mDay = c.get(Calendar.DAY_OF_MONTH);
+                mHour   = (Calendar.HOUR_OF_DAY);
+                mMinute = c.get(Calendar.MINUTE);
+
+                final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                                                                        new TimePickerDialog.OnTimeSetListener() {
+
+                                                                            @Override
+                                                                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                                                                tvExpenseDate.setText(tvExpenseDate.getText().toString() + " " + hourOfDay + ":" + minute);
+                                                                            }
+                                                                        }, mHour, mMinute, true);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                                                                        new DatePickerDialog.OnDateSetListener() {
+
+                                                                            @Override
+                                                                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                                                                                tvExpenseDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                                                                timePickerDialog.show();
+                                                                            }
+                                                                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+                break;
+            case R.id.llExpensePayee:
+                FragmentPayee fragmentExpensePayee = new FragmentPayee();
+                Bundle bundleExpensePayee = new Bundle();
+                bundleExpensePayee.putString("Payee", tvExpensePayee.getText().toString());
+                fragmentExpensePayee.setArguments(bundleExpensePayee);
+                FragmentNewTransaction.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, fragmentExpensePayee, "FragmentPayee")
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            case R.id.llExpenseEvent:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void initActionBar() {
+
 
         /* Todo: Init Data */
         String[] arTransactionTypeName      = getResources().getStringArray(R.array.transaction_type);
@@ -195,7 +264,7 @@ public class FragmentNewTransaction extends Fragment {
         spTransactionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                LogUtils.trace(TAG, "onItemSelected: " + position);
+                LogUtils.trace(Tag, "onItemSelected: " + position);
 
                 llExpense.setVisibility(View.GONE);
                 llIncome.setVisibility(View.GONE);
@@ -225,15 +294,110 @@ public class FragmentNewTransaction extends Fragment {
         });
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    /**
+     * Todo: Init view EXPENSE
+     */
+    private void initViewExpense() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
+
+        llExpenseCategory       = (LinearLayout) getView().findViewById(R.id.llExpenseCategory);
+        llExpenseCategory.setOnClickListener(this);
+        tvExpenseCategory       = (TextView) getView().findViewById(R.id.tvExpenseCategory);
+
+        llExpenseDescription    = (LinearLayout) getView().findViewById(R.id.llExpenseDescription);
+        llExpenseDescription.setOnClickListener(this);
+        tvExpenseDescription    = (TextView) getView().findViewById(R.id.tvExpenseDescription);
+
+        llExpenseAccount        = (LinearLayout) getView().findViewById(R.id.llExpenseAccount);
+        llExpenseAccount.setOnClickListener(this);
+        tvExpenseAccount        = (TextView) getView().findViewById(R.id.tvExpenseAccount);
+        llExpenseDate           = (LinearLayout) getView().findViewById(R.id.llExpenseDate);
+        llExpenseDate.setOnClickListener(this);
+        tvExpenseDate           = (TextView) getView().findViewById(R.id.tvExpenseDate);
+        llExpensePayee          = (LinearLayout) getView().findViewById(R.id.llExpensePayee);
+        llExpensePayee.setOnClickListener(this);
+        tvExpensePayee          = (TextView) getView().findViewById(R.id.tvExpensePayee);
+        llExpenseEvent          = (LinearLayout) getView().findViewById(R.id.llExpenseEvent);
+        llExpenseEvent.setOnClickListener(this);
+        tvExpenseEvent          = (TextView) getView().findViewById(R.id.tvExpenseEvent);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    private void initViewIncome() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
+        etIncomeAmount          = (EditText) getView().findViewById(R.id.etIncomeAmount);
+        ivIncomeCurrencyIcon    = (ImageView) getView().findViewById(R.id.ivIncomeCurrencyIcon);
+        llIncomeCategory        = (LinearLayout) getView().findViewById(R.id.llIncomeCategory);
+        tvIncomeCategory        = (TextView) getView().findViewById(R.id.tvIncomeCategory);
+        llIncomeDescription     = (LinearLayout) getView().findViewById(R.id.llIncomeDescription);
+        tvIncomeDescription     = (TextView) getView().findViewById(R.id.tvIncomeDescription);
+        llToAccount             = (LinearLayout) getView().findViewById(R.id.llToAccount);
+        tvToAccount             = (TextView) getView().findViewById(R.id.tvToAccount);
+        llIncomeDate            = (LinearLayout) getView().findViewById(R.id.llIncomeDate);
+        tvIncomeDate            = (TextView) getView().findViewById(R.id.tvIncomeDate);
+        llIncomeEvent           = (LinearLayout) getView().findViewById(R.id.llIncomeEvent);
+        tvIncomeEvent           = (TextView) getView().findViewById(R.id.tvIncomeEvent);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void initViewTransfer() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        llTransfer                  = (LinearLayout) getView().findViewById(R.id.llTransfer);
+        etTransferAmount            = (EditText) getView().findViewById(R.id.etTransferAmount);
+        ivTransferCurrencyIcon      = (ImageView) getView().findViewById(R.id.ivTransferCurrencyIcon);
+        llTransferFromAccount       = (LinearLayout) getView().findViewById(R.id.llTransferFromAccount);
+        tvTransferFromAccount       = (TextView) getView().findViewById(R.id.tvTransferFromAccount);
+        llTransferToAccount         = (LinearLayout) getView().findViewById(R.id.llTransferToAccount);
+        tvTransferToAccount         = (TextView) getView().findViewById(R.id.tvTransferToAccount);
+        llTransferDescription       = (LinearLayout) getView().findViewById(R.id.llTransferDescription);
+        tvTransferDescription       = (TextView) getView().findViewById(R.id.tvTransferDescription);
+        llTransferDate              = (LinearLayout) getView().findViewById(R.id.llTransferDate);
+        tvTransferDate              = (TextView) getView().findViewById(R.id.tvTransferDate);
+        etTransferFee               = (EditText) getView().findViewById(R.id.etTransferFee);
+        ivTransferFeeCurrencyIcon   = (ImageView) getView().findViewById(R.id.ivTransferFeeCurrencyIcon);
+        llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
+        tvTransferCategory          = (TextView) getView().findViewById(R.id.tvTransferCategory);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void initViewAdjustment() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        llAdjustment                = (LinearLayout) getView().findViewById(R.id.llAdjustment);
+        llAdjustmentAccount         = (LinearLayout) getView().findViewById(R.id.llAdjustmentAccount);
+        tvAdjustmentAccount         = (TextView) getView().findViewById(R.id.tvAdjustmentAccount);
+        etAdjustmentBalance         = (EditText) getView().findViewById(R.id.etAdjustmentBalance);
+        ivAdjustmentCurrencyIcon    = (ImageView) getView().findViewById(R.id.ivAdjustmentCurrencyIcon);
+        tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
+        llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
+        tvAdjustmentCategory        = (TextView) getView().findViewById(R.id.tvAdjustmentCategory);
+        llAdjustmentDescription     = (LinearLayout) getView().findViewById(R.id.llAdjustmentDescription);
+        tvAdjustmentDescription     = (TextView) getView().findViewById(R.id.tvAdjustmentDescription);
+        llAdjustmentDate            = (LinearLayout) getView().findViewById(R.id.llAdjustmentDate);
+        tvAdjustmentDate            = (TextView) getView().findViewById(R.id.tvAdjustmentDate);
+        llAdjustmentPayee           = (LinearLayout) getView().findViewById(R.id.llAdjustmentPayee);
+        tvAdjustmentPayee           = (TextView) getView().findViewById(R.id.tvAdjustmentPayee);
+        llAdjustmentEvent           = (LinearLayout) getView().findViewById(R.id.llAdjustmentEvent);
+        tvAdjustmentEvent           = (TextView) getView().findViewById(R.id.tvAdjustmentEvent);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+
+
+    /**
+     * Private class for Spinner TransactionType
+     */
     private class TransactionType {
         private String name;
         private String description;
@@ -327,11 +491,11 @@ public class FragmentNewTransaction extends Fragment {
     }
 
     /**
-     * Update ParentCategory, call from ActivityMain
+     * Update Category, call from ActivityMain
      * @param categoryId
      */
     public void updateCategory(int categoryId) {
-        LogUtils.logEnterFunction(TAG, "categoryId = " + categoryId);
+        LogUtils.logEnterFunction(Tag, "categoryId = " + categoryId);
 
         mCategory = db.getCategory(categoryId);
         if(mCategory != null) {
@@ -340,6 +504,51 @@ public class FragmentNewTransaction extends Fragment {
             tvExpenseCategory.setText("");
         }
 
-        LogUtils.logLeaveFunction(TAG, "categoryId = " + categoryId, null);
+        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+    }
+
+    /**
+     * Update description
+     * @param description
+     */
+    public void updateDescription(String description) {
+        LogUtils.logEnterFunction(Tag, "description = " + description);
+
+        tvExpenseDescription.setText(description);
+        tvIncomeDescription.setText(description);
+        tvTransferDescription.setText(description);
+        tvAdjustmentDescription.setText(description);
+
+        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+    }
+
+    /**
+     * Update Account, call from ActivityMain
+     * @param accountId
+     */
+    public void updateAccount(int accountId) {
+        LogUtils.logEnterFunction(Tag, "accountId = " + accountId);
+
+        mAccount = db.getAccount(accountId);
+        if(mAccount != null) {
+            tvExpenseAccount.setText(mAccount.getName());
+        } else {
+            tvExpenseAccount.setText("");
+        }
+
+        LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
+    }
+
+    /**
+     * Update Payee
+     * @param payee
+     */
+    public void updatePayee(String payee) {
+        LogUtils.logEnterFunction(Tag, "payee = " + payee);
+
+        tvExpensePayee.setText(payee);
+        tvAdjustmentPayee.setText(payee);
+
+        LogUtils.logLeaveFunction(Tag, "payee = " + payee, null);
     }
 }
