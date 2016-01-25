@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="com.example.tablayout.fragment.MainActivity">
+    <item
+        android:id="@+id/action_account_edit"
+        android:orderInCategory="10"
+        android:title="Update"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/icon_edit"/>
+
+    <item
+        android:id="@+id/action_account_add"
+        android:orderInCategory="10"
+        android:title="Add"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/icon_plus"/>
+    <item
+        android:id="@+id/action_account_done"
+        android:orderInCategory="10"
+        android:title="Done"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/icon_done"/>
+</menu>

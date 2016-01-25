@@ -1,0 +1,3 @@
+Stop fragment recreate when back grom other fragment:
+
+Solution: Use FragmentTransaction.add(...) instead of replace(...)

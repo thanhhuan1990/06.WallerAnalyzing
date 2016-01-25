@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">Wallet Analyzing</string>
+
+    <string name="select_file_title">Select cert. file</string>
+    <string name="serializable">Serializable</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="tab_transaction">Ghi chép</string>
+    <string name="tab_account">Tài khoản</string>
+    <string name="tab_budget">hạn mức chi</string>
+    <string name="tab_report">Báo cáo</string>
+    <string name="tab_utilities">Utilities</string>
+
+    <string-array name="transaction_type">
+        <item>Chi tiền</item>
+        <item>Thu tiền</item>
+        <item>Chuyển khoản</item>
+        <item>Ghi theo tiền còn</item>
+    </string-array>
+    <string-array name="transaction_type_description">
+        <item>Khi chi tiêu, cho vay, trả nợ.</item>
+        <item>Khi có khoản thu nhập, thu nợ, đi vay.</item>
+        <item>Chuyển tiền giữa các tài khoản trong sổ của bạn.</item>
+        <item>Tính và ghi số tiền đã chi/thu theo số tiền bạn còn.</item>
+    </string-array>
+
+    <string-array name="data_file_extension">
+        <item>xls</item>
+        <item>xlsx</item>
+    </string-array>
+
+    <string name="account_type_cash">Tiền mặt</string>
+    <string name="account_type_bank_account">Tài khoản ngân hàng</string>
+    <string name="account_type_credit_card">Thẻ tín dụng</string>
+    <string name="account_type_investment">Tài khoản đầu tư</string>
+    <string name="account_type_saving_deposit">Tài khoản tiết kiệm</string>
+    <string name="account_type_other">Khác</string>
+
+    <string name="account_add_name">Tên</string>
+    <string name="account_add_name_hint">Tên tài khoản</string>
+    <string name="account_add_type">Loai tài khoản</string>
+    <string name="account_add_currency">Loại tiền tệ</string>
+    <string name="account_add_initial_balance">Số tiền ban đầu</string>
+    <string name="account_add_note">Ghi chú</string>
+
+    <string name="new_transaction_amount">Số tiền</string>
+    <string name="new_transaction_category_expense">Mục chi</string>
+    <string name="new_transaction_category_income">Mục thu</string>
+    <string name="new_transaction_description">Diễn giải</string>
+    <string name="new_transaction_from_account">Từ tài khoản</string>
+    <string name="new_transaction_date">Ngày</string>
+    <string name="new_transaction_today">Hôm nay</string>
+    <string name="new_transaction_payee">Chi cho ai</string>
+    <string name="new_transaction_event">Chuyến đi/Sự kiện</string>
+    <string name="new_transaction_to_account">Tới tài khoản</string>
+    <string name="new_transaction_transfer_fee">Phí chuyển khoản/rút tiền</string>
+    <string name="new_transaction_transfer_fee_hint">Phí chuyển khoản</string>
+    <string name="new_transaction_account">Của tài khoản</string>
+    <string name="new_transaction_remaining_amount">Số tiền hiện còn</string>
+    <string name="new_transaction_adjustment">Ghi theo tiền còn</string>
+
+    <string name="Save">Ghi</string>
+    <string name="Delete">Xóa</string>
+
+    <string name="Input_Error_Account_Name_Empty">Tên tài khoản không được để trống!</string>
+
+    <string name="new_category_name">Tên</string>
+    <string name="new_category_hint">Tên hạng mục</string>
+    <string name="new_category_parent_category">Hạng mục cha</string>
+    <string name="new_category_description">Diễn giải</string>
+    <string name="new_category_select_as_parent">(Không chọn)</string>
+
+    <string name="title_category_expense">Hạng mục chi</string>
+    <string name="title_category_expense_add">Thêm hạng mục chi</string>
+    <string name="title_category_expense_select_parent">Hạng mục cha</string>
+    <string name="title_category_income">Hạng mục thu</string>
+    <string name="title_category_income_add">Thêm hạng mục thu</string>
+    <string name="title_category_income_select_parent">Hạng mục cha</string>
+
+    <string name="expense_category">Chi tiêu</string>
+    <string name="expense_category_lent">Vay nợ</string>
+
+</resources>

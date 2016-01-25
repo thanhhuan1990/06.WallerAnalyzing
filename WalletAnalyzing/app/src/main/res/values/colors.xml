@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_gray">#E1E1E1</color>
+    <color name="light_gray">#FFE0E0E0</color>
+    <color name="imagecolor">#85b2e7</color>
+
+    <color name="colorPrimary">#36a3a0</color>
+    <color name="colorPrimaryDark">#028372</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="blue_text">#0099CC</color>
+    <color name="transaction_type_name">#419E94</color>
+    <color name="transaction_type_description">#ABABAB</color>
+    <color name="background_slash">#45b39c</color>
+
+    <color name="transaction_date_background">#cdcdcd</color>
+    <color name="textcolor_none">#cdcdcd</color>
+
+    <color name="background_category_parent">#FAFAFA</color>
+
+    <color name="listview_parent_item_background">#FAFAFA</color>
+    <color name="listview_divider">#C2C2C2</color>
+
+    <color name="description_border">#5A7A77</color>
+
+    <color name="background_spinner">#1CB8B5</color>
+
+    <color name="background_button_pressed">#C8D8D5</color>
+
+</resources>

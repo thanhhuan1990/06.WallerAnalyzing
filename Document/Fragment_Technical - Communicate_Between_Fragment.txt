@@ -1,0 +1,24 @@
+Communicate between Fragment:
+http://android-er.blogspot.com/2012/06/communication-between-fragments-in.html
+
+1. Activity:
+	private String tagFragmentFirst;
+
+    public void setFragmentFirst(String tag) {
+        tagFragmentFirst = tag;
+    }
+
+    public String getFragmentAccoutAdd(){
+        return tagFragmentFirst;
+    }
+	
+2. FragmentFirst: onCreateView
+	String myTag = getTag();
+    ((ActivityMain)getActivity()).setFragmentAccoutAdd(myTag);
+	
+3. FragmentSecond:
+	String TabOfFragmentB = ((ActivityMain)getActivity()).getFragmentAccoutAdd();
+    FragmentAccountAdd fragmentB = (FragmentAccountAdd)getActivity().getSupportFragmentManager().findFragmentByTag(TabOfFragmentB);
+    fragmentB.updateAccountType(AccountType.listAccount.get(position).getId());
+
+	
