@@ -13,12 +13,10 @@
     <color name="transaction_type_description">#ABABAB</color>
     <color name="background_slash">#45b39c</color>
 
-    <color name="transaction_date_background">#cdcdcd</color>
     <color name="textcolor_none">#cdcdcd</color>
+    <color name="textcolor_income">#2d8986</color>
 
-    <color name="background_category_parent">#FAFAFA</color>
-
-    <color name="listview_parent_item_background">#FAFAFA</color>
+    <color name="listview_parent_item_background">#e6e6e6</color>
     <color name="listview_divider">#C2C2C2</color>
 
     <color name="description_border">#5A7A77</color>

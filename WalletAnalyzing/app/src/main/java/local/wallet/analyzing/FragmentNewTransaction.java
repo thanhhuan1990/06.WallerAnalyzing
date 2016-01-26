@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +27,7 @@ import android.widget.TimePicker;
 
 import org.w3c.dom.Text;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.List;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
@@ -113,6 +117,8 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     private LinearLayout    llAdjustmentEvent;
     private TextView        tvAdjustmentEvent;
 
+    private LinearLayout    llSave;
+
     private int mYear, mMonth, mDay, mHour, mMinute;
 
     @Override
@@ -141,6 +147,16 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         db = new DatabaseHelper(getActivity());
 
+        // Get Current DateTime
+        final Calendar c = Calendar.getInstance();
+        mYear   = c.get(Calendar.YEAR);
+        mMonth  = c.get(Calendar.MONTH);
+        mDay    = c.get(Calendar.DAY_OF_MONTH);
+        mHour   = c.get(Calendar.HOUR_OF_DAY);
+        mMinute = c.get(Calendar.MINUTE);
+
+        llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
+        llSave.setOnClickListener(this);
         initViewExpense();
         initViewIncome();
         initViewTransfer();
@@ -196,20 +212,13 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
                 break;
             case R.id.llExpenseDate:
-                // Get Current Date
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
-                mHour   = (Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
-
                 final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
                                                                         new TimePickerDialog.OnTimeSetListener() {
 
                                                                             @Override
                                                                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                                                                tvExpenseDate.setText(tvExpenseDate.getText().toString() + " " + hourOfDay + ":" + minute);
+                                                                                tvExpenseDate.setText(tvExpenseDate.getText().toString() + " "
+                                                                                                        + hourOfDay + ":" + String.format("%02d", minute));
                                                                             }
                                                                         }, mHour, mMinute, true);
 
@@ -236,7 +245,45 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         .commit();
                 break;
             case R.id.llExpenseEvent:
+                FragmentEvent fragmentExpenseEvent = new FragmentEvent();
+                Bundle bundleExpenseEvent = new Bundle();
+                bundleExpenseEvent.putString("Event", tvExpenseEvent.getText().toString());
+                fragmentExpenseEvent.setArguments(bundleExpenseEvent);
+                FragmentNewTransaction.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, fragmentExpenseEvent, "FragmentEvent")
+                        .addToBackStack(null)
+                        .commit();
                 break;
+            case R.id.llSave:
+                switch (spTransactionType.getSelectedItemPosition()) {
+                    case 0:
+                        Double expenseAmount =  etExpenseAmount.getText().toString().equals("") ? 0 : Double.parseDouble(etExpenseAmount.getText().toString().replaceAll(",", ""));
+                        int expenseCategoryId = mCategory.getId();
+                        String expenseDescription = tvExpenseDescription.getText().toString();
+                        int expenseAccountId    = mAccount.getId();
+                        Date expenseDate = getDate(mYear, mMonth, mDay, mHour, mMinute);
+                        String expensePayee = tvExpensePayee.getText().toString();
+                        String expenseEvent = tvExpenseEvent.getText().toString();
+
+                        Transaction transaction = new Transaction(0, expenseAmount, expenseCategoryId, expenseDescription, expenseAccountId, expenseDate, expensePayee, expenseEvent);
+                        db.createTransaction(transaction);
+
+                        // Set input string for Payee's description in FragmentNewTransaction, and then return.
+                        FragmentTransactions fragmentTransactions = (FragmentTransactions)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                        fragmentTransactions.updateListTransaction();
+
+                        ((ActivityMain) getActivity()).updateTabs(ActivityMain.TAB_POSITION_NEW_TRANSACTION, ActivityMain.TAB_POSITION_TRANSACTIONS);
+
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        break;
+                }
             default:
                 break;
         }
@@ -304,13 +351,17 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
 
-        llExpenseCategory       = (LinearLayout) getView().findViewById(R.id.llExpenseCategory);
-        llExpenseCategory.setOnClickListener(this);
-        tvExpenseCategory       = (TextView) getView().findViewById(R.id.tvExpenseCategory);
+        etExpenseAmount         = (EditText) getView().findViewById(R.id.etExpenseAmount);
+        etExpenseAmount.addTextChangedListener(new CurrencyTextWatcher(etExpenseAmount));
+        ivExpenseCurrencyIcon   = (ImageView) getView().findViewById(R.id.ivExpenseCurrencyIcon);
 
         llExpenseDescription    = (LinearLayout) getView().findViewById(R.id.llExpenseDescription);
         llExpenseDescription.setOnClickListener(this);
         tvExpenseDescription    = (TextView) getView().findViewById(R.id.tvExpenseDescription);
+
+        llExpenseCategory       = (LinearLayout) getView().findViewById(R.id.llExpenseCategory);
+        llExpenseCategory.setOnClickListener(this);
+        tvExpenseCategory       = (TextView) getView().findViewById(R.id.tvExpenseCategory);
 
         llExpenseAccount        = (LinearLayout) getView().findViewById(R.id.llExpenseAccount);
         llExpenseAccount.setOnClickListener(this);
@@ -318,6 +369,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llExpenseDate           = (LinearLayout) getView().findViewById(R.id.llExpenseDate);
         llExpenseDate.setOnClickListener(this);
         tvExpenseDate           = (TextView) getView().findViewById(R.id.tvExpenseDate);
+        tvExpenseDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
         llExpensePayee          = (LinearLayout) getView().findViewById(R.id.llExpensePayee);
         llExpensePayee.setOnClickListener(this);
         tvExpensePayee          = (TextView) getView().findViewById(R.id.tvExpensePayee);
@@ -333,6 +385,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
         etIncomeAmount          = (EditText) getView().findViewById(R.id.etIncomeAmount);
+        etIncomeAmount.addTextChangedListener(new CurrencyTextWatcher(etIncomeAmount));
         ivIncomeCurrencyIcon    = (ImageView) getView().findViewById(R.id.ivIncomeCurrencyIcon);
         llIncomeCategory        = (LinearLayout) getView().findViewById(R.id.llIncomeCategory);
         tvIncomeCategory        = (TextView) getView().findViewById(R.id.tvIncomeCategory);
@@ -342,6 +395,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvToAccount             = (TextView) getView().findViewById(R.id.tvToAccount);
         llIncomeDate            = (LinearLayout) getView().findViewById(R.id.llIncomeDate);
         tvIncomeDate            = (TextView) getView().findViewById(R.id.tvIncomeDate);
+        tvIncomeDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
         llIncomeEvent           = (LinearLayout) getView().findViewById(R.id.llIncomeEvent);
         tvIncomeEvent           = (TextView) getView().findViewById(R.id.tvIncomeEvent);
 
@@ -353,6 +407,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         llTransfer                  = (LinearLayout) getView().findViewById(R.id.llTransfer);
         etTransferAmount            = (EditText) getView().findViewById(R.id.etTransferAmount);
+        etTransferAmount.addTextChangedListener(new CurrencyTextWatcher(etTransferAmount));
         ivTransferCurrencyIcon      = (ImageView) getView().findViewById(R.id.ivTransferCurrencyIcon);
         llTransferFromAccount       = (LinearLayout) getView().findViewById(R.id.llTransferFromAccount);
         tvTransferFromAccount       = (TextView) getView().findViewById(R.id.tvTransferFromAccount);
@@ -362,6 +417,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvTransferDescription       = (TextView) getView().findViewById(R.id.tvTransferDescription);
         llTransferDate              = (LinearLayout) getView().findViewById(R.id.llTransferDate);
         tvTransferDate              = (TextView) getView().findViewById(R.id.tvTransferDate);
+        tvTransferDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
         etTransferFee               = (EditText) getView().findViewById(R.id.etTransferFee);
         ivTransferFeeCurrencyIcon   = (ImageView) getView().findViewById(R.id.ivTransferFeeCurrencyIcon);
         llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
@@ -377,6 +433,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llAdjustmentAccount         = (LinearLayout) getView().findViewById(R.id.llAdjustmentAccount);
         tvAdjustmentAccount         = (TextView) getView().findViewById(R.id.tvAdjustmentAccount);
         etAdjustmentBalance         = (EditText) getView().findViewById(R.id.etAdjustmentBalance);
+        etAdjustmentBalance.addTextChangedListener(new CurrencyTextWatcher(etAdjustmentBalance));
         ivAdjustmentCurrencyIcon    = (ImageView) getView().findViewById(R.id.ivAdjustmentCurrencyIcon);
         tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
         llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
@@ -385,6 +442,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvAdjustmentDescription     = (TextView) getView().findViewById(R.id.tvAdjustmentDescription);
         llAdjustmentDate            = (LinearLayout) getView().findViewById(R.id.llAdjustmentDate);
         tvAdjustmentDate            = (TextView) getView().findViewById(R.id.tvAdjustmentDate);
+        tvAdjustmentDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
         llAdjustmentPayee           = (LinearLayout) getView().findViewById(R.id.llAdjustmentPayee);
         tvAdjustmentPayee           = (TextView) getView().findViewById(R.id.tvAdjustmentPayee);
         llAdjustmentEvent           = (LinearLayout) getView().findViewById(R.id.llAdjustmentEvent);
@@ -491,6 +549,85 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     }
 
     /**
+     * Initial Balance EditText's TextWatcher
+     */
+    private class CurrencyTextWatcher implements TextWatcher {
+        private String current = "";
+
+        private EditText mEdittext;
+
+        public CurrencyTextWatcher(EditText et) {
+            mEdittext = et;
+        }
+
+        public synchronized void afterTextChanged(Editable s) {}
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            LogUtils.logEnterFunction(Tag, null);
+
+            if(!s.toString().equals(current)){
+                mEdittext.removeTextChangedListener(this);
+
+                LogUtils.trace(Tag, "input: " + s.toString());
+                String inputted = s.toString().replaceAll(",", "");
+
+                LogUtils.trace(Tag, "input replace: " + inputted);
+                String[] ar = inputted.split("\\.");
+
+                StringBuilder formatted = new StringBuilder();
+                if(ar[0].length() > 0) {
+                    LogUtils.trace(Tag, "ar[0]: " + ar[0]);
+                    for(int i = 0; i < ar[0].length(); i++) {
+                        formatted.append(ar[0].charAt(i));
+                        if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
+                            formatted.append(",");
+                        }
+                        LogUtils.trace(Tag, "formatted :" + formatted.toString());
+                    }
+                }
+
+                if(s.toString().charAt(s.toString().length()-1) == '.') {
+                    formatted.append(".");
+                    LogUtils.trace(Tag, "formatted Add '.' :" + formatted.toString());
+                } else if(ar.length == 2) {
+                    LogUtils.trace(Tag, "ar[1]: " + ar[1]);
+                    formatted.append(".");
+                    for(int i = 0; i < ar[1].length(); i++) {
+                        formatted.append(ar[1].charAt(i));
+                        if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
+                            formatted.append(",");
+                        }
+                        LogUtils.trace(Tag, "formatted :" + formatted.toString());
+                    }
+                }
+
+                current = formatted.toString();
+                mEdittext.setText(formatted);
+                mEdittext.setSelection(formatted.length());
+
+                mEdittext.addTextChangedListener(this);
+            }
+
+            LogUtils.logLeaveFunction(Tag, null, null);
+        }
+
+    }
+
+    private Date getDate(int year, int month, int day, int hour, int minute) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    /**
      * Update Category, call from ActivityMain
      * @param categoryId
      */
@@ -550,5 +687,19 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvAdjustmentPayee.setText(payee);
 
         LogUtils.logLeaveFunction(Tag, "payee = " + payee, null);
+    }
+
+    /**
+     * Update Payee
+     * @param event
+     */
+    public void updateEvent(String event) {
+        LogUtils.logEnterFunction(Tag, "event = " + event);
+
+        tvExpenseEvent.setText(event);
+        tvIncomeEvent.setText(event);
+        tvAdjustmentEvent.setText(event);
+
+        LogUtils.logLeaveFunction(Tag, "event = " + event, null);
     }
 }

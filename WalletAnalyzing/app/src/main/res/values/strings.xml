@@ -94,11 +94,13 @@
     <string name="title_category_income_select_parent">Add income category</string>
     <string name="title_account">Accounts</string>
     <string name="title_account_add">Add account</string>
-    <string name="title_currency_select">Select currency</string>
+    <string name="title_account_select_type">Add account</string>
+    <string name="title_account_select_currency">Select currency</string>
     <string name="title_budget">Budget</string>
     <string name="title_budget_add">Add budget</string>
     <string name="title_utility">Utilities</string>
     <string name="title_description">Description</string>
     <string name="title_payee">Payee</string>
+    <string name="title_event">Event</string>
 
 </resources>

@@ -24,7 +24,7 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                FragmentTransaction tabTransaction = new FragmentTransaction();
+                FragmentTransactions tabTransaction = new FragmentTransactions();
                 return tabTransaction;
             case 1:
                 FragmentNewTransaction tabNewTransaction = new FragmentNewTransaction();

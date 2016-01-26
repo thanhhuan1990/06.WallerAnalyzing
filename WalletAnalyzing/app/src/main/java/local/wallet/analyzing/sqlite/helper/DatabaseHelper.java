@@ -57,12 +57,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_ACCOUNT_DESCRIPTION         = "description";
 
     // TRANSACTION Table - column names
-    private static final String KEY_TIME                        = "time";
-    private static final String KEY_AMOUNT                      = "amount";
-    private static final String KEY_CATEGORY_ID                 = "category_id";
+    private static final String KEY_TRANSACTION_AMOUNT          = "amount";
+    private static final String KEY_TRANSACTION_DESCRIPTION     = "description";
+    private static final String KEY_TRANSACTION_CATEGORY_ID     = "category_id";
     private static final String KEY_TRANSACTION_ACCOUNT_ID      = "account_id";
-    private static final String KEY_REASON                      = "reason";
-    private static final String KEY_EVENT                       = "event";
+    private static final String KEY_TRANSACTION_TIME            = "time";
+    private static final String KEY_TRANSACTION_PAYEE           = "payee";
+    private static final String KEY_TRANSACTION_EVENT           = "event";
 
     // Table Create Statements
     // KIND table create statement
@@ -94,13 +95,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_TRANSACTION = "CREATE TABLE "
             + TABLE_TRANSACTION + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_NAME + " TEXT,"
-            + KEY_TIME + " DATETIME,"
-            + KEY_AMOUNT + " INTEGER,"
-            + KEY_CATEGORY_ID + " INTEGER,"
+            + KEY_TRANSACTION_AMOUNT + " DOUBLE,"
+            + KEY_TRANSACTION_DESCRIPTION + " TEXT,"
+            + KEY_TRANSACTION_CATEGORY_ID + " INTEGER,"
             + KEY_TRANSACTION_ACCOUNT_ID + " INTEGER,"
-            + KEY_REASON + " TEXT,"
-            + KEY_EVENT + " TEXT" + ")";
+            + KEY_TRANSACTION_TIME + " DATETIME,"
+            + KEY_TRANSACTION_PAYEE + " TEXT,"
+            + KEY_TRANSACTION_EVENT + " TEXT" + ")";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -632,13 +633,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, transaction.getName());
-        values.put(KEY_AMOUNT, transaction.getAmount());
-        values.put(KEY_CATEGORY_ID, transaction.getCategory());
-        values.put(KEY_TIME, getDateTime(transaction.getTime()));
-        values.put(KEY_TRANSACTION_ACCOUNT_ID, transaction.getAccount());
-        values.put(KEY_REASON, transaction.getReason());
-        values.put(KEY_EVENT, transaction.getEvent());
+        values.put(KEY_TRANSACTION_AMOUNT, transaction.getAmount());
+        values.put(KEY_TRANSACTION_DESCRIPTION, transaction.getDescription());
+        values.put(KEY_TRANSACTION_CATEGORY_ID, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_ACCOUNT_ID, transaction.getAccountId());
+        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
+        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
 
         // insert row
         long transaction_id = db.insert(TABLE_TRANSACTION, null, values);
@@ -664,12 +665,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Transaction transaction = new Transaction();
         transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-        transaction.setAmount(c.getInt(c.getColumnIndex(KEY_AMOUNT)));
-        transaction.setCategory(c.getInt(c.getColumnIndex(KEY_CATEGORY_ID)));
-        transaction.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TIME))));
-        transaction.setAccount(c.getInt(c.getColumnIndex(KEY_AMOUNT)));
-        transaction.setReason(c.getString(c.getColumnIndex(KEY_REASON)));
-        transaction.setEvent(c.getString(c.getColumnIndex(KEY_EVENT)));
+        transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+        transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+        transaction.setAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_ACCOUNT_ID)));
+        transaction.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+        transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+        transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
 
         return transaction;
     }
@@ -689,14 +690,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
+
                 Transaction transaction = new Transaction();
                 transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                transaction.setAmount(c.getInt(c.getColumnIndex(KEY_AMOUNT)));
-                transaction.setCategory(c.getInt(c.getColumnIndex(KEY_CATEGORY_ID)));
-                transaction.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TIME))));
-                transaction.setAccount(c.getInt(c.getColumnIndex(KEY_AMOUNT)));
-                transaction.setReason(c.getString(c.getColumnIndex(KEY_REASON)));
-                transaction.setEvent(c.getString(c.getColumnIndex(KEY_EVENT)));
+                transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                transaction.setAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_ACCOUNT_ID)));
+                transaction.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+                transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
 
                 // adding to kinds list
                 transactions.add(transaction);
@@ -728,17 +730,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, transaction.getName());
-        values.put(KEY_AMOUNT, transaction.getAmount());
-        values.put(KEY_CATEGORY_ID, transaction.getCategory());
-        values.put(KEY_TIME, getDateTime(transaction.getTime()));
-        values.put(KEY_TRANSACTION_ACCOUNT_ID, transaction.getAccount());
-        values.put(KEY_REASON, transaction.getReason());
-        values.put(KEY_EVENT, transaction.getEvent());
+        values.put(KEY_TRANSACTION_AMOUNT, transaction.getAmount());
+        values.put(KEY_TRANSACTION_DESCRIPTION, transaction.getDescription());
+        values.put(KEY_TRANSACTION_CATEGORY_ID, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_ACCOUNT_ID, transaction.getAccountId());
+        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
+        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
 
         // updating row
-        return db.update(TABLE_TRANSACTION, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(transaction.getId()) });
+        return db.update(TABLE_TRANSACTION, values, KEY_ID + " = ?", new String[] { String.valueOf(transaction.getId()) });
     }
 
     /*

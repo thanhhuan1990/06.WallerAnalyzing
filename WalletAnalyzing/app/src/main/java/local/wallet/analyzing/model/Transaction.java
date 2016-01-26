@@ -5,29 +5,34 @@ import java.util.Date;
 /**
  * Created by huynh.thanh.huan on 11/23/2015.
  */
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
 
     private int id;
-    private String name;
-    private int amount;
-    private int category;
+    private Double amount;
+    private String description;
+    private int categoryId;
+    private int accountId;
     private Date time;
-    private int account;
-    private String reason;
+    private String payee;
     private String event;
 
     public Transaction() {
     }
 
-    public Transaction(int id, String name, int amount, int category, Date time, int account, String reason, String event) {
+    public Transaction(int id, Double amount, int categoryId, String description, int accountId, Date time, String payee, String event) {
         this.id = id;
-        this.name = name;
-        this.time = time;
-        this.account = account;
         this.amount = amount;
-        this.category = category;
-        this.reason = reason;
+        this.categoryId = categoryId;
+        this.description = description;
+        this.accountId = accountId;
+        this.time = time;
+        this.payee = payee;
         this.event = event;
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+        return getTime().compareTo(o.getTime());
     }
 
     public int getId() {
@@ -38,12 +43,36 @@ public class Transaction {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Double getAmount() {
+        return amount;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     public Date getTime() {
@@ -54,36 +83,12 @@ public class Transaction {
         this.time = time;
     }
 
-    public int getAccount() {
-        return account;
+    public String getPayee() {
+        return payee;
     }
 
-    public void setAccount(int account) {
-        this.account = account;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public int getCategory() {
-        return category;
-    }
-
-    public void setCategory(int category) {
-        this.category = category;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setPayee(String payee) {
+        this.payee = payee;
     }
 
     public String getEvent() {

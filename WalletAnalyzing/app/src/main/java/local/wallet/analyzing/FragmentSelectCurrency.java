@@ -97,8 +97,11 @@ public class FragmentSelectCurrency extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(TAG, null);
-        menu.findItem(R.id.action_account_edit).setVisible(false);
-        menu.findItem(R.id.action_account_add).setVisible(false);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_account_select_currency, null);
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
         super.onCreateOptionsMenu(menu, inflater);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
