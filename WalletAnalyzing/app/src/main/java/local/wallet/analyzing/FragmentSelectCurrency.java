@@ -46,6 +46,20 @@ public class FragmentSelectCurrency extends Fragment {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_select_currency));
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        super.onCreateOptionsMenu(menu, inflater);
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,7 +82,7 @@ public class FragmentSelectCurrency extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
+                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountAdd())) {
                     LogUtils.trace(TAG, "Setup for FragmentAccountAdd");
                     // Return Type's Id to FragmentAccountAdd
                     String TabOfFragmentAccountAdd = ((ActivityMain) getActivity()).getFragmentAccountAdd();
@@ -78,11 +92,11 @@ public class FragmentSelectCurrency extends Fragment {
                     fragmentAccountAdd.updateCurrency(Currency.Currencies.get(position).getId());
 
                     getFragmentManager().popBackStackImmediate();
-                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountEdit())) {
+                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountEdit())) {
                     LogUtils.trace(TAG, "Setup for FragmentAccountEdit");
                     // Return Type's Id to FragmentAccountAdd
-                    String TabOfFragmentAccountEdit = ((ActivityMain)getActivity()).getFragmentAccountEdit();
-                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit)getActivity()
+                    String TabOfFragmentAccountEdit = ((ActivityMain) getActivity()).getFragmentAccountEdit();
+                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit) getActivity()
                             .getSupportFragmentManager()
                             .findFragmentByTag(TabOfFragmentAccountEdit);
                     fragmentAccountEdit.updateCurrency(Currency.Currencies.get(position).getId());
@@ -91,18 +105,6 @@ public class FragmentSelectCurrency extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_account_select_currency, null);
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 

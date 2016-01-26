@@ -108,7 +108,7 @@ public class FragmentCategoryAddSelectParent extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_new_category, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
         TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
         if(mTransactionType == 0) {
             tvTitle.setText(getResources().getString(R.string.title_category_expense_select_parent));

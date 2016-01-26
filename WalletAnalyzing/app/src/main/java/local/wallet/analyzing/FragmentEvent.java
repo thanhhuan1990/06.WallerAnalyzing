@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
 
@@ -48,6 +49,38 @@ public class FragmentEvent extends Fragment {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_event));
+        ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
+        ivDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtils.trace(TAG, "Click Menu Action Done.");
+
+                if(mTagOfSource == null) {
+                    LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
+                    // Set input string for Payee's description in FragmentNewTransaction, and then return.
+                    FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    fragmentNewTransaction.updateEvent(etEvent.getText().toString());
+                }
+
+                // Back
+                getFragmentManager().popBackStackImmediate();
+            }
+        });
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,36 +104,6 @@ public class FragmentEvent extends Fragment {
 
         etEvent = (ClearableEditText) getView().findViewById(R.id.etEvent);
         etEvent.setText(mEvent);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_event, null);
-        ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
-        ivDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Done.");
-
-                if(mTagOfSource == null) {
-                    LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
-                    // Set input string for Payee's description in FragmentNewTransaction, and then return.
-                    FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updateEvent(etEvent.getText().toString());
-                }
-
-                // Back
-                getFragmentManager().popBackStackImmediate();
-            }
-        });
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }

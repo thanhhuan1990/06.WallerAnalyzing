@@ -1,6 +1,7 @@
 package local.wallet.analyzing.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class TransactionGroup {
 
-    private Date date;
+    private Calendar time;
     private List<Transaction> arTrans = new ArrayList<Transaction>();
 
     public TransactionGroup() {}
@@ -25,12 +26,12 @@ public class TransactionGroup {
         Collections.sort(arTrans);
 
         for(Transaction tran : arTrans) {
-            if(group.size() == 0 || tran.getTime().getDate() != group.get(group.size() - 1).date.getDate()) {
+            if(group.size() == 0 || tran.getTime().get(Calendar.DAY_OF_YEAR) != group.get(group.size() - 1).time.get(Calendar.DAY_OF_YEAR)) {
                 TransactionGroup date = new TransactionGroup();
-                date.date = tran.getTime();
+                date.time = tran.getTime();
                 date.addTransaction(tran);
                 group.add(date);
-            } else if(tran.getTime().getDate() == group.get(group.size() - 1).date.getDate()) {
+            } else if(tran.getTime().get(Calendar.DAY_OF_YEAR) == group.get(group.size() - 1).time.get(Calendar.DAY_OF_YEAR)) {
                 group.get(group.size() - 1).addTransaction(tran);
             }
         }
@@ -38,12 +39,12 @@ public class TransactionGroup {
         return group;
     }
 
-    public Date getDate() {
-        return date;
+    public Calendar getTime() {
+        return time;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTime(Calendar time) {
+        this.time = time;
     }
 
     public List<Transaction> getArTrans() {

@@ -56,6 +56,26 @@ public class FragmentCategoryAdd extends Fragment {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        if(mTransactionType == 0) {
+            tvTitle.setText(getResources().getString(R.string.title_category_expense_add));
+        } else if(mTransactionType == 1) {
+            tvTitle.setText(getResources().getString(R.string.title_category_income_add));
+        }
+
+        // Update ActionBar
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -131,26 +151,6 @@ public class FragmentCategoryAdd extends Fragment {
                 getFragmentManager().popBackStackImmediate();
             }
         });
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_new_category, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        if(mTransactionType == 0) {
-            tvTitle.setText(getResources().getString(R.string.title_category_expense_add));
-        } else if(mTransactionType == 1) {
-            tvTitle.setText(getResources().getString(R.string.title_category_income_add));
-        }
-
-        // Update ActionBar
-                ((ActivityMain) getActivity()).updateActionBar(mCustomView);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 

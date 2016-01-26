@@ -189,7 +189,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
 
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_select_category, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_add, null);
         TextView tvTitle    = (TextView) mCustomView.findViewById(R.id.tvTitle);
 
         // Change title of fragment

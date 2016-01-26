@@ -128,6 +128,16 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+        initActionBar();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     @Nullable
     @Override
@@ -161,17 +171,6 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         initViewIncome();
         initViewTransfer();
         initViewAdjustment();
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
-        initActionBar();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -262,10 +261,12 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         String expenseDescription = tvExpenseDescription.getText().toString();
                         int expenseAccountId    = mAccount.getId();
                         Date expenseDate = getDate(mYear, mMonth, mDay, mHour, mMinute);
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(expenseDate);
                         String expensePayee = tvExpensePayee.getText().toString();
                         String expenseEvent = tvExpenseEvent.getText().toString();
 
-                        Transaction transaction = new Transaction(0, expenseAmount, expenseCategoryId, expenseDescription, expenseAccountId, expenseDate, expensePayee, expenseEvent);
+                        Transaction transaction = new Transaction(0, expenseAmount, expenseCategoryId, expenseDescription, expenseAccountId, cal, expensePayee, expenseEvent);
                         db.createTransaction(transaction);
 
                         // Set input string for Payee's description in FragmentNewTransaction, and then return.
@@ -290,8 +291,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     }
 
     private void initActionBar() {
-
-
+        LogUtils.logEnterFunction(Tag, null);
         /* Todo: Init Data */
         String[] arTransactionTypeName      = getResources().getStringArray(R.array.transaction_type);
         String[] arTransactionDescription   = getResources().getStringArray(R.array.transaction_type_description);
@@ -303,9 +303,9 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         /* Todo: Update ActionBar: Spinner TransactionType */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_new_transaction, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_spinner, null);
 
-        spTransactionType   = (Spinner) mCustomView.findViewById(R.id.spinnerTransactionType);
+        spTransactionType   = (Spinner) mCustomView.findViewById(R.id.spinner);
         spTransactionType.setAdapter(new TransactionTypeAdapter(getActivity().getApplicationContext(), arTransaction));
 
         spTransactionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -337,10 +337,13 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**

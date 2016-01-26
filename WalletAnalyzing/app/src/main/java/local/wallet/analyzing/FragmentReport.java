@@ -35,21 +35,6 @@ public class FragmentReport extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.layout_fragment_report, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -58,9 +43,9 @@ public class FragmentReport extends Fragment {
         String[] arReportType      = getResources().getStringArray(R.array.report_type);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_report, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_spinner, null);
 
-        spReportType = (Spinner) mCustomView.findViewById(R.id.spinnerReportType);
+        spReportType = (Spinner) mCustomView.findViewById(R.id.spinner);
         spReportType.setAdapter(new TransactionTypeAdapter(getActivity().getApplicationContext(), Arrays.asList(arReportType)));
 
         spReportType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -76,6 +61,21 @@ public class FragmentReport extends Fragment {
         });
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.layout_fragment_report, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        super.onActivityCreated(savedInstanceState);
+
+        LogUtils.logLeaveFunction(TAG, null, null);
     }
 
     /**

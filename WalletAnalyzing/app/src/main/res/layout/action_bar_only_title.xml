@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:gravity="center"
-            android:text="@string/title_category_expense_add"
+            android:text="Title"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>

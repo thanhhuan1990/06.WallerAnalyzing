@@ -47,6 +47,20 @@ public class FragmentAccountSelectType extends Fragment {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_select_type));
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        super.onCreateOptionsMenu(menu, inflater);
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,17 +82,17 @@ public class FragmentAccountSelectType extends Fragment {
         lvAccountType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
+                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountAdd())) {
                     LogUtils.trace(TAG, "Setup for FragmentAccountAdd");
                     // Return Type's Id to FragmentAccountAdd
-                    String TagOfFragmentAccountAdd = ((ActivityMain)getActivity()).getFragmentAccountAdd();
-                    FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd)getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountAdd);
+                    String TagOfFragmentAccountAdd = ((ActivityMain) getActivity()).getFragmentAccountAdd();
+                    FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd) getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountAdd);
                     fragmentAccountAdd.updateAccountType(AccountType.Accounts.get(position).getId());
-                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountEdit())) {
+                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountEdit())) {
                     LogUtils.trace(TAG, "Setup for FragmentAccountEdit");
                     // Return Type's Id to FragmentAccountEdit
-                    String TagOfFragmentAccountEdit = ((ActivityMain)getActivity()).getFragmentAccountEdit();
-                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit)getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountEdit);
+                    String TagOfFragmentAccountEdit = ((ActivityMain) getActivity()).getFragmentAccountEdit();
+                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit) getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountEdit);
                     fragmentAccountEdit.updateAccountType(AccountType.Accounts.get(position).getId());
 
                 }
@@ -87,18 +101,6 @@ public class FragmentAccountSelectType extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_account_select, null);
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 

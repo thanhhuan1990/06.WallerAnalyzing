@@ -24,18 +24,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:gravity="center"
-            android:text="@string/title_category_expense"
+            android:text="Title"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
+
 
         <ImageView
             android:id="@+id/ivAdd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="18dp"
-            android:scaleType="fitCenter"
+            android:padding="12dp"
+            android:scaleType="fitEnd"
             android:src="@drawable/icon_plus"/>
+
     </LinearLayout>
 </RelativeLayout>

@@ -124,7 +124,9 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
 
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_account_select, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account));
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(TAG, null, null);

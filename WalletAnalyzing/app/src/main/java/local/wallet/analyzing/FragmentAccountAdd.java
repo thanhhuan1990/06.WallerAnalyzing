@@ -53,6 +53,21 @@ public class FragmentAccountAdd extends Fragment {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_add));
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,12 +90,12 @@ public class FragmentAccountAdd extends Fragment {
         db = new DatabaseHelper(getActivity());
 
         // Initialize View
-        etName = (ClearableEditText) getView().findViewById(R.id.etName);
+        etName              = (ClearableEditText) getView().findViewById(R.id.etName);
         llType              = (LinearLayout) getView().findViewById(R.id.llType);
         tvType              = (TextView) getView().findViewById(R.id.tvType);
         llCurrency          = (LinearLayout) getView().findViewById(R.id.llCurrency);
         tvCurrency          = (TextView) getView().findViewById(R.id.tvCurrency);
-        etInitialBalance = (EditText) getView().findViewById(R.id.etInitialBalance);
+        etInitialBalance    = (EditText) getView().findViewById(R.id.etInitialBalance);
         ivCurrencyIcon      = (ImageView) getView().findViewById(R.id.ivCurrencyIcon);
         llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
         tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
@@ -159,19 +174,6 @@ public class FragmentAccountAdd extends Fragment {
                 getFragmentManager().popBackStackImmediate();
             }
         });
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_account_add, null);
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 

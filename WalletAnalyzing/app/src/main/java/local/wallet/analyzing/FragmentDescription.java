@@ -51,25 +51,6 @@ public class FragmentDescription extends Fragment {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_description, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        etDescription = (EditText) getView().findViewById(R.id.etDescription);
-        etDescription.setText(oldDescription);
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(TAG, null);
@@ -77,7 +58,9 @@ public class FragmentDescription extends Fragment {
 
         /* Todo: Update ActionBar: Spinner TransactionType */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_description, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_description));
         ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +94,25 @@ public class FragmentDescription extends Fragment {
         });
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logLeaveFunction(TAG, null, null);
+        return inflater.inflate(R.layout.layout_fragment_description, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        super.onActivityCreated(savedInstanceState);
+
+        etDescription = (EditText) getView().findViewById(R.id.etDescription);
+        etDescription.setText(oldDescription);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 

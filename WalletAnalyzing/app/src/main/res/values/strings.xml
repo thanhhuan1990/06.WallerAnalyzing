@@ -103,4 +103,7 @@
     <string name="title_payee">Payee</string>
     <string name="title_event">Event</string>
 
+    <string name="content_expense">Expense</string>
+    <string name="content_income">Income</string>
+
 </resources>

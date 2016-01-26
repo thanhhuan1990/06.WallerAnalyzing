@@ -85,7 +85,9 @@ public class FragmentPayee extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_payee, null);
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
+        TextView    tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_payee));
         ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override

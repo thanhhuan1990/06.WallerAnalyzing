@@ -28,6 +28,21 @@ public class FragmentBudget extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_add, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_budget));
+
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,19 +56,6 @@ public class FragmentBudget extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         super.onActivityCreated(savedInstanceState);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_budget, null);
-
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }

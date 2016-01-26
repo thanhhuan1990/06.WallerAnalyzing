@@ -1,5 +1,6 @@
 package local.wallet.analyzing.model;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -12,14 +13,14 @@ public class Transaction implements Comparable<Transaction> {
     private String description;
     private int categoryId;
     private int accountId;
-    private Date time;
+    private Calendar time;
     private String payee;
     private String event;
 
     public Transaction() {
     }
 
-    public Transaction(int id, Double amount, int categoryId, String description, int accountId, Date time, String payee, String event) {
+    public Transaction(int id, Double amount, int categoryId, String description, int accountId, Calendar time, String payee, String event) {
         this.id = id;
         this.amount = amount;
         this.categoryId = categoryId;
@@ -75,11 +76,11 @@ public class Transaction implements Comparable<Transaction> {
         this.accountId = accountId;
     }
 
-    public Date getTime() {
+    public Calendar getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Calendar time) {
         this.time = time;
     }
 
