@@ -17,8 +17,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
@@ -269,7 +272,10 @@ public class FragmentAccount extends Fragment {
             viewHolder.ivIcon.setImageResource(AccountType.getAccountTypeById(mList.get(position).getTypeId()).getIcon());
             viewHolder.tvAccountName.setText(mList.get(position).getName());
 
-            String remain = mList.get(position).getRemain().toString();
+            DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            df.setMaximumFractionDigits(340); //340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
+
+            String remain = df.format(mList.get(position).getRemain());
             String[] ar = remain.split("\\.");
 
             StringBuilder formatted = new StringBuilder();

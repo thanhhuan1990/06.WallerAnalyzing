@@ -74,9 +74,15 @@
                 android:layout_height="12dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/account_type_cash"
-                android:scaleType="fitStart"/>
+                android:scaleType="fitStart"
+                android:layout_marginLeft="5dp"/>
         </LinearLayout>
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.2dp"
+        android:background="@color/listview_divider"/>
 
 </LinearLayout>

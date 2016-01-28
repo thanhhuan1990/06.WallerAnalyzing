@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -630,19 +631,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a TRANSACTION
      */
     public long createTransaction(Transaction transaction) {
+        LogUtils.logEnterFunction(TAG, "transaction = " + transaction.toString());
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_TRANSACTION_AMOUNT, transaction.getAmount());
         values.put(KEY_TRANSACTION_DESCRIPTION, transaction.getDescription());
-        values.put(KEY_TRANSACTION_CATEGORY_ID, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_CATEGORY_ID, transaction.getCategoryId());
         values.put(KEY_TRANSACTION_ACCOUNT_ID, transaction.getAccountId());
-        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime().getTime()));
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
         values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
 
         // insert row
         long transaction_id = db.insert(TABLE_TRANSACTION, null, values);
+
+        LogUtils.logLeaveFunction(TAG, "transaction = " + transaction.toString(), "transaction_id = " + transaction_id);
 
         return transaction_id;
     }
@@ -651,6 +655,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * get single TRANSACTION
      */
     public Transaction getTransaction(long transaction_id) {
+        LogUtils.logEnterFunction(TAG, "transaction_id = " + transaction_id);
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_ID + " = " + transaction_id;
@@ -659,26 +664,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if (c != null) {
+        if (c != null && c.moveToFirst()) {
             c.moveToFirst();
+
+            Transaction transaction = new Transaction();
+            transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+            transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+            transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+            transaction.setAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_ACCOUNT_ID)));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+            transaction.setTime(calendar);
+            transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+            transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+
+            LogUtils.logLeaveFunction(TAG, "transaction_id = " + transaction_id, transaction.toString());
+
+            return transaction;
         }
 
-        Transaction transaction = new Transaction();
-        transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-        transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
-        transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
-        transaction.setAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_ACCOUNT_ID)));
-        transaction.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
-        transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-        transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+        LogUtils.logLeaveFunction(TAG, "transaction_id = " + transaction_id, null);
 
-        return transaction;
+        return null;
+
     }
 
     /**
      * getting all TRANSACTIONs
      * */
     public List<Transaction> getAllTransactions() {
+        LogUtils.logEnterFunction(TAG, null);
         List<Transaction> transactions = new ArrayList<Transaction>();
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION;
 
@@ -696,7 +711,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
                 transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
                 transaction.setAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_ACCOUNT_ID)));
-                transaction.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+                transaction.setTime(calendar);
                 transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
                 transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
 
@@ -705,6 +722,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
+        LogUtils.logLeaveFunction(TAG, null, transactions.toString());
         return transactions;
     }
 
@@ -732,9 +750,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_TRANSACTION_AMOUNT, transaction.getAmount());
         values.put(KEY_TRANSACTION_DESCRIPTION, transaction.getDescription());
-        values.put(KEY_TRANSACTION_CATEGORY_ID, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_CATEGORY_ID, transaction.getCategoryId());
         values.put(KEY_TRANSACTION_ACCOUNT_ID, transaction.getAccountId());
-        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime()));
+        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime().getTime()));
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
         values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
 

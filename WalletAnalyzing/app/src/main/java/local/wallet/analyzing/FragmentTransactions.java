@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
@@ -39,10 +41,8 @@ public class FragmentTransactions extends Fragment {
 
     private DatabaseHelper db;
 
-    private List<Transaction> arTrans;
     private List<TransactionGroup> arGroupTrans;
-
-    private ListView    lvTransaction;
+    private ListView            lvTransaction;
     private TransactionAdapter  mAdapter;
 
     @Nullable
@@ -63,12 +63,12 @@ public class FragmentTransactions extends Fragment {
         db = new DatabaseHelper(getActivity());
 
         // Get all transaction
-        arTrans = db.getAllTransactions();
+        List<Transaction> arTrans = db.getAllTransactions();
         // Sort transaction
         Collections.sort(arTrans);
 
         // Add to Group Transaction
-        arGroupTrans    = TransactionGroup.parseTransactions(db.getAllTransactions());
+        arGroupTrans    = TransactionGroup.parseTransactions(arTrans);
 
         lvTransaction   = (ListView) getView().findViewById(R.id.lvTransaction);
         mAdapter = new TransactionAdapter(getActivity(), arGroupTrans);
@@ -104,7 +104,7 @@ public class FragmentTransactions extends Fragment {
             TextView    tvDate2;
             TextView    tvIncome;
             TextView    tvExpense;
-            ListView    lvTransactionDetail;
+            LinearLayout llTransactionDetail;
         }
 
         private List<TransactionGroup> mTransactions;
@@ -126,7 +126,7 @@ public class FragmentTransactions extends Fragment {
                 viewHolder.tvDate2              = (TextView) convertView.findViewById(R.id.tvDate2);
                 viewHolder.tvIncome             = (TextView) convertView.findViewById(R.id.tvIncome);
                 viewHolder.tvExpense            = (TextView) convertView.findViewById(R.id.tvExpense);
-                viewHolder.lvTransactionDetail  = (ListView) convertView.findViewById(R.id.lvTransactionDetail);
+                viewHolder.llTransactionDetail  = (LinearLayout) convertView.findViewById(R.id.llTransactionDetail);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -143,11 +143,14 @@ public class FragmentTransactions extends Fragment {
                 } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == time.get(Calendar.DAY_OF_YEAR)) {
                     viewHolder.tvDate1.setText("Yesterday");
                 } else {
-                    viewHolder.tvDate1.setText(new SimpleDateFormat("dd-MM-yyyy").format(time));
+                    viewHolder.tvDate1.setText(mTransactions.get(position).getTime().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
                 }
-                viewHolder.tvDate2.setText(mTransactions.get(position).getTime().get(Calendar.MONTH) + "/" + mTransactions.get(position).getTime().get(Calendar.YEAR));
 
-                Double expense = 0.1, income = 0.0;
+                viewHolder.tvDate2.setText(String.format(getResources().getString(R.string.format_month_year),
+                                            mTransactions.get(position).getTime().get(Calendar.MONTH) + 1,
+                                            mTransactions.get(position).getTime().get(Calendar.YEAR)));
+
+                Double expense = 0.0, income = 0.0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
                     if(db.getCategory(tran.getCategoryId()).isExpense()) {
                         expense += tran.getAmount();
@@ -158,73 +161,41 @@ public class FragmentTransactions extends Fragment {
 
                 if(expense != 0) {
                     viewHolder.tvExpense.setVisibility(View.VISIBLE);
-                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense) + ": " + expense);
+                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense) + ": " + (expense.longValue() == expense ? "" + expense.longValue() : "" + expense));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
                 }
 
                 if(income != 0) {
                     viewHolder.tvIncome.setVisibility(View.VISIBLE);
-                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income) + ": " + income);
+                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income) + ": " + (income.longValue() == income ? "" + income.longValue() : "" + income));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
                 }
-            }
 
-            return convertView;
-        }
-    }
+                for(Transaction tran : mTransactions.get(position).getArTrans()) {
+                    LayoutInflater inflater = LayoutInflater.from(getContext());
+                    View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
 
-    private class TransactionDetailAdapter extends ArrayAdapter<Transaction> {
-        private class ViewHolder {
-            TextView    tvCategory;
-            TextView    tvAmount;
-            ImageView   ivCurrencyIcon;
-            TextView    tvDescription;
-            TextView    tvAccount;
-            ImageView   ivAccountIcon;
-        }
+                    TextView tvCategory       = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
+                    Category cate = db.getCategory(tran.getCategoryId());
+                    String strCategory = (cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income)) + ": " + cate.getName();
+                    tvCategory.setText(strCategory);
+                    TextView tvAmount         = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
+                    tvAmount.setText(tran.getAmount().longValue() == tran.getAmount() ? "" + tran.getAmount().longValue() : "" + tran.getAmount());
+                    ImageView ivCurrencyIcon   = (ImageView) transactionDetailView.findViewById(R.id.ivCurrencyIcon);
+                    Account account = db.getAccount(tran.getAccountId());
+                    ivCurrencyIcon.setImageResource(Currency.getCurrencyById(account.getCurrencyId()).getIcon());
+                    TextView tvDescription    = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
+                    tvDescription.setText(tran.getDescription());
+                    TextView tvAccount        = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
+                    tvAccount.setText(account.getName());
+                    ImageView ivAccountIcon    = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
+                    ivAccountIcon.setImageResource(AccountType.getAccountTypeById(account.getTypeId()).getIcon());
 
-        private List<Transaction> mTransactions;
-        public TransactionDetailAdapter(Context context, List<Transaction> items) {
-            super(context, R.layout.listview_item_transaction_detail, items);
-            this.mTransactions  = items;
-        }
+                    viewHolder.llTransactionDetail.addView(transactionDetailView);
+                }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder viewHolder; // view lookup cache stored in tag
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
-                viewHolder.tvCategory       = (TextView) convertView.findViewById(R.id.tvCategory);
-                viewHolder.tvAmount         = (TextView) convertView.findViewById(R.id.tvAmount);
-                viewHolder.ivCurrencyIcon   = (ImageView) convertView.findViewById(R.id.ivCurrencyIcon);
-                viewHolder.tvDescription    = (TextView) convertView.findViewById(R.id.tvDescription);
-                viewHolder.tvAccount        = (TextView) convertView.findViewById(R.id.tvAccount);
-                viewHolder.ivAccountIcon    = (ImageView) convertView.findViewById(R.id.ivAccountIcon);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            if(mTransactions.get(position) != null) {
-                // Set category value
-                Category cate = db.getCategory(mTransactions.get(position).getCategoryId());
-                String strCategory = cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income) + ": " + cate.getName();
-                viewHolder.tvCategory.setText(strCategory);
-                // Set amount value
-                viewHolder.tvAmount.setText(mTransactions.get(position).getAmount() + "");
-                // Set amount currency
-                Account account = db.getAccount(mTransactions.get(position).getAccountId());
-                viewHolder.ivCurrencyIcon.setImageResource(Currency.getCurrencyById(account.getCurrencyId()).getIcon());
-                //Set description value
-                viewHolder.tvDescription.setText(mTransactions.get(position).getDescription());
-                // Set account value
-                viewHolder.tvAccount.setText(account.getName());
-                viewHolder.ivAccountIcon.setImageResource(AccountType.getAccountTypeById(account.getTypeId()).getIcon());
             }
 
             return convertView;

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Wallet Analyzing</string>
 
+    <string name="format_month_year">\%%02d/\%%02d</string>
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
     <string name="action_settings">Settings</string>

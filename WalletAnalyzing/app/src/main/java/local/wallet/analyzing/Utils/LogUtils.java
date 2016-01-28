@@ -20,7 +20,8 @@ public class LogUtils {
 	/****************************************************************************************************
 	 * Private members
 	 ***************************************************************************************************/
-	private static final String PADDING_STRING = "   ";
+    private static int MAX_TAG  = 30;
+	private static final String PADDING_STRING = " ";
 	private static int sMethodStackLevel = 0;
 
 	/****************************************************************************************************
@@ -35,7 +36,8 @@ public class LogUtils {
 	 */
 	public static void trace(String tag, String message) {
 		if (BuildConfig.DEBUG) {
-			Log.d(tag, message);
+            String strTid = String.valueOf(Thread.currentThread().getId());
+			Log.d(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
 		}
 	}
 
@@ -47,7 +49,8 @@ public class LogUtils {
 	 */
 	public static void error(String tag, String message) {
 		if (BuildConfig.DEBUG) {
-			Log.e(tag, message);
+            String strTid = String.valueOf(Thread.currentThread().getId());
+			Log.e(tag,getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
 		}
 	}
 
@@ -73,14 +76,7 @@ public class LogUtils {
 	public static void logEnterFunction(String tag, String param) {
 		if (BuildConfig.DEBUG) {
 			String strTid = String.valueOf(Thread.currentThread().getId());
-
-			/*Log.i(tag, getPaddingString() + "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "() ──────────┐");
-            if(param != null) {
-                Log.i(tag, getPaddingString() + "=[Thread_id:" + strTid + "]" + param);
-            }*/
-
-//			Log.i(tag, getPaddingString() + "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "(" + (param != null ? param : "") + ") ──────────┐");
-            Log.i(tag, "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "(" + (param != null ? param : "") + ") ──────────┐");
+			Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "(" + (param != null ? param : "") + ") ──────────┐");
 		}
 	}
 
@@ -100,8 +96,7 @@ public class LogUtils {
 				}
 			}
 
-//			Log.i(tag, getPaddingString() + "=[Thread_id:" + strTid + "]──[LEAVE]───── " + getMethodName() + "() " + temp + "──────────┘" + (result != null ? "→ return " + result : ""));
-            Log.i(tag, "=[Thread_id:" + strTid + "]──[LEAVE]───── " + getMethodName() + "() " + temp + "──────────┘" + (result != null ? "→ return " + result : ""));
+			Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[LEAVE]───── " + getMethodName() + "() " + temp + "──────────┘" + (result != null ? "→ return " + result : ""));
 		}
 	}
 
@@ -123,20 +118,13 @@ public class LogUtils {
 	 * 
 	 * @return
 	 */
-	private static String getPaddingString() {
-		final StackTraceElement[] ste = Thread.currentThread().getStackTrace();
-		String strPad = "";
-		int nPad = 0;
-		if (sMethodStackLevel == 0) {
-			sMethodStackLevel = ste.length;
-		}
+    private static String getPaddingString(String tag) {
+        String strPad = "";
 
-		nPad = ste.length - sMethodStackLevel;
+        for(int i = 0; i < MAX_TAG - tag.length(); i++) {
+            strPad += PADDING_STRING;
+        }
 
-		if (nPad < 0)
-			nPad = 0;
-		for (int i = 0; i < nPad; i++)
-			strPad += PADDING_STRING;
-		return strPad;
-	}
+        return strPad;
+    }
 }

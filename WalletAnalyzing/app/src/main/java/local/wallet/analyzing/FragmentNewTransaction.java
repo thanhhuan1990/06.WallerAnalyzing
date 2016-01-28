@@ -216,6 +216,8 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
                                                                             @Override
                                                                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                                                                mHour   = hourOfDay;
+                                                                                mMinute = minute;
                                                                                 tvExpenseDate.setText(tvExpenseDate.getText().toString() + " "
                                                                                                         + hourOfDay + ":" + String.format("%02d", minute));
                                                                             }
@@ -226,7 +228,9 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
                                                                             @Override
                                                                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
+                                                                                mYear   = year;
+                                                                                mMonth  = monthOfYear;
+                                                                                mDay    = dayOfMonth;
                                                                                 tvExpenseDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
                                                                                 timePickerDialog.show();
                                                                             }
@@ -571,6 +575,9 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
             LogUtils.logEnterFunction(Tag, null);
 
             if(!s.toString().equals(current)){
+                if(s.toString().equals("")) {
+                    return;
+                }
                 mEdittext.removeTextChangedListener(this);
 
                 LogUtils.trace(Tag, "input: " + s.toString());

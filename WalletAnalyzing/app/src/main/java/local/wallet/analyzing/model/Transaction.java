@@ -33,7 +33,7 @@ public class Transaction implements Comparable<Transaction> {
 
     @Override
     public int compareTo(Transaction o) {
-        return getTime().compareTo(o.getTime());
+        return o.getTime().compareTo(getTime());
     }
 
     public int getId() {
