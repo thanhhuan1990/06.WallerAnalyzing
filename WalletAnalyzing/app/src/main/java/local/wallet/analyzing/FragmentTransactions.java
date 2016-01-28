@@ -107,7 +107,7 @@ public class FragmentTransactions extends Fragment {
             LinearLayout llTransactionDetail;
         }
 
-        private List<TransactionGroup> mTransactions;
+        List<TransactionGroup> mTransactions;
         public TransactionAdapter(Context context, List<TransactionGroup> items) {
             super(context, R.layout.listview_item_transaction_date, items);
             this.mTransactions  = items;
@@ -139,16 +139,23 @@ public class FragmentTransactions extends Fragment {
                 viewHolder.tvDate.setText(time.get(Calendar.DATE) + "");
 
                 if(car.get(Calendar.DAY_OF_YEAR) == time.get(Calendar.DAY_OF_YEAR)) {
-                    viewHolder.tvDate1.setText("Today");
+                    viewHolder.tvDate1.setText(getResources().getString(R.string.content_today));
                 } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == time.get(Calendar.DAY_OF_YEAR)) {
-                    viewHolder.tvDate1.setText("Yesterday");
+                    viewHolder.tvDate1.setText(getResources().getString(R.string.content_yesterday));
+                } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == time.get(Calendar.DAY_OF_YEAR)) {
+                    Locale current = getResources().getConfiguration().locale;
+                    if(current.equals(Locale.forLanguageTag("vi_VN"))) {
+                        viewHolder.tvDate1.setText(getResources().getString(R.string.content_before_yesterday));
+                    } else {
+                        viewHolder.tvDate1.setText(mTransactions.get(position).getTime().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
+                    }
                 } else {
                     viewHolder.tvDate1.setText(mTransactions.get(position).getTime().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
                 }
 
                 viewHolder.tvDate2.setText(String.format(getResources().getString(R.string.format_month_year),
-                                            mTransactions.get(position).getTime().get(Calendar.MONTH) + 1,
-                                            mTransactions.get(position).getTime().get(Calendar.YEAR)));
+                        mTransactions.get(position).getTime().get(Calendar.MONTH) + 1,
+                        mTransactions.get(position).getTime().get(Calendar.YEAR)));
 
                 Double expense = 0.0, income = 0.0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
@@ -161,37 +168,48 @@ public class FragmentTransactions extends Fragment {
 
                 if(expense != 0) {
                     viewHolder.tvExpense.setVisibility(View.VISIBLE);
-                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense) + ": " + (expense.longValue() == expense ? "" + expense.longValue() : "" + expense));
+                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense) + ": " + Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, (expense.longValue() == expense ? expense.longValue() : expense)));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
                 }
 
                 if(income != 0) {
                     viewHolder.tvIncome.setVisibility(View.VISIBLE);
-                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income) + ": " + (income.longValue() == income ? "" + income.longValue() : "" + income));
+                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income) + ": " + Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, (income.longValue() == income ? income.longValue() :  income)));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
                 }
 
+                viewHolder.llTransactionDetail.removeAllViews();
+                int posi = 0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
+                    posi++;
+                    Account account = db.getAccount(tran.getAccountId());
                     LayoutInflater inflater = LayoutInflater.from(getContext());
                     View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
 
-                    TextView tvCategory       = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
                     Category cate = db.getCategory(tran.getCategoryId());
-                    String strCategory = (cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income)) + ": " + cate.getName();
+                    String strCategory          = (cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income)) + ": " + cate.getName();
+
+                    TextView tvCategory         = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
                     tvCategory.setText(strCategory);
-                    TextView tvAmount         = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
-                    tvAmount.setText(tran.getAmount().longValue() == tran.getAmount() ? "" + tran.getAmount().longValue() : "" + tran.getAmount());
-                    ImageView ivCurrencyIcon   = (ImageView) transactionDetailView.findViewById(R.id.ivCurrencyIcon);
-                    Account account = db.getAccount(tran.getAccountId());
-                    ivCurrencyIcon.setImageResource(Currency.getCurrencyById(account.getCurrencyId()).getIcon());
-                    TextView tvDescription    = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
+
+                    TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
+                    tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), tran.getAmount()));
+
+                    TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
                     tvDescription.setText(tran.getDescription());
-                    TextView tvAccount        = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
+
+                    TextView tvAccount          = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
                     tvAccount.setText(account.getName());
-                    ImageView ivAccountIcon    = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
+
+                    ImageView ivAccountIcon     = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
                     ivAccountIcon.setImageResource(AccountType.getAccountTypeById(account.getTypeId()).getIcon());
+
+                    View vDivider               = (View) transactionDetailView.findViewById(R.id.vDivider);
+                    if(posi == mTransactions.get(position).getArTrans().size()) {
+                        vDivider.setVisibility(View.GONE);
+                    }
 
                     viewHolder.llTransactionDetail.addView(transactionDetailView);
                 }
@@ -203,7 +221,15 @@ public class FragmentTransactions extends Fragment {
     }
 
     public void updateListTransaction() {
-        arGroupTrans    = TransactionGroup.parseTransactions(db.getAllTransactions());
+        // Get all transaction
+        List<Transaction> arTrans = db.getAllTransactions();
+        // Sort transaction
+        Collections.sort(arTrans);
+
+        // Add to Group Transaction
+        List<TransactionGroup> arTemp = TransactionGroup.parseTransactions(arTrans);
+        arGroupTrans.clear();
+        arGroupTrans.addAll(arTemp);
         mAdapter.notifyDataSetChanged();
     }
 }

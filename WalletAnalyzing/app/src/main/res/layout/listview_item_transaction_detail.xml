@@ -3,13 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="5">
+
         <TextView
             android:id="@+id/tvCategory"
             android:layout_width="0dp"
@@ -17,36 +20,28 @@
             android:layout_weight="3"
             android:text="Expense: ..."
             android:textColor="@android:color/black"
-            android:textStyle="bold"/>
-        <LinearLayout
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvAmount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:orientation="horizontal"
-            android:gravity="right|center_vertical">
-
-            <TextView
-                android:id="@+id/tvAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@android:color/black"
-                android:textStyle="bold"/>
-            <ImageView
-                android:id="@+id/ivCurrencyIcon"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:background="@android:color/transparent"
-                android:src="@drawable/currency_vnd"
-                android:scaleType="fitStart"/>
-        </LinearLayout>
+            android:gravity="right|center_vertical"
+            android:text="... ₫"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp">
+
         <TextView
             android:id="@+id/tvDescription"
             android:layout_width="0dp"
@@ -54,13 +49,15 @@
             android:layout_weight="4"
             android:text="description"
             android:textColor="@android:color/black"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:singleLine="true"/>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="right|center_vertical">
+            android:gravity="right|center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvAccount"
@@ -68,21 +65,23 @@
                 android:layout_height="wrap_content"
                 android:text="..."
                 android:textColor="@android:color/black" />
+
             <ImageView
                 android:id="@+id/ivAccountIcon"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
+                android:layout_marginLeft="5dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/account_type_cash"
                 android:scaleType="fitStart"
-                android:layout_marginLeft="5dp"/>
+                android:src="@drawable/account_type_cash" />
         </LinearLayout>
 
     </LinearLayout>
 
     <View
+        android:id="@+id/vDivider"
         android:layout_width="match_parent"
         android:layout_height="0.2dp"
-        android:background="@color/listview_divider"/>
+        android:background="@color/listview_divider" />
 
 </LinearLayout>

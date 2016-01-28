@@ -53,7 +53,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     /* Layout Expense */
     private LinearLayout    llExpense;
     private EditText        etExpenseAmount;
-    private ImageView       ivExpenseCurrencyIcon;
+    private TextView        tvExpenseCurrencyIcon;
     private LinearLayout    llExpenseCategory;
     private TextView        tvExpenseCategory;
     private LinearLayout    llExpenseDescription;
@@ -70,7 +70,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     /* Layout Income */
     private LinearLayout    llIncome;
     private EditText        etIncomeAmount;
-    private ImageView       ivIncomeCurrencyIcon;
+    private TextView        tvIncomeCurrencyIcon;
     private LinearLayout    llIncomeCategory;
     private TextView        tvIncomeCategory;
     private LinearLayout    llIncomeDescription;
@@ -85,7 +85,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     /* Layout Transfer */
     private LinearLayout    llTransfer;
     private EditText        etTransferAmount;
-    private ImageView       ivTransferCurrencyIcon;
+    private TextView        tvTransferCurrencyIcon;
     private LinearLayout    llTransferFromAccount;
     private TextView        tvTransferFromAccount;
     private LinearLayout    llTransferToAccount;
@@ -95,7 +95,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     private LinearLayout    llTransferDate;
     private TextView        tvTransferDate;
     private EditText        etTransferFee;
-    private ImageView       ivTransferFeeCurrencyIcon;
+    private TextView        tvTransferFeeCurrencyIcon;
     private LinearLayout    llTransferCategory;
     private TextView        tvTransferCategory;
 
@@ -104,7 +104,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     private LinearLayout    llAdjustmentAccount;
     private TextView        tvAdjustmentAccount;
     private EditText        etAdjustmentBalance;
-    private ImageView       ivAdjustmentCurrencyIcon;
+    private TextView        tvAdjustmentCurrencyIcon;
     private TextView        tvAdjustmentSpent;
     private LinearLayout    llAdjustmentCategory;
     private TextView        tvAdjustmentCategory;
@@ -156,6 +156,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         getActivity().invalidateOptionsMenu();
 
         db = new DatabaseHelper(getActivity());
+        mAccount = db.getAccount(db.getLastTransaction().getAccountId());
 
         // Get Current DateTime
         final Calendar c = Calendar.getInstance();
@@ -218,8 +219,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                                                                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                                                                                 mHour   = hourOfDay;
                                                                                 mMinute = minute;
-                                                                                tvExpenseDate.setText(tvExpenseDate.getText().toString() + " "
-                                                                                                        + hourOfDay + ":" + String.format("%02d", minute));
+                                                                                tvExpenseDate.setText(String.format("%02d-%02d-%02d %02d:%02d", mDay, mMonth + 1, mYear, mHour, mMinute));
                                                                             }
                                                                         }, mHour, mMinute, true);
 
@@ -231,7 +231,6 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                                                                                 mYear   = year;
                                                                                 mMonth  = monthOfYear;
                                                                                 mDay    = dayOfMonth;
-                                                                                tvExpenseDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
                                                                                 timePickerDialog.show();
                                                                             }
                                                                         }, mYear, mMonth, mDay);
@@ -260,7 +259,11 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
             case R.id.llSave:
                 switch (spTransactionType.getSelectedItemPosition()) {
                     case 0:
-                        Double expenseAmount =  etExpenseAmount.getText().toString().equals("") ? 0 : Double.parseDouble(etExpenseAmount.getText().toString().replaceAll(",", ""));
+
+                        if(etExpenseAmount.getText().toString().equals("") || mCategory == null || mAccount == null) {
+                            return;
+                        }
+                        Double expenseAmount =  Double.parseDouble(etExpenseAmount.getText().toString().replaceAll(",", ""));
                         int expenseCategoryId = mCategory.getId();
                         String expenseDescription = tvExpenseDescription.getText().toString();
                         int expenseAccountId    = mAccount.getId();
@@ -277,7 +280,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         FragmentTransactions fragmentTransactions = (FragmentTransactions)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
                         fragmentTransactions.updateListTransaction();
 
-                        ((ActivityMain) getActivity()).updateTabs(ActivityMain.TAB_POSITION_NEW_TRANSACTION, ActivityMain.TAB_POSITION_TRANSACTIONS);
+                        ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
 
                         break;
                     case 1:
@@ -360,7 +363,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         etExpenseAmount         = (EditText) getView().findViewById(R.id.etExpenseAmount);
         etExpenseAmount.addTextChangedListener(new CurrencyTextWatcher(etExpenseAmount));
-        ivExpenseCurrencyIcon   = (ImageView) getView().findViewById(R.id.ivExpenseCurrencyIcon);
+        tvExpenseCurrencyIcon   = (TextView) getView().findViewById(R.id.tvExpenseCurrencyIcon);
 
         llExpenseDescription    = (LinearLayout) getView().findViewById(R.id.llExpenseDescription);
         llExpenseDescription.setOnClickListener(this);
@@ -373,10 +376,12 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llExpenseAccount        = (LinearLayout) getView().findViewById(R.id.llExpenseAccount);
         llExpenseAccount.setOnClickListener(this);
         tvExpenseAccount        = (TextView) getView().findViewById(R.id.tvExpenseAccount);
+        tvExpenseAccount.setText(mAccount.getName());
         llExpenseDate           = (LinearLayout) getView().findViewById(R.id.llExpenseDate);
         llExpenseDate.setOnClickListener(this);
         tvExpenseDate           = (TextView) getView().findViewById(R.id.tvExpenseDate);
-        tvExpenseDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
+//        tvExpenseDate.setText(mDay + "-" + (mMonth + 1) + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
+        tvExpenseDate.setText(String.format("%02d-%02d-%02d %02d:%02d", mDay, mMonth + 1, mYear, mHour, mMinute));
         llExpensePayee          = (LinearLayout) getView().findViewById(R.id.llExpensePayee);
         llExpensePayee.setOnClickListener(this);
         tvExpensePayee          = (TextView) getView().findViewById(R.id.tvExpensePayee);
@@ -393,7 +398,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
         etIncomeAmount          = (EditText) getView().findViewById(R.id.etIncomeAmount);
         etIncomeAmount.addTextChangedListener(new CurrencyTextWatcher(etIncomeAmount));
-        ivIncomeCurrencyIcon    = (ImageView) getView().findViewById(R.id.ivIncomeCurrencyIcon);
+        tvIncomeCurrencyIcon    = (TextView) getView().findViewById(R.id.tvIncomeCurrencyIcon);
         llIncomeCategory        = (LinearLayout) getView().findViewById(R.id.llIncomeCategory);
         tvIncomeCategory        = (TextView) getView().findViewById(R.id.tvIncomeCategory);
         llIncomeDescription     = (LinearLayout) getView().findViewById(R.id.llIncomeDescription);
@@ -402,7 +407,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvToAccount             = (TextView) getView().findViewById(R.id.tvToAccount);
         llIncomeDate            = (LinearLayout) getView().findViewById(R.id.llIncomeDate);
         tvIncomeDate            = (TextView) getView().findViewById(R.id.tvIncomeDate);
-        tvIncomeDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
+        tvIncomeDate.setText(mDay + "-" + (mMonth + 1) + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
         llIncomeEvent           = (LinearLayout) getView().findViewById(R.id.llIncomeEvent);
         tvIncomeEvent           = (TextView) getView().findViewById(R.id.tvIncomeEvent);
 
@@ -415,7 +420,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llTransfer                  = (LinearLayout) getView().findViewById(R.id.llTransfer);
         etTransferAmount            = (EditText) getView().findViewById(R.id.etTransferAmount);
         etTransferAmount.addTextChangedListener(new CurrencyTextWatcher(etTransferAmount));
-        ivTransferCurrencyIcon      = (ImageView) getView().findViewById(R.id.ivTransferCurrencyIcon);
+        tvTransferCurrencyIcon      = (TextView) getView().findViewById(R.id.tvTransferCurrencyIcon);
         llTransferFromAccount       = (LinearLayout) getView().findViewById(R.id.llTransferFromAccount);
         tvTransferFromAccount       = (TextView) getView().findViewById(R.id.tvTransferFromAccount);
         llTransferToAccount         = (LinearLayout) getView().findViewById(R.id.llTransferToAccount);
@@ -424,9 +429,9 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvTransferDescription       = (TextView) getView().findViewById(R.id.tvTransferDescription);
         llTransferDate              = (LinearLayout) getView().findViewById(R.id.llTransferDate);
         tvTransferDate              = (TextView) getView().findViewById(R.id.tvTransferDate);
-        tvTransferDate.setText(mDay + "-" + mMonth + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
+        tvTransferDate.setText(mDay + "-" + (mMonth + 1) + "-" + mYear + " " + mHour + ":" + String.format("%02d", mMinute));
         etTransferFee               = (EditText) getView().findViewById(R.id.etTransferFee);
-        ivTransferFeeCurrencyIcon   = (ImageView) getView().findViewById(R.id.ivTransferFeeCurrencyIcon);
+        tvTransferFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvTransferFeeCurrencyIcon);
         llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
         tvTransferCategory          = (TextView) getView().findViewById(R.id.tvTransferCategory);
 
@@ -441,7 +446,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvAdjustmentAccount         = (TextView) getView().findViewById(R.id.tvAdjustmentAccount);
         etAdjustmentBalance         = (EditText) getView().findViewById(R.id.etAdjustmentBalance);
         etAdjustmentBalance.addTextChangedListener(new CurrencyTextWatcher(etAdjustmentBalance));
-        ivAdjustmentCurrencyIcon    = (ImageView) getView().findViewById(R.id.ivAdjustmentCurrencyIcon);
+        tvAdjustmentCurrencyIcon    = (TextView) getView().findViewById(R.id.tvAdjustmentCurrencyIcon);
         tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
         llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
         tvAdjustmentCategory        = (TextView) getView().findViewById(R.id.tvAdjustmentCategory);

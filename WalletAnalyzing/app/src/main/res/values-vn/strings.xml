@@ -79,5 +79,8 @@
 
     <string name="expense_category">Chi tiêu</string>
     <string name="expense_category_lent">Vay nợ</string>
+    <string name="content_today">Hôm nay</string>
+    <string name="content_yesterday">Hôm qua</string>
+    <string name="content_before_yesterday">Hôm kia</string>
 
 </resources>

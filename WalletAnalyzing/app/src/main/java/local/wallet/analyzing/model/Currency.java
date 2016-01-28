@@ -1,5 +1,8 @@
 package local.wallet.analyzing.model;
 
+import android.content.Context;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import local.wallet.analyzing.R;
@@ -8,52 +11,132 @@ import local.wallet.analyzing.R;
  * Created by huynh.thanh.huan on 1/5/2016.
  */
 public class Currency {
-    private int id;
-    private int name;
-    private int icon;
 
-    public static ArrayList<Currency> Currencies = new ArrayList<Currency>() {{
-        add(new Currency(1, R.string.currency_vnd,              R.drawable.currency_vnd));
-        add(new Currency(2, R.string.currency_usd,      R.drawable.currency_usd));
-        add(new Currency(3, R.string.currency_jpy,              R.drawable.currency_jpy));
-    }};
+    public enum CurrencyList {
+        VND(0),
+        USD(1),
+        JPY(2);
 
-    public Currency(int id, int name, int icon) {
-        this.id = id;
-        this.name = name;
-        this.icon = icon;
-    }
+        private int value;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getName() {
-        return name;
-    }
-
-    public void setName(int name) {
-        this.name = name;
-    }
-
-    public int getIcon() {
-        return icon;
-    }
-
-    public void setIcon(int icon) {
-        this.icon = icon;
-    }
-
-    public static Currency getCurrencyById(int id) {
-        for(Currency type : Currencies) {
-            if(id == type.getId()) {
-                return type;
-            }
+        private CurrencyList(int value) {
+            this.value = value;
         }
-        return null;
+
+        public int getValue() {
+            return this.value;
+        }
+
+    }
+    public static CurrencyList getCurrencyById(int currencyId) {
+
+        CurrencyList currency;
+        switch (currencyId) {
+            case 0:
+                currency = CurrencyList.VND;
+                break;
+            case 1:
+                currency = CurrencyList.USD;
+                break;
+            case 2:
+                currency = CurrencyList.JPY;
+                break;
+            default:
+                currency = CurrencyList.VND;
+                break;
+        }
+
+        return currency;
+    }
+
+    public static int getCurrencyIcon(CurrencyList currency) {
+        int strResource = -1;
+
+        switch (currency) {
+            case VND:
+                strResource = R.string.currency_icon_vietnam;
+                break;
+            case USD:
+                strResource = R.string.currency_icon_usd;
+                break;
+            case JPY:
+                strResource = R.string.currency_icon_jpy;
+                break;
+            default:
+                strResource = R.string.currency_icon_vietnam;
+                break;
+        }
+
+        return strResource;
+    }
+
+    public static int getCurrencyName(CurrencyList currency) {
+        int strResource = -1;
+
+        switch (currency) {
+            case VND:
+                strResource = R.string.currency_vnd;
+                break;
+            case USD:
+                strResource = R.string.currency_usd;
+                break;
+            case JPY:
+                strResource = R.string.currency_jpy;
+                break;
+            default:
+                strResource = R.string.currency_vnd;
+                break;
+        }
+
+        return strResource;
+    }
+
+    public static String formatCurrency(Context context, CurrencyList currency, Double amount) {
+        String strResource = "";
+
+        DecimalFormat df = new DecimalFormat();
+
+        if(amount.longValue() == amount) {
+            df = new DecimalFormat("#,### ");
+        } else {
+            df = new DecimalFormat("##,##0.00 ");
+        }
+        switch (currency) {
+            case VND:
+                strResource = df.format(amount) + context.getResources().getString(R.string.currency_icon_vietnam);
+                break;
+            case USD:
+                strResource = new DecimalFormat("##,##0.00 " + context.getResources().getString(R.string.currency_icon_usd)).format(amount);
+                break;
+            case JPY:
+                strResource = new DecimalFormat("##,##0.00 " + context.getResources().getString(R.string.currency_icon_jpy)).format(amount);
+                break;
+            default:
+                strResource = new DecimalFormat("##,##0.00 " + context.getResources().getString(R.string.currency_icon_vietnam)).format(amount);
+                break;
+        }
+
+        return strResource;
+    }
+
+    public static String formatCurrency(Context context, CurrencyList currency, String amount) {
+        String strResource = "";
+
+        switch (currency) {
+            case VND:
+                strResource = amount + context.getResources().getString(R.string.currency_icon_vietnam);
+                break;
+            case USD:
+                strResource = amount + context.getResources().getString(R.string.currency_icon_usd);
+                break;
+            case JPY:
+                strResource = amount + context.getResources().getString(R.string.currency_icon_jpy);
+                break;
+            default:
+                strResource = amount + context.getResources().getString(R.string.currency_icon_vietnam);
+                break;
+        }
+
+        return strResource;
     }
 }

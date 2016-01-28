@@ -53,9 +53,9 @@
     <string name="account_add_initial_balance">Initial balance</string>
     <string name="account_add_note">Note</string>
 
-    <string name="currency_vnd">Việt Nam Đồng(VND)</string>
-    <string name="currency_usd">United States Dollar(USD)</string>
-    <string name="currency_jpy">Japanese Yen(JPY)</string>
+    <string name="currency_vnd">₫ - Việt Nam Đồng(VND)</string>
+    <string name="currency_usd">$ - United States Dollar(USD)</string>
+    <string name="currency_jpy">¥ - Japanese Yen(JPY)</string>
 
     <string name="new_transaction_amount">Amount</string>
     <string name="new_transaction_category_expense">Category</string>
@@ -106,5 +106,11 @@
 
     <string name="content_expense">Expense</string>
     <string name="content_income">Income</string>
+    <string name="content_today">Today</string>
+    <string name="content_yesterday">Yesterday</string>
+
+    <string name="currency_icon_vietnam">₫</string>
+    <string name="currency_icon_usd">$</string>
+    <string name="currency_icon_jpy">¥</string>
 
 </resources>

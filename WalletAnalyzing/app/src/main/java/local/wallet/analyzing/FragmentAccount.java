@@ -262,7 +262,6 @@ public class FragmentAccount extends Fragment {
                 viewHolder.ivIcon           = (ImageView) convertView.findViewById(R.id.ivIcon);
                 viewHolder.tvAccountName    = (TextView) convertView.findViewById(R.id.tvAccount);
                 viewHolder.tvRemain         = (TextView) convertView.findViewById(R.id.tvRemain);
-                viewHolder.ivCurrency       = (ImageView) convertView.findViewById(R.id.ivCurrency);
                 viewHolder.ivEdit           = (ImageView) convertView.findViewById(R.id.ivEdit);
                 convertView.setTag(viewHolder);
             } else {
@@ -298,9 +297,7 @@ public class FragmentAccount extends Fragment {
                 }
             }
 
-            viewHolder.tvRemain.setText(formatted.toString());
-
-            viewHolder.ivCurrency.setImageResource(Currency.getCurrencyById(mList.get(position).getCurrencyId()).getIcon());
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, formatted.toString()));
 
             if(mCurrentMode == NORMAL_MODE) {
                 viewHolder.ivEdit.setImageResource(R.drawable.icon_list_edit);

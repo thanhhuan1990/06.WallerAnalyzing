@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/layout_new_transaction"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    android:id="@+id/layout_new_transaction"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,20 +48,22 @@
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/ivExpenseCurrencyIcon"
+                    <TextView
+                        android:id="@+id/tvExpenseCurrencyIcon"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
+                        android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/currency_vnd"/>
+                        android:text="@string/currency_icon_vietnam"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -88,7 +90,7 @@
                             android:layout_weight="4"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_category_expense"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvExpenseCategory"
@@ -97,20 +99,20 @@
                             android:layout_weight="15"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llExpenseDescription"
@@ -129,7 +131,7 @@
                             android:layout_weight="4"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_description"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvExpenseDescription"
@@ -139,14 +141,14 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:singleLine="true"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -174,7 +176,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_from_account"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvExpenseAccount"
@@ -183,21 +185,20 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="Ví"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llExpenseDate"
@@ -216,7 +217,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_date"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvExpenseDate"
@@ -226,20 +227,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="Today"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llExpensePayee"
@@ -258,7 +259,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_payee"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvExpensePayee"
@@ -268,20 +269,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text=""
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llExpenseEvent"
@@ -300,7 +301,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_event"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvExpenseEvent"
@@ -310,14 +311,14 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text=""
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -350,20 +351,22 @@
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/ivIncomeCurrencyIcon"
+                    <TextView
+                        android:id="@+id/tvIncomeCurrencyIcon"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
+                        android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/currency_vnd"/>
+                        android:text="@string/currency_icon_vietnam"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -390,7 +393,7 @@
                             android:layout_weight="4"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_category_income"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvIncomeCategory"
@@ -400,20 +403,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="Cash"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llIncomeDescription"
@@ -432,7 +435,7 @@
                             android:layout_weight="4"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_description"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvIncomeDescription"
@@ -441,14 +444,14 @@
                             android:layout_weight="15"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -476,7 +479,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_to_account"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvToAccount"
@@ -486,20 +489,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="Ví"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llIncomeDate"
@@ -518,7 +521,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_date"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvIncomeDate"
@@ -528,20 +531,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="@string/new_transaction_today"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llIncomeEvent"
@@ -560,7 +563,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_event"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvIncomeEvent"
@@ -570,14 +573,14 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text=""
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -610,20 +613,22 @@
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/ivTransferCurrencyIcon"
+                    <TextView
+                        android:id="@+id/tvTransferCurrencyIcon"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
+                        android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/currency_vnd"/>
+                        android:text="@string/currency_icon_vietnam"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -650,7 +655,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_from_account"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvTransferFromAccount"
@@ -660,20 +665,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="Ví"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llTransferToAccount"
@@ -692,7 +697,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_to_account"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvTransferToAccount"
@@ -701,14 +706,14 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -736,7 +741,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_description"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvTransferDescription"
@@ -746,20 +751,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text=""
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llTransferDate"
@@ -778,7 +783,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_date"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvTransferDate"
@@ -788,14 +793,14 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="@string/new_transaction_today"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -803,7 +808,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/new_transaction_transfer_fee"/>
+                    android:text="@string/new_transaction_transfer_fee" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -825,20 +830,22 @@
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/ivTransferFeeCurrencyIcon"
+                    <TextView
+                        android:id="@+id/tvTransferFeeCurrencyIcon"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
+                        android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/currency_vnd"/>
+                        android:text="@string/currency_icon_vietnam"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -861,7 +868,7 @@
                         android:layout_weight="6"
                         android:background="@android:color/transparent"
                         android:text="@string/new_transaction_category_expense"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <TextView
                         android:id="@+id/tvTransferCategory"
@@ -870,14 +877,14 @@
                         android:layout_weight="13"
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="20dp"
                         android:layout_weight="1"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/icon_next"/>
+                        android:src="@drawable/icon_next" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -907,7 +914,7 @@
                         android:layout_weight="6"
                         android:background="@android:color/transparent"
                         android:text="@string/new_transaction_account"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <TextView
                         android:id="@+id/tvAdjustmentAccount"
@@ -917,14 +924,14 @@
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
                         android:text="Ví"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_height="20dp"
                         android:layout_weight="1"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/icon_next"/>
+                        android:src="@drawable/icon_next" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -948,26 +955,28 @@
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/ivAdjustmentCurrencyIcon"
+                    <TextView
+                        android:id="@+id/tvAdjustmentCurrencyIcon"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
+                        android:gravity="center"
                         android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/currency_vnd"/>
+                        android:text="@string/currency_icon_vietnam"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="0.2dip"
-                    android:background="#504f4f"/>
+                    android:background="#504f4f" />
 
                 <TextView
                     android:id="@+id/tvAdjustmentSpent"
@@ -976,7 +985,7 @@
                     android:background="@drawable/background_linear_gray_corner_bottom"
                     android:gravity="right"
                     android:padding="5dp"
-                    android:text="-> Đã chi: 1 000 000"/>
+                    android:text="-> Đã chi: 1 000 000" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -1002,7 +1011,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_category_expense"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvAdjustmentCategory"
@@ -1012,20 +1021,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="Ví"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llAdjustmentDescription"
@@ -1044,7 +1053,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_description"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvAdjustmentDescription"
@@ -1054,20 +1063,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="@string/new_transaction_adjustment"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llAdjustmentDate"
@@ -1086,7 +1095,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_date"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvAdjustmentDate"
@@ -1096,20 +1105,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text="@string/new_transaction_today"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llAdjustmentPayee"
@@ -1128,7 +1137,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_payee"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvAdjustmentPayee"
@@ -1138,20 +1147,20 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text=""
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="#504f4f" />
 
                     <LinearLayout
                         android:id="@+id/llAdjustmentEvent"
@@ -1170,7 +1179,7 @@
                             android:layout_weight="6"
                             android:background="@android:color/transparent"
                             android:text="@string/new_transaction_event"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <TextView
                             android:id="@+id/tvAdjustmentEvent"
@@ -1180,14 +1189,14 @@
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
                             android:text=""
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black" />
 
                         <ImageView
                             android:layout_width="0dp"
                             android:layout_height="20dp"
                             android:layout_weight="1"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/icon_next"/>
+                            android:src="@drawable/icon_next" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -1210,7 +1219,7 @@
                 android:layout_height="25dp"
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_save"/>
+                android:src="@drawable/icon_save" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -1219,7 +1228,7 @@
                 android:layout_marginLeft="5dp"
                 android:text="@string/Save"
                 android:textColor="@android:color/white"
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

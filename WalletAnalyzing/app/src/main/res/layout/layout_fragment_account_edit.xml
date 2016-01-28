@@ -155,18 +155,20 @@
             android:textSize="28sp"
             android:textStyle="bold"/>
 
-        <ImageView
-            android:id="@+id/ivCurrencyIcon"
+        <TextView
+            android:id="@+id/tvCurrencyIcon"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1.2"
             android:background="@drawable/background_icon_currency"
+            android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="5dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/currency_vnd"/>
+            android:text="@string/currency_icon_vietnam"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout

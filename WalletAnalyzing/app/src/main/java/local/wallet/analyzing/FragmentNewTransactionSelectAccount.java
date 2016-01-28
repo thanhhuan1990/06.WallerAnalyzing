@@ -142,7 +142,6 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
             ImageView       ivIcon;
             TextView        tvAccount;
             TextView        tvRemain;
-            ImageView       ivCurrency;
             ImageView       ivUsing;
         }
 
@@ -168,7 +167,6 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
                 viewHolder.ivIcon       = (ImageView) convertView.findViewById(R.id.ivIcon);
                 viewHolder.tvAccount    = (TextView) convertView.findViewById(R.id.tvAccount);
                 viewHolder.tvRemain     = (TextView) convertView.findViewById(R.id.tvRemain);
-                viewHolder.ivCurrency   = (ImageView) convertView.findViewById(R.id.ivCurrency);
                 viewHolder.ivUsing      = (ImageView) convertView.findViewById(R.id.ivUsing);
                 convertView.setTag(viewHolder);
             } else {
@@ -200,8 +198,7 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
                 }
             }
 
-            viewHolder.tvRemain.setText(formatted.toString());
-            viewHolder.ivCurrency.setImageResource(Currency.getCurrencyById(arAccounts.get(position).getCurrencyId()).getIcon());
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(arAccounts.get(position).getCurrencyId()), formatted.toString()));
 
             if(mUsingAccountId == arAccounts.get(position).getId()) {
                 viewHolder.ivUsing.setVisibility(View.VISIBLE);

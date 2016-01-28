@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
@@ -75,7 +76,7 @@ public class FragmentSelectCurrency extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         ListView lvCurrency   = (ListView) getView().findViewById(R.id.lvCurrency);
-        CurrencyAdapter accountTypeAdapter = new CurrencyAdapter(getActivity(), Currency.Currencies);
+        CurrencyAdapter accountTypeAdapter = new CurrencyAdapter(getActivity(), Arrays.asList(Currency.CurrencyList.values()));
         lvCurrency.setAdapter(accountTypeAdapter);
 
         lvCurrency.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -89,7 +90,7 @@ public class FragmentSelectCurrency extends Fragment {
                     FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd) getActivity()
                             .getSupportFragmentManager()
                             .findFragmentByTag(TabOfFragmentAccountAdd);
-                    fragmentAccountAdd.updateCurrency(Currency.Currencies.get(position).getId());
+                    fragmentAccountAdd.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
 
                     getFragmentManager().popBackStackImmediate();
                 } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountEdit())) {
@@ -99,7 +100,7 @@ public class FragmentSelectCurrency extends Fragment {
                     FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit) getActivity()
                             .getSupportFragmentManager()
                             .findFragmentByTag(TabOfFragmentAccountEdit);
-                    fragmentAccountEdit.updateCurrency(Currency.Currencies.get(position).getId());
+                    fragmentAccountEdit.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
 
                 }
             }
@@ -111,15 +112,14 @@ public class FragmentSelectCurrency extends Fragment {
     /**
      *
      */
-    private class CurrencyAdapter extends ArrayAdapter<Currency> {
+    private class CurrencyAdapter extends ArrayAdapter<Currency.CurrencyList> {
 
         private class ViewHolder {
-            ImageView ivIcon;
             TextView tvType;
             ImageView ivUsing;
         }
 
-        public CurrencyAdapter(Context context, List<Currency> items) {
+        public CurrencyAdapter(Context context, List<Currency.CurrencyList> items) {
             super(context, R.layout.listview_item_currency, items);
         }
 
@@ -131,7 +131,6 @@ public class FragmentSelectCurrency extends Fragment {
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 convertView = inflater.inflate(R.layout.listview_item_currency, parent, false);
-                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.ivIcon);
                 viewHolder.tvType = (TextView) convertView.findViewById(R.id.tvType);
                 viewHolder.ivUsing = (ImageView) convertView.findViewById(R.id.ivUsing);
                 convertView.setTag(viewHolder);
@@ -139,16 +138,11 @@ public class FragmentSelectCurrency extends Fragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            Currency currency = getItem(position);
-
-            if (currency != null) {
-                viewHolder.ivIcon.setImageResource(currency.getIcon());
-                viewHolder.tvType.setText(getResources().getString(currency.getName()));
-                if(mUsingCurrencyId == currency.getId()) {
-                    viewHolder.ivUsing.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.ivUsing.setVisibility(View.INVISIBLE);
-                }
+            viewHolder.tvType.setText(Currency.getCurrencyName(getItem(position)));
+            if(mUsingCurrencyId == getItem(position).getValue()) {
+                viewHolder.ivUsing.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.ivUsing.setVisibility(View.INVISIBLE);
             }
 
             return convertView;

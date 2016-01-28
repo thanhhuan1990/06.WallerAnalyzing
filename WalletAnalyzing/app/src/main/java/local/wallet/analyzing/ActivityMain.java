@@ -30,6 +30,7 @@ public class ActivityMain extends AppCompatActivity {
     public static final int TAB_POSITION_UTILITIES = 5;
 
     private TabLayout tabLayout;
+    private ViewPager viewPager;
     private TabPagerAdapter adapter;
     private int lastTabPosition = 0;
 
@@ -68,7 +69,7 @@ public class ActivityMain extends AppCompatActivity {
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -224,5 +225,11 @@ public class ActivityMain extends AppCompatActivity {
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(hide).setVisibility(View.GONE);
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(show).setVisibility(View.VISIBLE);
         LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
+    }
+
+    public void updatePager(int position) {
+        LogUtils.logEnterFunction(TAG, "position =  " + position);
+        viewPager.setCurrentItem(position);
+        LogUtils.logLeaveFunction(TAG, "position =  " + position, null);
     }
 }

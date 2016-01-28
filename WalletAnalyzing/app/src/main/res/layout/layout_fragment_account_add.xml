@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/layout_account_add"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_account_add"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
@@ -33,7 +33,7 @@
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:text="@string/account_add_name"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black" />
 
             <org.droidparts.widget.ClearableEditText
                 android:id="@+id/etName"
@@ -43,14 +43,14 @@
                 android:background="@android:color/transparent"
                 android:gravity="right"
                 android:hint="@string/account_add_name_hint"
-                android:singleLine="true"
-                android:paddingRight="5dp"/>
+                android:paddingRight="5dp"
+                android:singleLine="true" />
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
         <LinearLayout
             android:id="@+id/llType"
@@ -69,7 +69,7 @@
                 android:layout_weight="6"
                 android:background="@android:color/transparent"
                 android:text="@string/account_add_type"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/tvType"
@@ -79,20 +79,20 @@
                 android:background="@android:color/transparent"
                 android:gravity="right|center_vertical"
                 android:text="Cash"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_next"/>
+                android:src="@drawable/icon_next" />
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
         <LinearLayout
             android:id="@+id/llCurrency"
@@ -111,7 +111,7 @@
                 android:layout_weight="4"
                 android:background="@android:color/transparent"
                 android:text="@string/account_add_currency"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/tvCurrency"
@@ -121,14 +121,14 @@
                 android:background="@android:color/transparent"
                 android:gravity="right|center_vertical"
                 android:text="VND"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_next"/>
+                android:src="@drawable/icon_next" />
         </LinearLayout>
     </LinearLayout>
 
@@ -153,20 +153,22 @@
             android:inputType="numberDecimal"
             android:padding="5dp"
             android:textSize="28sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/ivCurrencyIcon"
+        <TextView
+            android:id="@+id/tvCurrencyIcon"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_weight="1.2"
             android:background="@drawable/background_icon_currency"
+            android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="5dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/currency_vnd"/>
+            android:text="@string/currency_icon_vietnam"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -187,7 +189,7 @@
             android:background="@android:color/transparent"
             android:padding="10dp"
             android:text="Ghi chú"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/tvDescription"
@@ -198,14 +200,14 @@
             android:gravity="right"
             android:singleLine="true"
             android:text=""
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
         <ImageView
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
-            android:src="@drawable/icon_next"/>
+            android:src="@drawable/icon_next" />
     </LinearLayout>
 
     <LinearLayout
@@ -225,7 +227,7 @@
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
             android:scaleType="fitCenter"
-            android:src="@drawable/icon_save"/>
+            android:src="@drawable/icon_save" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -234,6 +236,6 @@
             android:layout_marginLeft="5dp"
             android:text="@string/Save"
             android:textColor="@android:color/white"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
     </LinearLayout>
 </LinearLayout>

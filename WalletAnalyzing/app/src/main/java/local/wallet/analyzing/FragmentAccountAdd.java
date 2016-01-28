@@ -32,7 +32,7 @@ public class FragmentAccountAdd extends Fragment {
     private DatabaseHelper db;
 
     private AccountType mAccountType = AccountType.Accounts.get(0);
-    private Currency    mCurrency = Currency.Currencies.get(0);
+    private Currency.CurrencyList    mCurrency = Currency.CurrencyList.VND;
 
     private ClearableEditText etName;
     private LinearLayout llType;
@@ -40,7 +40,6 @@ public class FragmentAccountAdd extends Fragment {
     private LinearLayout llCurrency;
     private TextView tvCurrency;
     private EditText etInitialBalance;
-    private ImageView ivCurrencyIcon;
     private LinearLayout llDescription;
     private TextView tvDescription;
     private LinearLayout llSave;
@@ -96,7 +95,6 @@ public class FragmentAccountAdd extends Fragment {
         llCurrency          = (LinearLayout) getView().findViewById(R.id.llCurrency);
         tvCurrency          = (TextView) getView().findViewById(R.id.tvCurrency);
         etInitialBalance    = (EditText) getView().findViewById(R.id.etInitialBalance);
-        ivCurrencyIcon      = (ImageView) getView().findViewById(R.id.ivCurrencyIcon);
         llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
         tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
         llSave              = (LinearLayout) getView().findViewById(R.id.llSave);
@@ -122,7 +120,7 @@ public class FragmentAccountAdd extends Fragment {
                 FragmentSelectCurrency nextFrag = new FragmentSelectCurrency();
                 Bundle bundle = new Bundle();
                 bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountAdd());
-                bundle.putInt("Currency", mCurrency.getId());
+                bundle.putInt("Currency", mCurrency.getValue());
                 nextFrag.setArguments(bundle);
                 FragmentAccountAdd.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, "FragmentSelectCurrency")
@@ -164,7 +162,7 @@ public class FragmentAccountAdd extends Fragment {
                 String description = tvDescription.getText().toString();
 
                 // Insert account to DB
-                long account_id = db.createAccount(accountName, mAccountType.getId(), mCurrency.getId(), initialBalance, description);
+                long account_id = db.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
 
                 // Update list of Account in FragmentAccount
                 FragmentAccount fragmentAccount = (FragmentAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
@@ -192,16 +190,15 @@ public class FragmentAccountAdd extends Fragment {
 
     /**
      * Update Currency, call from ActivityMain
-     * @param currencyId
+     * @param currency
      */
-    public void updateCurrency(int currencyId) {
-        LogUtils.logEnterFunction(TAG, "currencyId = " + currencyId);
+    public void updateCurrency(Currency.CurrencyList currency) {
+        LogUtils.logEnterFunction(TAG, "currencyId = " + currency.name());
 
-        mCurrency = Currency.getCurrencyById(currencyId);
-        tvCurrency.setText(mCurrency.getName());
-        ivCurrencyIcon.setImageResource(mCurrency.getIcon());
+        mCurrency = currency;
+        tvCurrency.setText(Currency.getCurrencyIcon(Currency.CurrencyList.VND));
 
-        LogUtils.logLeaveFunction(TAG, "currencyId = " + currencyId, null);
+        LogUtils.logLeaveFunction(TAG, "currencyId = " + currency.name(), null);
     }
 
     /**

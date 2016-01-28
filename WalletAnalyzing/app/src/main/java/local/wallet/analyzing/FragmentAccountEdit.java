@@ -41,7 +41,7 @@ public class FragmentAccountEdit extends Fragment {
     private LinearLayout llCurrency;
     private TextView tvCurrency;
     private EditText etInitialBalance;
-    private ImageView ivCurrencyIcon;
+    private TextView tvCurrencyIcon;
     private LinearLayout llDescription;
     private TextView tvDescription;
     private LinearLayout llSave;
@@ -103,8 +103,8 @@ public class FragmentAccountEdit extends Fragment {
         tvType              = (TextView) getView().findViewById(R.id.tvType);
         llCurrency          = (LinearLayout) getView().findViewById(R.id.llCurrency);
         tvCurrency          = (TextView) getView().findViewById(R.id.tvCurrency);
-        etInitialBalance = (EditText) getView().findViewById(R.id.etInitialBalance);
-        ivCurrencyIcon      = (ImageView) getView().findViewById(R.id.ivCurrencyIcon);
+        etInitialBalance    = (EditText) getView().findViewById(R.id.etInitialBalance);
+        tvCurrencyIcon      = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
         llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
         tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
         llSave              = (LinearLayout) getView().findViewById(R.id.llSave);
@@ -112,9 +112,10 @@ public class FragmentAccountEdit extends Fragment {
 
         etName.setText(mAccount.getName());
         tvType.setText(AccountType.getAccountTypeById(mAccount.getTypeId()).getName());
-        tvCurrency.setText(Currency.getCurrencyById(mAccount.getCurrencyId()).getName());
+        tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
         etInitialBalance.setText(mAccount.getRemain() + "");
-        ivCurrencyIcon.setImageResource(Currency.getCurrencyById(mAccount.getCurrencyId()).getIcon());
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mAccount.getCurrencyId())));
+//        ivCurrencyIcon.setImageResource(Currency.getCurrencyById(mAccount.getCurrencyId()).getIcon());
         tvDescription.setText(mAccount.getDescription());
 
         llType.setOnClickListener(new View.OnClickListener() {
@@ -225,16 +226,16 @@ public class FragmentAccountEdit extends Fragment {
 
     /**
      * Update Currency, call from ActivityMain
-     * @param currencyId
+     * @param currency
      */
-    public void updateCurrency(int currencyId) {
-        LogUtils.logEnterFunction(TAG, "currencyId = " + currencyId);
+    public void updateCurrency(Currency.CurrencyList currency) {
+        LogUtils.logEnterFunction(TAG, "currency = " + currency);
 
-        mAccount.setCurrencyId(currencyId);
-        tvCurrency.setText(Currency.getCurrencyById(currencyId).getName());
-        ivCurrencyIcon.setImageResource(Currency.getCurrencyById(currencyId).getIcon());
+        mAccount.setCurrencyId(currency.getValue());
+        tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mAccount.getCurrencyId())));
 
-        LogUtils.logLeaveFunction(TAG, "currencyId = " + currencyId, null);
+        LogUtils.logLeaveFunction(TAG, "currency = " + currency, null);
     }
 
     /**

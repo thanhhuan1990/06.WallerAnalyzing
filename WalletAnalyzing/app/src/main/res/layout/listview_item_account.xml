@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@android:color/white"
-              android:gravity="center_vertical"
-              android:orientation="horizontal"
-              android:padding="10dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="10dp">
 
 
     <ImageView
@@ -14,7 +14,7 @@
         android:layout_height="50dp"
         android:layout_weight="1"
         android:scaleType="fitCenter"
-        android:src="@drawable/account_type_cash"/>
+        android:src="@drawable/account_type_cash" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -32,31 +32,18 @@
             android:gravity="center_vertical"
             android:text="Name"
             android:textColor="@android:color/black"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/tvRemain"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:text="1 000 000 ₫"
+            android:textColor="@android:color/black" />
 
-            <TextView
-                android:id="@+id/tvRemain"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="1 000 000"
-                android:textColor="@android:color/black"/>
-
-            <ImageView
-                android:id="@+id/ivCurrency"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:src="@drawable/currency_vnd"
-                android:scaleType="fitCenter"
-                android:background="@android:color/transparent"/>
-        </LinearLayout>
     </LinearLayout>
 
     <ImageView
@@ -65,5 +52,5 @@
         android:layout_height="30dp"
         android:layout_weight="1"
         android:scaleType="fitCenter"
-        android:src="@drawable/icon_list_edit"/>
+        android:src="@drawable/icon_list_edit" />
 </LinearLayout>
