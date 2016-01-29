@@ -9,8 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -24,9 +22,9 @@ import java.util.List;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
-import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -37,6 +35,7 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
 
     private String mTagOfSource = "";
     private int mUsingAccountId;
+    private TransactionEnum mTransactionType;
 
     private DatabaseHelper db;
     private List<Account> arAccounts = new ArrayList<Account>();
@@ -57,9 +56,11 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
         Bundle bundle                   = this.getArguments();
         mTagOfSource                    = bundle.getString("Tag");
         mUsingAccountId                 = bundle.getInt("AccountID", 0);
+        mTransactionType               = (TransactionEnum) bundle.get("TransactionType");
 
         LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(TAG, "mUsingAccountId = " + mUsingAccountId);
+        LogUtils.trace(TAG, "mTransactionType = " + mTransactionType.name());
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -101,7 +102,7 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
                 LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
 
                 FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                fragmentNewTransaction.updateAccount(arAccounts.get(position).getId());
+                fragmentNewTransaction.updateAccount(mTransactionType, arAccounts.get(position).getId());
 
                 // Back to FragmentTransactionNew
                 getFragmentManager().popBackStackImmediate();

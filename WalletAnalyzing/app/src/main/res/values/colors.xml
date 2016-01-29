@@ -15,7 +15,10 @@
 
     <color name="textcolor_none">#cdcdcd</color>
     <color name="textcolor_income">#2d8986</color>
+    <color name="textcolor_listview_account">#555555</color>
+    <color name="textcolor_hint">#c7c7cd</color>
 
+    <color name="listview_category_parent_item_background">#FAFAFA</color>
     <color name="listview_parent_item_background">#e6e6e6</color>
     <color name="listview_divider">#C2C2C2</color>
 
@@ -38,7 +41,5 @@
     <color name="budget_background_progress_over">#ad1a1a</color>
     <color name="budget_background_date">#edd3d1</color>
     <color name="budget_border">#909090</color>
-
-    <color name="textcolor_hint">#c7c7cd</color>
 
 </resources>

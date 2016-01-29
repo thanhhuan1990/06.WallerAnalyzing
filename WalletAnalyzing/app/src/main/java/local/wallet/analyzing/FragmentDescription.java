@@ -24,6 +24,7 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -33,6 +34,7 @@ public class FragmentDescription extends Fragment {
     private static final String TAG = "FragmentDescription";
 
     private String mTagOfSource = "";
+    private TransactionEnum mTransactionType;
     private String oldDescription;
     private EditText etDescription;
 
@@ -47,6 +49,11 @@ public class FragmentDescription extends Fragment {
         Bundle bundle       = this.getArguments();
         mTagOfSource        = bundle.getString("Tag");
         oldDescription      = bundle.getString("Description", "");
+        mTransactionType    = (TransactionEnum) bundle.get("TransactionType");
+
+        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(TAG, "oldDescription = " + oldDescription);
+        LogUtils.trace(TAG, "mTransactionType = " + mTransactionType != null ? mTransactionType.name() : "");
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -71,7 +78,7 @@ public class FragmentDescription extends Fragment {
                     LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
                     // Set input string for Account's description in FragmentAccountEdit, and then return.
                     FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updateDescription(etDescription.getText().toString());
+                    fragmentNewTransaction.updateDescription(mTransactionType, etDescription.getText().toString());
                 } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
 
                     LogUtils.trace(TAG, "Setup for FragmentAccountAdd");

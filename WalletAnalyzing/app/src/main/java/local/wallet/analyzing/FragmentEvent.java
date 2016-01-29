@@ -18,6 +18,7 @@ import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -29,6 +30,7 @@ public class FragmentEvent extends Fragment {
     private DatabaseHelper db;
 
     private String mTagOfSource = "";
+    private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
     private String mEvent;
 
     private ClearableEditText   etEvent;
@@ -42,9 +44,14 @@ public class FragmentEvent extends Fragment {
 
         setHasOptionsMenu(true);
 
-        Bundle bundle       = this.getArguments();
-        mTagOfSource        = bundle.getString("Tag");
-        mEvent              = bundle.getString("Event", "");
+        Bundle bundle                   = this.getArguments();
+        mTagOfSource                    = bundle.getString("Tag");
+        mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
+        mEvent                          = bundle.getString("Event", "");
+
+        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(TAG, "mCurrentTransactionType = " + mCurrentTransactionType);
+        LogUtils.trace(TAG, "mEvent = " + mEvent);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -67,7 +74,7 @@ public class FragmentEvent extends Fragment {
                     LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
                     // Set input string for Payee's description in FragmentNewTransaction, and then return.
                     FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updateEvent(etEvent.getText().toString());
+                    fragmentNewTransaction.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
                 }
 
                 // Back

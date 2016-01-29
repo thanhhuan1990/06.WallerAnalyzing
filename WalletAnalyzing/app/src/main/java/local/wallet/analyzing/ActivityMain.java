@@ -8,11 +8,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -132,7 +135,6 @@ public class ActivityMain extends AppCompatActivity {
      */
     public void updateActionBar(View view) {
         LogUtils.logEnterFunction(TAG, null);
-        /* Todo: Update ActionBar: Spinner TransactionType */
         ActionBar mActionBar = getSupportActionBar();
         mActionBar.setDisplayShowHomeEnabled(false);
         mActionBar.setDisplayShowTitleEnabled(false);
@@ -143,6 +145,22 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    public void showError(String error) {
+        LayoutInflater inflater = getLayoutInflater();
+
+        View layout = inflater.inflate(R.layout.layout_error_toast, (ViewGroup) findViewById(R.id.llCustomToast));
+
+        // set a message
+        TextView text = (TextView) layout.findViewById(R.id.tvError);
+        text.setText(error);
+
+        // Toast...
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        toast.show();
+    }
     /**
      * Retrieve fragment from TabPagerAdapter
      *

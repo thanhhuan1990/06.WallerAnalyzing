@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="8dp">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingLeft="5dp"
+              android:paddingRight="5dp"
+              android:paddingTop="8dp"
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +21,7 @@
             android:layout_weight="3"
             android:text="Expense: ..."
             android:textColor="@android:color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvAmount"
@@ -30,58 +31,58 @@
             android:gravity="right|center_vertical"
             android:text="... ₫"
             android:textColor="@android:color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
-        android:weightSum="5"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp">
+        android:weightSum="5">
 
         <TextView
             android:id="@+id/tvDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
+            android:singleLine="true"
             android:text="description"
             android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:singleLine="true"/>
+            android:textStyle="bold"/>
 
-        <LinearLayout
-            android:layout_width="0dp"
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="5dp"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvAccount"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right|center_vertical"
-            android:orientation="horizontal">
+            android:text="..."
+            android:textColor="@color/textcolor_listview_account"/>
 
-            <TextView
-                android:id="@+id/tvAccount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@android:color/black" />
-
-            <ImageView
-                android:id="@+id/ivAccountIcon"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_marginLeft="5dp"
-                android:background="@android:color/transparent"
-                android:scaleType="fitStart"
-                android:src="@drawable/account_type_cash" />
-        </LinearLayout>
-
+        <ImageView
+            android:id="@+id/ivAccountIcon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitStart"
+            android:src="@drawable/account_type_cash"/>
     </LinearLayout>
 
     <View
         android:id="@+id/vDivider"
         android:layout_width="match_parent"
         android:layout_height="0.2dp"
-        android:background="@color/listview_divider" />
+        android:background="@color/listview_divider"/>
 
 </LinearLayout>

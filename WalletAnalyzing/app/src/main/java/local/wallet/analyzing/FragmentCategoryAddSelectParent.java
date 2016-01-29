@@ -23,6 +23,7 @@ import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -31,7 +32,7 @@ public class FragmentCategoryAddSelectParent extends Fragment {
 
     private static final String TAG = "FragmentCategoryAddSelectParent";
 
-    private int mTransactionType     = 0;
+    private TransactionEnum mTransactionType     = TransactionEnum.Expense;
 
     private DatabaseHelper db;
     private List<Category> arParentCategories = new ArrayList<Category>();
@@ -48,7 +49,7 @@ public class FragmentCategoryAddSelectParent extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle = this.getArguments();
-        mTransactionType                = bundle.getInt("TransactionType");
+        mTransactionType                = (TransactionEnum)bundle.get("TransactionType");
         mTagOfSource                    = bundle.getString("Tag");
         mCurrentParentCategoryId        = bundle.getInt("ParentCategoryId", 0);
 
@@ -76,7 +77,7 @@ public class FragmentCategoryAddSelectParent extends Fragment {
         db = new DatabaseHelper(getActivity());
 
         arParentCategories.add(new Category(0, 0, getResources().getString(R.string.new_category_select_as_parent), true, false, null));
-        arParentCategories.addAll(db.getAllParentCategories(true, false));
+        arParentCategories.addAll(db.getAllParentCategories((mTransactionType == TransactionEnum.Expense || mTransactionType == TransactionEnum.Transfer || mTransactionType == TransactionEnum.Adjustment) ? true : false, false));
 
         ListView lvParentCategory   = (ListView) getView().findViewById(R.id.lvParentCategory);
         ParentCategoryAdapter accountTypeAdapter = new ParentCategoryAdapter(getActivity(), arParentCategories);
@@ -110,9 +111,9 @@ public class FragmentCategoryAddSelectParent extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
         TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        if(mTransactionType == 0) {
+        if(mTransactionType == TransactionEnum.Expense) {
             tvTitle.setText(getResources().getString(R.string.title_category_expense_select_parent));
-        } else if(mTransactionType == 1) {
+        } else if(mTransactionType == TransactionEnum.Income) {
             tvTitle.setText(getResources().getString(R.string.title_category_income));
         }
 

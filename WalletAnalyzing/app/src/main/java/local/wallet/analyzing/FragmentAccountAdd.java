@@ -29,20 +29,20 @@ public class FragmentAccountAdd extends Fragment {
 
     private static final String TAG     = "FragmentAccountAdd";
 
-    private DatabaseHelper db;
+    private DatabaseHelper              db;
 
-    private AccountType mAccountType = AccountType.Accounts.get(0);
-    private Currency.CurrencyList    mCurrency = Currency.CurrencyList.VND;
+    private AccountType                 mAccountType    = AccountType.Accounts.get(0);
+    private Currency.CurrencyList       mCurrency       = Currency.CurrencyList.VND;
 
-    private ClearableEditText etName;
-    private LinearLayout llType;
-    private TextView tvType;
-    private LinearLayout llCurrency;
-    private TextView tvCurrency;
-    private EditText etInitialBalance;
-    private LinearLayout llDescription;
-    private TextView tvDescription;
-    private LinearLayout llSave;
+    private ClearableEditText           etName;
+    private LinearLayout                llType;
+    private TextView                    tvType;
+    private LinearLayout                llCurrency;
+    private TextView                    tvCurrency;
+    private EditText                    etInitialBalance;
+    private LinearLayout                llDescription;
+    private TextView                    tvDescription;
+    private LinearLayout                llSave;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,9 +56,9 @@ public class FragmentAccountAdd extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(TAG, null);
 
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle            = (TextView) mCustomView.findViewById(R.id.tvTitle);
         tvTitle.setText(getResources().getString(R.string.title_account_add));
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 

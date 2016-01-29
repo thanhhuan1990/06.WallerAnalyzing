@@ -2,6 +2,7 @@
     <string name="app_name">Wallet Analyzing</string>
 
     <string name="format_month_year">\%%02d/\%%02d</string>
+
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
     <string name="action_settings">Settings</string>
@@ -76,9 +77,14 @@
     <string name="Save">Save</string>
     <string name="Delete">Delete</string>
 
-    <string name="Input_Error_Account_Name_Empty">Name cannot be empty!</string>
+    <string name="Input_Error_Account_Name_Empty">Name can\'t be empty!</string>
+    <string name="Input_Error_Amount_Empty">Amount can\'t be empty!</string>
+    <string name="Input_Error_TransferFee_Empty">Transfer Fee can\'t be empty!</string>
+    <string name="Input_Error_Category_Empty">Category can\'t be empty!</string>
+    <string name="Input_Error_Account_Empty">Account can\'t be empty!</string>
 
     <string name="expense_category">Expense Category</string>
+    <string name="income_category">Income Category</string>
     <string name="expense_category_lent">Lent/Borrowed</string>
 
     <string name="new_category_name">Name</string>

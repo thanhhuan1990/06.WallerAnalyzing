@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +17,9 @@ import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
+import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Kind;
 import local.wallet.analyzing.model.Transaction;
 
@@ -613,7 +616,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_ACCOUNT_DESCRIPTION, account.getDescription());
 
         // updating row
-        db.update(TABLE_ACCOUNT, values, KEY_ID + " = ?", new String[] { String.valueOf(account.getId()) });
+        db.update(TABLE_ACCOUNT, values, KEY_ID + " = ?", new String[]{String.valueOf(account.getId())});
     }
 
     /*
@@ -642,12 +645,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
         values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
 
-        // insert row
-        long transaction_id = db.insert(TABLE_TRANSACTION, null, values);
+        try {
+            // insert row
+            long transaction_id = db.insert(TABLE_TRANSACTION, null, values);
+
+            if(transaction_id != -1) {
+                // Update Account's remain
+                Account account = getAccount(transaction.getAccountId());
+                Category category = getCategory(transaction.getCategoryId());
+
+                if(category.isExpense()) {  // Expense
+                    account.setRemain(account.getRemain() - transaction.getAmount());
+                } else {                    // Income
+                    account.setRemain(account.getRemain() + transaction.getAmount());
+                }
+
+                updateAccount(account);
+            }
+
+            return transaction_id;
+
+        } catch (android.database.SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
 
 //        LogUtils.logLeaveFunction(TAG, "transaction = " + transaction.toString(), "transaction_id = " + transaction_id);
 
-        return transaction_id;
     }
 
     public Transaction getLastTransaction() {
@@ -852,4 +876,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         createCategory(0, "Cho vay",                true, true);
         createCategory(0, "Trả nợ",                 true, true);
     }
+
 }

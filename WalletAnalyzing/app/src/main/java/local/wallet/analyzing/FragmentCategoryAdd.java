@@ -20,6 +20,7 @@ import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -30,7 +31,7 @@ public class FragmentCategoryAdd extends Fragment {
 
     private DatabaseHelper db;
 
-    private int mTransactionType     = 0;
+    private TransactionEnum mTransactionType     = TransactionEnum.Expense;
 
     // Keep return value from FragmentCategoryAddSelectParent
     private Category mParentCategory;
@@ -49,7 +50,7 @@ public class FragmentCategoryAdd extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
-        mTransactionType                = bundle.getInt("TransactionType");
+        mTransactionType                = (TransactionEnum)bundle.get("TransactionType");
 
         LogUtils.trace(TAG, "mTransactionType = " + mTransactionType);
 
@@ -65,9 +66,11 @@ public class FragmentCategoryAdd extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
         TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        if(mTransactionType == 0) {
+        if(mTransactionType == TransactionEnum.Expense ||
+                mTransactionType == TransactionEnum.Transfer ||
+                mTransactionType == TransactionEnum.Adjustment) {
             tvTitle.setText(getResources().getString(R.string.title_category_expense_add));
-        } else if(mTransactionType == 1) {
+        } else if(mTransactionType == TransactionEnum.Income) {
             tvTitle.setText(getResources().getString(R.string.title_category_income_add));
         }
 
@@ -109,7 +112,7 @@ public class FragmentCategoryAdd extends Fragment {
             public void onClick(View v) {
                 FragmentCategoryAddSelectParent nextFrag = new FragmentCategoryAddSelectParent();
                 Bundle bundle = new Bundle();
-                bundle.putInt("TransactionType", mTransactionType);
+                bundle.putSerializable("TransactionType", mTransactionType);
                 bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryAdd());
                 bundle.putInt("ParentCategoryId", mParentCategory != null ? mParentCategory.getId() : 0);
                 nextFrag.setArguments(bundle);
@@ -134,9 +137,9 @@ public class FragmentCategoryAdd extends Fragment {
 
                 // Todo: Insert new Category to DB
                 long categoryId = db.createCategory(mParentCategory != null ? mParentCategory.getId() : 0,    // ParentID
-                        etName.getText().toString(),                            // Name
-                        mTransactionType == 0 ? true : false,                   // Expense
-                        mBorrow);                                                 // Borrow
+                                                        etName.getText().toString(),                            // Name
+                                                        (mTransactionType == TransactionEnum.Expense || mTransactionType == TransactionEnum.Transfer || mTransactionType == TransactionEnum.Adjustment) ? true : false,                   // Expense
+                                                        mBorrow);                                                 // Borrow
 
                 if (categoryId <= 0) {
                     LogUtils.error(TAG, "Create Category Failed.");

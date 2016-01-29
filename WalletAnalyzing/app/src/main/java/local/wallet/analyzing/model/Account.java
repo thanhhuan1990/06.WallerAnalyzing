@@ -17,8 +17,7 @@ public class Account {
 
     private String description;
 
-    public Account() {
-    }
+    public Account() {}
 
     public Account(int id, String name, int typeId, int currencyId, Double remain, String description) {
         this.id             = id;

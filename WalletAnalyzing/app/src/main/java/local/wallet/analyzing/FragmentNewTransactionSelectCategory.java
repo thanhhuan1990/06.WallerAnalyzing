@@ -25,6 +25,7 @@ import java.util.List;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -34,7 +35,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
     private static final String TAG = "FragmentNewTransactionSelectCategory";
 
     private String mTagOfSource = "";
-    private int mCurrentTransactionType     = 0;
+    private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
     private int mUsingCategoryId;
 
     private DatabaseHelper db;
@@ -58,7 +59,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
         /* Get data from Bundle */
         Bundle bundle                   = this.getArguments();
         mTagOfSource                    = bundle.getString("Tag");
-        mCurrentTransactionType         = bundle.getInt("TransactionType");
+        mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mUsingCategoryId                = bundle.getInt("CategoryID", 0);
 
         LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
@@ -92,6 +93,8 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
         db.insertDefaultCategories();
 
         btnExpense      = (Button) getView().findViewById(R.id.btnExpense);
+        btnExpense.setText(getResources().getString((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer || mCurrentTransactionType == TransactionEnum.Adjustment)
+                                                        ? R.string.expense_category : R.string.income_category));
         btnExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +106,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
 
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
-                List<Category> arParentCategories = db.getAllParentCategories(((mCurrentTransactionType == 0 || mCurrentTransactionType == 3) ? true : false), false);
+                List<Category> arParentCategories = db.getAllParentCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
                 for(Category category : arParentCategories) {
                     arCategoriesView.add(new CategoryView(category, true));
                     List<Category> arCategories = db.getCategoriesByParent(category.getId());
@@ -129,7 +132,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
 
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
-                List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == 0 || mCurrentTransactionType == 3) ? true : false), true);
+                List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), true);
                 for(Category category : arParentCategories) {
                     arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
                     List<Category> arCategories = db.getCategoriesByParent(category.getId());
@@ -147,7 +150,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
 
         /* Change datasource and update listview */
         arCategoriesView.clear();
-        List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == 0 || mCurrentTransactionType == 3) ? true : false), false);
+        List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
         for(Category category : arParentCategories) {
             arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
             List<Category> arCategories = db.getCategoriesByParent(category.getId());
@@ -166,7 +169,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
                 LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
 
                 FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                fragmentNewTransaction.updateCategory(arCategoriesView.get(position).category.getId());
+                fragmentNewTransaction.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
 
                 // Back to FragmentTransactionNew
                 getFragmentManager().popBackStackImmediate();
@@ -193,9 +196,11 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
         TextView tvTitle    = (TextView) mCustomView.findViewById(R.id.tvTitle);
 
         // Change title of fragment
-        if(mCurrentTransactionType == 0) {
+        if(mCurrentTransactionType == TransactionEnum.Expense ||
+                mCurrentTransactionType == TransactionEnum.Transfer ||
+                mCurrentTransactionType == TransactionEnum.Adjustment  ) {
             tvTitle.setText(getResources().getString(R.string.title_category_expense));
-        } else if(mCurrentTransactionType == 1) {
+        } else if(mCurrentTransactionType == TransactionEnum.Income) {
             tvTitle.setText(getResources().getString(R.string.title_category_income));
         }
 
@@ -207,7 +212,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
                 LogUtils.trace(TAG, "Click Menu Action Add Category.");
                 FragmentCategoryAdd nextFrag = new FragmentCategoryAdd();
                 Bundle bundle = new Bundle();
-                bundle.putInt("TransactionType", mCurrentTransactionType);
+                bundle.putSerializable("TransactionType", mCurrentTransactionType);
                 nextFrag.setArguments(bundle);
                 FragmentNewTransactionSelectCategory.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryAdd")
@@ -299,9 +304,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
             final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
             expand.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
+                public void onAnimationStart(Animation animation) {}
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
@@ -315,9 +318,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
                 }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
+                public void onAnimationRepeat(Animation animation) {}
             });
 
             final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);

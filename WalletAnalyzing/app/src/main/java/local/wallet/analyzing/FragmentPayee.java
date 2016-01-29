@@ -22,6 +22,7 @@ import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -33,6 +34,7 @@ public class FragmentPayee extends Fragment {
     private DatabaseHelper db;
 
     private String mTagOfSource = "";
+    private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
     private String mPayee;
 
     private ClearableEditText   etPayee;
@@ -46,9 +48,14 @@ public class FragmentPayee extends Fragment {
 
         setHasOptionsMenu(true);
 
-        Bundle bundle       = this.getArguments();
-        mTagOfSource        = bundle.getString("Tag");
-        mPayee              = bundle.getString("Payee", "");
+        Bundle bundle                   = this.getArguments();
+        mTagOfSource                    = bundle.getString("Tag");
+        mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
+        mPayee                          = bundle.getString("Payee", "");
+
+        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(TAG, "mCurrentTransactionType = " + mCurrentTransactionType);
+        LogUtils.trace(TAG, "mPayee = " + mPayee);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -98,7 +105,7 @@ public class FragmentPayee extends Fragment {
                     LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
                     // Set input string for Payee's description in FragmentNewTransaction, and then return.
                     FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updatePayee(etPayee.getText().toString());
+                    fragmentNewTransaction.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
                 }
 
                 // Back

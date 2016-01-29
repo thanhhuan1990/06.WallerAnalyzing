@@ -39,11 +39,11 @@ public class FragmentTransactions extends Fragment {
 
     private static final String TAG = "FragmentTransactions";
 
-    private DatabaseHelper db;
+    private DatabaseHelper          db;
 
-    private List<TransactionGroup> arGroupTrans;
-    private ListView            lvTransaction;
-    private TransactionAdapter  mAdapter;
+    private List<TransactionGroup>  arGroupTrans;
+    private ListView                lvTransaction;
+    private TransactionAdapter      mAdapter;
 
     @Nullable
     @Override
@@ -142,20 +142,16 @@ public class FragmentTransactions extends Fragment {
                     viewHolder.tvDate1.setText(getResources().getString(R.string.content_today));
                 } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == time.get(Calendar.DAY_OF_YEAR)) {
                     viewHolder.tvDate1.setText(getResources().getString(R.string.content_yesterday));
-                } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == time.get(Calendar.DAY_OF_YEAR)) {
-                    Locale current = getResources().getConfiguration().locale;
-                    if(current.equals(Locale.forLanguageTag("vi_VN"))) {
+                } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == time.get(Calendar.DAY_OF_YEAR)
+                        && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
                         viewHolder.tvDate1.setText(getResources().getString(R.string.content_before_yesterday));
-                    } else {
-                        viewHolder.tvDate1.setText(mTransactions.get(position).getTime().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
-                    }
                 } else {
                     viewHolder.tvDate1.setText(mTransactions.get(position).getTime().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
                 }
 
                 viewHolder.tvDate2.setText(String.format(getResources().getString(R.string.format_month_year),
-                        mTransactions.get(position).getTime().get(Calendar.MONTH) + 1,
-                        mTransactions.get(position).getTime().get(Calendar.YEAR)));
+                                                            mTransactions.get(position).getTime().get(Calendar.MONTH) + 1,
+                                                            mTransactions.get(position).getTime().get(Calendar.YEAR)));
 
                 Double expense = 0.0, income = 0.0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
@@ -181,24 +177,29 @@ public class FragmentTransactions extends Fragment {
                 }
 
                 viewHolder.llTransactionDetail.removeAllViews();
-                int posi = 0;
+                int pos = 0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
-                    posi++;
+                    pos++;
+
                     Account account = db.getAccount(tran.getAccountId());
+                    Category cate = db.getCategory(tran.getCategoryId());
+
                     LayoutInflater inflater = LayoutInflater.from(getContext());
                     View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
 
-                    Category cate = db.getCategory(tran.getCategoryId());
-                    String strCategory          = (cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income)) + ": " + cate.getName();
 
                     TextView tvCategory         = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
+                    String strCategory          = (cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income)) + ": " + cate.getName();
                     tvCategory.setText(strCategory);
+                    tvCategory.setTextColor(getResources().getColor(cate.isExpense() ? android.R.color.black : R.color.colorPrimary));
 
                     TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
                     tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), tran.getAmount()));
+                    tvAmount.setTextColor(getResources().getColor(cate.isExpense() ? android.R.color.black : R.color.colorPrimary));
 
                     TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
                     tvDescription.setText(tran.getDescription());
+                    tvDescription.setTextColor(getResources().getColor(cate.isExpense() ? android.R.color.black : R.color.colorPrimary));
 
                     TextView tvAccount          = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
                     tvAccount.setText(account.getName());
@@ -206,9 +207,8 @@ public class FragmentTransactions extends Fragment {
                     ImageView ivAccountIcon     = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
                     ivAccountIcon.setImageResource(AccountType.getAccountTypeById(account.getTypeId()).getIcon());
 
-                    View vDivider               = (View) transactionDetailView.findViewById(R.id.vDivider);
-                    if(posi == mTransactions.get(position).getArTrans().size()) {
-                        vDivider.setVisibility(View.GONE);
+                    if(pos == mTransactions.get(position).getArTrans().size()) {
+                        transactionDetailView.findViewById(R.id.vDivider).setVisibility(View.GONE);
                     }
 
                     viewHolder.llTransactionDetail.addView(transactionDetailView);

@@ -37,7 +37,7 @@
                     android:padding="5dp"
                     android:weightSum="10">
 
-                    <EditText
+                    <org.droidparts.widget.ClearableEditText
                         android:id="@+id/etExpenseAmount"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
@@ -46,6 +46,7 @@
                         android:gravity="right|center_vertical"
                         android:hint="@string/new_transaction_amount"
                         android:inputType="numberDecimal"
+                        android:textColorHint="@color/textcolor_hint"
                         android:padding="5dp"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -57,13 +58,12 @@
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
                         android:gravity="center"
-                        android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:paddingTop="5dp"
                         android:text="@string/currency_icon_vietnam"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -226,7 +226,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="Today"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -340,7 +339,7 @@
                     android:padding="5dp"
                     android:weightSum="10">
 
-                    <EditText
+                    <org.droidparts.widget.ClearableEditText
                         android:id="@+id/etIncomeAmount"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
@@ -348,6 +347,7 @@
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
                         android:hint="@string/new_transaction_amount"
+                        android:textColorHint="@color/textcolor_hint"
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
@@ -360,13 +360,12 @@
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
                         android:gravity="center"
-                        android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:paddingTop="5dp"
                         android:text="@string/currency_icon_vietnam"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -402,7 +401,6 @@
                             android:layout_weight="15"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="Cash"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -488,7 +486,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="Ví"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -530,7 +527,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="@string/new_transaction_today"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -602,7 +598,7 @@
                     android:padding="5dp"
                     android:weightSum="10">
 
-                    <EditText
+                    <org.droidparts.widget.ClearableEditText
                         android:id="@+id/etTransferAmount"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
@@ -610,6 +606,7 @@
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
                         android:hint="@string/new_transaction_amount"
+                        android:textColorHint="@color/textcolor_hint"
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
@@ -622,13 +619,12 @@
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
                         android:gravity="center"
-                        android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:paddingTop="5dp"
                         android:text="@string/currency_icon_vietnam"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -664,7 +660,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="Ví"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -792,7 +787,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="@string/new_transaction_today"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -819,7 +813,7 @@
                     android:padding="5dp"
                     android:weightSum="10">
 
-                    <EditText
+                    <org.droidparts.widget.ClearableEditText
                         android:id="@+id/etTransferFee"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
@@ -827,6 +821,7 @@
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
                         android:hint="@string/new_transaction_transfer_fee_hint"
+                        android:textColorHint="@color/textcolor_hint"
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
@@ -839,13 +834,12 @@
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
                         android:gravity="center"
-                        android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:paddingTop="5dp"
                         android:text="@string/currency_icon_vietnam"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -923,7 +917,6 @@
                         android:layout_weight="13"
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
-                        android:text="Ví"
                         android:textColor="@android:color/black" />
 
                     <ImageView
@@ -944,7 +937,7 @@
                     android:padding="5dp"
                     android:weightSum="10">
 
-                    <EditText
+                    <org.droidparts.widget.ClearableEditText
                         android:id="@+id/etAdjustmentBalance"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
@@ -952,6 +945,7 @@
                         android:background="@android:color/transparent"
                         android:gravity="right|center_vertical"
                         android:hint="@string/new_transaction_remaining_amount"
+                        android:textColorHint="@color/textcolor_hint"
                         android:inputType="numberDecimal"
                         android:padding="5dp"
                         android:textSize="28sp"
@@ -964,13 +958,12 @@
                         android:layout_weight="1.2"
                         android:background="@drawable/background_icon_currency"
                         android:gravity="center"
-                        android:paddingBottom="5dp"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:paddingTop="5dp"
                         android:text="@string/currency_icon_vietnam"
                         android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
                 <View
@@ -984,8 +977,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/background_linear_gray_corner_bottom"
                     android:gravity="right"
-                    android:padding="5dp"
-                    android:text="-> Đã chi: 1 000 000" />
+                    android:padding="5dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -1020,7 +1012,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="Ví"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -1062,7 +1053,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="@string/new_transaction_adjustment"
                             android:textColor="@android:color/black" />
 
                         <ImageView
@@ -1104,7 +1094,6 @@
                             android:layout_weight="13"
                             android:background="@android:color/transparent"
                             android:gravity="right|center_vertical"
-                            android:text="@string/new_transaction_today"
                             android:textColor="@android:color/black" />
 
                         <ImageView
