@@ -162,10 +162,8 @@
             android:layout_weight="1.2"
             android:background="@drawable/background_icon_currency"
             android:gravity="center"
-            android:paddingBottom="5dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="5dp"
             android:text="@string/currency_icon_vietnam"
             android:textSize="20sp"
             android:textStyle="bold" />

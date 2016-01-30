@@ -155,9 +155,16 @@ public class FragmentTransactions extends Fragment {
 
                 Double expense = 0.0, income = 0.0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
-                    if(db.getCategory(tran.getCategoryId()).isExpense()) {
+//                    if(db.getCategory(tran.getCategoryId()).isExpense()) {
+//                        expense += tran.getAmount();
+//                    } else {
+//                        income += tran.getAmount();
+//                    }
+                    Account fromAccount = db.getAccount(tran.getFromAccountId());
+                    Account toAccount   = db.getAccount(tran.getToAccountId());
+                    if(fromAccount != null && toAccount == null) {
                         expense += tran.getAmount();
-                    } else {
+                    } else if(fromAccount == null && toAccount != null) {
                         income += tran.getAmount();
                     }
                 }
@@ -181,31 +188,54 @@ public class FragmentTransactions extends Fragment {
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
                     pos++;
 
-                    Account account = db.getAccount(tran.getAccountId());
+                    Account fromAccount = db.getAccount(tran.getFromAccountId());
+                    Account toAccount   = db.getAccount(tran.getToAccountId());
                     Category cate = db.getCategory(tran.getCategoryId());
 
                     LayoutInflater inflater = LayoutInflater.from(getContext());
                     View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
 
-
                     TextView tvCategory         = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
-                    String strCategory          = (cate.isExpense() ? getResources().getString(R.string.content_expense) : getResources().getString(R.string.content_income)) + ": " + cate.getName();
+                    String strCategory          = "";
+                    if(fromAccount != null && toAccount == null) {
+                        strCategory += getResources().getString(R.string.content_expense);
+                    } else if(fromAccount == null && toAccount != null) {
+                        strCategory += getResources().getString(R.string.content_income);
+                    } else if(fromAccount != null && toAccount != null) {
+                        strCategory += getResources().getString(R.string.content_transfer) + toAccount.getName();
+                    }
+
+                    strCategory += ": " + (cate != null ? cate.getName() : "");
+
                     tvCategory.setText(strCategory);
-                    tvCategory.setTextColor(getResources().getColor(cate.isExpense() ? android.R.color.black : R.color.colorPrimary));
 
                     TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
-                    tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), tran.getAmount()));
-                    tvAmount.setTextColor(getResources().getColor(cate.isExpense() ? android.R.color.black : R.color.colorPrimary));
+                    if(fromAccount != null) {
+                        tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAccount.getCurrencyId()), tran.getAmount()));
+                    } else if(toAccount != null) {
+                        tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(toAccount.getCurrencyId()), tran.getAmount()));
+                    }
 
                     TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
                     tvDescription.setText(tran.getDescription());
-                    tvDescription.setTextColor(getResources().getColor(cate.isExpense() ? android.R.color.black : R.color.colorPrimary));
 
                     TextView tvAccount          = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
-                    tvAccount.setText(account.getName());
-
                     ImageView ivAccountIcon     = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
-                    ivAccountIcon.setImageResource(AccountType.getAccountTypeById(account.getTypeId()).getIcon());
+
+                    if(fromAccount != null) {
+                        tvAccount.setText(fromAccount.getName());
+                        ivAccountIcon.setImageResource(AccountType.getAccountTypeById(fromAccount.getTypeId()).getIcon());
+                    } else if(toAccount != null) {
+                        tvAccount.setText(toAccount.getName());
+                        ivAccountIcon.setImageResource(AccountType.getAccountTypeById(toAccount.getTypeId()).getIcon());
+                    }
+
+                    if(toAccount != null && fromAccount == null) {
+                        tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        tvDescription.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        tvAccount.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        tvAmount.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    }
 
                     if(pos == mTransactions.get(position).getArTrans().size()) {
                         transactionDetailView.findViewById(R.id.vDivider).setVisibility(View.GONE);

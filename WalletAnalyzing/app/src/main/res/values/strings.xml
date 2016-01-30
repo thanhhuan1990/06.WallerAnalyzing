@@ -82,6 +82,7 @@
     <string name="Input_Error_TransferFee_Empty">Transfer Fee can\'t be empty!</string>
     <string name="Input_Error_Category_Empty">Category can\'t be empty!</string>
     <string name="Input_Error_Account_Empty">Account can\'t be empty!</string>
+    <string name="Input_Error_ToAccount_Empty">To Account can\'t be empty!</string>
 
     <string name="expense_category">Expense Category</string>
     <string name="income_category">Income Category</string>
@@ -110,8 +111,9 @@
     <string name="title_payee">Payee</string>
     <string name="title_event">Event</string>
 
-    <string name="content_expense">Expense</string>
-    <string name="content_income">Income</string>
+    <string name="content_expense">Expense </string>
+    <string name="content_income">Income </string>
+    <string name="content_transfer">Transfer to </string>
     <string name="content_today">Today</string>
     <string name="content_yesterday">Yesterday</string>
 

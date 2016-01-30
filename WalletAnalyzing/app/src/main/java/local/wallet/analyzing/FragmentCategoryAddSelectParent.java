@@ -23,7 +23,7 @@ import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
-import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
+import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.

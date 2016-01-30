@@ -17,14 +17,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
-import local.wallet.analyzing.FragmentNewTransaction.TransactionEnum;
+import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -176,30 +179,60 @@ public class FragmentNewTransactionSelectAccount extends Fragment {
 
             viewHolder.ivIcon.setImageResource(AccountType.getAccountTypeById(arAccounts.get(position).getTypeId()).getIcon());
             viewHolder.tvAccount.setText(arAccounts.get(position).getName());
-            String remain = arAccounts.get(position).getRemain().toString();
-            String[] ar = remain.split("\\.");
 
-            StringBuilder formatted = new StringBuilder();
-            if(ar[0].length() > 0) {
-                for(int i = 0; i < ar[0].length(); i++) {
-                    formatted.append(ar[0].charAt(i));
-                    if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
-                        formatted.append(",");
+            Double initBalance = arAccounts.get(position).getRemain();
+            Double remain = initBalance;
+
+            List<Transaction> arTransactions = db.getAllTransactions(arAccounts.get(position).getId());
+
+            Collections.sort(arTransactions, new Comparator<Transaction>() {
+                public int compare(Transaction o1, Transaction o2) {
+                    return o2.getTime().compareTo(o1.getTime());
+                }
+            });
+
+            for (Transaction tran : arTransactions) {
+                if (tran.getTransactionType() == TransactionEnum.Expense.getValue()) {
+                    remain -= tran.getAmount();
+                } else if (tran.getTransactionType() == TransactionEnum.Income.getValue()) {
+                    remain += tran.getAmount();
+                } else if (tran.getTransactionType() == TransactionEnum.Transfer.getValue()) {
+                    if (arAccounts.get(position).getId() == tran.getFromAccountId()) {
+                        remain -= tran.getAmount();
+                    } else if (arAccounts.get(position).getId() == tran.getToAccountId()) {
+                        remain += tran.getAmount();
                     }
+                } else if (tran.getTransactionType() == TransactionEnum.Adjustment.getValue()) {
+                    remain = tran.getAmount();
                 }
             }
 
-            if(ar.length == 2 && !ar[1].equals("0")) {
-                formatted.append(".");
-                for(int i = 0; i < ar[1].length(); i++) {
-                    formatted.append(ar[1].charAt(i));
-                    if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
-                        formatted.append(",");
-                    }
-                }
-            }
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, remain));
 
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(arAccounts.get(position).getCurrencyId()), formatted.toString()));
+//            String remain = arAccounts.get(position).getRemain().toString();
+//            String[] ar = remain.split("\\.");
+//
+//            StringBuilder formatted = new StringBuilder();
+//            if(ar[0].length() > 0) {
+//                for(int i = 0; i < ar[0].length(); i++) {
+//                    formatted.append(ar[0].charAt(i));
+//                    if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
+//                        formatted.append(",");
+//                    }
+//                }
+//            }
+//
+//            if(ar.length == 2 && !ar[1].equals("0")) {
+//                formatted.append(".");
+//                for(int i = 0; i < ar[1].length(); i++) {
+//                    formatted.append(ar[1].charAt(i));
+//                    if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
+//                        formatted.append(",");
+//                    }
+//                }
+//            }
+//
+//            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(arAccounts.get(position).getCurrencyId()), formatted.toString()));
 
             if(mUsingAccountId == arAccounts.get(position).getId()) {
                 viewHolder.ivUsing.setVisibility(View.VISIBLE);

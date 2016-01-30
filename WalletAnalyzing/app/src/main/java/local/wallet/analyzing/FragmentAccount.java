@@ -20,25 +20,29 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Account;
+import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentAccount extends Fragment {
-    private static final String TAG     = "FragmentAccount";
+    private static final String TAG = "FragmentAccount";
 
-    private static final int NORMAL_MODE        = 1;
-    private static final int EDIT_MODE          = 2;
+    private static final int NORMAL_MODE = 1;
+    private static final int EDIT_MODE = 2;
 
-    private int mCurrentMode    = NORMAL_MODE;
+    private int mCurrentMode = NORMAL_MODE;
 
     private ImageView ivAdd;
     private ImageView ivEdit;
@@ -46,7 +50,7 @@ public class FragmentAccount extends Fragment {
 
     private DatabaseHelper db;
     private ListView lvAccount;
-    private AccountAdapter  accAdapter;
+    private AccountAdapter accAdapter;
     private List<Account> listAccount = new ArrayList<Account>();
 
     private TextView tvEmpty;
@@ -79,7 +83,7 @@ public class FragmentAccount extends Fragment {
 
         db = new DatabaseHelper(getActivity());
 
-        lvAccount   = (ListView) getView().findViewById(R.id.lvAccount);
+        lvAccount = (ListView) getView().findViewById(R.id.lvAccount);
         tvEmpty = (TextView) getView().findViewById(R.id.tvEmpty);
 
         listAccount = db.getAllAccounts();
@@ -94,7 +98,7 @@ public class FragmentAccount extends Fragment {
             }
         });
 
-        if(listAccount.size() > 0) {
+        if (listAccount.size() > 0) {
             tvEmpty = (TextView) getView().findViewById(R.id.tvEmpty);
             tvEmpty.setVisibility(View.GONE);
         }
@@ -111,21 +115,17 @@ public class FragmentAccount extends Fragment {
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_account, null);
-        TextView tvTitle    = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
 
-        ivAdd               = (ImageView) mCustomView.findViewById(R.id.ivAdd);
-        ivEdit              = (ImageView) mCustomView.findViewById(R.id.ivEdit);
-        ivDone              = (ImageView) mCustomView.findViewById(R.id.ivDone);
+        ivAdd = (ImageView) mCustomView.findViewById(R.id.ivAdd);
+        ivEdit = (ImageView) mCustomView.findViewById(R.id.ivEdit);
+        ivDone = (ImageView) mCustomView.findViewById(R.id.ivDone);
 
-        if(mCurrentMode == NORMAL_MODE) {
-            if(listAccount.size() > 0) {
-                ivEdit.setVisibility(View.VISIBLE);
-            } else {
-                ivEdit.setVisibility(View.GONE);
-            }
+        if (mCurrentMode == NORMAL_MODE) {
+            ivEdit.setVisibility(listAccount.size() > 0 ? View.VISIBLE : View.GONE);
             ivAdd.setVisibility(View.VISIBLE);
             ivDone.setVisibility(View.GONE);
-        } else if(mCurrentMode == EDIT_MODE) {
+        } else if (mCurrentMode == EDIT_MODE) {
             ivAdd.setVisibility(View.GONE);
             ivEdit.setVisibility(View.GONE);
             ivDone.setVisibility(View.VISIBLE);
@@ -135,7 +135,7 @@ public class FragmentAccount extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Add Account.");
-                FragmentAccountAdd nextFrag= new FragmentAccountAdd();
+                FragmentAccountAdd nextFrag = new FragmentAccountAdd();
                 FragmentAccount.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, "FragmentAccountAdd")
                         .addToBackStack(null)
@@ -163,14 +163,14 @@ public class FragmentAccount extends Fragment {
             }
         });
 
-        ((ActivityMain)getActivity()).updateActionBar(mCustomView);
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
     /**
-    * Update AccountType, call from ActivityMain
-    */
+     * Update AccountType, call from ActivityMain
+     */
     public void addToAccountList(Account account) {
         LogUtils.logEnterFunction(TAG, null);
 
@@ -186,8 +186,8 @@ public class FragmentAccount extends Fragment {
     public void updateToAccountList(Account account) {
         LogUtils.logEnterFunction(TAG, null);
 
-        for(int i = 0 ; i < listAccount.size(); i++) {
-            if(listAccount.get(i).getId() == account.getId()) {
+        for (int i = 0; i < listAccount.size(); i++) {
+            if (listAccount.get(i).getId() == account.getId()) {
                 listAccount.set(i, account);
             }
         }
@@ -201,15 +201,15 @@ public class FragmentAccount extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         // Remove Account
-        for(Account account : listAccount) {
-            if(account.getId() == accountId) {
+        for (Account account : listAccount) {
+            if (account.getId() == accountId) {
                 listAccount.remove(account);
             }
         }
         // Reload list Account
         accAdapter.notifyDataSetChanged();
 
-        if(listAccount.size() > 0) {
+        if (listAccount.size() > 0) {
             tvEmpty.setVisibility(View.GONE);
         } else {
             tvEmpty.setVisibility(View.VISIBLE);
@@ -231,6 +231,7 @@ public class FragmentAccount extends Fragment {
         }
 
         private List<Account> mList;
+
         public AccountAdapter(Context context, List<Account> items) {
             super(context, R.layout.listview_item_account, items);
             this.mList = items;
@@ -259,10 +260,10 @@ public class FragmentAccount extends Fragment {
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 convertView = inflater.inflate(R.layout.listview_item_account, parent, false);
-                viewHolder.ivIcon           = (ImageView) convertView.findViewById(R.id.ivIcon);
-                viewHolder.tvAccountName    = (TextView) convertView.findViewById(R.id.tvAccount);
-                viewHolder.tvRemain         = (TextView) convertView.findViewById(R.id.tvRemain);
-                viewHolder.ivEdit           = (ImageView) convertView.findViewById(R.id.ivEdit);
+                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.ivIcon);
+                viewHolder.tvAccountName = (TextView) convertView.findViewById(R.id.tvAccount);
+                viewHolder.tvRemain = (TextView) convertView.findViewById(R.id.tvRemain);
+                viewHolder.ivEdit = (ImageView) convertView.findViewById(R.id.ivEdit);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -271,35 +272,63 @@ public class FragmentAccount extends Fragment {
             viewHolder.ivIcon.setImageResource(AccountType.getAccountTypeById(mList.get(position).getTypeId()).getIcon());
             viewHolder.tvAccountName.setText(mList.get(position).getName());
 
-            DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-            df.setMaximumFractionDigits(340); //340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
+            Double initBalance = mList.get(position).getRemain();
+            Double remain = initBalance;
 
-            String remain = df.format(mList.get(position).getRemain());
-            String[] ar = remain.split("\\.");
+            List<Transaction> arTransactions = db.getAllTransactions(mList.get(position).getId());
 
-            StringBuilder formatted = new StringBuilder();
-            if(ar[0].length() > 0) {
-                for(int i = 0; i < ar[0].length(); i++) {
-                    formatted.append(ar[0].charAt(i));
-                    if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
-                        formatted.append(",");
+            Collections.sort(arTransactions, new Comparator<Transaction>() {
+                public int compare(Transaction o1, Transaction o2) {
+                    return o2.getTime().compareTo(o1.getTime());
+                }
+            });
+
+            for (Transaction tran : arTransactions) {
+                if (tran.getTransactionType() == TransactionEnum.Expense.getValue()) {
+                    remain -= tran.getAmount();
+                } else if (tran.getTransactionType() == TransactionEnum.Income.getValue()) {
+                    remain += tran.getAmount();
+                } else if (tran.getTransactionType() == TransactionEnum.Transfer.getValue()) {
+                    if (mList.get(position).getId() == tran.getFromAccountId()) {
+                        remain -= tran.getAmount();
+                    } else if (mList.get(position).getId() == tran.getToAccountId()) {
+                        remain += tran.getAmount();
                     }
+                } else if (tran.getTransactionType() == TransactionEnum.Adjustment.getValue()) {
+                    remain = tran.getAmount();
                 }
             }
 
-            if(ar.length == 2 && !ar[1].equals("0")) {
-                formatted.append(".");
-                for(int i = 0; i < ar[1].length(); i++) {
-                    formatted.append(ar[1].charAt(i));
-                    if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
-                        formatted.append(",");
-                    }
-                }
-            }
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, remain));
+//            DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+//            df.setMaximumFractionDigits(340); //340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
+//
+//            String remain = df.format(mList.get(position).getRemain());
+//            String[] ar = remain.split("\\.");
+//
+//            StringBuilder formatted = new StringBuilder();
+//            if(ar[0].length() > 0) {
+//                for(int i = 0; i < ar[0].length(); i++) {
+//                    formatted.append(ar[0].charAt(i));
+//                    if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
+//                        formatted.append(",");
+//                    }
+//                }
+//            }
+//
+//            if(ar.length == 2 && !ar[1].equals("0")) {
+//                formatted.append(".");
+//                for(int i = 0; i < ar[1].length(); i++) {
+//                    formatted.append(ar[1].charAt(i));
+//                    if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
+//                        formatted.append(",");
+//                    }
+//                }
+//            }
+//
+//            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, formatted.toString()));
 
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, formatted.toString()));
-
-            if(mCurrentMode == NORMAL_MODE) {
+            if (mCurrentMode == NORMAL_MODE) {
                 viewHolder.ivEdit.setImageResource(R.drawable.icon_list_edit);
                 viewHolder.ivEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -310,12 +339,12 @@ public class FragmentAccount extends Fragment {
                         bundle.putInt("AccountID", listAccount.get(position).getId());
                         nextFrag.setArguments(bundle);
                         FragmentAccount.this.getFragmentManager().beginTransaction()
-                                                        .add(R.id.layout_account, nextFrag, "FragmentAccountEdit")
-                                                        .addToBackStack(null)
-                                                        .commit();
+                                .add(R.id.layout_account, nextFrag, "FragmentAccountEdit")
+                                .addToBackStack(null)
+                                .commit();
                     }
                 });
-            } else if(mCurrentMode == EDIT_MODE) {
+            } else if (mCurrentMode == EDIT_MODE) {
                 viewHolder.ivEdit.setImageResource(R.drawable.icon_list_delete);
                 viewHolder.ivEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -325,7 +354,7 @@ public class FragmentAccount extends Fragment {
                         listAccount.remove(position);
                         accAdapter.notifyDataSetChanged();
 
-                        if(listAccount.size() == 0) {
+                        if (listAccount.size() == 0) {
                             mCurrentMode = NORMAL_MODE;
                             getActivity().invalidateOptionsMenu();
                         }
