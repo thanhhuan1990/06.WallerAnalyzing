@@ -4,11 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,21 +15,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
-import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Account;
-import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
@@ -72,7 +63,7 @@ public class FragmentAccount extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_account, container, false);
+        return inflater.inflate(R.layout.layout_fragment_accounts, container, false);
     }
 
     @Override
@@ -135,9 +126,9 @@ public class FragmentAccount extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Add Account.");
-                FragmentAccountAdd nextFrag = new FragmentAccountAdd();
+                FragmentAccountCreate nextFrag = new FragmentAccountCreate();
                 FragmentAccount.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, "FragmentAccountAdd")
+                        .add(R.id.layout_account, nextFrag, "FragmentAccountCreate")
                         .addToBackStack(null)
                         .commit();
             }
@@ -272,61 +263,8 @@ public class FragmentAccount extends Fragment {
             viewHolder.ivIcon.setImageResource(AccountType.getAccountTypeById(mList.get(position).getTypeId()).getIcon());
             viewHolder.tvAccountName.setText(mList.get(position).getName());
 
-            Double initBalance = mList.get(position).getRemain();
-            Double remain = initBalance;
-
-            List<Transaction> arTransactions = db.getAllTransactions(mList.get(position).getId());
-
-            Collections.sort(arTransactions, new Comparator<Transaction>() {
-                public int compare(Transaction o1, Transaction o2) {
-                    return o2.getTime().compareTo(o1.getTime());
-                }
-            });
-
-            for (Transaction tran : arTransactions) {
-                if (tran.getTransactionType() == TransactionEnum.Expense.getValue()) {
-                    remain -= tran.getAmount();
-                } else if (tran.getTransactionType() == TransactionEnum.Income.getValue()) {
-                    remain += tran.getAmount();
-                } else if (tran.getTransactionType() == TransactionEnum.Transfer.getValue()) {
-                    if (mList.get(position).getId() == tran.getFromAccountId()) {
-                        remain -= tran.getAmount();
-                    } else if (mList.get(position).getId() == tran.getToAccountId()) {
-                        remain += tran.getAmount();
-                    }
-                } else if (tran.getTransactionType() == TransactionEnum.Adjustment.getValue()) {
-                    remain = tran.getAmount();
-                }
-            }
-
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, remain));
-//            DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-//            df.setMaximumFractionDigits(340); //340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
-//
-//            String remain = df.format(mList.get(position).getRemain());
-//            String[] ar = remain.split("\\.");
-//
-//            StringBuilder formatted = new StringBuilder();
-//            if(ar[0].length() > 0) {
-//                for(int i = 0; i < ar[0].length(); i++) {
-//                    formatted.append(ar[0].charAt(i));
-//                    if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
-//                        formatted.append(",");
-//                    }
-//                }
-//            }
-//
-//            if(ar.length == 2 && !ar[1].equals("0")) {
-//                formatted.append(".");
-//                for(int i = 0; i < ar[1].length(); i++) {
-//                    formatted.append(ar[1].charAt(i));
-//                    if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
-//                        formatted.append(",");
-//                    }
-//                }
-//            }
-//
-//            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, formatted.toString()));
+            Double remain = db.getAccountRemain(mList.get(position).getId());
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mList.get(position).getCurrencyId()), remain));
 
             if (mCurrentMode == NORMAL_MODE) {
                 viewHolder.ivEdit.setImageResource(R.drawable.icon_list_edit);
@@ -334,12 +272,12 @@ public class FragmentAccount extends Fragment {
                     @Override
                     public void onClick(View v) {
                         LogUtils.trace(TAG, "Edit item number " + position + " -> AccountID = " + listAccount.get(position));
-                        FragmentAccountEdit nextFrag = new FragmentAccountEdit();
+                        FragmentAccountUpdate nextFrag = new FragmentAccountUpdate();
                         Bundle bundle = new Bundle();
                         bundle.putInt("AccountID", listAccount.get(position).getId());
                         nextFrag.setArguments(bundle);
                         FragmentAccount.this.getFragmentManager().beginTransaction()
-                                .add(R.id.layout_account, nextFrag, "FragmentAccountEdit")
+                                .add(R.id.layout_account, nextFrag, "FragmentAccountUpdate")
                                 .addToBackStack(null)
                                 .commit();
                     }

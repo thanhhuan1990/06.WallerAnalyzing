@@ -24,15 +24,16 @@ import android.widget.TimePicker;
 
 import org.droidparts.widget.ClearableEditText;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -40,17 +41,16 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentUpdateTransaction extends Fragment implements  View.OnClickListener {
-    private static final String Tag = "FragmentUpdateTransaction";
+public class FragmentTransactionCreate extends Fragment implements  View.OnClickListener {
+    public static final String Tag = "FragmentTransactionCreate";
 
-    private DatabaseHelper db;
+    private DatabaseHelper      db;
 
-    private Transaction     mTransaction;
-    private Category        mCategory;
-    private Account         mFromAccount;
-    private Account         mToAccount;
-    private Spinner         spTransactionType;
-    private TransactionEnum mCurrentTransactionType;
+    private Category            mCategory;
+    private Account             mFromAccount;
+    private Account             mToAccount;
+    private Spinner             spTransactionType;
+    private TransactionEnum     mCurrentTransactionType  = TransactionEnum.Expense;
 
     /* Layout Expense */
     private LinearLayout        llExpense;
@@ -121,18 +121,26 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
 
     private LinearLayout        llSave;
 
-    private int mYear, mMonth, mDay, mHour, mMinute;
+    private int mYear = 0, mMonth = 0, mDay = 0, mHour = 0, mMinute = 0;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        super.onActivityCreated(savedInstanceState);
+
+        setHasOptionsMenu(true);
+        getActivity().invalidateOptionsMenu();
+
+        db = new DatabaseHelper(getActivity());
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
-
-        setHasOptionsMenu(true);
-
-        Bundle bundle = this.getArguments();
-        mTransaction                = (Transaction)bundle.get("Transaction");
-
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -143,6 +151,33 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         super.onCreateOptionsMenu(menu, inflater);
 
         initActionBar();
+
+        if(mYear == 0) {
+            Transaction tran = db.getLastTransaction();
+            if(tran != null) {
+                mFromAccount = tran.getFromAccountId() != 0 ? db.getAccount(tran.getFromAccountId()) : db.getAccount(tran.getToAccountId());
+                mToAccount  = tran.getToAccountId() != 0 ? db.getAccount(tran.getToAccountId()) : db.getAccount(tran.getFromAccountId());
+            } else {
+                List<Account> accs = db.getAllAccounts();
+                mFromAccount    = accs.size() > 0 ? accs.get(0) : null;
+                mToAccount      = (accs.size() > 1 && mFromAccount != null) ? accs.get(1) : null;
+            }
+
+            llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
+            llSave.setOnClickListener(this);
+            // Get Current DateTime
+            final Calendar c = Calendar.getInstance();
+            mYear   = c.get(Calendar.YEAR);
+            mMonth  = c.get(Calendar.MONTH);
+            mDay    = c.get(Calendar.DAY_OF_MONTH);
+            mHour   = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
+
+            initViewExpense();
+            initViewIncome();
+            initViewTransfer();
+            initViewAdjustment();
+        }
 
         switch (mCurrentTransactionType) {
             case Expense:
@@ -172,43 +207,13 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_new_transaction, container, false);
+        return inflater.inflate(R.layout.layout_fragment_transaction_create, container, false);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onResume() {
         LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
-        getActivity().invalidateOptionsMenu();
-
-        db = new DatabaseHelper(getActivity());
-        Transaction tran = db.getLastTransaction();
-        if(tran != null) {
-            mFromAccount = db.getAccount(tran.getFromAccountId());
-            mToAccount  = db.getAccount(tran.getToAccountId());
-        } else {
-            List<Account> accs = db.getAllAccounts();
-            mFromAccount    = accs.size() > 0 ? accs.get(0) : null;
-            mToAccount      = (accs.size() > 1 && mFromAccount != null) ? accs.get(1) : null;
-        }
-
-        // Get Current DateTime
-        final Calendar c = Calendar.getInstance();
-        mYear   = c.get(Calendar.YEAR);
-        mMonth  = c.get(Calendar.MONTH);
-        mDay    = c.get(Calendar.DAY_OF_MONTH);
-        mHour   = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
-
-        initViewExpense();
-        initViewIncome();
-        initViewTransfer();
-        initViewAdjustment();
-
-        llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
-        llSave.setOnClickListener(this);
+        super.onResume();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -331,7 +336,29 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
                         String expensePayee = tvExpensePayee.getText().toString();
                         String expenseEvent = tvExpenseEvent.getText().toString();
 
-                        // Todo: Update transaction
+                        Transaction transaction = new Transaction(0,
+                                                                    TransactionEnum.Expense.getValue(),
+                                                                    expenseAmount,
+                                                                    expenseCategoryId,
+                                                                    expenseDescription,
+                                                                    expenseAccountId,
+                                                                    0,
+                                                                    cal,
+                                                                    0.0,
+                                                                    expensePayee,
+                                                                    expenseEvent);
+                        long newTransactionId = db.createTransaction(transaction);
+
+                        if (newTransactionId != -1) {
+
+                            cleanup();
+
+                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            fragmentTransactions.updateListTransaction();
+
+                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                        }
+
                         break;
                     }
                     case Income: {
@@ -357,7 +384,28 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
                         cal.setTime(expenseDate);
                         String incomeEvent = tvIncomeEvent.getText().toString();
 
-                        // Todo: Update transaction
+                        Transaction transaction = new Transaction(0,
+                                                                    TransactionEnum.Income.getValue(),
+                                                                    incomeAmount,
+                                                                    incomeCategoryId,
+                                                                    incomeDescription,
+                                                                    0,
+                                                                    incomeAccountId,
+                                                                    cal,
+                                                                    0.0,
+                                                                    "",
+                                                                    incomeEvent);
+                        long newTransactionId = db.createTransaction(transaction);
+
+                        if (newTransactionId != -1) {
+
+                            cleanup();
+
+                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            fragmentTransactions.updateListTransaction();
+
+                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                        }
                         break;
                     }
                     case Transfer: {
@@ -390,12 +438,75 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
 
                         int transferCategoryId = mCategory != null ? mCategory.getId() : 0;
 
-                        // Todo: Update transaction
+                        Transaction transaction = new Transaction(0,
+                                                                    TransactionEnum.Transfer.getValue(),
+                                                                    transferAmount,
+                                                                    transferCategoryId,
+                                                                    transferDescription,
+                                                                    fromAccountId,
+                                                                    toAccountId,
+                                                                    cal,
+                                                                    transferFee,
+                                                                    "",
+                                                                    "");
+                        long newTransactionId = db.createTransaction(transaction);
+
+                        if (newTransactionId != -1) {
+
+                            cleanup();
+
+                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            fragmentTransactions.updateListTransaction();
+
+                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                        }
 
                         break;
                     }
-                    case Adjustment:
+                    case Adjustment: {
+                        if (mFromAccount == null) {
+                            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
+                            return;
+                        }
+
+                        Double balance = !etAdjustmentBalance.getText().toString().equals("") ? Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", "")) : 0;
+
+                        int fromAccountId = mFromAccount.getId();
+                        Double initBalance = db.getAccountRemain(fromAccountId);
+
+                        int adjustmentCategoryId = mCategory != null ? mCategory.getId() : 0;
+                        String adjustmentDescription = tvAdjustmentDescription.getText().toString();
+                        Date adjustmentDate = getDate(mYear, mMonth, mDay, mHour, mMinute);
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(adjustmentDate);
+                        String adjustmentPayee = tvAdjustmentPayee.getText().toString();
+                        String adjustmentEvent = tvAdjustmentEvent.getText().toString();
+
+                        Transaction transaction = new Transaction(0,
+                                                                    TransactionEnum.Adjustment.getValue(),
+                                                                    initBalance - balance,
+                                                                    adjustmentCategoryId,
+                                                                    adjustmentDescription,
+                                                                    fromAccountId,
+                                                                    0,
+                                                                    cal,
+                                                                    0.0,
+                                                                    adjustmentPayee,
+                                                                    adjustmentEvent);
+                        long newTransactionId = db.createTransaction(transaction);
+
+                        if (newTransactionId != -1) {
+
+                            cleanup();
+
+                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            fragmentTransactions.updateListTransaction();
+
+                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                        }
+
                         break;
+                    }
                     default:
                         break;
                 }
@@ -483,6 +594,7 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         llExpenseCategory       = (LinearLayout) getView().findViewById(R.id.llExpenseCategory);
         llExpenseCategory.setOnClickListener(this);
         tvExpenseCategory       = (TextView) getView().findViewById(R.id.tvExpenseCategory);
+        tvExpenseCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         llExpenseAccount        = (LinearLayout) getView().findViewById(R.id.llExpenseAccount);
         llExpenseAccount.setOnClickListener(this);
@@ -517,6 +629,7 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         llIncomeCategory        = (LinearLayout) getView().findViewById(R.id.llIncomeCategory);
         llIncomeCategory.setOnClickListener(this);
         tvIncomeCategory        = (TextView) getView().findViewById(R.id.tvIncomeCategory);
+        tvIncomeCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         llIncomeDescription     = (LinearLayout) getView().findViewById(R.id.llIncomeDescription);
         llIncomeDescription.setOnClickListener(this);
@@ -525,7 +638,7 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         llIncomeToAccount = (LinearLayout) getView().findViewById(R.id.llToAccount);
         llIncomeToAccount.setOnClickListener(this);
         tvIncomeToAccount = (TextView) getView().findViewById(R.id.tvToAccount);
-        tvIncomeToAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
+        tvIncomeToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
 
         llIncomeDate            = (LinearLayout) getView().findViewById(R.id.llIncomeDate);
         llIncomeDate.setOnClickListener(this);
@@ -550,10 +663,12 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         llTransferFromAccount       = (LinearLayout) getView().findViewById(R.id.llTransferFromAccount);
         llTransferFromAccount.setOnClickListener(this);
         tvTransferFromAccount       = (TextView) getView().findViewById(R.id.tvTransferFromAccount);
+        tvTransferFromAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
 
         llTransferToAccount         = (LinearLayout) getView().findViewById(R.id.llTransferToAccount);
         llTransferToAccount.setOnClickListener(this);
         tvTransferToAccount         = (TextView) getView().findViewById(R.id.tvTransferToAccount);
+        tvTransferToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
 
         llTransferDescription       = (LinearLayout) getView().findViewById(R.id.llTransferDescription);
         llTransferDescription.setOnClickListener(this);
@@ -570,6 +685,7 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
         llTransferCategory.setOnClickListener(this);
         tvTransferCategory          = (TextView) getView().findViewById(R.id.tvTransferCategory);
+        tvTransferCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -582,16 +698,21 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         llAdjustmentAccount         = (LinearLayout) getView().findViewById(R.id.llAdjustmentAccount);
         llAdjustmentAccount.setOnClickListener(this);
         tvAdjustmentAccount         = (TextView) getView().findViewById(R.id.tvAdjustmentAccount);
+        tvAdjustmentAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
 
         etAdjustmentBalance         = (ClearableEditText) getView().findViewById(R.id.etAdjustmentBalance);
         etAdjustmentBalance.addTextChangedListener(new CurrencyTextWatcher(etAdjustmentBalance));
 
         tvAdjustmentCurrencyIcon    = (TextView) getView().findViewById(R.id.tvAdjustmentCurrencyIcon);
         tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
+        tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed)
+                                +  Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), 0.0));
+
 
         llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
         llAdjustmentCategory.setOnClickListener(this);
         tvAdjustmentCategory        = (TextView) getView().findViewById(R.id.tvAdjustmentCategory);
+        tvAdjustmentCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         llAdjustmentDescription     = (LinearLayout) getView().findViewById(R.id.llAdjustmentDescription);
         llAdjustmentDescription.setOnClickListener(this);
@@ -734,41 +855,24 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
                 mEdittext.removeTextChangedListener(this);
 
                 LogUtils.trace(Tag, "input: " + s.toString());
-                String inputted = s.toString().replaceAll(",", "");
+                String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
+                String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                    Double.parseDouble(inputted));
 
-                LogUtils.trace(Tag, "input replace: " + inputted);
-                String[] ar = inputted.split("\\.");
-
-                StringBuilder formatted = new StringBuilder();
-                if(ar[0].length() > 0) {
-                    LogUtils.trace(Tag, "ar[0]: " + ar[0]);
-                    for(int i = 0; i < ar[0].length(); i++) {
-                        formatted.append(ar[0].charAt(i));
-                        if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
-                            formatted.append(",");
-                        }
-                        LogUtils.trace(Tag, "formatted :" + formatted.toString());
-                    }
-                }
-
-                if(s.toString().charAt(s.toString().length()-1) == '.') {
-                    formatted.append(".");
-                    LogUtils.trace(Tag, "formatted Add '.' :" + formatted.toString());
-                } else if(ar.length == 2) {
-                    LogUtils.trace(Tag, "ar[1]: " + ar[1]);
-                    formatted.append(".");
-                    for(int i = 0; i < ar[1].length(); i++) {
-                        formatted.append(ar[1].charAt(i));
-                        if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
-                            formatted.append(",");
-                        }
-                        LogUtils.trace(Tag, "formatted :" + formatted.toString());
-                    }
-                }
-
-                current = formatted.toString();
+                current = formatted;
                 mEdittext.setText(formatted);
                 mEdittext.setSelection(formatted.length());
+
+                if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                    Double balance = !mEdittext.getText().toString().equals("") ?
+                                        Double.parseDouble(mEdittext.getText().toString().replaceAll(",", ""))
+                                        : 0;
+                    Double remain   = db.getAccountRemain(mFromAccount.getId());
+                    tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed)
+                                            +  Currency.formatCurrency(getContext(),
+                                                                        Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                        (remain - balance)));
+                }
 
                 mEdittext.addTextChangedListener(this);
             }
@@ -791,13 +895,14 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
     }
 
     private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
-        FragmentNewTransactionSelectCategory nextFrag = new FragmentNewTransactionSelectCategory();
-        Bundle bundleSelectCategory = new Bundle();
-        bundleSelectCategory.putSerializable("TransactionType", transactionType);
-        bundleSelectCategory.putInt("CategoryID", oldCategoryId);
-        nextFrag.setArguments(bundleSelectCategory);
-        FragmentUpdateTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, nextFrag, "FragmentNewTransactionSelectCategory")
+        FragmentCategorySelect nextFrag = new FragmentCategorySelect();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", Tag);
+        bundle.putInt("CategoryID", oldCategoryId);
+        bundle.putSerializable("TransactionType", transactionType);
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
+                .add(R.id.layout_new_transaction, nextFrag, "FragmentCategorySelect")
                 .addToBackStack(null)
                 .commit();
     }
@@ -840,10 +945,11 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
     private void startFragmentDescription(TransactionEnum transactionType, String oldDescription) {
         FragmentDescription fragmentDescription = new FragmentDescription();
         Bundle bundleExpenseDescription = new Bundle();
+        bundleExpenseDescription.putString("Tag", Tag);
         bundleExpenseDescription.putSerializable("TransactionType", transactionType);
         bundleExpenseDescription.putString("Description", oldDescription);
         fragmentDescription.setArguments(bundleExpenseDescription);
-        FragmentUpdateTransaction.this.getFragmentManager().beginTransaction()
+        FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
                 .add(R.id.layout_new_transaction, fragmentDescription, "FragmentDescription")
                 .addToBackStack(null)
                 .commit();
@@ -878,13 +984,14 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
 
     private void startFragmentSelectAccount(TransactionEnum transactionType, int oldAccountId) {
         LogUtils.logEnterFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId);
-        FragmentNewTransactionSelectAccount fragmentAccount = new FragmentNewTransactionSelectAccount();
+        FragmentAccountsSelect fragmentAccount = new FragmentAccountsSelect();
         Bundle bundleAccount = new Bundle();
-        bundleAccount.putSerializable("TransactionType", transactionType);
+        bundleAccount.putString("Tag", Tag);
         bundleAccount.putInt("AccountID", oldAccountId);
+        bundleAccount.putSerializable("TransactionType", transactionType);
         fragmentAccount.setArguments(bundleAccount);
-        FragmentUpdateTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentAccount, "FragmentNewTransactionSelectAccount")
+        FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
+                .add(R.id.layout_new_transaction, fragmentAccount, "FragmentAccountsSelect")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
@@ -901,14 +1008,18 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
             case Expense:
                 mFromAccount = db.getAccount(accountId);
                 tvExpenseAccount.setText(mFromAccount.getName());
+                tvExpenseCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
                 break;
             case Income:
                 mToAccount = db.getAccount(accountId);
                 tvIncomeToAccount.setText(mToAccount.getName());
+                tvIncomeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId()))));
                 break;
             case TransferFrom:
                 mFromAccount = db.getAccount(accountId);
                 tvTransferFromAccount.setText(mFromAccount.getName());
+                tvTransferCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+                tvTransferFeeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
                 break;
             case TransferTo:
                 mToAccount = db.getAccount(accountId);
@@ -917,6 +1028,18 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
             case Adjustment:
                 mFromAccount = db.getAccount(accountId);
                 tvAdjustmentAccount.setText(mFromAccount.getName());
+
+                Double balance = !etAdjustmentBalance.getText().toString().equals("") ?
+                                                    Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", ""))
+                                                    : 0;
+                Double remain   = db.getAccountRemain(accountId);
+                tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed) + " " +
+                                            Currency.formatCurrency(getContext(),
+                                                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                    (remain - balance)));
+
+                tvAdjustmentCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+
                 break;
             default:
                 break;
@@ -928,10 +1051,11 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
     private void startFragmentPayee(TransactionEnum transactionType, String oldPayee) {
         FragmentPayee fragmentExpensePayee = new FragmentPayee();
         Bundle bundleExpensePayee = new Bundle();
+        bundleExpensePayee.putString("Tag", Tag);
         bundleExpensePayee.putSerializable("TransactionType", transactionType);
         bundleExpensePayee.putString("Payee", oldPayee);
         fragmentExpensePayee.setArguments(bundleExpensePayee);
-        FragmentUpdateTransaction.this.getFragmentManager().beginTransaction()
+        FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
                 .add(R.id.layout_new_transaction, fragmentExpensePayee, "FragmentPayee")
                 .addToBackStack(null)
                 .commit();
@@ -965,10 +1089,11 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
     private void startFragmentEvent(TransactionEnum transactionType, String oldEvent) {
         FragmentEvent fragmentExpenseEvent = new FragmentEvent();
         Bundle bundleExpenseEvent = new Bundle();
+        bundleExpenseEvent.putString("Tag", Tag);
         bundleExpenseEvent.putSerializable("TransactionType", transactionType);
         bundleExpenseEvent.putString("Event", oldEvent);
         fragmentExpenseEvent.setArguments(bundleExpenseEvent);
-        FragmentUpdateTransaction.this.getFragmentManager().beginTransaction()
+        FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
                 .add(R.id.layout_new_transaction, fragmentExpenseEvent, "FragmentEvent")
                 .addToBackStack(null)
                 .commit();
@@ -1004,16 +1129,59 @@ public class FragmentUpdateTransaction extends Fragment implements  View.OnClick
         Calendar car = Calendar.getInstance();
         String date = "";
         if(car.get(Calendar.DAY_OF_YEAR) == mDay) {
-            date = getResources().getString(R.string.content_today);
+            date = getResources().getString(R.string.content_today) + String.format(" %02d:%02d", mHour, mMinute);
         } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == mDay) {
-            date = getResources().getString(R.string.content_yesterday);
+            date = getResources().getString(R.string.content_yesterday) + String.format(" %02d:%02d", mHour, mMinute);
         } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == mDay
                 && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
-            date = getResources().getString(R.string.content_before_yesterday);
+            date = getResources().getString(R.string.content_before_yesterday) + String.format(" %02d:%02d", mHour, mMinute);
         } else {
             date = String.format("%02d-%02d-%02d %02d:%02d", mDay, mMonth + 1, mYear, mHour, mMinute);
         }
 
         return date;
+    }
+
+    /**
+     * Cleanup Old datas
+     */
+    private void cleanup() {
+        mCategory                   = null;
+        mFromAccount                = null;
+        mToAccount                  = null;
+        mCurrentTransactionType     = TransactionEnum.Expense;
+        mYear                       = 0;
+        mMonth                      = 0;
+        mDay                        = 0;
+        mHour                       = 0;
+        mMinute                     = 0;
+
+        /* Reset value */
+        etExpenseAmount.setText("");
+        tvExpenseCategory.setText("");
+        tvExpenseDescription.setText("");
+        tvExpenseAccount.setText("");
+        tvExpensePayee.setText("");
+        tvExpenseEvent.setText("");
+
+        etIncomeAmount.setText("");
+        tvIncomeCategory.setText("");
+        tvIncomeDescription.setText("");
+        tvIncomeToAccount.setText("");
+        tvIncomeEvent.setText("");
+
+        etTransferAmount.setText("");
+        tvTransferFromAccount.setText("");
+        tvTransferToAccount.setText("");
+        tvTransferDescription.setText("");
+        etTransferFee.setText("");
+        tvTransferCategory.setText("");
+
+        etAdjustmentBalance.setText("");
+        tvAdjustmentAccount.setText("");
+        tvAdjustmentCategory.setText("");
+        tvAdjustmentDescription.setText("");
+        tvAdjustmentPayee.setText("");
+        tvAdjustmentEvent.setText("");
     }
 }

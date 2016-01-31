@@ -91,6 +91,34 @@ public class Currency {
         return strResource;
     }
 
+    public static String formatCurrencyDouble(CurrencyList currency, Double amount) {
+        String strResource = "";
+
+        DecimalFormat df = new DecimalFormat();
+
+        if(amount.longValue() == amount) {
+            df = new DecimalFormat("#,###");
+        } else {
+            df = new DecimalFormat("##,##0.00");
+        }
+        switch (currency) {
+            case VND:
+                strResource = df.format(amount);
+                break;
+            case USD:
+                strResource = new DecimalFormat("##,##0.00").format(amount);
+                break;
+            case JPY:
+                strResource = new DecimalFormat("##,##0.00").format(amount);
+                break;
+            default:
+                strResource = new DecimalFormat("##,##0.00").format(amount);
+                break;
+        }
+
+        return strResource;
+    }
+
     public static String formatCurrency(Context context, CurrencyList currency, Double amount) {
         String strResource = "";
 
@@ -113,27 +141,6 @@ public class Currency {
                 break;
             default:
                 strResource = new DecimalFormat("##,##0.00 " + context.getResources().getString(R.string.currency_icon_vietnam)).format(amount);
-                break;
-        }
-
-        return strResource;
-    }
-
-    public static String formatCurrency(Context context, CurrencyList currency, String amount) {
-        String strResource = "";
-
-        switch (currency) {
-            case VND:
-                strResource = amount + context.getResources().getString(R.string.currency_icon_vietnam);
-                break;
-            case USD:
-                strResource = amount + context.getResources().getString(R.string.currency_icon_usd);
-                break;
-            case JPY:
-                strResource = amount + context.getResources().getString(R.string.currency_icon_jpy);
-                break;
-            default:
-                strResource = amount + context.getResources().getString(R.string.currency_icon_vietnam);
                 break;
         }
 

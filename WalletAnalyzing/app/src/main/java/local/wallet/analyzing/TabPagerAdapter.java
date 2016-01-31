@@ -27,7 +27,7 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
                 FragmentTransactions tabTransaction = new FragmentTransactions();
                 return tabTransaction;
             case 1:
-                FragmentNewTransaction tabNewTransaction = new FragmentNewTransaction();
+                FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
                 return tabNewTransaction;
             case 2:
                 return FragmentAccount.newInstance();

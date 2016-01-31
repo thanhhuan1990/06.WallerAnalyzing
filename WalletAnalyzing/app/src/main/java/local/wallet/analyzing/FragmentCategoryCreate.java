@@ -3,21 +3,18 @@ package local.wallet.analyzing;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
@@ -25,15 +22,15 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentCategoryAdd extends Fragment {
+public class FragmentCategoryCreate extends Fragment {
 
-    private static final String TAG     = "FragmentCategoryAdd";
+    private static final String TAG     = "FragmentCategoryCreate";
 
     private DatabaseHelper db;
 
     private TransactionEnum mTransactionType     = TransactionEnum.Expense;
 
-    // Keep return value from FragmentCategoryAddSelectParent
+    // Keep return value from FragmentCategoryParentSelect
     private Category mParentCategory;
     private boolean mBorrow = false;
 
@@ -89,7 +86,7 @@ public class FragmentCategoryAdd extends Fragment {
 
         LogUtils.logLeaveFunction(TAG, null, null);
 
-        return inflater.inflate(R.layout.layout_fragment_category_add, container, false);
+        return inflater.inflate(R.layout.layout_fragment_category_create, container, false);
     }
 
     @Override
@@ -110,14 +107,14 @@ public class FragmentCategoryAdd extends Fragment {
         llParentCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentCategoryAddSelectParent nextFrag = new FragmentCategoryAddSelectParent();
+                FragmentCategoryParentSelect nextFrag = new FragmentCategoryParentSelect();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mTransactionType);
                 bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryAdd());
                 bundle.putInt("ParentCategoryId", mParentCategory != null ? mParentCategory.getId() : 0);
                 nextFrag.setArguments(bundle);
-                FragmentCategoryAdd.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryAddSelectParent")
+                FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryParentSelect")
                         .addToBackStack(null)
                         .commit();
             }
@@ -138,19 +135,24 @@ public class FragmentCategoryAdd extends Fragment {
                 // Todo: Insert new Category to DB
                 long categoryId = db.createCategory(mParentCategory != null ? mParentCategory.getId() : 0,    // ParentID
                                                         etName.getText().toString(),                            // Name
-                                                        (mTransactionType == TransactionEnum.Expense || mTransactionType == TransactionEnum.Transfer || mTransactionType == TransactionEnum.Adjustment) ? true : false,                   // Expense
+                                                        (mTransactionType == TransactionEnum.Expense
+                                                                    || mTransactionType == TransactionEnum.Transfer
+                                                                    || mTransactionType == TransactionEnum.Adjustment)
+                                                                                ? true : false,                   // Expense
                                                         mBorrow);                                                 // Borrow
 
                 if (categoryId <= 0) {
                     LogUtils.error(TAG, "Create Category Failed.");
                 } else {
-                    // Todo: Update list Category in FragmentNewTransactionSelectCategory
-                    String TagOfFragmentNewTransactionSelectCategory = ((ActivityMain) getActivity()).getFragmentNewTransactionSelectCategory();
-                    FragmentNewTransactionSelectCategory fragmentNewTransactionSelectCategory = (FragmentNewTransactionSelectCategory) getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentNewTransactionSelectCategory);
-                    fragmentNewTransactionSelectCategory.updateListCategory();
+                    // Todo: Update list Category in FragmentCategorySelect
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentNewTransactionSelectCategory();
+                    FragmentCategorySelect fragment = (FragmentCategorySelect) getActivity()
+                                                                        .getSupportFragmentManager()
+                                                                            .findFragmentByTag(tagOfFragment);
+                    fragment.updateListCategory();
                 }
 
-                // Return to FragmentNewTransactionSelectCategory
+                // Return to FragmentCategorySelect
                 getFragmentManager().popBackStackImmediate();
             }
         });

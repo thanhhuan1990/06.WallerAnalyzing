@@ -1,29 +1,18 @@
 package local.wallet.analyzing;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.List;
-
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
 /**
@@ -74,25 +63,37 @@ public class FragmentDescription extends Fragment {
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Done.");
 
-                if(mTagOfSource == null) {
-                    LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
-                    // Set input string for Account's description in FragmentAccountEdit, and then return.
-                    FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updateDescription(mTransactionType, etDescription.getText().toString());
+                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
+                    // Set input string for Account's description in FragmentAccountUpdate, and then return.
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    fragment.updateDescription(mTransactionType, etDescription.getText().toString());
+
+                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentTransactionUpdate())) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    // Set input string for Account's description in FragmentAccountUpdate, and then return.
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateDescription(mTransactionType, etDescription.getText().toString());
+
                 } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentAccountAdd");
-                    // Set input string for Account's description in FragmentAccountAdd, and then return.
-                    String TagOfFragmentAccountAdd = ((ActivityMain)getActivity()).getFragmentAccountAdd();
-                    FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd) getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentAccountAdd);
-                    fragmentAccountAdd.updateDescription(etDescription.getText().toString());
+                    LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
+                    // Set input string for Account's description in FragmentAccountCreate, and then return.
+                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentAccountAdd();
+                    FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateDescription(etDescription.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountEdit())) {
-                    LogUtils.trace(TAG, "Setup for FragmentAccountEdit");
-                    // Set input string for Account's description in FragmentAccountEdit, and then return.
-                    String TabOfFragmentAccountEdit = ((ActivityMain)getActivity()).getFragmentAccountEdit();
-                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit)getActivity().getSupportFragmentManager().findFragmentByTag(TabOfFragmentAccountEdit);
-                    fragmentAccountEdit.updateDescription(etDescription.getText().toString());
+
+                    LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
+                    // Set input string for Account's description in FragmentAccountUpdate, and then return.
+                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentAccountEdit();
+                    FragmentAccountUpdate fragment = (FragmentAccountUpdate)getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateDescription(etDescription.getText().toString());
+
                 }
 
                 // Back

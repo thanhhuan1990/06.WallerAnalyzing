@@ -116,6 +116,7 @@
     <string name="content_transfer">Transfer to </string>
     <string name="content_today">Today</string>
     <string name="content_yesterday">Yesterday</string>
+    <string name="content_expensed">Expensed: </string>
 
     <string name="currency_icon_vietnam">₫</string>
     <string name="currency_icon_usd">$</string>

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -155,11 +156,6 @@ public class FragmentTransactions extends Fragment {
 
                 Double expense = 0.0, income = 0.0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
-//                    if(db.getCategory(tran.getCategoryId()).isExpense()) {
-//                        expense += tran.getAmount();
-//                    } else {
-//                        income += tran.getAmount();
-//                    }
                     Account fromAccount = db.getAccount(tran.getFromAccountId());
                     Account toAccount   = db.getAccount(tran.getToAccountId());
                     if(fromAccount != null && toAccount == null) {
@@ -184,8 +180,10 @@ public class FragmentTransactions extends Fragment {
                 }
 
                 viewHolder.llTransactionDetail.removeAllViews();
+                List<Transaction> arTrans = mTransactions.get(position).getArTrans();
+                Collections.sort(arTrans);
                 int pos = 0;
-                for(Transaction tran : mTransactions.get(position).getArTrans()) {
+                for(final Transaction tran : arTrans) {
                     pos++;
 
                     Account fromAccount = db.getAccount(tran.getFromAccountId());
@@ -197,12 +195,13 @@ public class FragmentTransactions extends Fragment {
 
                     TextView tvCategory         = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
                     String strCategory          = "";
-                    if(fromAccount != null && toAccount == null) {
+                    if(tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue() ||
+                            tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
                         strCategory += getResources().getString(R.string.content_expense);
-                    } else if(fromAccount == null && toAccount != null) {
+                    } else if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
                         strCategory += getResources().getString(R.string.content_income);
-                    } else if(fromAccount != null && toAccount != null) {
-                        strCategory += getResources().getString(R.string.content_transfer) + toAccount.getName();
+                    } else if(tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue()) {
+                        strCategory += getResources().getString(R.string.content_transfer) + " " + toAccount.getName();
                     }
 
                     strCategory += ": " + (cate != null ? cate.getName() : "");
@@ -230,7 +229,7 @@ public class FragmentTransactions extends Fragment {
                         ivAccountIcon.setImageResource(AccountType.getAccountTypeById(toAccount.getTypeId()).getIcon());
                     }
 
-                    if(toAccount != null && fromAccount == null) {
+                    if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
                         tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
                         tvDescription.setTextColor(getResources().getColor(R.color.colorPrimary));
                         tvAccount.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -240,6 +239,20 @@ public class FragmentTransactions extends Fragment {
                     if(pos == mTransactions.get(position).getArTrans().size()) {
                         transactionDetailView.findViewById(R.id.vDivider).setVisibility(View.GONE);
                     }
+
+                    transactionDetailView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("Transaction", tran);
+                            nextFrag.setArguments(bundle);
+                            FragmentTransactions.this.getFragmentManager().beginTransaction()
+                                    .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
 
                     viewHolder.llTransactionDetail.addView(transactionDetailView);
                 }

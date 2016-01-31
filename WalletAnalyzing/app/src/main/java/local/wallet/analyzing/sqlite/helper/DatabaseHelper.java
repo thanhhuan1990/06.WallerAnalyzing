@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -553,7 +555,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             account.setName((c.getString(c.getColumnIndex(KEY_NAME))));
             account.setTypeId(c.getInt(c.getColumnIndex(KEY_ACCOUNT_TYPE_ID)));
             account.setCurrencyId(c.getInt(c.getColumnIndex(KEY_ACCOUNT_CURRENCY)));
-            account.setRemain(c.getDouble(c.getColumnIndex(KEY_ACCOUNT_INITIAL_BALANCE)));
+            account.setInitBalance(c.getDouble(c.getColumnIndex(KEY_ACCOUNT_INITIAL_BALANCE)));
             account.setDescription(c.getString(c.getColumnIndex(KEY_ACCOUNT_DESCRIPTION)));
 
             return account;
@@ -582,7 +584,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 account.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 account.setTypeId(c.getInt(c.getColumnIndex(KEY_ACCOUNT_TYPE_ID)));
                 account.setCurrencyId(c.getInt(c.getColumnIndex(KEY_ACCOUNT_CURRENCY)));
-                account.setRemain(c.getDouble(c.getColumnIndex(KEY_ACCOUNT_INITIAL_BALANCE)));
+                account.setInitBalance(c.getDouble(c.getColumnIndex(KEY_ACCOUNT_INITIAL_BALANCE)));
                 account.setDescription(c.getString(c.getColumnIndex(KEY_ACCOUNT_DESCRIPTION)));
 
                 // adding to kinds list
@@ -591,6 +593,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return accounts;
+    }
+
+    /**
+     * Get account remain
+     * @return
+     */
+    public Double getAccountRemain(int accountId) {
+        Double remain = getAccount(accountId).getInitBalance();
+
+        List<Transaction> arTransactions = getAllTransactions(accountId);
+
+        Collections.sort(arTransactions, new Comparator<Transaction>() {
+            public int compare(Transaction o1, Transaction o2) {
+                return o2.getTime().compareTo(o1.getTime());
+            }
+        });
+
+        for (Transaction tran : arTransactions) {
+            if (tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue() ||
+                    tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+                remain -= tran.getAmount();
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
+                remain += tran.getAmount();
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue()) {
+                if (accountId == tran.getFromAccountId()) {
+                    remain -= tran.getAmount();
+                } else if (accountId == tran.getToAccountId()) {
+                    remain += tran.getAmount();
+                }
+            }
+        }
+
+        return remain;
     }
 
     /*
@@ -618,7 +653,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_NAME, account.getName());
         values.put(KEY_ACCOUNT_TYPE_ID, account.getTypeId());
         values.put(KEY_ACCOUNT_CURRENCY, account.getCurrencyId());
-        values.put(KEY_ACCOUNT_INITIAL_BALANCE, account.getRemain());
+        values.put(KEY_ACCOUNT_INITIAL_BALANCE, account.getInitBalance());
         values.put(KEY_ACCOUNT_DESCRIPTION, account.getDescription());
 
         // updating row

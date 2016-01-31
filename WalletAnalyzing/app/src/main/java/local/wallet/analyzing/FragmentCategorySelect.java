@@ -30,9 +30,9 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentNewTransactionSelectCategory extends Fragment {
+public class FragmentCategorySelect extends Fragment {
 
-    private static final String TAG = "FragmentNewTransactionSelectCategory";
+    private static final String TAG = "FragmentCategorySelect";
 
     private String mTagOfSource = "";
     private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
@@ -79,7 +79,7 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
         ((ActivityMain)getActivity()).setFragmentNewTransactionSelectCategory(myTag);
 
         LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_new_transaction_select_category, container, false);
+        return inflater.inflate(R.layout.layout_fragment_category_select, container, false);
     }
 
     @Override
@@ -166,10 +166,20 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
+                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
-                FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                fragmentNewTransaction.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    fragment.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
+
+                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
+
+                }
 
                 // Back to FragmentTransactionNew
                 getFragmentManager().popBackStackImmediate();
@@ -210,12 +220,12 @@ public class FragmentNewTransactionSelectCategory extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Add Category.");
-                FragmentCategoryAdd nextFrag = new FragmentCategoryAdd();
+                FragmentCategoryCreate nextFrag = new FragmentCategoryCreate();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mCurrentTransactionType);
                 nextFrag.setArguments(bundle);
-                FragmentNewTransactionSelectCategory.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryAdd")
+                FragmentCategorySelect.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryCreate")
                         .addToBackStack(null)
                         .commit();
             }

@@ -42,6 +42,8 @@ public class ActivityMain extends AppCompatActivity {
     private String fragmentNewTransactionSelectCategory;
     private String fragmentCategoryAdd;
     private String fragmentNewTransactionSelectAccount;
+    private String fragmentTransactionNew;
+    private String fragmentTransactionUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -236,6 +238,18 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentNewTransactionSelectAccount);
         return fragmentNewTransactionSelectAccount;
+    }
+
+    public void setFragmentTransactionUpdate(String tag) {
+        LogUtils.logEnterFunction(TAG, "tag = " + tag);
+        fragmentTransactionUpdate = tag;
+        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
+    }
+
+    public String getFragmentTransactionUpdate() {
+        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logLeaveFunction(TAG, null, fragmentTransactionUpdate);
+        return fragmentTransactionUpdate;
     }
 
     public void updateTabs(int hide, int show) {

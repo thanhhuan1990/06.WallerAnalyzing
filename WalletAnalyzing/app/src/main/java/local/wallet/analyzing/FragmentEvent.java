@@ -70,11 +70,19 @@ public class FragmentEvent extends Fragment {
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Done.");
 
-                if(mTagOfSource == null) {
-                    LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
-                    // Set input string for Payee's description in FragmentNewTransaction, and then return.
-                    FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+
+                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+
                 }
 
                 // Back

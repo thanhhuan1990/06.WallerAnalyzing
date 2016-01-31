@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
@@ -28,9 +26,9 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentCategoryAddSelectParent extends Fragment {
+public class FragmentCategoryParentSelect extends Fragment {
 
-    private static final String TAG = "FragmentCategoryAddSelectParent";
+    private static final String TAG = "FragmentCategoryParentSelect";
 
     private TransactionEnum mTransactionType     = TransactionEnum.Expense;
 
@@ -77,7 +75,11 @@ public class FragmentCategoryAddSelectParent extends Fragment {
         db = new DatabaseHelper(getActivity());
 
         arParentCategories.add(new Category(0, 0, getResources().getString(R.string.new_category_select_as_parent), true, false, null));
-        arParentCategories.addAll(db.getAllParentCategories((mTransactionType == TransactionEnum.Expense || mTransactionType == TransactionEnum.Transfer || mTransactionType == TransactionEnum.Adjustment) ? true : false, false));
+        arParentCategories.addAll(db.getAllParentCategories((mTransactionType == TransactionEnum.Expense
+                                                            || mTransactionType == TransactionEnum.Transfer
+                                                            || mTransactionType == TransactionEnum.Adjustment)
+                                                                        ? true : false
+                                                                , false));
 
         ListView lvParentCategory   = (ListView) getView().findViewById(R.id.lvParentCategory);
         ParentCategoryAdapter accountTypeAdapter = new ParentCategoryAdapter(getActivity(), arParentCategories);
@@ -86,12 +88,17 @@ public class FragmentCategoryAddSelectParent extends Fragment {
         lvParentCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentCategoryAdd())) {
-                    LogUtils.trace(TAG, "Setup for FragmentCategoryAdd");
-                    // Return ParentCategory's Id to FragmentCategoryAdd
-                    String TagOfFragmentCategoryAdd = ((ActivityMain)getActivity()).getFragmentCategoryAdd();
-                    FragmentCategoryAdd fragmentAccountAdd = (FragmentCategoryAdd)getActivity().getSupportFragmentManager().findFragmentByTag(TagOfFragmentCategoryAdd);
-                    fragmentAccountAdd.updateParentCategory(arParentCategories.get(position).getId(), false);
+
+                    LogUtils.trace(TAG, "Setup for FragmentCategoryCreate");
+                    // Return ParentCategory's Id to FragmentCategoryCreate
+                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentCategoryAdd();
+                    FragmentCategoryCreate fragment = (FragmentCategoryCreate)getActivity()
+                                                        .getSupportFragmentManager()
+                                                            .findFragmentByTag(tagOfFragment);
+                    fragment.updateParentCategory(arParentCategories.get(position).getId(), false);
+
                 }
 
                 // Back to last fragment

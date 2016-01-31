@@ -13,18 +13,18 @@ public class Account {
 
     private int currencyId;
 
-    private Double remain;
+    private Double initBalance;
 
     private String description;
 
     public Account() {}
 
-    public Account(int id, String name, int typeId, int currencyId, Double remain, String description) {
+    public Account(int id, String name, int typeId, int currencyId, Double initBalance, String description) {
         this.id             = id;
         this.name           = name;
         this.typeId         = typeId;
         this.currencyId     = currencyId;
-        this.remain         = remain;
+        this.initBalance         = initBalance;
         this.description    = description;
     }
 
@@ -60,12 +60,12 @@ public class Account {
         this.currencyId = currencyId;
     }
 
-    public Double getRemain() {
-        return remain;
+    public Double getInitBalance() {
+        return initBalance;
     }
 
-    public void setRemain(Double remain) {
-        this.remain = remain;
+    public void setInitBalance(Double initBalance) {
+        this.initBalance = initBalance;
     }
 
     public String getDescription() {

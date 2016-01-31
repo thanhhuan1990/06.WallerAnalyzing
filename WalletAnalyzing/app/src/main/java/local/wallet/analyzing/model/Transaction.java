@@ -1,12 +1,14 @@
 package local.wallet.analyzing.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by huynh.thanh.huan on 11/23/2015.
  */
-public class Transaction implements Comparable<Transaction> {
+public class Transaction implements Comparable<Transaction>, Serializable {
 
     public enum TransactionEnum {
         Expense(0),
@@ -23,6 +25,13 @@ public class Transaction implements Comparable<Transaction> {
 
         public int getValue() {
             return value;
+        }
+
+        public static TransactionEnum getTransactionEnum(int value) {
+            for (TransactionEnum l : TransactionEnum.values()) {
+                if (l.value == value) return l;
+            }
+            throw new IllegalArgumentException("TransactionEnum not found. Amputated?");
         }
     }
 

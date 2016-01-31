@@ -15,22 +15,22 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
-import local.wallet.analyzing.model.Currency;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentSelectCurrency extends Fragment {
+public class FragmentAccountTypeSelect extends Fragment {
 
-    private static final String TAG = "FragmentSelectCurrency";
+    private static final String TAG = "FragmentAccountTypeSelect";
 
     private String mTagOfSource = "";
-    private int mUsingCurrencyId;
+    private int mUsingAccountTypeId;
+    private int myExpenseUsingMode = 0;
+    private int myIncomeUsingMode = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class FragmentSelectCurrency extends Fragment {
 
         Bundle bundle = this.getArguments();
         mTagOfSource        = bundle.getString("Tag");
-        mUsingCurrencyId = bundle.getInt("Currency", 1);
+        mUsingAccountTypeId = bundle.getInt("AccountType", 1);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -54,7 +54,7 @@ public class FragmentSelectCurrency extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
         TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_account_select_currency));
+        tvTitle.setText(getResources().getString(R.string.title_account_select_type));
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -66,7 +66,7 @@ public class FragmentSelectCurrency extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_currency, container, false);
+        return inflater.inflate(R.layout.layout_fragment_accounttype, container, false);
     }
 
     @Override
@@ -75,34 +75,29 @@ public class FragmentSelectCurrency extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-        ListView lvCurrency   = (ListView) getView().findViewById(R.id.lvCurrency);
-        CurrencyAdapter accountTypeAdapter = new CurrencyAdapter(getActivity(), Arrays.asList(Currency.CurrencyList.values()));
-        lvCurrency.setAdapter(accountTypeAdapter);
+        ListView lvAccountType   = (ListView) getView().findViewById(R.id.lvAccountType);
+        AccountTypeAdapter accountTypeAdapter = new AccountTypeAdapter(getActivity(), AccountType.Accounts);
+        lvAccountType.setAdapter(accountTypeAdapter);
 
-        lvCurrency.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvAccountType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountAdd())) {
-                    LogUtils.trace(TAG, "Setup for FragmentAccountAdd");
-                    // Return Type's Id to FragmentAccountAdd
-                    String TabOfFragmentAccountAdd = ((ActivityMain) getActivity()).getFragmentAccountAdd();
-                    FragmentAccountAdd fragmentAccountAdd = (FragmentAccountAdd) getActivity()
-                            .getSupportFragmentManager()
-                            .findFragmentByTag(TabOfFragmentAccountAdd);
-                    fragmentAccountAdd.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-
-                    getFragmentManager().popBackStackImmediate();
+                    LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
+                    // Return Type's Id to FragmentAccountCreate
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountAdd();
+                    FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateAccountType(AccountType.Accounts.get(position).getId());
                 } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountEdit())) {
-                    LogUtils.trace(TAG, "Setup for FragmentAccountEdit");
-                    // Return Type's Id to FragmentAccountAdd
-                    String TabOfFragmentAccountEdit = ((ActivityMain) getActivity()).getFragmentAccountEdit();
-                    FragmentAccountEdit fragmentAccountEdit = (FragmentAccountEdit) getActivity()
-                            .getSupportFragmentManager()
-                            .findFragmentByTag(TabOfFragmentAccountEdit);
-                    fragmentAccountEdit.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
+                    LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
+                    // Return Type's Id to FragmentAccountUpdate
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountEdit();
+                    FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updateAccountType(AccountType.Accounts.get(position).getId());
 
                 }
+
+                getFragmentManager().popBackStackImmediate();
             }
         });
 
@@ -112,15 +107,16 @@ public class FragmentSelectCurrency extends Fragment {
     /**
      *
      */
-    private class CurrencyAdapter extends ArrayAdapter<Currency.CurrencyList> {
+    private class AccountTypeAdapter extends ArrayAdapter<AccountType> {
 
         private class ViewHolder {
+            ImageView ivIcon;
             TextView tvType;
             ImageView ivUsing;
         }
 
-        public CurrencyAdapter(Context context, List<Currency.CurrencyList> items) {
-            super(context, R.layout.listview_item_currency, items);
+        public AccountTypeAdapter(Context context, List<AccountType> items) {
+            super(context, R.layout.listview_item_account_type, items);
         }
 
         @Override
@@ -130,19 +126,25 @@ public class FragmentSelectCurrency extends Fragment {
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(R.layout.listview_item_currency, parent, false);
+                convertView = inflater.inflate(R.layout.listview_item_account_type, parent, false);
+                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.ivIcon);
                 viewHolder.tvType = (TextView) convertView.findViewById(R.id.tvType);
-                viewHolder.ivUsing = (ImageView) convertView.findViewById(R.id.ivUsing);
+                viewHolder.ivUsing  = (ImageView) convertView.findViewById(R.id.ivUsing);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.tvType.setText(Currency.getCurrencyName(getItem(position)));
-            if(mUsingCurrencyId == getItem(position).getValue()) {
-                viewHolder.ivUsing.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.ivUsing.setVisibility(View.INVISIBLE);
+            AccountType accountType = getItem(position);
+
+            if (accountType != null) {
+                viewHolder.ivIcon.setImageResource(accountType.getIcon());
+                viewHolder.tvType.setText(getResources().getString(accountType.getName()));
+                if(mUsingAccountTypeId == accountType.getId()) {
+                    viewHolder.ivUsing.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.ivUsing.setVisibility(View.INVISIBLE);
+                }
             }
 
             return convertView;

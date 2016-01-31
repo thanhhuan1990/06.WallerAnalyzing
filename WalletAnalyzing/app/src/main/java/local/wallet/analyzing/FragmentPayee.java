@@ -10,17 +10,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.AccountType;
-import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
@@ -101,11 +97,19 @@ public class FragmentPayee extends Fragment {
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Done.");
 
-                if(mTagOfSource == null) {
-                    LogUtils.trace(TAG, "Setup for FragmentNewTransaction");
-                    // Set input string for Payee's description in FragmentNewTransaction, and then return.
-                    FragmentNewTransaction fragmentNewTransaction = (FragmentNewTransaction)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
-                    fragmentNewTransaction.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
+                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
+
+                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
+
+                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
+
                 }
 
                 // Back

@@ -24,15 +24,16 @@ import android.widget.TimePicker;
 
 import org.droidparts.widget.ClearableEditText;
 
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -40,16 +41,17 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentNewTransaction extends Fragment implements  View.OnClickListener {
-    private static final String Tag = "FragmentNewTransaction";
+public class FragmentTransactionUpdate extends Fragment implements  View.OnClickListener {
+    private static final String Tag = "FragmentTransactionUpdate";
 
-    private DatabaseHelper db;
+    private DatabaseHelper      db;
 
-    private Category        mCategory;
-    private Account         mFromAccount;
-    private Account         mToAccount;
-    private Spinner         spTransactionType;
-    private TransactionEnum mCurrentTransactionType  = TransactionEnum.Expense;
+    private Transaction         mTransaction;
+    private Category            mCategory;
+    private Account             mFromAccount;
+    private Account             mToAccount;
+    private Spinner             spTransactionType;
+    private TransactionEnum     mCurrentTransactionType  = TransactionEnum.Expense;
 
     /* Layout Expense */
     private LinearLayout        llExpense;
@@ -119,13 +121,35 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     private TextView            tvAdjustmentEvent;
 
     private LinearLayout        llSave;
+    private LinearLayout        llDelete;
 
-    private int mYear, mMonth, mDay, mHour, mMinute;
+    private int mYear = 0, mMonth = 0, mDay = 0, mHour = 0, mMinute = 0;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        super.onActivityCreated(savedInstanceState);
+
+        setHasOptionsMenu(true);
+        getActivity().invalidateOptionsMenu();
+
+        db = new DatabaseHelper(getActivity());
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
+
+        Bundle bundle       = this.getArguments();
+        mTransaction        = (Transaction)bundle.get("Transaction");
+        mCurrentTransactionType = TransactionEnum.getTransactionEnum(mTransaction.getTransactionType());
+
+        LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -136,6 +160,31 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         super.onCreateOptionsMenu(menu, inflater);
 
         initActionBar();
+
+        if(mYear == 0 && mTransaction != null) {
+            mCategory       = db.getCategory(mTransaction.getCategoryId());
+            mFromAccount    = mTransaction.getFromAccountId() != 0 ?
+                                db.getAccount(mTransaction.getFromAccountId()) : db.getAccount(mTransaction.getToAccountId());
+            mToAccount      = mTransaction.getToAccountId() != 0 ?
+                                db.getAccount(mTransaction.getToAccountId()) : db.getAccount(mTransaction.getFromAccountId());
+
+            final Calendar c = mTransaction.getTime();
+            mYear   = c.get(Calendar.YEAR);
+            mMonth  = c.get(Calendar.MONTH);
+            mDay    = c.get(Calendar.DAY_OF_MONTH);
+            mHour   = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
+
+            llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
+            llSave.setOnClickListener(this);
+            llDelete    = (LinearLayout) getView().findViewById(R.id.llDelete);
+            llDelete.setOnClickListener(this);
+
+            initViewExpense();
+            initViewIncome();
+            initViewTransfer();
+            initViewAdjustment();
+        }
 
         switch (mCurrentTransactionType) {
             case Expense:
@@ -164,44 +213,18 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
+
+        String myTag = getTag();
+        ((ActivityMain)getActivity()).setFragmentTransactionUpdate(myTag);
+
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_new_transaction, container, false);
+        return inflater.inflate(R.layout.layout_fragment_transaction_update, container, false);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onResume() {
         LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
-        getActivity().invalidateOptionsMenu();
-
-        db = new DatabaseHelper(getActivity());
-        Transaction tran = db.getLastTransaction();
-        if(tran != null) {
-            mFromAccount = db.getAccount(tran.getFromAccountId());
-            mToAccount  = db.getAccount(tran.getToAccountId());
-        } else {
-            List<Account> accs = db.getAllAccounts();
-            mFromAccount    = accs.size() > 0 ? accs.get(0) : null;
-            mToAccount      = (accs.size() > 1 && mFromAccount != null) ? accs.get(1) : null;
-        }
-
-        // Get Current DateTime
-        final Calendar c = Calendar.getInstance();
-        mYear   = c.get(Calendar.YEAR);
-        mMonth  = c.get(Calendar.MONTH);
-        mDay    = c.get(Calendar.DAY_OF_MONTH);
-        mHour   = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
-
-        initViewExpense();
-        initViewIncome();
-        initViewTransfer();
-        initViewAdjustment();
-
-        llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
-        llSave.setOnClickListener(this);
+        super.onResume();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -296,7 +319,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
             case R.id.llAdjustmentEvent:
                 startFragmentEvent(TransactionEnum.Adjustment, tvAdjustmentEvent.getText().toString());
                 break;
-            case R.id.llSave:
+            case R.id.llSave: {
                 switch (mCurrentTransactionType) {
                     case Expense: {
 
@@ -309,7 +332,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Category_Empty));
                             return;
                         }
-                        if(mFromAccount == null) {
+                        if (mFromAccount == null) {
                             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
                             return;
                         }
@@ -324,34 +347,28 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         String expensePayee = tvExpensePayee.getText().toString();
                         String expenseEvent = tvExpenseEvent.getText().toString();
 
-                        Transaction transaction = new Transaction(0,
-                                                                    TransactionEnum.Expense.getValue(),
-                                                                    expenseAmount,
-                                                                    expenseCategoryId,
-                                                                    expenseDescription,
-                                                                    expenseAccountId,
-                                                                    0,
-                                                                    cal,
-                                                                    0.0,
-                                                                    expensePayee,
-                                                                    expenseEvent);
-                        long newTransactionId = db.createTransaction(transaction);
+                        Transaction transaction = new Transaction(mTransaction.getId(),
+                                TransactionEnum.Expense.getValue(),
+                                expenseAmount,
+                                expenseCategoryId,
+                                expenseDescription,
+                                expenseAccountId,
+                                0,
+                                cal,
+                                0.0,
+                                expensePayee,
+                                expenseEvent);
+                        int row = db.updateTransaction(transaction);
+                        if (row == 1) {
 
-                        if (newTransactionId != -1) {
+                            cleanup();
 
-                            /* Reset value */
-                            etExpenseAmount.setText("");
-                            tvExpenseCategory.setText("");
-                            tvExpenseDescription.setText("");
-                            tvExpenseAccount.setText("");
-                            tvExpensePayee.setText("");
-                            tvExpenseEvent.setText("");
-
-                            // Set input string for Payee's description in FragmentNewTransaction, and then return.
                             FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
                             fragmentTransactions.updateListTransaction();
 
-                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            // Return to FragmentTransactions
+                            getFragmentManager().popBackStackImmediate();
+
                         }
 
                         break;
@@ -365,7 +382,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Category_Empty));
                             return;
                         }
-                        if(mToAccount == null) {
+                        if (mToAccount == null) {
                             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
                             return;
                         }
@@ -379,33 +396,27 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         cal.setTime(expenseDate);
                         String incomeEvent = tvIncomeEvent.getText().toString();
 
-                        Transaction transaction = new Transaction(0,
-                                                                    TransactionEnum.Income.getValue(),
-                                                                    incomeAmount,
-                                                                    incomeCategoryId,
-                                                                    incomeDescription,
-                                                                    0,
-                                                                    incomeAccountId,
-                                                                    cal,
-                                                                    0.0,
-                                                                    "",
-                                                                    incomeEvent);
-                        long newTransactionId = db.createTransaction(transaction);
+                        Transaction transaction = new Transaction(mTransaction.getId(),
+                                TransactionEnum.Income.getValue(),
+                                incomeAmount,
+                                incomeCategoryId,
+                                incomeDescription,
+                                0,
+                                incomeAccountId,
+                                cal,
+                                0.0,
+                                "",
+                                incomeEvent);
+                        int row = db.updateTransaction(transaction);
+                        if (row == 1) {
 
-                        if (newTransactionId != -1) {
+                            cleanup();
 
-                            /* Reset value */
-                            etIncomeAmount.setText("");
-                            tvIncomeCategory.setText("");
-                            tvIncomeDescription.setText("");
-                            tvIncomeToAccount.setText("");
-                            tvIncomeEvent.setText("");
-
-                            // Set input string for Payee's description in FragmentNewTransaction, and then return.
                             FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
                             fragmentTransactions.updateListTransaction();
 
-                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            // Return to FragmentTransactions
+                            getFragmentManager().popBackStackImmediate();
                         }
                         break;
                     }
@@ -415,12 +426,12 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                             return;
                         }
 
-                        if(mFromAccount == null) {
+                        if (mFromAccount == null) {
                             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
                             return;
                         }
 
-                        if(mToAccount == null) {
+                        if (mToAccount == null) {
                             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_ToAccount_Empty));
                             return;
                         }
@@ -439,34 +450,27 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
                         int transferCategoryId = mCategory != null ? mCategory.getId() : 0;
 
-                        Transaction transaction = new Transaction(0,
-                                                                    TransactionEnum.Transfer.getValue(),
-                                                                    transferAmount,
-                                                                    transferCategoryId,
-                                                                    transferDescription,
-                                                                    fromAccountId,
-                                                                    toAccountId,
-                                                                    cal,
-                                                                    transferFee,
-                                                                    "",
-                                                                    "");
-                        long newTransactionId = db.createTransaction(transaction);
+                        Transaction transaction = new Transaction(mTransaction.getId(),
+                                TransactionEnum.Transfer.getValue(),
+                                transferAmount,
+                                transferCategoryId,
+                                transferDescription,
+                                fromAccountId,
+                                toAccountId,
+                                cal,
+                                transferFee,
+                                "",
+                                "");
+                        int row = db.updateTransaction(transaction);
+                        if (row == 1) {
 
-                        if (newTransactionId != -1) {
+                            cleanup();
 
-                            /* Reset value */
-                            etTransferAmount.setText("");
-                            tvTransferFromAccount.setText("");
-                            tvTransferToAccount.setText("");
-                            tvTransferDescription.setText("");
-                            etTransferFee.setText("");
-                            tvTransferCategory.setText("");
-
-                            // Set input string for Payee's description in FragmentNewTransaction, and then return.
                             FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
                             fragmentTransactions.updateListTransaction();
 
-                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            // Return to FragmentTransactions
+                            getFragmentManager().popBackStackImmediate();
                         }
 
                         break;
@@ -478,8 +482,10 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         }
 
                         Double balance = !etAdjustmentBalance.getText().toString().equals("") ? Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", "")) : 0;
-//                        Double adjustmentAmount = mFromAccount.getRemain() - balance;
+
                         int fromAccountId = mFromAccount.getId();
+                        Double initBalance = db.getAccountRemain(fromAccountId);
+
                         int adjustmentCategoryId = mCategory != null ? mCategory.getId() : 0;
                         String adjustmentDescription = tvAdjustmentDescription.getText().toString();
                         Date adjustmentDate = getDate(mYear, mMonth, mDay, mHour, mMinute);
@@ -488,33 +494,27 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                         String adjustmentPayee = tvAdjustmentPayee.getText().toString();
                         String adjustmentEvent = tvAdjustmentEvent.getText().toString();
 
-                        Transaction transaction = new Transaction(0,
-                                                                    TransactionEnum.Adjustment.getValue(),
-                                                                    balance,
-                                                                    adjustmentCategoryId,
-                                                                    adjustmentDescription,
-                                                                    fromAccountId,
-                                                                    0,
-                                                                    cal,
-                                                                    0.0,
-                                                                    adjustmentPayee,
-                                                                    adjustmentEvent);
-                        long newTransactionId = db.createTransaction(transaction);
+                        Transaction transaction = new Transaction(mTransaction.getId(),
+                                TransactionEnum.Adjustment.getValue(),
+                                initBalance - balance,
+                                adjustmentCategoryId,
+                                adjustmentDescription,
+                                fromAccountId,
+                                0,
+                                cal,
+                                0.0,
+                                adjustmentPayee,
+                                adjustmentEvent);
+                        int row = db.updateTransaction(transaction);
+                        if (row == 1) {
 
-                        if (newTransactionId != -1) {
-
-                            /* Reset value */
-                            etAdjustmentBalance.setText("");
-                            tvAdjustmentAccount.setText("");
-                            tvAdjustmentCategory.setText("");
-                            tvAdjustmentDescription.setText("");
-                            tvAdjustmentPayee.setText("");
-                            tvAdjustmentEvent.setText("");
+                            cleanup();
 
                             FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
                             fragmentTransactions.updateListTransaction();
 
-                            ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                            // Return to FragmentTransactions
+                            getFragmentManager().popBackStackImmediate();
                         }
 
                         break;
@@ -522,6 +522,20 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                     default:
                         break;
                 }
+                break;
+            }
+            case R.id.llDelete: {
+                db.deleteTransaction(mTransaction.getId());
+
+                cleanup();
+
+                FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                fragmentTransactions.updateListTransaction();
+
+                // Return to FragmentTransactions
+                getFragmentManager().popBackStackImmediate();
+                break;
+            }
             default:
                 break;
         }
@@ -559,18 +573,43 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                     case 0:
                         llExpense.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Expense;
+
+                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
+                            mCategory = db.getCategory(mTransaction.getCategoryId());
+                            tvExpenseCategory.setText(mCategory != null ? mCategory.getName() : "");
+                            tvExpenseAccount.setText(mFromAccount.getName());
+                        }
                         break;
                     case 1:
                         llIncome.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Income;
+
+                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
+                            mCategory = db.getCategory(mTransaction.getCategoryId());
+                            tvIncomeCategory.setText(mCategory != null ? mCategory.getName() : "");
+                            tvIncomeToAccount.setText(mToAccount.getName());
+                        }
                         break;
                     case 2:
                         llTransfer.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Transfer;
+
+                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
+                            mCategory = db.getCategory(mTransaction.getCategoryId());
+                            tvTransferCategory.setText(mCategory != null ? mCategory.getName() : "");
+                            tvTransferFromAccount.setText(mFromAccount.getName());
+                            tvTransferToAccount.setText(mToAccount.getName());
+                        }
                         break;
                     case 3:
                         llAdjustment.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Adjustment;
+
+                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
+                            mCategory = db.getCategory(mTransaction.getCategoryId());
+                            tvAdjustmentCategory.setText(mCategory != null ? mCategory.getName() : "");
+                            tvAdjustmentAccount.setText(mFromAccount.getName());
+                        }
                         break;
                     default:
                         break;
@@ -596,16 +635,21 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
 
         etExpenseAmount         = (ClearableEditText) getView().findViewById(R.id.etExpenseAmount);
+        etExpenseAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                mTransaction.getAmount()));
         etExpenseAmount.addTextChangedListener(new CurrencyTextWatcher(etExpenseAmount));
         tvExpenseCurrencyIcon   = (TextView) getView().findViewById(R.id.tvExpenseCurrencyIcon);
+        tvExpenseCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
 
         llExpenseDescription    = (LinearLayout) getView().findViewById(R.id.llExpenseDescription);
         llExpenseDescription.setOnClickListener(this);
         tvExpenseDescription    = (TextView) getView().findViewById(R.id.tvExpenseDescription);
+        tvExpenseDescription.setText(mTransaction.getDescription());
 
         llExpenseCategory       = (LinearLayout) getView().findViewById(R.id.llExpenseCategory);
         llExpenseCategory.setOnClickListener(this);
         tvExpenseCategory       = (TextView) getView().findViewById(R.id.tvExpenseCategory);
+        tvExpenseCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         llExpenseAccount        = (LinearLayout) getView().findViewById(R.id.llExpenseAccount);
         llExpenseAccount.setOnClickListener(this);
@@ -620,10 +664,12 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llExpensePayee          = (LinearLayout) getView().findViewById(R.id.llExpensePayee);
         llExpensePayee.setOnClickListener(this);
         tvExpensePayee          = (TextView) getView().findViewById(R.id.tvExpensePayee);
+        tvExpensePayee.setText(mTransaction.getPayee());
 
         llExpenseEvent          = (LinearLayout) getView().findViewById(R.id.llExpenseEvent);
         llExpenseEvent.setOnClickListener(this);
         tvExpenseEvent          = (TextView) getView().findViewById(R.id.tvExpenseEvent);
+        tvExpenseEvent.setText(mTransaction.getEvent());
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -634,21 +680,26 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
 
         etIncomeAmount          = (ClearableEditText) getView().findViewById(R.id.etIncomeAmount);
+        etIncomeAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mToAccount.getCurrencyId())
+                                                              , mTransaction.getAmount()));
         etIncomeAmount.addTextChangedListener(new CurrencyTextWatcher(etIncomeAmount));
         tvIncomeCurrencyIcon    = (TextView) getView().findViewById(R.id.tvIncomeCurrencyIcon);
+        tvIncomeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId())));
 
         llIncomeCategory        = (LinearLayout) getView().findViewById(R.id.llIncomeCategory);
         llIncomeCategory.setOnClickListener(this);
         tvIncomeCategory        = (TextView) getView().findViewById(R.id.tvIncomeCategory);
+        tvIncomeCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         llIncomeDescription     = (LinearLayout) getView().findViewById(R.id.llIncomeDescription);
         llIncomeDescription.setOnClickListener(this);
         tvIncomeDescription     = (TextView) getView().findViewById(R.id.tvIncomeDescription);
+        tvIncomeDescription.setText(mTransaction.getDescription());
 
         llIncomeToAccount = (LinearLayout) getView().findViewById(R.id.llToAccount);
         llIncomeToAccount.setOnClickListener(this);
         tvIncomeToAccount = (TextView) getView().findViewById(R.id.tvToAccount);
-        tvIncomeToAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
+        tvIncomeToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
 
         llIncomeDate            = (LinearLayout) getView().findViewById(R.id.llIncomeDate);
         llIncomeDate.setOnClickListener(this);
@@ -658,6 +709,7 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llIncomeEvent           = (LinearLayout) getView().findViewById(R.id.llIncomeEvent);
         llIncomeEvent.setOnClickListener(this);
         tvIncomeEvent           = (TextView) getView().findViewById(R.id.tvIncomeEvent);
+        tvIncomeEvent.setText(mTransaction.getEvent());
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -667,20 +719,26 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
         llTransfer                  = (LinearLayout) getView().findViewById(R.id.llTransfer);
         etTransferAmount            = (ClearableEditText) getView().findViewById(R.id.etTransferAmount);
+        etTransferAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                mTransaction.getAmount()));
         etTransferAmount.addTextChangedListener(new CurrencyTextWatcher(etTransferAmount));
         tvTransferCurrencyIcon      = (TextView) getView().findViewById(R.id.tvTransferCurrencyIcon);
+        tvTransferCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
 
         llTransferFromAccount       = (LinearLayout) getView().findViewById(R.id.llTransferFromAccount);
         llTransferFromAccount.setOnClickListener(this);
         tvTransferFromAccount       = (TextView) getView().findViewById(R.id.tvTransferFromAccount);
+        tvTransferFromAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
 
         llTransferToAccount         = (LinearLayout) getView().findViewById(R.id.llTransferToAccount);
         llTransferToAccount.setOnClickListener(this);
         tvTransferToAccount         = (TextView) getView().findViewById(R.id.tvTransferToAccount);
+        tvTransferToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
 
         llTransferDescription       = (LinearLayout) getView().findViewById(R.id.llTransferDescription);
         llTransferDescription.setOnClickListener(this);
         tvTransferDescription       = (TextView) getView().findViewById(R.id.tvTransferDescription);
+        tvTransferDescription.setText(mTransaction.getDescription());
 
         llTransferDate              = (LinearLayout) getView().findViewById(R.id.llTransferDate);
         llTransferDate.setOnClickListener(this);
@@ -688,11 +746,14 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         tvTransferDate.setText(getDateString());
 
         etTransferFee               = (ClearableEditText) getView().findViewById(R.id.etTransferFee);
+        etTransferFee.addTextChangedListener(new CurrencyTextWatcher(etTransferFee));
         tvTransferFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvTransferFeeCurrencyIcon);
+        tvTransferFeeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
 
         llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
         llTransferCategory.setOnClickListener(this);
         tvTransferCategory          = (TextView) getView().findViewById(R.id.tvTransferCategory);
+        tvTransferCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -705,20 +766,31 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llAdjustmentAccount         = (LinearLayout) getView().findViewById(R.id.llAdjustmentAccount);
         llAdjustmentAccount.setOnClickListener(this);
         tvAdjustmentAccount         = (TextView) getView().findViewById(R.id.tvAdjustmentAccount);
+        tvAdjustmentAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
 
         etAdjustmentBalance         = (ClearableEditText) getView().findViewById(R.id.etAdjustmentBalance);
+        Double remain = db.getAccountRemain(mFromAccount.getId());
+        etAdjustmentBalance.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                    (remain - mTransaction.getAmount())));
         etAdjustmentBalance.addTextChangedListener(new CurrencyTextWatcher(etAdjustmentBalance));
 
         tvAdjustmentCurrencyIcon    = (TextView) getView().findViewById(R.id.tvAdjustmentCurrencyIcon);
         tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
+        tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed)
+                                +  Currency.formatCurrency(getContext(),
+                                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                            mTransaction.getAmount()));
+
 
         llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
         llAdjustmentCategory.setOnClickListener(this);
         tvAdjustmentCategory        = (TextView) getView().findViewById(R.id.tvAdjustmentCategory);
+        tvAdjustmentCategory.setText(mCategory != null ? mCategory.getName() : "");
 
         llAdjustmentDescription     = (LinearLayout) getView().findViewById(R.id.llAdjustmentDescription);
         llAdjustmentDescription.setOnClickListener(this);
         tvAdjustmentDescription     = (TextView) getView().findViewById(R.id.tvAdjustmentDescription);
+        tvAdjustmentDescription.setText(mTransaction.getDescription());
 
         llAdjustmentDate            = (LinearLayout) getView().findViewById(R.id.llAdjustmentDate);
         llAdjustmentDate.setOnClickListener(this);
@@ -728,10 +800,12 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         llAdjustmentPayee           = (LinearLayout) getView().findViewById(R.id.llAdjustmentPayee);
         llAdjustmentPayee.setOnClickListener(this);
         tvAdjustmentPayee           = (TextView) getView().findViewById(R.id.tvAdjustmentPayee);
+        tvAdjustmentPayee.setText(mTransaction.getPayee());
 
         llAdjustmentEvent           = (LinearLayout) getView().findViewById(R.id.llAdjustmentEvent);
         llAdjustmentEvent.setOnClickListener(this);
         tvAdjustmentEvent           = (TextView) getView().findViewById(R.id.tvAdjustmentEvent);
+        tvAdjustmentEvent.setText(mTransaction.getEvent());
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -857,41 +931,24 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
                 mEdittext.removeTextChangedListener(this);
 
                 LogUtils.trace(Tag, "input: " + s.toString());
-                String inputted = s.toString().replaceAll(",", "");
+                String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
+                String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                    Double.parseDouble(inputted));
 
-                LogUtils.trace(Tag, "input replace: " + inputted);
-                String[] ar = inputted.split("\\.");
-
-                StringBuilder formatted = new StringBuilder();
-                if(ar[0].length() > 0) {
-                    LogUtils.trace(Tag, "ar[0]: " + ar[0]);
-                    for(int i = 0; i < ar[0].length(); i++) {
-                        formatted.append(ar[0].charAt(i));
-                        if(((ar[0].length() - (i+1)) % 3 == 0) && (i != ar[0].length()-1)) {
-                            formatted.append(",");
-                        }
-                        LogUtils.trace(Tag, "formatted :" + formatted.toString());
-                    }
-                }
-
-                if(s.toString().charAt(s.toString().length()-1) == '.') {
-                    formatted.append(".");
-                    LogUtils.trace(Tag, "formatted Add '.' :" + formatted.toString());
-                } else if(ar.length == 2) {
-                    LogUtils.trace(Tag, "ar[1]: " + ar[1]);
-                    formatted.append(".");
-                    for(int i = 0; i < ar[1].length(); i++) {
-                        formatted.append(ar[1].charAt(i));
-                        if(((ar[1].length() - (i+1)) % 3 == 0) && (i != ar[1].length()-1)) {
-                            formatted.append(",");
-                        }
-                        LogUtils.trace(Tag, "formatted :" + formatted.toString());
-                    }
-                }
-
-                current = formatted.toString();
+                current = formatted;
                 mEdittext.setText(formatted);
                 mEdittext.setSelection(formatted.length());
+
+                if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                    Double balance = !mEdittext.getText().toString().equals("") ?
+                                        Double.parseDouble(mEdittext.getText().toString().replaceAll(",", ""))
+                                        : 0;
+                    Double remain   = db.getAccountRemain(mFromAccount.getId());
+                    tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed)
+                                            +  Currency.formatCurrency(getContext(),
+                                                                        Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                        (remain - balance)));
+                }
 
                 mEdittext.addTextChangedListener(this);
             }
@@ -914,13 +971,14 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     }
 
     private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
-        FragmentNewTransactionSelectCategory nextFrag = new FragmentNewTransactionSelectCategory();
-        Bundle bundleSelectCategory = new Bundle();
-        bundleSelectCategory.putSerializable("TransactionType", transactionType);
-        bundleSelectCategory.putInt("CategoryID", oldCategoryId);
-        nextFrag.setArguments(bundleSelectCategory);
-        FragmentNewTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, nextFrag, "FragmentNewTransactionSelectCategory")
+        FragmentCategorySelect nextFragment = new FragmentCategorySelect();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
+        bundle.putInt("CategoryID", oldCategoryId);
+        bundle.putSerializable("TransactionType", transactionType);
+        nextFragment.setArguments(bundle);
+        FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_transactions, nextFragment, "FragmentCategorySelect")
                 .addToBackStack(null)
                 .commit();
     }
@@ -961,13 +1019,14 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     }
 
     private void startFragmentDescription(TransactionEnum transactionType, String oldDescription) {
-        FragmentDescription fragmentDescription = new FragmentDescription();
-        Bundle bundleExpenseDescription = new Bundle();
-        bundleExpenseDescription.putSerializable("TransactionType", transactionType);
-        bundleExpenseDescription.putString("Description", oldDescription);
-        fragmentDescription.setArguments(bundleExpenseDescription);
-        FragmentNewTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentDescription, "FragmentDescription")
+        FragmentDescription nextFragment = new FragmentDescription();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
+        bundle.putSerializable("TransactionType", transactionType);
+        bundle.putString("Description", oldDescription);
+        nextFragment.setArguments(bundle);
+        FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_transactions, nextFragment, "FragmentDescription")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1001,13 +1060,14 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
 
     private void startFragmentSelectAccount(TransactionEnum transactionType, int oldAccountId) {
         LogUtils.logEnterFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId);
-        FragmentNewTransactionSelectAccount fragmentAccount = new FragmentNewTransactionSelectAccount();
-        Bundle bundleAccount = new Bundle();
-        bundleAccount.putSerializable("TransactionType", transactionType);
-        bundleAccount.putInt("AccountID", oldAccountId);
-        fragmentAccount.setArguments(bundleAccount);
-        FragmentNewTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentAccount, "FragmentNewTransactionSelectAccount")
+        FragmentAccountsSelect nextFragment = new FragmentAccountsSelect();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
+        bundle.putInt("AccountID", oldAccountId);
+        bundle.putSerializable("TransactionType", transactionType);
+        nextFragment.setArguments(bundle);
+        FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_transactions, nextFragment, "FragmentAccountsSelect")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
@@ -1024,14 +1084,18 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
             case Expense:
                 mFromAccount = db.getAccount(accountId);
                 tvExpenseAccount.setText(mFromAccount.getName());
+                tvExpenseCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
                 break;
             case Income:
                 mToAccount = db.getAccount(accountId);
                 tvIncomeToAccount.setText(mToAccount.getName());
+                tvIncomeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId()))));
                 break;
             case TransferFrom:
                 mFromAccount = db.getAccount(accountId);
                 tvTransferFromAccount.setText(mFromAccount.getName());
+                tvTransferCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+                tvTransferFeeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
                 break;
             case TransferTo:
                 mToAccount = db.getAccount(accountId);
@@ -1040,6 +1104,18 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
             case Adjustment:
                 mFromAccount = db.getAccount(accountId);
                 tvAdjustmentAccount.setText(mFromAccount.getName());
+
+                Double balance = !etAdjustmentBalance.getText().toString().equals("") ?
+                                                    Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", ""))
+                                                    : 0;
+                Double remain   = db.getAccountRemain(accountId);
+                tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed) + " " +
+                                            Currency.formatCurrency(getContext(),
+                                                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                    (remain - balance)));
+
+                tvAdjustmentCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+
                 break;
             default:
                 break;
@@ -1049,13 +1125,14 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     }
 
     private void startFragmentPayee(TransactionEnum transactionType, String oldPayee) {
-        FragmentPayee fragmentExpensePayee = new FragmentPayee();
-        Bundle bundleExpensePayee = new Bundle();
-        bundleExpensePayee.putSerializable("TransactionType", transactionType);
-        bundleExpensePayee.putString("Payee", oldPayee);
-        fragmentExpensePayee.setArguments(bundleExpensePayee);
-        FragmentNewTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentExpensePayee, "FragmentPayee")
+        FragmentPayee nextFragment = new FragmentPayee();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
+        bundle.putSerializable("TransactionType", transactionType);
+        bundle.putString("Payee", oldPayee);
+        nextFragment.setArguments(bundle);
+        FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_transactions, nextFragment, "FragmentPayee")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1086,13 +1163,14 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
     }
 
     private void startFragmentEvent(TransactionEnum transactionType, String oldEvent) {
-        FragmentEvent fragmentExpenseEvent = new FragmentEvent();
-        Bundle bundleExpenseEvent = new Bundle();
-        bundleExpenseEvent.putSerializable("TransactionType", transactionType);
-        bundleExpenseEvent.putString("Event", oldEvent);
-        fragmentExpenseEvent.setArguments(bundleExpenseEvent);
-        FragmentNewTransaction.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentExpenseEvent, "FragmentEvent")
+        FragmentEvent nextFragment = new FragmentEvent();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
+        bundle.putSerializable("TransactionType", transactionType);
+        bundle.putString("Event", oldEvent);
+        nextFragment.setArguments(bundle);
+        FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_transactions, nextFragment, "FragmentEvent")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1127,16 +1205,59 @@ public class FragmentNewTransaction extends Fragment implements  View.OnClickLis
         Calendar car = Calendar.getInstance();
         String date = "";
         if(car.get(Calendar.DAY_OF_YEAR) == mDay) {
-            date = getResources().getString(R.string.content_today);
+            date = getResources().getString(R.string.content_today) + String.format(" %02d:%02d", mHour, mMinute);
         } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == mDay) {
-            date = getResources().getString(R.string.content_yesterday);
+            date = getResources().getString(R.string.content_yesterday) + String.format(" %02d:%02d", mHour, mMinute);
         } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == mDay
                 && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
-            date = getResources().getString(R.string.content_before_yesterday);
+            date = getResources().getString(R.string.content_before_yesterday) + String.format(" %02d:%02d", mHour, mMinute);
         } else {
             date = String.format("%02d-%02d-%02d %02d:%02d", mDay, mMonth + 1, mYear, mHour, mMinute);
         }
 
         return date;
+    }
+
+    /**
+     * Cleanup Old datas
+     */
+    private void cleanup() {
+        mCategory                   = null;
+        mFromAccount                = null;
+        mToAccount                  = null;
+        mCurrentTransactionType     = TransactionEnum.Expense;
+        mYear                       = 0;
+        mMonth                      = 0;
+        mDay                        = 0;
+        mHour                       = 0;
+        mMinute                     = 0;
+
+        /* Reset value */
+        etExpenseAmount.setText("");
+        tvExpenseCategory.setText("");
+        tvExpenseDescription.setText("");
+        tvExpenseAccount.setText("");
+        tvExpensePayee.setText("");
+        tvExpenseEvent.setText("");
+
+        etIncomeAmount.setText("");
+        tvIncomeCategory.setText("");
+        tvIncomeDescription.setText("");
+        tvIncomeToAccount.setText("");
+        tvIncomeEvent.setText("");
+
+        etTransferAmount.setText("");
+        tvTransferFromAccount.setText("");
+        tvTransferToAccount.setText("");
+        tvTransferDescription.setText("");
+        etTransferFee.setText("");
+        tvTransferCategory.setText("");
+
+        etAdjustmentBalance.setText("");
+        tvAdjustmentAccount.setText("");
+        tvAdjustmentCategory.setText("");
+        tvAdjustmentDescription.setText("");
+        tvAdjustmentPayee.setText("");
+        tvAdjustmentEvent.setText("");
     }
 }
