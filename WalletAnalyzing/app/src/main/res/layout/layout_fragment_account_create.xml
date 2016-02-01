@@ -78,7 +78,6 @@
                 android:layout_weight="13"
                 android:background="@android:color/transparent"
                 android:gravity="right|center_vertical"
-                android:text="Cash"
                 android:textColor="@android:color/black" />
 
             <ImageView
@@ -108,7 +107,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+                android:layout_weight="6"
                 android:background="@android:color/transparent"
                 android:text="@string/account_add_currency"
                 android:textColor="@android:color/black" />
@@ -117,10 +116,9 @@
                 android:id="@+id/tvCurrency"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="15"
+                android:layout_weight="13"
                 android:background="@android:color/transparent"
                 android:gravity="right|center_vertical"
-                android:text="VND"
                 android:textColor="@android:color/black" />
 
             <ImageView
@@ -186,7 +184,7 @@
             android:layout_weight="4"
             android:background="@android:color/transparent"
             android:padding="10dp"
-            android:text="Ghi chú"
+            android:text="@string/account_add_note"
             android:textColor="@android:color/black" />
 
         <TextView
@@ -197,7 +195,6 @@
             android:background="@android:color/transparent"
             android:gravity="right"
             android:singleLine="true"
-            android:text=""
             android:textColor="@android:color/black" />
 
         <ImageView

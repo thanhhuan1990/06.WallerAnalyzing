@@ -28,10 +28,11 @@ public class FragmentAccountCreate extends Fragment {
 
     private static final String TAG     = "FragmentAccountCreate";
 
-    private DatabaseHelper              db;
+    private Configurations              mConfigs;
+    private DatabaseHelper              mDbHelper;
 
     private AccountType                 mAccountType    = AccountType.Accounts.get(0);
-    private Currency.CurrencyList       mCurrency       = Currency.CurrencyList.VND;
+    private Currency.CurrencyList       mCurrency;
 
     private ClearableEditText           etName;
     private LinearLayout                llType;
@@ -85,14 +86,18 @@ public class FragmentAccountCreate extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mConfigs    = new Configurations(getActivity());
+        mCurrency   = Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency));
+        mDbHelper   = new DatabaseHelper(getActivity());
 
         // Initialize View
         etName              = (ClearableEditText) getView().findViewById(R.id.etName);
         llType              = (LinearLayout) getView().findViewById(R.id.llType);
         tvType              = (TextView) getView().findViewById(R.id.tvType);
+        tvType.setText(AccountType.Accounts.get(0).getName());
         llCurrency          = (LinearLayout) getView().findViewById(R.id.llCurrency);
         tvCurrency          = (TextView) getView().findViewById(R.id.tvCurrency);
+        tvCurrency.setText(Currency.getCurrencyName(mCurrency));
         etInitialBalance    = (EditText) getView().findViewById(R.id.etInitialBalance);
         llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
         tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
@@ -161,11 +166,11 @@ public class FragmentAccountCreate extends Fragment {
                 String description = tvDescription.getText().toString();
 
                 // Insert account to DB
-                long account_id = db.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
+                long account_id = mDbHelper.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
 
                 // Update list of Account in FragmentAccount
                 FragmentAccount fragmentAccount = (FragmentAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
-                fragmentAccount.addToAccountList(db.getAccount(account_id));
+                fragmentAccount.addToAccountList(mDbHelper.getAccount(account_id));
 
                 // Return to FragmentAccount
                 getFragmentManager().popBackStackImmediate();
@@ -195,7 +200,7 @@ public class FragmentAccountCreate extends Fragment {
         LogUtils.logEnterFunction(TAG, "currencyId = " + currency.name());
 
         mCurrency = currency;
-        tvCurrency.setText(Currency.getCurrencyIcon(Currency.CurrencyList.VND));
+        tvCurrency.setText(Currency.getCurrencyName(mCurrency));
 
         LogUtils.logLeaveFunction(TAG, "currencyId = " + currency.name(), null);
     }

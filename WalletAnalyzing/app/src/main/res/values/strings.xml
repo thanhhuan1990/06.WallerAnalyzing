@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Wallet Analyzing</string>
 
+    <string name="button_delete">Delete</string>
+
     <string name="format_month_year">\%%02d/\%%02d</string>
 
     <string name="select_file_title">Select cert. file</string>
@@ -59,8 +61,8 @@
     <string name="currency_jpy">¥ - Japanese Yen(JPY)</string>
 
     <string name="new_transaction_amount">Amount</string>
-    <string name="new_transaction_category_expense">Category</string>
-    <string name="new_transaction_category_income">Category</string>
+    <string name="transaction_category_expense">Category</string>
+    <string name="transaction_category_income">Category</string>
     <string name="new_transaction_description">Description</string>
     <string name="new_transaction_from_account">Account</string>
     <string name="new_transaction_date">Date</string>
@@ -116,7 +118,8 @@
     <string name="content_transfer">Transfer to </string>
     <string name="content_today">Today</string>
     <string name="content_yesterday">Yesterday</string>
-    <string name="content_expensed">Expensed: </string>
+    <string name="content_expensed">Expensed: %s</string>
+    <string name="content_adjustment_income">Income: %s</string>
 
     <string name="currency_icon_vietnam">₫</string>
     <string name="currency_icon_usd">$</string>

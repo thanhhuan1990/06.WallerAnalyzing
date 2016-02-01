@@ -10,6 +10,8 @@ import android.content.SharedPreferences.Editor;
 import android.os.Environment;
 import android.util.Log;
 
+import local.wallet.analyzing.model.Currency;
+
 class Configurations {
 
 	private static final String Tag = "Configurations";
@@ -24,7 +26,9 @@ class Configurations {
 	}
 
 	static enum Key {
-        passcode;
+        Locale,
+        Passcode,
+        Currency;
 	}
 
 	private SharedPreferences mPreferences;
@@ -66,7 +70,9 @@ class Configurations {
 		mPreferences = context.getSharedPreferences(PreferencesFile, Context.MODE_PRIVATE);
 		Editor editor = mPreferences.edit();
 
-		editor.putString(Key.passcode.name(), mPreferences.getString(Key.passcode.name(), "0000"));
+		editor.putString(Key.Passcode.name(), mPreferences.getString(Key.Passcode.name(), "0000"));
+        editor.putString(Key.Locale.name(), mPreferences.getString(Key.Locale.name(), "vn"));
+        editor.putInt(Key.Currency.name(), mPreferences.getInt(Key.Currency.name(), Currency.CurrencyList.VND.getValue()));
 
 		boolean result = editor.commit();
 		if (!result) {

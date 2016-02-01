@@ -26,7 +26,7 @@ public class ActivityEnter extends Activity implements OnInputPasscode{
         setContentView(R.layout.layout_enter);
 
         Configurations config = new Configurations(getApplicationContext());
-        String passCode = config.getString(Configurations.Key.passcode);
+        String passCode = config.getString(Configurations.Key.Passcode);
 
         mPasscode   = new PasscodeText(this, this, passCode);
     }

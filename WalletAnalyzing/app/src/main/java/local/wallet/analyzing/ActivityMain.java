@@ -51,13 +51,16 @@ public class ActivityMain extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-//        String languageToLoad  = "vn"; // your language
-//        Locale locale = new Locale(languageToLoad);
-//        Locale.setDefault(locale);
-//        Configuration config = new Configuration();
-//        config.locale = locale;
-//        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        /* Update Locale */
+        Configurations config = new Configurations(getApplicationContext());
+        String languageToLoad  = config.getString(Configurations.Key.Locale);
+        Locale locale = new Locale(languageToLoad);
+        Locale.setDefault(locale);
+        Configuration androidConfigs = new Configuration();
+        androidConfigs.locale = locale;
+        getBaseContext().getResources().updateConfiguration(androidConfigs, getBaseContext().getResources().getDisplayMetrics());
 
+        // Update View
         setContentView(R.layout.activity_main);
 
         /* Todo: Init Views */

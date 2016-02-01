@@ -44,8 +44,8 @@
     <string name="account_add_note">Ghi chú</string>
 
     <string name="new_transaction_amount">Số tiền</string>
-    <string name="new_transaction_category_expense">Mục chi</string>
-    <string name="new_transaction_category_income">Mục thu</string>
+    <string name="transaction_category_expense">Mục chi</string>
+    <string name="transaction_category_income">Mục thu</string>
     <string name="new_transaction_description">Diễn giải</string>
     <string name="new_transaction_from_account">Từ tài khoản</string>
     <string name="new_transaction_date">Ngày</string>
@@ -82,6 +82,7 @@
     <string name="content_today">Hôm nay</string>
     <string name="content_yesterday">Hôm qua</string>
     <string name="content_before_yesterday">Hôm kia</string>
-    <string name="content_expensed">Đã chi: </string>
+    <string name="content_expensed">Đã chi: %s</string>
+    <string name="content_adjustment_income">Đã thu: %s</string>
 
 </resources>

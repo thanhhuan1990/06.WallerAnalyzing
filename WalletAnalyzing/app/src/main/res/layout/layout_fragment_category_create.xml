@@ -66,7 +66,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="8"
                 android:background="@android:color/transparent"
                 android:gravity="left"
                 android:text="@string/new_category_parent_category"
@@ -76,7 +76,7 @@
                 android:id="@+id/tvParentCategory"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="13"
+                android:layout_weight="11"
                 android:background="@android:color/transparent"
                 android:gravity="right|center_vertical"
                 android:textColor="@android:color/black"/>

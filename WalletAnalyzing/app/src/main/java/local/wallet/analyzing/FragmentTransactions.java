@@ -167,14 +167,22 @@ public class FragmentTransactions extends Fragment {
 
                 if(expense != 0) {
                     viewHolder.tvExpense.setVisibility(View.VISIBLE);
-                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense) + ": " + Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, (expense.longValue() == expense ? expense.longValue() : expense)));
+                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense)
+                                                    + ": "
+                                                    + Currency.formatCurrency(getContext(),
+                                                                                Currency.CurrencyList.VND,
+                                                                                (expense.longValue() == expense ? expense.longValue() : expense)));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
                 }
 
                 if(income != 0) {
                     viewHolder.tvIncome.setVisibility(View.VISIBLE);
-                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income) + ": " + Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, (income.longValue() == income ? income.longValue() :  income)));
+                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income)
+                                                    + ": "
+                                                    + Currency.formatCurrency(getContext(),
+                                                                                Currency.CurrencyList.VND,
+                                                                                (income.longValue() == income ? income.longValue() :  income)));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
                 }
@@ -186,22 +194,27 @@ public class FragmentTransactions extends Fragment {
                 for(final Transaction tran : arTrans) {
                     pos++;
 
-                    Account fromAccount = db.getAccount(tran.getFromAccountId());
-                    Account toAccount   = db.getAccount(tran.getToAccountId());
-                    Category cate = db.getCategory(tran.getCategoryId());
+                    Account fromAccount     = db.getAccount(tran.getFromAccountId());
+                    Account toAccount       = db.getAccount(tran.getToAccountId());
+                    Category cate           = db.getCategory(tran.getCategoryId());
 
                     LayoutInflater inflater = LayoutInflater.from(getContext());
                     View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
 
                     TextView tvCategory         = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
                     String strCategory          = "";
-                    if(tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue() ||
-                            tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+                    if(tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
                         strCategory += getResources().getString(R.string.content_expense);
                     } else if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
                         strCategory += getResources().getString(R.string.content_income);
                     } else if(tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue()) {
                         strCategory += getResources().getString(R.string.content_transfer) + " " + toAccount.getName();
+                    } else if(tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+                        if(fromAccount != null) {
+                            strCategory += getResources().getString(R.string.content_expense);
+                        } else {
+                            strCategory += getResources().getString(R.string.content_income);
+                        }
                     }
 
                     strCategory += ": " + (cate != null ? cate.getName() : "");
@@ -210,9 +223,13 @@ public class FragmentTransactions extends Fragment {
 
                     TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
                     if(fromAccount != null) {
-                        tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAccount.getCurrencyId()), tran.getAmount()));
+                        tvAmount.setText(Currency.formatCurrency(getContext(),
+                                                                    Currency.getCurrencyById(fromAccount.getCurrencyId()),
+                                                                    tran.getAmount()));
                     } else if(toAccount != null) {
-                        tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(toAccount.getCurrencyId()), tran.getAmount()));
+                        tvAmount.setText(Currency.formatCurrency(getContext(),
+                                                                    Currency.getCurrencyById(toAccount.getCurrencyId()),
+                                                                    tran.getAmount()));
                     }
 
                     TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
@@ -229,7 +246,8 @@ public class FragmentTransactions extends Fragment {
                         ivAccountIcon.setImageResource(AccountType.getAccountTypeById(toAccount.getTypeId()).getIcon());
                     }
 
-                    if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
+                    if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue() ||
+                            (tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue() && tran.getToAccountId() > 0)) {
                         tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
                         tvDescription.setTextColor(getResources().getColor(R.color.colorPrimary));
                         tvAccount.setTextColor(getResources().getColor(R.color.colorPrimary));

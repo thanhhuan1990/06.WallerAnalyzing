@@ -83,22 +83,25 @@ public class FragmentCurrencySelect extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountAdd())) {
+
                     LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
                     // Return Type's Id to FragmentAccountCreate
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountAdd();
                     FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity()
-                            .getSupportFragmentManager()
-                            .findFragmentByTag(tagOfFragment);
+                                                                                .getSupportFragmentManager()
+                                                                                .findFragmentByTag(tagOfFragment);
                     fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
 
                     getFragmentManager().popBackStackImmediate();
+
                 } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountEdit())) {
+
                     LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
                     // Return Type's Id to FragmentAccountUpdate
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountEdit();
                     FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity()
-                            .getSupportFragmentManager()
-                            .findFragmentByTag(tagOfFragment);
+                                                                                .getSupportFragmentManager()
+                                                                                .findFragmentByTag(tagOfFragment);
                     fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
 
                 }

@@ -93,7 +93,7 @@ public class FragmentCategorySelect extends Fragment {
         db.insertDefaultCategories();
 
         btnExpense      = (Button) getView().findViewById(R.id.btnExpense);
-        btnExpense.setText(getResources().getString((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer || mCurrentTransactionType == TransactionEnum.Adjustment)
+        btnExpense.setText(getResources().getString((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer)
                                                         ? R.string.expense_category : R.string.income_category));
         btnExpense.setOnClickListener(new View.OnClickListener() {
             @Override
