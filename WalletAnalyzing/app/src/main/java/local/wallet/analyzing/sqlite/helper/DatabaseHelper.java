@@ -611,18 +611,92 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         });
 
         for (Transaction tran : arTransactions) {
-            if (tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue() ||
-                    tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+            if (tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
                 remain -= tran.getAmount();
             } else if (tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
                 remain += tran.getAmount();
-            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue()) {
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue() ||
+                    tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
                 if (accountId == tran.getFromAccountId()) {
                     remain -= tran.getAmount();
-                } else if (accountId == tran.getToAccountId()) {
+                }
+                if (accountId == tran.getToAccountId()) {
                     remain += tran.getAmount();
                 }
             }
+        }
+
+        return remain;
+    }
+
+    public Double getAccountRemainBefore(int accountId, Calendar time) {
+
+        Double remain = getAccount(accountId).getInitBalance();
+
+        List<Transaction> arTransactions = getAllTransactions(accountId);
+
+        Collections.sort(arTransactions, new Comparator<Transaction>() {
+            public int compare(Transaction o1, Transaction o2) {
+                return o1.getTime().compareTo(o2.getTime());
+            }
+        });
+
+        for (Transaction tran : arTransactions) {
+            if(tran.getTime().compareTo(time) >= 0) {
+                return remain;
+            }
+
+            if (tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
+                remain -= tran.getAmount();
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
+                remain += tran.getAmount();
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue() ||
+                    tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue() ) {
+                if (accountId == tran.getFromAccountId()) {
+                    remain -= tran.getAmount();
+                }
+                if (accountId == tran.getToAccountId()) {
+                    remain += tran.getAmount();
+                }
+            }
+
+        }
+
+        return remain;
+    }
+
+    public Double getAccountRemainAfter(int accountId, Calendar time) {
+
+        Double remain = getAccount(accountId).getInitBalance();
+
+        List<Transaction> arTransactions = getAllTransactions(accountId);
+
+        Collections.sort(arTransactions, new Comparator<Transaction>() {
+            public int compare(Transaction o1, Transaction o2) {
+                return o1.getTime().compareTo(o2.getTime());
+            }
+        });
+
+        for (Transaction tran : arTransactions) {
+
+            if (tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
+                remain -= tran.getAmount();
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
+                remain += tran.getAmount();
+            } else if (tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue() ||
+                    tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+                if (accountId == tran.getFromAccountId()) {
+                    remain -= tran.getAmount();
+                }
+                if (accountId == tran.getToAccountId()) {
+                    remain += tran.getAmount();
+                }
+            }
+
+            if(tran.getTime().compareTo(time) >= 0) {
+                return remain;
+            }
+
         }
 
         return remain;

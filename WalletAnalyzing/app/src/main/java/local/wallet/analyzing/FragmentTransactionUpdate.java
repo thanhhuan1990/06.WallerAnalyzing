@@ -124,7 +124,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     private LinearLayout        llSave;
     private LinearLayout        llDelete;
 
-    private int mYear = 0, mMonth = 0, mDay = 0, mHour = 0, mMinute = 0;
+    private Calendar            mCal;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -163,19 +163,12 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
         initActionBar();
 
-        if(mYear == 0 && mTransaction != null) {
+        if(mCal == null && mTransaction != null) {
             mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
-            mFromAccount    = mTransaction.getFromAccountId() != 0 ?
-                                mDbHelper.getAccount(mTransaction.getFromAccountId()) : mDbHelper.getAccount(mTransaction.getToAccountId());
-            mToAccount      = mTransaction.getToAccountId() != 0 ?
-                                mDbHelper.getAccount(mTransaction.getToAccountId()) : mDbHelper.getAccount(mTransaction.getFromAccountId());
+            mFromAccount    = mTransaction.getFromAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getFromAccountId()) : mDbHelper.getAccount(mTransaction.getToAccountId());
+            mToAccount      = mTransaction.getToAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getToAccountId()) : mDbHelper.getAccount(mTransaction.getFromAccountId());
 
-            final Calendar c = mTransaction.getTime();
-            mYear   = c.get(Calendar.YEAR);
-            mMonth  = c.get(Calendar.MONTH);
-            mDay    = c.get(Calendar.DAY_OF_MONTH);
-            mHour   = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
+            mCal            = mTransaction.getTime();
 
             llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
             llSave.setOnClickListener(this);
@@ -241,10 +234,17 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 startFragmentSelectCategory(TransactionEnum.Income, mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llTransferCategory:
-                startFragmentSelectCategory(TransactionEnum.TransferTo, mCategory != null ? mCategory.getId() : 0);
+                startFragmentSelectCategory(TransactionEnum.Transfer, mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llAdjustmentCategory:
-                startFragmentSelectCategory(TransactionEnum.Adjustment, mCategory != null ? mCategory.getId() : 0);
+                Double balance      = !etAdjustmentBalance.getText().toString().equals("") ?
+                        Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", ""))
+                        : 0;
+
+                int fromAccountId   = mFromAccount.getId();
+                Double remain       = mDbHelper.getAccountRemainBefore(fromAccountId, mCal);
+
+                startFragmentSelectCategory(remain > balance ? TransactionEnum.Expense : TransactionEnum.Income, mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llExpenseDescription:
                 startFragmentDescription(TransactionEnum.Expense, tvExpenseDescription.getText().toString());
@@ -277,34 +277,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
             case R.id.llIncomeDate:
             case R.id.llTransferDate:
             case R.id.llAdjustmentDate:
-                final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
-                                                                        new TimePickerDialog.OnTimeSetListener() {
-
-                                                                            @Override
-                                                                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                                                                mHour   = hourOfDay;
-                                                                                mMinute = minute;
-
-                                                                                tvExpenseDate.setText(getDateString());
-                                                                                tvIncomeDate.setText(getDateString());
-                                                                                tvTransferDate.setText(getDateString());
-                                                                                tvAdjustmentDate.setText(getDateString());
-
-                                                                            }
-                                                                        }, mHour, mMinute, true);
-
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
-                                                                        new DatePickerDialog.OnDateSetListener() {
-
-                                                                            @Override
-                                                                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                                                                mYear   = year;
-                                                                                mMonth  = monthOfYear;
-                                                                                mDay    = dayOfMonth;
-                                                                                timePickerDialog.show();
-                                                                            }
-                                                                        }, mYear, mMonth, mDay);
-                datePickerDialog.show();
+                showDialogTime();
                 break;
             case R.id.llExpensePayee:
                 startFragmentPayee(TransactionEnum.Expense, tvExpensePayee.getText().toString());
@@ -322,206 +295,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 startFragmentEvent(TransactionEnum.Adjustment, tvAdjustmentEvent.getText().toString());
                 break;
             case R.id.llSave: {
-                switch (mCurrentTransactionType) {
-                    case Expense: {
-
-                        if (etExpenseAmount.getText().toString().equals("")) {
-                            etExpenseAmount.setError(getResources().getString(R.string.Input_Error_Amount_Empty));
-                            return;
-                        }
-
-                        if (mFromAccount == null) {
-                            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
-                            return;
-                        }
-
-                        Double expenseAmount        = Double.parseDouble(etExpenseAmount.getText().toString().replaceAll(",", ""));
-                        int expenseCategoryId       = mCategory != null ? mCategory.getId() : 0;
-                        String expenseDescription   = tvExpenseDescription.getText().toString();
-                        int expenseAccountId        = mFromAccount.getId();
-                        Date expenseDate            = getDate(mYear, mMonth, mDay, mHour, mMinute);
-                        Calendar cal                = Calendar.getInstance();
-                        cal.setTime(expenseDate);
-                        String expensePayee         = tvExpensePayee.getText().toString();
-                        String expenseEvent         = tvExpenseEvent.getText().toString();
-
-                        Transaction transaction     = new Transaction(mTransaction.getId(),
-                                                                        TransactionEnum.Expense.getValue(),
-                                                                        expenseAmount,
-                                                                        expenseCategoryId,
-                                                                        expenseDescription,
-                                                                        expenseAccountId,
-                                                                        0,
-                                                                        cal,
-                                                                        0.0,
-                                                                        expensePayee,
-                                                                        expenseEvent);
-                        int row = mDbHelper.updateTransaction(transaction);
-                        if (row == 1) {
-
-                            cleanup();
-
-                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                            fragmentTransactions.updateListTransaction();
-
-                            // Return to FragmentTransactions
-                            getFragmentManager().popBackStackImmediate();
-
-                        }
-
-                        break;
-                    }
-                    case Income: {
-                        if (etIncomeAmount.getText().toString().equals("")) {
-                            etIncomeAmount.setError(getResources().getString(R.string.Input_Error_Amount_Empty));
-                            return;
-                        }
-
-                        if (mToAccount == null) {
-                            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
-                            return;
-                        }
-
-                        Double incomeAmount             = Double.parseDouble(etIncomeAmount.getText().toString().replaceAll(",", ""));
-                        int incomeCategoryId            = mCategory != null ? mCategory.getId() : 0;
-                        String incomeDescription        = tvIncomeDescription.getText().toString();
-                        int incomeAccountId             = mToAccount.getId();
-                        Date expenseDate                = getDate(mYear, mMonth, mDay, mHour, mMinute);
-                        Calendar cal                    = Calendar.getInstance();
-                        cal.setTime(expenseDate);
-                        String incomeEvent              = tvIncomeEvent.getText().toString();
-
-                        Transaction transaction = new Transaction(mTransaction.getId(),
-                                                                    TransactionEnum.Income.getValue(),
-                                                                    incomeAmount,
-                                                                    incomeCategoryId,
-                                                                    incomeDescription,
-                                                                    0,
-                                                                    incomeAccountId,
-                                                                    cal,
-                                                                    0.0,
-                                                                    "",
-                                                                    incomeEvent);
-                        int row = mDbHelper.updateTransaction(transaction);
-                        if (row == 1) {
-
-                            cleanup();
-
-                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                            fragmentTransactions.updateListTransaction();
-
-                            // Return to FragmentTransactions
-                            getFragmentManager().popBackStackImmediate();
-                        }
-                        break;
-                    }
-                    case Transfer: {
-                        if (etTransferAmount.getText().toString().equals("")) {
-                            etTransferAmount.setError(getResources().getString(R.string.Input_Error_Amount_Empty));
-                            return;
-                        }
-
-                        if (mFromAccount == null) {
-                            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
-                            return;
-                        }
-
-                        if (mToAccount == null) {
-                            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_ToAccount_Empty));
-                            return;
-                        }
-
-                        Double transferAmount       = Double.parseDouble(etTransferAmount.getText().toString().replaceAll(",", ""));
-
-                        int fromAccountId           = mFromAccount.getId();
-                        int toAccountId             = mToAccount.getId();
-
-                        String transferDescription  = tvTransferDescription.getText().toString();
-                        Date transferDate           = getDate(mYear, mMonth, mDay, mHour, mMinute);
-                        Calendar cal                = Calendar.getInstance();
-                        cal.setTime(transferDate);
-
-                        Double transferFee          = !etTransferFee.getText().toString().equals("") ?
-                                                            Double.parseDouble(etTransferFee.getText().toString().replaceAll(",", ""))
-                                                            : 0.0;
-
-                        int transferCategoryId      = mCategory != null ? mCategory.getId() : 0;
-
-                        Transaction transaction = new Transaction(mTransaction.getId(),
-                                                                    TransactionEnum.Transfer.getValue(),
-                                                                    transferAmount,
-                                                                    transferCategoryId,
-                                                                    transferDescription,
-                                                                    fromAccountId,
-                                                                    toAccountId,
-                                                                    cal,
-                                                                    transferFee,
-                                                                    "",
-                                                                    "");
-                        int row = mDbHelper.updateTransaction(transaction);
-                        if (row == 1) {
-
-                            cleanup();
-
-                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                            fragmentTransactions.updateListTransaction();
-
-                            // Return to FragmentTransactions
-                            getFragmentManager().popBackStackImmediate();
-                        }
-
-                        break;
-                    }
-                    case Adjustment: {
-                        if (mFromAccount == null) {
-                            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
-                            return;
-                        }
-
-                        int fromAccountId               = mFromAccount.getId();
-
-                        Double balance                  = !etAdjustmentBalance.getText().toString().equals("") ?
-                                                                Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", ""))
-                                                                : 0;
-
-                        Double remain                   = mDbHelper.getAccountRemain(fromAccountId) + mTransaction.getAmount();
-
-                        int adjustmentCategoryId        = mCategory != null ? mCategory.getId() : 0;
-                        String adjustmentDescription    = tvAdjustmentDescription.getText().toString();
-                        Date adjustmentDate             = getDate(mYear, mMonth, mDay, mHour, mMinute);
-                        Calendar cal                    = Calendar.getInstance();
-                        cal.setTime(adjustmentDate);
-                        String adjustmentPayee          = tvAdjustmentPayee.getText().toString();
-                        String adjustmentEvent          = tvAdjustmentEvent.getText().toString();
-
-                        Transaction transaction = new Transaction(mTransaction.getId(),
-                                                                        TransactionEnum.Adjustment.getValue(),
-                                                                        remain - balance,
-                                                                        adjustmentCategoryId,
-                                                                        adjustmentDescription,
-                                                                        fromAccountId,
-                                                                        0,
-                                                                        cal,
-                                                                        0.0,
-                                                                        adjustmentPayee,
-                                                                        adjustmentEvent);
-                        int row = mDbHelper.updateTransaction(transaction);
-                        if (row == 1) {
-
-                            cleanup();
-
-                            FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                            fragmentTransactions.updateListTransaction();
-
-                            // Return to FragmentTransactions
-                            getFragmentManager().popBackStackImmediate();
-                        }
-
-                        break;
-                    }
-                    default:
-                        break;
-                }
+                save();
                 break;
             }
             case R.id.llDelete: {
@@ -574,41 +348,40 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                         llExpense.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Expense;
 
-                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
-                            mCategory = mDbHelper.getCategory(mTransaction.getCategoryId());
-                            tvExpenseCategory.setText(mCategory != null ? mCategory.getName() : "");
-                            tvExpenseAccount.setText(mFromAccount.getName());
+                        if(mCategory != null && !mCategory.isExpense()) {
+                            mCategory = null;
+                            tvExpenseCategory.setText("");
                         }
                         break;
                     case 1:
                         llIncome.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Income;
 
-                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
-                            mCategory = mDbHelper.getCategory(mTransaction.getCategoryId());
-                            tvIncomeCategory.setText(mCategory != null ? mCategory.getName() : "");
-                            tvIncomeToAccount.setText(mToAccount.getName());
+                        if(mCategory != null && mCategory.isExpense()) {
+                            mCategory = null;
+                            tvIncomeCategory.setText("");
                         }
                         break;
                     case 2:
                         llTransfer.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Transfer;
 
-                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
+                        if(mCategory != null && !mCategory.isExpense()) {
                             mCategory = mDbHelper.getCategory(mTransaction.getCategoryId());
-                            tvTransferCategory.setText(mCategory != null ? mCategory.getName() : "");
-                            tvTransferFromAccount.setText(mFromAccount.getName());
-                            tvTransferToAccount.setText(mToAccount.getName());
+                            tvExpenseCategory.setText(mCategory.getName());
                         }
                         break;
                     case 3:
                         llAdjustment.setVisibility(View.VISIBLE);
                         mCurrentTransactionType = TransactionEnum.Adjustment;
 
-                        if(mTransaction.getTransactionType() == mCurrentTransactionType.getValue()) {
-                            mCategory = mDbHelper.getCategory(mTransaction.getCategoryId());
-                            tvAdjustmentCategory.setText(mCategory != null ? mCategory.getName() : "");
-                            tvAdjustmentAccount.setText(mFromAccount.getName());
+                        Double balance = !etAdjustmentBalance.getText().toString().equals("") ? Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", "")) : 0;
+                        Double remain   = mDbHelper.getAccountRemainBefore(mFromAccount.getId(), mCal);
+
+                        if((remain.doubleValue() > balance.doubleValue() && mCategory != null && !mCategory.isExpense()) ||
+                                (remain.doubleValue() < balance.doubleValue() && mCategory != null && mCategory.isExpense())) {
+                            mCategory = null;
+                            tvAdjustmentCategory.setText("");
                         }
                         break;
                     default:
@@ -659,7 +432,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llExpenseDate           = (LinearLayout) getView().findViewById(R.id.llExpenseDate);
         llExpenseDate.setOnClickListener(this);
         tvExpenseDate           = (TextView) getView().findViewById(R.id.tvExpenseDate);
-        tvExpenseDate.setText(getDateString());
+        tvExpenseDate.setText(getDateString(mCal));
 
         llExpensePayee          = (LinearLayout) getView().findViewById(R.id.llExpensePayee);
         llExpensePayee.setOnClickListener(this);
@@ -704,7 +477,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llIncomeDate            = (LinearLayout) getView().findViewById(R.id.llIncomeDate);
         llIncomeDate.setOnClickListener(this);
         tvIncomeDate            = (TextView) getView().findViewById(R.id.tvIncomeDate);
-        tvIncomeDate.setText(getDateString());
+        tvIncomeDate.setText(getDateString(mCal));
 
         llIncomeEvent           = (LinearLayout) getView().findViewById(R.id.llIncomeEvent);
         llIncomeEvent.setOnClickListener(this);
@@ -743,7 +516,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llTransferDate              = (LinearLayout) getView().findViewById(R.id.llTransferDate);
         llTransferDate.setOnClickListener(this);
         tvTransferDate              = (TextView) getView().findViewById(R.id.tvTransferDate);
-        tvTransferDate.setText(getDateString());
+        tvTransferDate.setText(getDateString(mCal));
 
         etTransferFee               = (ClearableEditText) getView().findViewById(R.id.etTransferFee);
         etTransferFee.addTextChangedListener(new CurrencyTextWatcher(etTransferFee));
@@ -770,26 +543,32 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
         etAdjustmentBalance         = (ClearableEditText) getView().findViewById(R.id.etAdjustmentBalance);
         etAdjustmentBalance.addTextChangedListener(new CurrencyTextWatcher(etAdjustmentBalance));
-        Double remain               = mDbHelper.getAccountRemain(mFromAccount.getId());
+        Double remain               = mDbHelper.getAccountRemainAfter(mFromAccount.getId(), mCal);
         etAdjustmentBalance.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()), remain));
 
         tvAdjustmentCurrencyIcon    = (TextView) getView().findViewById(R.id.tvAdjustmentCurrencyIcon);
         tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
 
-        if(mTransaction.getAmount() > 0) {
-            tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed)
-                                            +  Currency.formatCurrency(getContext(),
+        if(mTransaction.getFromAccountId() > 0) {
+            tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
+                                                    Currency.formatCurrency(getContext(),
                                                                             Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                            mTransaction.getAmount()));
+                                                                            mTransaction.getAmount())));
         } else {
-            tvAdjustmentSpent.setText(getResources().getString(R.string.content_adjustment_income)
-                                            +  Currency.formatCurrency(getContext(),
+            tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
+                                                    Currency.formatCurrency(getContext(),
                                                                             Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                            mTransaction.getAmount() * -1));
+                                                                            mTransaction.getAmount())));
         }
 
         llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
         llAdjustmentCategory.setOnClickListener(this);
+        if(mTransaction.getFromAccountId() != 0) {
+            ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
+        }
+        if(mTransaction.getToAccountId() != 0) {
+            ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
+        }
         tvAdjustmentCategory        = (TextView) getView().findViewById(R.id.tvAdjustmentCategory);
         tvAdjustmentCategory.setText(mCategory != null ? mCategory.getName() : "");
 
@@ -801,7 +580,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llAdjustmentDate            = (LinearLayout) getView().findViewById(R.id.llAdjustmentDate);
         llAdjustmentDate.setOnClickListener(this);
         tvAdjustmentDate            = (TextView) getView().findViewById(R.id.tvAdjustmentDate);
-        tvAdjustmentDate.setText(getDateString());
+        tvAdjustmentDate.setText(getDateString(mCal));
 
         llAdjustmentPayee           = (LinearLayout) getView().findViewById(R.id.llAdjustmentPayee);
         llAdjustmentPayee.setOnClickListener(this);
@@ -947,24 +726,32 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 mEdittext.setText(formatted);
                 mEdittext.setSelection(formatted.length());
 
-                if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                if(mCurrentTransactionType == TransactionEnum.Adjustment && tvAdjustmentSpent != null) {
                     Double balance = !mEdittext.getText().toString().equals("") ?
                                         Double.parseDouble(mEdittext.getText().toString().replaceAll(",", ""))
                                         : 0;
-                    Double remain   = mDbHelper.getAccountRemain(mFromAccount.getId());
+                    Double remain   = mDbHelper.getAccountRemainBefore(mFromAccount.getId(), mCal);
 
-                    if(remain > balance) {
+                    if(remain.doubleValue() > balance.doubleValue()) {
                         tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
                                                                     Currency.formatCurrency(getContext(),
                                                                                                 Currency.getCurrencyById(mFromAccount.getCurrencyId()),
                                                                                                 remain - balance)));
                         ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
+                        if(mCategory != null && !mCategory.isExpense()) {
+                            tvAdjustmentCategory.setText("");
+                            mCategory   = null;
+                        }
                     } else {
                         tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
                                                                     Currency.formatCurrency(getContext(),
                                                                                                 Currency.getCurrencyById(mFromAccount.getCurrencyId()),
                                                                                                 balance - remain)));
                         ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
+                        if(mCategory != null && mCategory.isExpense()) {
+                            tvAdjustmentCategory.setText("");
+                            mCategory   = null;
+                        }
                     }
                 }
 
@@ -976,16 +763,263 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
     }
 
-    private Date getDate(int year, int month, int day, int hour, int minute) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.HOUR_OF_DAY, hour);
-        cal.set(Calendar.MINUTE, minute);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
+    private void save() {
+
+        switch (mCurrentTransactionType) {
+            case Expense: {
+
+                String inputtedAmout = etExpenseAmount.getText().toString().trim().replaceAll(",", "");
+                if (inputtedAmout.equals("") || Double.parseDouble(inputtedAmout) == 0) {
+                    etExpenseAmount.setError(getResources().getString(R.string.Input_Error_Amount_Empty));
+                    return;
+                }
+
+                if (mFromAccount == null) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
+                    return;
+                }
+
+                Double expenseAmount        = Double.parseDouble(inputtedAmout);
+                int expenseCategoryId       = mCategory != null ? mCategory.getId() : 0;
+                String expenseDescription   = tvExpenseDescription.getText().toString();
+                int expenseAccountId        = mFromAccount.getId();
+                String expensePayee         = tvExpensePayee.getText().toString();
+                String expenseEvent         = tvExpenseEvent.getText().toString();
+
+                Transaction transaction     = new Transaction(mTransaction.getId(),
+                                                                TransactionEnum.Expense.getValue(),
+                                                                expenseAmount,
+                                                                expenseCategoryId,
+                                                                expenseDescription,
+                                                                expenseAccountId,
+                                                                0,
+                                                                mCal,
+                                                                0.0,
+                                                                expensePayee,
+                                                                expenseEvent);
+                int row = mDbHelper.updateTransaction(transaction);
+                if (row == 1) {
+
+                    cleanup();
+
+                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentTransactions.updateListTransaction();
+
+                    // Return to FragmentTransactions
+                    getFragmentManager().popBackStackImmediate();
+
+                }
+
+                break;
+            }
+            case Income: {
+
+                String inputtedAmount = etIncomeAmount.getText().toString().trim().replaceAll(",", "");
+
+                if (inputtedAmount.equals("") || Double.parseDouble(inputtedAmount) == 0) {
+                    etIncomeAmount.setError(getResources().getString(R.string.Input_Error_Amount_Empty));
+                    return;
+                }
+
+                if (mToAccount == null) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
+                    return;
+                }
+
+                Double incomeAmount             = Double.parseDouble(inputtedAmount);
+                int incomeCategoryId            = mCategory != null ? mCategory.getId() : 0;
+                String incomeDescription        = tvIncomeDescription.getText().toString();
+                int incomeAccountId             = mToAccount.getId();
+                String incomeEvent              = tvIncomeEvent.getText().toString();
+
+                Transaction transaction = new Transaction(mTransaction.getId(),
+                                                            TransactionEnum.Income.getValue(),
+                                                            incomeAmount,
+                                                            incomeCategoryId,
+                                                            incomeDescription,
+                                                            0,
+                                                            incomeAccountId,
+                                                            mCal,
+                                                            0.0,
+                                                            "",
+                                                            incomeEvent);
+                int row = mDbHelper.updateTransaction(transaction);
+                if (row == 1) {
+
+                    cleanup();
+
+                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentTransactions.updateListTransaction();
+
+                    // Return to FragmentTransactions
+                    getFragmentManager().popBackStackImmediate();
+                }
+                break;
+            }
+            case Transfer: {
+
+                String inputtedAmount = etIncomeAmount.getText().toString().trim().replaceAll(",", "");
+
+                if (inputtedAmount.equals("") || Double.parseDouble(inputtedAmount) == 0) {
+                    etTransferAmount.setError(getResources().getString(R.string.Input_Error_Amount_Empty));
+                    return;
+                }
+
+                if (mFromAccount == null) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
+                    return;
+                }
+
+                if (mToAccount == null) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_ToAccount_Empty));
+                    return;
+                }
+
+                if(mFromAccount.getId() == mToAccount.getId()) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Transfer_Same_Account));
+                    return;
+                }
+
+                Double transferAmount       = Double.parseDouble(inputtedAmount);
+                int fromAccountId           = mFromAccount.getId();
+                int toAccountId             = mToAccount.getId();
+                String transferDescription  = tvTransferDescription.getText().toString();
+                Double transferFee          = !etTransferFee.getText().toString().equals("") ?
+                        Double.parseDouble(etTransferFee.getText().toString().replaceAll(",", ""))
+                        : 0.0;
+
+                int transferCategoryId      = mCategory != null ? mCategory.getId() : 0;
+
+                Transaction transaction = new Transaction(mTransaction.getId(),
+                                                            TransactionEnum.Transfer.getValue(),
+                                                            transferAmount,
+                                                            transferCategoryId,
+                                                            transferDescription,
+                                                            fromAccountId,
+                                                            toAccountId,
+                                                            mCal,
+                                                            transferFee,
+                                                            "",
+                                                            "");
+                int row = mDbHelper.updateTransaction(transaction);
+                if (row == 1) {
+
+                    cleanup();
+
+                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentTransactions.updateListTransaction();
+
+                    // Return to FragmentTransactions
+                    getFragmentManager().popBackStackImmediate();
+                }
+
+                break;
+            }
+            case Adjustment: {
+                if (mFromAccount == null) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
+                    return;
+                }
+
+                Double balance                  = !etAdjustmentBalance.getText().toString().equals("") ? Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", "")): 0;
+                Double remain                   = mDbHelper.getAccountRemainBefore(mFromAccount.getId(), mCal);
+
+                if(remain.doubleValue() == balance.doubleValue()) {
+                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Adjustment_Same_Amount));
+                    return;
+                }
+
+                int adjustmentCategoryId        = mCategory != null ? mCategory.getId() : 0;
+                String adjustmentDescription    = tvAdjustmentDescription.getText().toString();
+                String adjustmentPayee          = tvAdjustmentPayee.getText().toString();
+                String adjustmentEvent          = tvAdjustmentEvent.getText().toString();
+                Transaction transaction = new Transaction(mTransaction.getId(),
+                                                            TransactionEnum.Adjustment.getValue(),
+                                                            Math.abs(remain - balance),
+                                                            adjustmentCategoryId,
+                                                            adjustmentDescription,
+                                                            remain > balance ? mFromAccount.getId() : 0,
+                                                            remain > balance ? 0 : mFromAccount.getId(),
+                                                            mCal,
+                                                            0.0,
+                                                            adjustmentPayee,
+                                                            adjustmentEvent);
+                int row = mDbHelper.updateTransaction(transaction);
+                if (row == 1) {
+
+                    cleanup();
+
+                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentTransactions.updateListTransaction();
+
+                    // Return to FragmentTransactions
+                    getFragmentManager().popBackStackImmediate();
+                }
+
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    private void showDialogTime() {
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                        mCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        mCal.set(Calendar.MINUTE, minute);
+
+                        tvExpenseDate.setText(getDateString(mCal));
+                        tvIncomeDate.setText(getDateString(mCal));
+                        tvTransferDate.setText(getDateString(mCal));
+                        tvAdjustmentDate.setText(getDateString(mCal));
+
+                        if(mCurrentTransactionType  != TransactionEnum.Adjustment) {
+                            return;
+                        }
+
+                        Double remain   = mDbHelper.getAccountRemainBefore(mFromAccount.getId(), mCal);
+                        Double balance  = !etAdjustmentBalance.getText().toString().equals("") ? Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", "")) : 0;
+
+                        if (remain.doubleValue() > balance.doubleValue()) {
+                            tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
+                                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), remain - balance)));
+
+                            ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
+                            if(mCategory != null && !mCategory.isExpense()) {
+                                tvAdjustmentCategory.setText("");
+                                mCategory   = null;
+                            }
+                        } else {
+                            tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_income),
+                                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), balance - remain)));
+
+                            ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
+                            if(mCategory != null && mCategory.isExpense()) {
+                                tvAdjustmentCategory.setText("");
+                                mCategory   = null;
+                            }
+                        }
+                    }
+                }, mCal.get(Calendar.HOUR_OF_DAY), mCal.get(Calendar.MINUTE), true);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                        mCal.set(Calendar.YEAR, year);
+                        mCal.set(Calendar.MONTH, monthOfYear);
+                        mCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                        timePickerDialog.show();
+                    }
+                }, mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), mCal.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
     }
 
     private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
@@ -1011,10 +1045,18 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
         switch (type) {
             case Expense:
-                tvExpenseCategory.setText(mCategory.getName());
+                if(mCurrentTransactionType == TransactionEnum.Expense) {
+                    tvExpenseCategory.setText(mCategory.getName());
+                } else if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                    tvAdjustmentCategory.setText(mCategory.getName());
+                }
                 break;
             case Income:
-                tvIncomeCategory.setText(mCategory.getName());
+                if(mCurrentTransactionType == TransactionEnum.Income) {
+                    tvIncomeCategory.setText(mCategory.getName());
+                } else if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                    tvAdjustmentCategory.setText(mCategory.getName());
+                }
                 break;
             case Transfer:
             case TransferFrom:
@@ -1026,11 +1068,6 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 break;
             default:
                 break;
-        }
-
-        if(mCategory != null) {
-        } else {
-            tvExpenseCategory.setText("");
         }
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", categoryId = " + categoryId, null);
@@ -1126,11 +1163,28 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 Double balance = !etAdjustmentBalance.getText().toString().equals("") ?
                                                     Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", ""))
                                                     : 0;
-                Double remain   = mDbHelper.getAccountRemain(accountId);
-                tvAdjustmentSpent.setText(getResources().getString(R.string.content_expensed) + " " +
-                                            Currency.formatCurrency(getContext(),
-                                                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                    (remain - balance)));
+                Double remain   = mDbHelper.getAccountRemainBefore(accountId, mCal);
+                if(remain.doubleValue() > balance.doubleValue()) {
+                    tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
+                            Currency.formatCurrency(getContext(),
+                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                    remain - balance)));
+                    ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
+                    if(mCategory != null && !mCategory.isExpense()) {
+                        tvAdjustmentCategory.setText("");
+                        mCategory   = null;
+                    }
+                } else {
+                    tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
+                            Currency.formatCurrency(getContext(),
+                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                    balance - remain)));
+                    ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
+                    if(mCategory != null && mCategory.isExpense()) {
+                        tvAdjustmentCategory.setText("");
+                        mCategory   = null;
+                    }
+                }
 
                 tvAdjustmentCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
 
@@ -1219,18 +1273,22 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", event = " + event, null);
     }
 
-    private String getDateString() {
-        Calendar car = Calendar.getInstance();
+    /**
+     * Get Date's String
+     * @return
+     */
+    private String getDateString(Calendar cal) {
+        Calendar current = Calendar.getInstance();
         String date = "";
-        if(car.get(Calendar.DAY_OF_YEAR) == mDay) {
-            date = getResources().getString(R.string.content_today) + String.format(" %02d:%02d", mHour, mMinute);
-        } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == mDay) {
-            date = getResources().getString(R.string.content_yesterday) + String.format(" %02d:%02d", mHour, mMinute);
-        } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == mDay
+        if(cal.get(Calendar.DAY_OF_YEAR) == current.get(Calendar.DAY_OF_YEAR)) {
+            date = getResources().getString(R.string.content_today) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+        } else if((cal.get(Calendar.DAY_OF_YEAR) - 1) == current.get(Calendar.DAY_OF_YEAR)) {
+            date = getResources().getString(R.string.content_yesterday) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+        } else if((cal.get(Calendar.DAY_OF_YEAR) - 2) == current.get(Calendar.DAY_OF_YEAR)
                 && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
-            date = getResources().getString(R.string.content_before_yesterday) + String.format(" %02d:%02d", mHour, mMinute);
+            date = getResources().getString(R.string.content_before_yesterday) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         } else {
-            date = String.format("%02d-%02d-%02d %02d:%02d", mDay, mMonth + 1, mYear, mHour, mMinute);
+            date = String.format("%02d-%02d-%02d %02d:%02d", mCal.get(Calendar.DAY_OF_MONTH), mCal.get(Calendar.MONTH) + 1, mCal.get(Calendar.YEAR), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         }
 
         return date;
@@ -1244,11 +1302,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         mFromAccount                = null;
         mToAccount                  = null;
         mCurrentTransactionType     = TransactionEnum.Expense;
-        mYear                       = 0;
-        mMonth                      = 0;
-        mDay                        = 0;
-        mHour                       = 0;
-        mMinute                     = 0;
+        mCal                        = null;
 
         /* Reset value */
         etExpenseAmount.setText("");

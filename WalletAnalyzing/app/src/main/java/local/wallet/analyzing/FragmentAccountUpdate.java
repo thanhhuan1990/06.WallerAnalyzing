@@ -267,7 +267,10 @@ public class FragmentAccountUpdate extends Fragment {
                 etInitialBalance.removeTextChangedListener(this);
 
                 LogUtils.trace(TAG, "input: " + s.toString());
-                String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
+                String inputted = s.toString().trim().replaceAll(",", "").replaceAll(" ", "");
+                if(inputted.equals("")) {
+                    return;
+                }
                 String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mAccount.getCurrencyId())
                                                                     , Double.parseDouble(inputted));
 

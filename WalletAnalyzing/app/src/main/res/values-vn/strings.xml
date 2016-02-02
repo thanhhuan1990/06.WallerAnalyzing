@@ -5,11 +5,11 @@
     <string name="serializable">Serializable</string>
     <string name="action_settings">Settings</string>
 
-    <string name="tab_transaction">Ghi chép</string>
-    <string name="tab_account">Tài khoản</string>
-    <string name="tab_budget">hạn mức chi</string>
-    <string name="tab_report">Báo cáo</string>
-    <string name="tab_utilities">Utilities</string>
+    <string name="tab_transaction">Ghi chép</string>
+    <string name="tab_account">Tài khoản</string>
+    <string name="tab_budget">Hạn mức chi</string>
+    <string name="tab_report">Báo cáo</string>
+    <string name="tab_utilities">Tiện ích</string>
 
     <string-array name="transaction_type">
         <item>Chi tiền</item>
@@ -63,11 +63,16 @@
     <string name="Delete">Xóa</string>
 
     <string name="Input_Error_Account_Name_Empty">Tên tài khoản không được để trống!</string>
+    <string name="Input_Error_Amount_Empty">Số tiền không được để trống!</string>
+    <string name="Input_Error_Account_Empty">Tài khoản không được để trống!</string>
+    <string name="Input_Error_ToAccount_Empty">Tài khoản chuyển tới không được để trống!</string>
+    <string name="Input_Error_Transfer_Same_Account">Không thể chuyển khoản trong cùng tài khoản!</string>
+    <string name="Input_Error_Adjustment_Same_Amount">Số tiền bằng 0!</string>
 
     <string name="new_category_name">Tên</string>
     <string name="new_category_hint">Tên hạng mục</string>
     <string name="new_category_parent_category">Hạng mục cha</string>
-    <string name="new_category_description">Diễn giải</string>
+    <string name="new_category_description">Diễn giải</string>
     <string name="new_category_select_as_parent">(Không chọn)</string>
 
     <string name="title_category_expense">Hạng mục chi</string>
