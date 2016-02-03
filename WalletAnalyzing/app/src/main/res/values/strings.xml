@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Wallet Analyzing</string>
+    <string name="click_back_to_exist">Please click BACK again to exit!</string>
 
     <string name="button_delete">Delete</string>
 
     <string name="format_month_year">\%%02d/\%%02d</string>
+    <string name="format_day_month_year">\%%02d/\%%02d/\%%02d</string>
 
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
@@ -55,6 +57,10 @@
     <string name="account_add_currency">Currency</string>
     <string name="account_add_initial_balance">Initial balance</string>
     <string name="account_add_note">Note</string>
+
+    <string name="account_list_remain">Balance</string>
+    <string name="account_list_init_balance">Initial balance</string>
+    <string name="account_list_balance">Balance: %s</string>
 
     <string name="currency_vnd">₫ - Việt Nam Đồng(VND)</string>
     <string name="currency_usd">$ - United States Dollar(USD)</string>
@@ -113,8 +119,8 @@
     <string name="title_payee">Payee</string>
     <string name="title_event">Event</string>
 
-    <string name="content_expense">Expense </string>
-    <string name="content_income">Income </string>
+    <string name="content_expense">Expense: %s</string>
+    <string name="content_income">Income: %s</string>
     <string name="content_transfer">Transfer to </string>
     <string name="content_today">Today</string>
     <string name="content_yesterday">Yesterday</string>

@@ -1,7 +1,9 @@
 package local.wallet.analyzing;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -14,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +27,8 @@ import local.wallet.analyzing.Utils.LogUtils;
 public class ActivityMain extends AppCompatActivity {
 
     private static final String TAG = "ActivityMain";
+
+    boolean doubleBackToExitPressedOnce = false;
 
     public static final int TAB_POSITION_TRANSACTIONS = 0;
     public static final int TAB_POSITION_NEW_TRANSACTION = 1;
@@ -42,8 +47,8 @@ public class ActivityMain extends AppCompatActivity {
     private String fragmentNewTransactionSelectCategory;
     private String fragmentCategoryAdd;
     private String fragmentNewTransactionSelectAccount;
-    private String fragmentTransactionNew;
     private String fragmentTransactionUpdate;
+    private String fragmentAccountTransactions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,19 +91,33 @@ public class ActivityMain extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 LogUtils.trace(TAG, "onTabSelected: " + tab.getPosition());
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(tabLayout.getApplicationWindowToken(), 0);
+
                 viewPager.setCurrentItem(tab.getPosition());
 
                 /* Todo: Update TabLayout Follow Current Position */
-                if (tab.getPosition() == TAB_POSITION_TRANSACTIONS) { //  TRANSACTION is showing, hide TRANSACTION, show NEW_TRANSACTION
+                if (tab.getPosition() == TAB_POSITION_TRANSACTIONS) {                       //  TRANSACTION is showing, hide TRANSACTION, show NEW_TRANSACTION
+
                     updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_NEW_TRANSACTION);
-                } else if (tab.getPosition() == TAB_POSITION_NEW_TRANSACTION) { // NEW_TRANSACTION is showing, hide tab NEW_TRANSACTION, show tab TRANSACTIONS
+
+                } else if (tab.getPosition() == TAB_POSITION_NEW_TRANSACTION) {             // NEW_TRANSACTION is showing, hide tab NEW_TRANSACTION, show tab TRANSACTIONS
+
                     updateTabs(TAB_POSITION_NEW_TRANSACTION, TAB_POSITION_TRANSACTIONS);
+
                 } else if(lastTabPosition == 0 || lastTabPosition == 1){ // Other tabs
+
                     if (((ViewGroup) tabLayout.getChildAt(0)).getChildAt(TAB_POSITION_NEW_TRANSACTION).getVisibility() == View.VISIBLE) { // NEW_TRANSACTION is VISIBLE
+
                         updateTabs(TAB_POSITION_NEW_TRANSACTION, TAB_POSITION_TRANSACTIONS); // Gone tab NEW_TRANSACTION, tab Show TRANSACTIONS
+
                     } else if (((ViewGroup) tabLayout.getChildAt(0)).getChildAt(TAB_POSITION_TRANSACTIONS).getVisibility() == View.VISIBLE) { // TRANSACTION is VISIBLE
+
                         updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_NEW_TRANSACTION); // Gone tab TRANSACTION, Show tab NEW_TRANSACTION
+
                     }
+
                 }
             }
 
@@ -124,13 +143,29 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
         }
 
-        return super.onOptionsItemSelected(item);
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            this.doubleBackToExitPressedOnce = true;
+            showError(getResources().getString(R.string.click_back_to_exist));
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
     }
 
     /**
@@ -253,6 +288,18 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentTransactionUpdate);
         return fragmentTransactionUpdate;
+    }
+
+    public void setFragmentAccountTransactions(String tag) {
+        LogUtils.logEnterFunction(TAG, "tag = " + tag);
+        fragmentAccountTransactions = tag;
+        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
+    }
+
+    public String getFragmentAccountTransactions() {
+        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logLeaveFunction(TAG, null, fragmentAccountTransactions);
+        return fragmentAccountTransactions;
     }
 
     public void updateTabs(int hide, int show) {

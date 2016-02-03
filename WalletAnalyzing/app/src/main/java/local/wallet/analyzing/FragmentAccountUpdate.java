@@ -182,11 +182,11 @@ public class FragmentAccountUpdate extends Fragment {
                 // Update account in DB
                 db.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));
 
-                // Update list of Account in FragmentAccount
-                FragmentAccount fragmentAccount = (FragmentAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
-                fragmentAccount.updateToAccountList(db.getAccount(mAccountId));
+                // Update list of Account in FragmentAccounts
+                FragmentAccounts fragmentAccounts = (FragmentAccounts)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                fragmentAccounts.updateToAccountList(db.getAccount(mAccountId));
 
-                // Return to FragmentAccount
+                // Return to FragmentAccounts
                 getFragmentManager().popBackStackImmediate();
             }
         });
@@ -196,11 +196,11 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 db.deleteAccount(mAccountId);
 
-                // Update list of Account in FragmentAccount
-                FragmentAccount fragmentAccount = (FragmentAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
-                fragmentAccount.removeToAccountList(mAccountId);
+                // Update list of Account in FragmentAccounts
+                FragmentAccounts fragmentAccounts = (FragmentAccounts)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                fragmentAccounts.removeToAccountList(mAccountId);
 
-                // Return to FragmentAccount
+                // Return to FragmentAccounts
                 getFragmentManager().popBackStackImmediate();
             }
         });

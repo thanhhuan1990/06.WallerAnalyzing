@@ -38,7 +38,8 @@
         <activity
             android:name="local.wallet.analyzing.ActivityMain"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden"/>
 
     </application>
 

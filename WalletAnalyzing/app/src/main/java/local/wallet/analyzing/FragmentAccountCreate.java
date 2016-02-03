@@ -168,11 +168,11 @@ public class FragmentAccountCreate extends Fragment {
                 // Insert account to DB
                 long account_id = mDbHelper.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
 
-                // Update list of Account in FragmentAccount
-                FragmentAccount fragmentAccount = (FragmentAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
-                fragmentAccount.addToAccountList(mDbHelper.getAccount(account_id));
+                // Update list of Account in FragmentAccounts
+                FragmentAccounts fragmentAccounts = (FragmentAccounts)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                fragmentAccounts.addToAccountList(mDbHelper.getAccount(account_id));
 
-                // Return to FragmentAccount
+                // Return to FragmentAccounts
                 getFragmentManager().popBackStackImmediate();
             }
         });

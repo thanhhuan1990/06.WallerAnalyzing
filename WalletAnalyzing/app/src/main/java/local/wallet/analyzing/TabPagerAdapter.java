@@ -30,7 +30,7 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
                 FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
                 return tabNewTransaction;
             case 2:
-                return FragmentAccount.newInstance();
+                return FragmentAccounts.newInstance();
             case 3:
                 FragmentBudget tabBudget = new FragmentBudget();
                 return tabBudget;

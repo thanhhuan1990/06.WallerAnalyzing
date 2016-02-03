@@ -114,7 +114,7 @@ public class FragmentCategoryCreate extends Fragment {
                 bundle.putInt("ParentCategoryId", mParentCategory != null ? mParentCategory.getId() : 0);
                 nextFrag.setArguments(bundle);
                 FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryParentSelect")
+                        .add(R.id.layout_transaction_create, nextFrag, "FragmentCategoryParentSelect")
                         .addToBackStack(null)
                         .commit();
             }

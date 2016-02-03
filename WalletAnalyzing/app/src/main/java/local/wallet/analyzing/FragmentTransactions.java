@@ -167,22 +167,20 @@ public class FragmentTransactions extends Fragment {
 
                 if(expense != 0) {
                     viewHolder.tvExpense.setVisibility(View.VISIBLE);
-                    viewHolder.tvExpense.setText(getResources().getString(R.string.content_expense)
-                                                    + ": "
-                                                    + Currency.formatCurrency(getContext(),
-                                                                                Currency.CurrencyList.VND,
-                                                                                (expense.longValue() == expense ? expense.longValue() : expense)));
+                    viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense),
+                                                                Currency.formatCurrency(getContext(),
+                                                                        Currency.CurrencyList.VND,
+                                                                        (expense.longValue() == expense ? expense.longValue() : expense))));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
                 }
 
                 if(income != 0) {
                     viewHolder.tvIncome.setVisibility(View.VISIBLE);
-                    viewHolder.tvIncome.setText(getResources().getString(R.string.content_income)
-                                                    + ": "
-                                                    + Currency.formatCurrency(getContext(),
-                                                                                Currency.CurrencyList.VND,
-                                                                                (income.longValue() == income ? income.longValue() :  income)));
+                    viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income),
+                                                                Currency.formatCurrency(getContext(),
+                                                                        Currency.CurrencyList.VND,
+                                                                        (income.longValue() == income ? income.longValue() :  income))));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
                 }
@@ -217,9 +215,7 @@ public class FragmentTransactions extends Fragment {
                         }
                     }
 
-                    strCategory += ": " + (cate != null ? cate.getName() : "");
-
-                    tvCategory.setText(strCategory);
+                    tvCategory.setText(String.format(strCategory, cate != null ? cate.getName() : ""));
 
                     TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
                     if(fromAccount != null) {
@@ -233,7 +229,11 @@ public class FragmentTransactions extends Fragment {
                     }
 
                     TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
-                    tvDescription.setText(tran.getDescription());
+                    if(!tran.getDescription().equals("")) {
+                        tvDescription.setText(tran.getDescription());
+                    } else {
+                        tvDescription.setVisibility(View.GONE);
+                    }
 
                     TextView tvAccount          = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
                     ImageView ivAccountIcon     = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);

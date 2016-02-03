@@ -1,5 +1,6 @@
 package local.wallet.analyzing;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -152,8 +154,6 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        initActionBar();
-
         if(mCal == null) {
             Transaction tran = mDbHelper.getLastTransaction();
             if(tran != null) {
@@ -167,7 +167,6 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
             llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
             llSave.setOnClickListener(this);
-            // Get Current DateTime
             mCal        = Calendar.getInstance();
 
             initViewExpense();
@@ -176,25 +175,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             initViewAdjustment();
         }
 
-        switch (mCurrentTransactionType) {
-            case Expense:
-                spTransactionType.setSelection(0);
-                break;
-            case Income:
-                spTransactionType.setSelection(1);
-                break;
-            case Transfer:
-            case TransferFrom:
-            case TransferTo:
-                spTransactionType.setSelection(2);
-                break;
-            case Adjustment:
-                spTransactionType.setSelection(3);
-                break;
-            default:
-                spTransactionType.setSelection(0);
-                break;
-        }
+        initActionBar();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -211,7 +192,6 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
     public void onResume() {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
-
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -349,6 +329,26 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        switch (mCurrentTransactionType) {
+            case Expense:
+                spTransactionType.setSelection(0);
+                break;
+            case Income:
+                spTransactionType.setSelection(1);
+                break;
+            case Transfer:
+            case TransferFrom:
+            case TransferTo:
+                spTransactionType.setSelection(2);
+                break;
+            case Adjustment:
+                spTransactionType.setSelection(3);
+                break;
+            default:
+                spTransactionType.setSelection(0);
+                break;
+        }
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
@@ -952,8 +952,8 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         bundle.putSerializable("TransactionType", transactionType);
         nextFrag.setArguments(bundle);
         FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, nextFrag, "FragmentCategorySelect")
-                .addToBackStack(null)
+                .add(R.id.layout_transaction_create, nextFrag, "FragmentCategorySelect")
+                .addToBackStack(Tag)
                 .commit();
     }
 
@@ -977,7 +977,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             case Income:
                 if(mCurrentTransactionType == TransactionEnum.Income) {
                     tvIncomeCategory.setText(mCategory.getName());
-                } else if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                } else if (mCurrentTransactionType == TransactionEnum.Adjustment) {
                     tvAdjustmentCategory.setText(mCategory.getName());
                 }
                 break;
@@ -1009,8 +1009,8 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         bundleExpenseDescription.putString("Description", oldDescription);
         fragmentDescription.setArguments(bundleExpenseDescription);
         FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentDescription, "FragmentDescription")
-                .addToBackStack(null)
+                .add(R.id.layout_transaction_create, fragmentDescription, "FragmentDescription")
+                .addToBackStack(Tag)
                 .commit();
     }
 
@@ -1056,8 +1056,8 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         bundle.putSerializable("TransactionType", transactionType);
         fragment.setArguments(bundle);
         FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
-                                                            .add(R.id.layout_new_transaction, fragment, "FragmentAccountsSelect")
-                                                            .addToBackStack(null)
+                .add(R.id.layout_transaction_create, fragment, "FragmentAccountsSelect")
+                                                            .addToBackStack(Tag)
                                                             .commit();
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
     }
@@ -1143,8 +1143,8 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         bundleExpensePayee.putString("Payee", oldPayee);
         fragmentExpensePayee.setArguments(bundleExpensePayee);
         FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentExpensePayee, "FragmentPayee")
-                .addToBackStack(null)
+                .add(R.id.layout_transaction_create, fragmentExpensePayee, "FragmentPayee")
+                .addToBackStack(Tag)
                 .commit();
     }
 
@@ -1187,8 +1187,8 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         bundleExpenseEvent.putString("Event", oldEvent);
         fragmentExpenseEvent.setArguments(bundleExpenseEvent);
         FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_new_transaction, fragmentExpenseEvent, "FragmentEvent")
-                .addToBackStack(null)
+                .add(R.id.layout_transaction_create, fragmentExpenseEvent, "FragmentEvent")
+                .addToBackStack(Tag)
                 .commit();
     }
 

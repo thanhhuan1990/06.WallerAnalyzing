@@ -1,5 +1,6 @@
 package local.wallet.analyzing;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -27,17 +30,13 @@ import local.wallet.analyzing.model.Account;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentAccount extends Fragment {
-    private static final String TAG = "FragmentAccount";
+public class FragmentAccounts extends Fragment {
+    private static final String TAG = "FragmentAccounts";
 
     private static final int NORMAL_MODE = 1;
     private static final int EDIT_MODE = 2;
 
     private int mCurrentMode = NORMAL_MODE;
-
-    private ImageView ivAdd;
-    private ImageView ivEdit;
-    private ImageView ivDone;
 
     private DatabaseHelper db;
     private ListView lvAccount;
@@ -46,9 +45,9 @@ public class FragmentAccount extends Fragment {
 
     private TextView tvEmpty;
 
-    static FragmentAccount newInstance() {
-        FragmentAccount fragmentAccount = new FragmentAccount();
-        return fragmentAccount;
+    static FragmentAccounts newInstance() {
+        FragmentAccounts fragmentAccounts = new FragmentAccounts();
+        return fragmentAccounts;
     }
 
     @Override
@@ -61,7 +60,6 @@ public class FragmentAccount extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
-
         LogUtils.logLeaveFunction(TAG, null, null);
         return inflater.inflate(R.layout.layout_fragment_accounts, container, false);
     }
@@ -86,6 +84,16 @@ public class FragmentAccount extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 LogUtils.trace(TAG, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
                 // Go to list of transaction related with this Account
+                FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
+                Bundle bundle = new Bundle();
+                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS).getTag());
+                bundle.putInt("AccountID", accAdapter.getItem(position).getId());
+                nextFrag.setArguments(bundle);
+                FragmentAccounts.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_account, nextFrag, "FragmentAccountTransactions")
+                        .addToBackStack(null)
+                        .commit();
+
             }
         });
 
@@ -106,11 +114,10 @@ public class FragmentAccount extends Fragment {
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_account, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
 
-        ivAdd = (ImageView) mCustomView.findViewById(R.id.ivAdd);
-        ivEdit = (ImageView) mCustomView.findViewById(R.id.ivEdit);
-        ivDone = (ImageView) mCustomView.findViewById(R.id.ivDone);
+        ImageView ivAdd = (ImageView) mCustomView.findViewById(R.id.ivAdd);
+        ImageView ivEdit = (ImageView) mCustomView.findViewById(R.id.ivEdit);
+        ImageView ivDone = (ImageView) mCustomView.findViewById(R.id.ivDone);
 
         if (mCurrentMode == NORMAL_MODE) {
             ivEdit.setVisibility(listAccount.size() > 0 ? View.VISIBLE : View.GONE);
@@ -127,7 +134,7 @@ public class FragmentAccount extends Fragment {
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Add Account.");
                 FragmentAccountCreate nextFrag = new FragmentAccountCreate();
-                FragmentAccount.this.getFragmentManager().beginTransaction()
+                FragmentAccounts.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, "FragmentAccountCreate")
                         .addToBackStack(null)
                         .commit();
@@ -210,7 +217,7 @@ public class FragmentAccount extends Fragment {
     }
 
     /**
-     *
+     * Adapter for Accounts
      */
     private class AccountAdapter extends ArrayAdapter<Account> {
         private class ViewHolder {
@@ -276,7 +283,7 @@ public class FragmentAccount extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putInt("AccountID", listAccount.get(position).getId());
                         nextFrag.setArguments(bundle);
-                        FragmentAccount.this.getFragmentManager().beginTransaction()
+                        FragmentAccounts.this.getFragmentManager().beginTransaction()
                                 .add(R.id.layout_account, nextFrag, "FragmentAccountUpdate")
                                 .addToBackStack(null)
                                 .commit();

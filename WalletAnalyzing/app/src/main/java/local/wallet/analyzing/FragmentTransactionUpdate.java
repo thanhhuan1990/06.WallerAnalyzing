@@ -146,7 +146,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
 
-        Bundle bundle       = this.getArguments();
+        Bundle bundle           = this.getArguments();
         mTransaction            = (Transaction)bundle.get("Transaction");
         mCurrentTransactionType = TransactionEnum.getTransactionEnum(mTransaction.getTransactionType());
 

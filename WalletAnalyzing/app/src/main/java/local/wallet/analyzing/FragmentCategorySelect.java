@@ -225,7 +225,7 @@ public class FragmentCategorySelect extends Fragment {
                 bundle.putSerializable("TransactionType", mCurrentTransactionType);
                 nextFrag.setArguments(bundle);
                 FragmentCategorySelect.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_new_transaction, nextFrag, "FragmentCategoryCreate")
+                        .add(R.id.layout_transaction_create, nextFrag, "FragmentCategoryCreate")
                         .addToBackStack(null)
                         .commit();
             }
