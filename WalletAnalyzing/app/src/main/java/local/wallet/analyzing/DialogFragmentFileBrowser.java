@@ -37,9 +37,9 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 1/5/2016.
  */
-public class DialogDragmentFileBrowser extends DialogFragment {
+public class DialogFragmentFileBrowser extends DialogFragment {
 
-    private static final String Tag = "DialogDragmentFileBrowser";
+    private static final String Tag = "DialogFragmentFileBrowser";
 
     /** SDCard directory */
     public static final String SDCARD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();

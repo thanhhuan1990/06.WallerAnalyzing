@@ -26,7 +26,6 @@ import org.droidparts.widget.ClearableEditText;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -303,10 +302,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                 cleanup();
 
-                FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                fragmentTransactions.updateListTransaction();
+                FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                fragmentListTransaction.updateListTransaction();
 
-                // Return to FragmentTransactions
+                // Return to FragmentListTransaction
                 getFragmentManager().popBackStackImmediate();
                 break;
             }
@@ -802,10 +801,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    // Return to FragmentTransactions
+                    // Return to FragmentListTransaction
                     getFragmentManager().popBackStackImmediate();
 
                 }
@@ -848,10 +847,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    // Return to FragmentTransactions
+                    // Return to FragmentListTransaction
                     getFragmentManager().popBackStackImmediate();
                 }
                 break;
@@ -906,10 +905,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    // Return to FragmentTransactions
+                    // Return to FragmentListTransaction
                     getFragmentManager().popBackStackImmediate();
                 }
 
@@ -949,10 +948,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    // Return to FragmentTransactions
+                    // Return to FragmentListTransaction
                     getFragmentManager().popBackStackImmediate();
                 }
 

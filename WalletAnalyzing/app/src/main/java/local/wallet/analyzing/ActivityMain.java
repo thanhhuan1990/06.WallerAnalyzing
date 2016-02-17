@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -66,7 +66,7 @@ public class ActivityMain extends AppCompatActivity {
         getBaseContext().getResources().updateConfiguration(androidConfigs, getBaseContext().getResources().getDisplayMetrics());
 
         // Update View
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.layout_activity_main);
 
         /* Todo: Init Views */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -145,7 +145,16 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
+            FragmentManager fm = getSupportFragmentManager();
+            for (Fragment frag : fm.getFragments()) {
+                if (frag.isVisible()) {
+                    FragmentManager childFm = frag.getChildFragmentManager();
+                    if (childFm.getBackStackEntryCount() > 0) {
+                        childFm.popBackStack();
+                        return;
+                    }
+                }
+            }
             return;
         }
 
@@ -307,11 +316,5 @@ public class ActivityMain extends AppCompatActivity {
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(hide).setVisibility(View.GONE);
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(show).setVisibility(View.VISIBLE);
         LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
-    }
-
-    public void updatePager(int position) {
-        LogUtils.logEnterFunction(TAG, "position =  " + position);
-        viewPager.setCurrentItem(position);
-        LogUtils.logLeaveFunction(TAG, "position =  " + position, null);
     }
 }

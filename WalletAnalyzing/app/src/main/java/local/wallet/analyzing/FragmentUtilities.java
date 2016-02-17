@@ -92,7 +92,7 @@ public class FragmentUtilities extends Fragment {
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getFragmentManager();
-                DialogDragmentFileBrowser dl = new DialogDragmentFileBrowser();
+                DialogFragmentFileBrowser dl = new DialogFragmentFileBrowser();
                 dl.setTargetFragment(FragmentUtilities.this, 0);
                 dl.show(fm, "File Browser");
             }

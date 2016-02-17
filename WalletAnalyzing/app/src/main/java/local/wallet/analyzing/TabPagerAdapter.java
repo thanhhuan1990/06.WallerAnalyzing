@@ -2,6 +2,7 @@ package local.wallet.analyzing;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
@@ -9,7 +10,7 @@ import android.view.ViewGroup;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class TabPagerAdapter extends FragmentStatePagerAdapter {
+public class TabPagerAdapter extends FragmentPagerAdapter {
 
     SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
 
@@ -24,15 +25,18 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                FragmentTransactions tabTransaction = new FragmentTransactions();
+                FragmentListTransaction tabTransaction = new FragmentListTransaction();
                 return tabTransaction;
             case 1:
                 FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
                 return tabNewTransaction;
             case 2:
-                return FragmentAccounts.newInstance();
+//                return FragmentListAccount.newInstance();
+//                FragmentListAccount fragmentListAccount = new FragmentListAccount();
+//                return fragmentListAccount;
+                return FragmentListAccount.getInstance();
             case 3:
-                FragmentBudget tabBudget = new FragmentBudget();
+                FragmentListBudget tabBudget = new FragmentListBudget();
                 return tabBudget;
             case 4:
                 FragmentReport tabReport = new FragmentReport();

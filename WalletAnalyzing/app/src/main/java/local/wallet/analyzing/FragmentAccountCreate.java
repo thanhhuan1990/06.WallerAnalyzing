@@ -1,5 +1,6 @@
 package local.wallet.analyzing;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -48,6 +49,7 @@ public class FragmentAccountCreate extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         setHasOptionsMenu(true);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -168,14 +170,77 @@ public class FragmentAccountCreate extends Fragment {
                 // Insert account to DB
                 long account_id = mDbHelper.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
 
-                // Update list of Account in FragmentAccounts
-                FragmentAccounts fragmentAccounts = (FragmentAccounts)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
-                fragmentAccounts.addToAccountList(mDbHelper.getAccount(account_id));
+                // Update list of Account in FragmentListAccount
+                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                fragmentListAccount.addToAccountList(mDbHelper.getAccount(account_id));
 
-                // Return to FragmentAccounts
+                // Return to FragmentListAccount
                 getFragmentManager().popBackStackImmediate();
             }
         });
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onAttach(activity);
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onStart() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onStart();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onResume() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onResume();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onPause() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onPause();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onStop() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onStop();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onDestroyView() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onDestroyView();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onDestroy() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onDestroy();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onDetach() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onDetach();
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    @Override
+    public void onDestroyOptionsMenu() {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onDestroyOptionsMenu();
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 

@@ -4,21 +4,17 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -36,9 +32,9 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentTransactions extends Fragment {
+public class FragmentListTransaction extends Fragment {
 
-    private static final String TAG = "FragmentTransactions";
+    private static final String TAG = "FragmentListTransaction";
 
     private DatabaseHelper          db;
 
@@ -59,6 +55,8 @@ public class FragmentTransactions extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         super.onActivityCreated(savedInstanceState);
+
+        setRetainInstance(true);
         setHasOptionsMenu(true);
 
         db = new DatabaseHelper(getActivity());
@@ -87,6 +85,9 @@ public class FragmentTransactions extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(menu.size() != 0) {
+            return;
+        }
         LogUtils.logEnterFunction(TAG, null);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -265,7 +266,7 @@ public class FragmentTransactions extends Fragment {
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("Transaction", tran);
                             nextFrag.setArguments(bundle);
-                            FragmentTransactions.this.getFragmentManager().beginTransaction()
+                            FragmentListTransaction.this.getFragmentManager().beginTransaction()
                                     .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")
                                     .addToBackStack(null)
                                     .commit();

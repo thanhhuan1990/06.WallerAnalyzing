@@ -18,9 +18,9 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentBudget extends Fragment {
+public class FragmentListBudget extends Fragment {
 
-    private static final String TAG = "FragmentBudget";
+    private static final String TAG = "FragmentListBudget";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

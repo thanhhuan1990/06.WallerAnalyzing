@@ -38,17 +38,17 @@ public class FragmentAccountTransactions extends Fragment {
 
     private static final String TAG = "FragmentAccountTransactions";
 
+    /** to prevent multiple calls to inflate menu */
+    private boolean menuIsInflated;
+
     private String              mTagOfSource = "";
     private int                 mAccountId;
 
     private DatabaseHelper      mDbHelper;
     private List<Transaction>   arTransactions = new ArrayList<Transaction>();
-//    private TransactionAdapter  transactionAdapter;
 
     private TextView            tvInitBalance;
     private TextView            tvBalance;
-    private LinearLayout        llTransactions;
-//    private ListView            lvTransactions;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,7 @@ public class FragmentAccountTransactions extends Fragment {
 
         super.onCreate(savedInstanceState);
 
+        setRetainInstance(true);
         setHasOptionsMenu(true);
 
         /* Get data from Bundle */
@@ -162,9 +163,9 @@ public class FragmentAccountTransactions extends Fragment {
             }
 
             tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
-                    tran.getTime().get(Calendar.DAY_OF_MONTH),
-                    tran.getTime().get(Calendar.MONTH) + 1,
-                    tran.getTime().get(Calendar.YEAR)));
+                                        tran.getTime().get(Calendar.DAY_OF_MONTH),
+                                        tran.getTime().get(Calendar.MONTH) + 1,
+                                        tran.getTime().get(Calendar.YEAR)));
 
             Account fromAcc = mDbHelper.getAccount(tran.getFromAccountId());
             Account toAcc   = mDbHelper.getAccount(tran.getToAccountId());

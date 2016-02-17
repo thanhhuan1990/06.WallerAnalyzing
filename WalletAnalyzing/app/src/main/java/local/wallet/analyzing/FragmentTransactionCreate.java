@@ -1,6 +1,5 @@
 package local.wallet.analyzing;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -26,7 +24,6 @@ import android.widget.TimePicker;
 
 import org.droidparts.widget.ClearableEditText;
 
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -132,6 +129,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
         super.onActivityCreated(savedInstanceState);
 
+        setRetainInstance(true);
         setHasOptionsMenu(true);
         getActivity().invalidateOptionsMenu();
 
@@ -150,6 +148,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(menu.size() != 0) {
+            return;
+        }
         LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -720,10 +721,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
                 }
 
                 break;
@@ -764,10 +764,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
                 }
                 break;
             }
@@ -822,10 +821,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
                 }
 
                 break;
@@ -866,10 +864,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
                     cleanup();
 
-                    FragmentTransactions fragmentTransactions = (FragmentTransactions) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentTransactions.updateListTransaction();
+                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
+                    fragmentListTransaction.updateListTransaction();
 
-                    ((ActivityMain) getActivity()).updatePager(ActivityMain.TAB_POSITION_TRANSACTIONS);
                 }
 
                 break;
