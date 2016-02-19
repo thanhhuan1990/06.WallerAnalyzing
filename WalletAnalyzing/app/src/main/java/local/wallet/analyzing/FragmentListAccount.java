@@ -28,7 +28,7 @@ import local.wallet.analyzing.model.Account;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentListAccount extends Fragment {
-    private static final String TAG = "FragmentListAccount";
+    private static final String TAG = "ListAccount";
 
     private static FragmentListAccount instance;
 
@@ -54,9 +54,10 @@ public class FragmentListAccount extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(TAG, null);
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         setHasOptionsMenu(true);
+        LogUtils.logLeaveFunction(TAG, null, null);
     }
 
     @Nullable
@@ -64,7 +65,7 @@ public class FragmentListAccount extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_accounts, container, false);
+        return inflater.inflate(R.layout.layout_fragment_list_account, container, false);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class FragmentListAccount extends Fragment {
                 // Go to list of transaction related with this Account
                 FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS).getTag());
+                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT).getTag());
                 bundle.putInt("AccountID", accAdapter.getItem(position).getId());
                 nextFrag.setArguments(bundle);
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
@@ -165,6 +166,14 @@ public class FragmentListAccount extends Fragment {
         });
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        // Update list Accounts
+        listAccount.clear();
+        List<Account> arTemp = db.getAllAccounts();
+        for(int i = 0 ; i < arTemp.size(); i++) {
+            listAccount.add(arTemp.get(i));
+        }
+        accAdapter.notifyDataSetChanged();
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }

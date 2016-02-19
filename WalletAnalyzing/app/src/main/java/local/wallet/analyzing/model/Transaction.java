@@ -159,6 +159,6 @@ public class Transaction implements Comparable<Transaction>, Serializable {
 
     @Override
     public String toString() {
-        return "Id = " + id + ", TransactionType = " + transactionType + ", amount = " + amount + ", description = " + description;
+        return "Id = " + id + ", TransactionType = " + transactionType + ", amount = " + amount + ", description = \'" + description + "\'";
     }
 }

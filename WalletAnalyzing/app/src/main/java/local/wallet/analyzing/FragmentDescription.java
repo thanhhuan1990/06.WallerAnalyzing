@@ -67,7 +67,7 @@ public class FragmentDescription extends Fragment {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
                     // Set input string for Account's description in FragmentAccountUpdate, and then return.
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updateDescription(mTransactionType, etDescription.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentTransactionUpdate())) {
@@ -78,19 +78,19 @@ public class FragmentDescription extends Fragment {
                     FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateDescription(mTransactionType, etDescription.getText().toString());
 
-                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountAdd())) {
+                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountCreate())) {
 
                     LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
                     // Set input string for Account's description in FragmentAccountCreate, and then return.
-                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentAccountAdd();
+                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentAccountCreate();
                     FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateDescription(etDescription.getText().toString());
 
-                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountEdit())) {
+                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentAccountUpdate())) {
 
                     LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
                     // Set input string for Account's description in FragmentAccountUpdate, and then return.
-                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentAccountEdit();
+                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentAccountUpdate();
                     FragmentAccountUpdate fragment = (FragmentAccountUpdate)getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateDescription(etDescription.getText().toString());
 

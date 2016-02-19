@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_main_frame">#E1E1E1</color>
+    <color name="background_main_frame">#DCDCDC</color>
     <color name="light_gray">#FFE0E0E0</color>
     <color name="imagecolor">#85b2e7</color>
 
@@ -17,7 +17,9 @@
     <color name="textcolor_income">#2d8986</color>
     <color name="textcolor_listview_account">#555555</color>
     <color name="textcolor_hint">#c7c7cd</color>
+    <color name="textcolor_title_attribute">#40454E</color>
 
+    <color name="listview_transaction_parent_background">#E6E6E6</color>
     <color name="listview_account_transactions_parent_background">#e9e9e9</color>
     <color name="listview_account_transactions_event_background">#FFFFFF</color>
     <color name="listview_account_transactions_odd_background">#F7F7F7</color>
@@ -31,7 +33,6 @@
 
     <color name="background_button_pressed">#C8D8D5</color>
 
-
     <color name="stroke">#909090</color>
     <color name="divider">#aaaaaa</color>
 
@@ -40,9 +41,10 @@
     <color name="background_button_save">#248a62</color>
     <color name="background_button_save_pressed">#134934</color>
 
-    <color name="budget_background_progress_used_money">#aaaaaa</color>
-    <color name="budget_background_progress_over">#ad1a1a</color>
-    <color name="budget_background_date">#edd3d1</color>
+    <color name="budget_background_progress">#37A3A0</color>
+    <color name="budget_background_progress_used_money">#AAAAAA</color>
+    <color name="budget_background_progress_over">#AD1A1A</color>
+    <color name="budget_background_date">#EDD3D1</color>
     <color name="budget_border">#909090</color>
 
 </resources>

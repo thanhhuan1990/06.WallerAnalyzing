@@ -10,11 +10,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -35,6 +40,8 @@ public class FragmentPayee extends Fragment {
 
     private ClearableEditText   etPayee;
     private ListView            lvPayee;
+    private List<String>        payees = new ArrayList<String>();
+    private ArrayAdapter<String> mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +69,7 @@ public class FragmentPayee extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountAdd(myTag);
+        ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
 
         LogUtils.logLeaveFunction(TAG, null, null);
 
@@ -79,6 +86,22 @@ public class FragmentPayee extends Fragment {
 
         etPayee = (ClearableEditText) getView().findViewById(R.id.etPayee);
         etPayee.setText(mPayee);
+        etPayee.addTextChangedListener(new PayeeTextWatcher());
+
+        lvPayee = (ListView) getView().findViewById(R.id.lvPayee);
+        payees = db.getPayees("");
+        mAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_1,
+                android.R.id.text1,
+                payees);
+        lvPayee.setAdapter(mAdapter);
+
+        lvPayee.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                etPayee.setText(payees.get(position));
+            }
+        });
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -100,7 +123,7 @@ public class FragmentPayee extends Fragment {
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
@@ -138,7 +161,15 @@ public class FragmentPayee extends Fragment {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             LogUtils.logEnterFunction(TAG, null);
 
-            if(!s.toString().equals(current)){
+            if(!s.toString().trim().equals(current)){
+                payees.clear();
+                List<String> arTemp = db.getPayees(s.toString().trim());
+                for(int i = 0 ; i < arTemp.size(); i++) {
+                    payees.add(arTemp.get(i));
+                }
+                mAdapter.notifyDataSetChanged();
+
+                current = s.toString().trim();
             }
 
             LogUtils.logLeaveFunction(TAG, null, null);

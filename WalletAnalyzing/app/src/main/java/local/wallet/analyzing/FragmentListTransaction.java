@@ -34,7 +34,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentListTransaction extends Fragment {
 
-    private static final String TAG = "FragmentListTransaction";
+    private static final String TAG = "ListTransaction";
 
     private DatabaseHelper          db;
 
@@ -42,12 +42,20 @@ public class FragmentListTransaction extends Fragment {
     private ListView                lvTransaction;
     private TransactionAdapter      mAdapter;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(TAG, null);
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_transactions, container, false);
+        return inflater.inflate(R.layout.layout_fragment_list_transaction, container, false);
     }
 
     @Override
@@ -55,9 +63,6 @@ public class FragmentListTransaction extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         super.onActivityCreated(savedInstanceState);
-
-        setRetainInstance(true);
-        setHasOptionsMenu(true);
 
         db = new DatabaseHelper(getActivity());
 
@@ -77,17 +82,7 @@ public class FragmentListTransaction extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onResume();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(menu.size() != 0) {
-            return;
-        }
         LogUtils.logEnterFunction(TAG, null);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -96,6 +91,7 @@ public class FragmentListTransaction extends Fragment {
         View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
+        updateListTransaction();
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
@@ -207,7 +203,7 @@ public class FragmentListTransaction extends Fragment {
                     } else if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
                         strCategory += getResources().getString(R.string.content_income);
                     } else if(tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue()) {
-                        strCategory += getResources().getString(R.string.content_transfer) + " " + toAccount.getName();
+                        strCategory += String.format(getResources().getString(R.string.content_transfer_to), toAccount.getName());
                     } else if(tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
                         if(fromAccount != null) {
                             strCategory += getResources().getString(R.string.content_expense);
@@ -230,11 +226,24 @@ public class FragmentListTransaction extends Fragment {
                     }
 
                     TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
-                    if(!tran.getDescription().equals("")) {
-                        tvDescription.setText(tran.getDescription());
+                    String description = tran.getDescription();
+
+                    if(tran.getFee() != 0) {
+                        if(!description.equals("")) {
+                            description += "\n";
+                        }
+                        description += String.format(getResources().getString(R.string.content_transfer_fee),
+                                Currency.formatCurrency(getContext(),
+                                        Currency.getCurrencyById(fromAccount.getCurrencyId()),
+                                        tran.getFee()));
+                    }
+
+                    if(!description.equals("")) {
+                        tvDescription.setText(description);
                     } else {
                         tvDescription.setVisibility(View.GONE);
                     }
+
 
                     TextView tvAccount          = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
                     ImageView ivAccountIcon     = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
@@ -265,6 +274,7 @@ public class FragmentListTransaction extends Fragment {
                             FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("Transaction", tran);
+                            bundle.putInt("ContainerViewId", R.id.ll_transactions);
                             nextFrag.setArguments(bundle);
                             FragmentListTransaction.this.getFragmentManager().beginTransaction()
                                     .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")

@@ -41,7 +41,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentTransactionUpdate extends Fragment implements  View.OnClickListener {
-    private static final String Tag = "FragmentTransactionUpdate";
+    private static final String Tag = "TransactionUpdate";
 
     private Configurations      mConfigs;
     private DatabaseHelper      mDbHelper;
@@ -52,6 +52,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     private Account             mToAccount;
     private Spinner             spTransactionType;
     private TransactionEnum     mCurrentTransactionType  = TransactionEnum.Expense;
+    private int                 mContainerViewId;
 
     /* Layout Expense */
     private LinearLayout        llExpense;
@@ -148,6 +149,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         Bundle bundle           = this.getArguments();
         mTransaction            = (Transaction)bundle.get("Transaction");
         mCurrentTransactionType = TransactionEnum.getTransactionEnum(mTransaction.getTransactionType());
+        mContainerViewId        = bundle.getInt("ContainerViewId");
 
         LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
 
@@ -294,16 +296,13 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 startFragmentEvent(TransactionEnum.Adjustment, tvAdjustmentEvent.getText().toString());
                 break;
             case R.id.llSave: {
-                save();
+                updateTransaction();
                 break;
             }
             case R.id.llDelete: {
                 mDbHelper.deleteTransaction(mTransaction.getId());
 
                 cleanup();
-
-                FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                fragmentListTransaction.updateListTransaction();
 
                 // Return to FragmentListTransaction
                 getFragmentManager().popBackStackImmediate();
@@ -518,6 +517,8 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         tvTransferDate.setText(getDateString(mCal));
 
         etTransferFee               = (ClearableEditText) getView().findViewById(R.id.etTransferFee);
+        etTransferFee.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                                                                     mTransaction.getFee()));
         etTransferFee.addTextChangedListener(new CurrencyTextWatcher(etTransferFee));
         tvTransferFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvTransferFeeCurrencyIcon);
         tvTransferFeeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
@@ -762,7 +763,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
     }
 
-    private void save() {
+    private void updateTransaction() {
 
         switch (mCurrentTransactionType) {
             case Expense: {
@@ -798,15 +799,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                                                                 expenseEvent);
                 int row = mDbHelper.updateTransaction(transaction);
                 if (row == 1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
-                    // Return to FragmentListTransaction
-                    getFragmentManager().popBackStackImmediate();
-
                 }
 
                 break;
@@ -844,14 +837,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                                                             incomeEvent);
                 int row = mDbHelper.updateTransaction(transaction);
                 if (row == 1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
-                    // Return to FragmentListTransaction
-                    getFragmentManager().popBackStackImmediate();
                 }
                 break;
             }
@@ -902,14 +888,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                                                             "");
                 int row = mDbHelper.updateTransaction(transaction);
                 if (row == 1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
-                    // Return to FragmentListTransaction
-                    getFragmentManager().popBackStackImmediate();
                 }
 
                 break;
@@ -945,14 +924,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                                                             adjustmentEvent);
                 int row = mDbHelper.updateTransaction(transaction);
                 if (row == 1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
-                    // Return to FragmentListTransaction
-                    getFragmentManager().popBackStackImmediate();
                 }
 
                 break;
@@ -960,6 +932,9 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
             default:
                 break;
         }
+
+        // Return to last fragment
+        getFragmentManager().popBackStackImmediate();
     }
     private void showDialogTime() {
         final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
@@ -1029,7 +1004,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         bundle.putSerializable("TransactionType", transactionType);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_transactions, nextFragment, "FragmentCategorySelect")
+                .add(mContainerViewId, nextFragment, "FragmentCategorySelect")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1080,7 +1055,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         bundle.putString("Description", oldDescription);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_transactions, nextFragment, "FragmentDescription")
+                .add(mContainerViewId, nextFragment, "FragmentDescription")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1121,7 +1096,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         bundle.putSerializable("TransactionType", transactionType);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_transactions, nextFragment, "FragmentAccountsSelect")
+                .add(mContainerViewId, nextFragment, "FragmentAccountsSelect")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
@@ -1203,7 +1178,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         bundle.putString("Payee", oldPayee);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_transactions, nextFragment, "FragmentPayee")
+                .add(mContainerViewId, nextFragment, "FragmentPayee")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1241,7 +1216,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         bundle.putString("Event", oldEvent);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_transactions, nextFragment, "FragmentEvent")
+                .add(mContainerViewId, nextFragment, "FragmentEvent")
                 .addToBackStack(null)
                 .commit();
     }

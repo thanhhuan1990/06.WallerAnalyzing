@@ -64,6 +64,46 @@
     <string name="new_transaction_remaining_amount">Số tiền hiện còn</string>
     <string name="new_transaction_adjustment">Ghi theo tiền còn</string>
 
+    <string name="new_category_name">Tên</string>
+    <string name="new_category_hint">Tên hạng mục</string>
+    <string name="new_category_parent_category">Hạng mục cha</string>
+    <string name="new_category_description">Diễn giải</string>
+    <string name="new_category_select_as_parent">(Không chọn)</string>
+
+    <string name="new_budget_name">Tên</string>
+    <string name="new_budget_name_hit">Tên hạn mức</string>
+    <string name="new_budget_amount">Số tiền</string>
+    <string name="new_budget_repeat">Lặp lại</string>
+    <string name="new_budget_from_date">Ngày bắt đầu</string>
+    <string name="new_budget_move_to_next">Dồn sang kỳ sau</string>
+    <string name="new_budget_move_to_next_description_not">(Số tiền dư hoặc bội chi sẽ KHÔNG được chuyển sang kỳ sau)</string>
+    <string name="new_budget_move_to_next_description">(Số tiền dư hoặc bội chi sẽ được chuyển sang kỳ sau)</string>
+    <string-array name="budget_repeat_type">
+        <item>Không lặp lại</item>
+        <item>Hàng ngày</item>
+        <item>Hàng tuần</item>
+        <item>Hàng tháng</item>
+        <item>Hàng quý</item>
+        <item>Hàng năm</item>
+    </string-array>
+
+    <string name="title_category_expense">Hạng mục chi</string>
+    <string name="title_category_expense_add">Thêm hạng mục chi</string>
+    <string name="title_category_expense_select_parent">Hạng mục cha</string>
+    <string name="title_category_income">Hạng mục thu</string>
+    <string name="title_category_income_add">Thêm hạng mục thu</string>
+    <string name="title_category_income_select_parent">Hạng mục cha</string>
+    <string name="title_account">Tài khoản</string>
+    <string name="title_account_add">Thêm tài khoản</string>
+    <string name="title_account_select_type">Thuộc loại</string>
+    <string name="title_account_select_currency">Loại tiền tệ</string>
+    <string name="title_budget">Hạn mức chi</string>
+    <string name="title_budget_create">Thêm hạn mức</string>
+    <string name="title_utility">Utilities</string>
+    <string name="title_description">Description</string>
+    <string name="title_payee">Chi cho ai</string>
+    <string name="title_event">Chuyến đi/Sự kiện</string>
+
     <string name="Save">Ghi</string>
     <string name="Delete">Xóa</string>
 
@@ -78,27 +118,16 @@
     <string name="income_category">Thu Vào</string>
     <string name="expense_category_lent">Vay nợ</string>
 
-    <string name="new_category_name">Tên</string>
-    <string name="new_category_hint">Tên hạng mục</string>
-    <string name="new_category_parent_category">Hạng mục cha</string>
-    <string name="new_category_description">Diễn giải</string>
-    <string name="new_category_select_as_parent">(Không chọn)</string>
-
-    <string name="title_category_expense">Hạng mục chi</string>
-    <string name="title_category_expense_add">Thêm hạng mục chi</string>
-    <string name="title_category_expense_select_parent">Hạng mục cha</string>
-    <string name="title_category_income">Hạng mục thu</string>
-    <string name="title_category_income_add">Thêm hạng mục thu</string>
-    <string name="title_category_income_select_parent">Hạng mục cha</string>
-
     <string name="content_expense">Chi: %s</string>
     <string name="content_income">Thu: %s</string>
-    <string name="content_transfer">Transfer to </string>
     <string name="content_today">Hôm nay</string>
     <string name="content_yesterday">Hôm qua</string>
     <string name="content_before_yesterday">Hôm kia</string>
     <string name="content_expensed">Đã chi: %s</string>
     <string name="content_adjustment_income">Đã thu: %s</string>
+    <string name="content_transfer_to">Chuyển tới %s</string>
+    <string name="content_transfer_from">Chuyển từ %s</string>
+    <string name="content_transfer_fee">Phí chuyển khoản: %s</string>
 
 
 </resources>

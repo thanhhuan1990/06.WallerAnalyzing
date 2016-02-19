@@ -82,7 +82,7 @@ public class FragmentCategoryCreate extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentCategoryAdd(myTag);
+        ((ActivityMain)getActivity()).setFragmentCategoryCreate(myTag);
 
         LogUtils.logLeaveFunction(TAG, null, null);
 
@@ -110,7 +110,7 @@ public class FragmentCategoryCreate extends Fragment {
                 FragmentCategoryParentSelect nextFrag = new FragmentCategoryParentSelect();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mTransactionType);
-                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryAdd());
+                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryCreate());
                 bundle.putInt("ParentCategoryId", mParentCategory != null ? mParentCategory.getId() : 0);
                 nextFrag.setArguments(bundle);
                 FragmentCategoryCreate.this.getFragmentManager().beginTransaction()

@@ -1,0 +1,1230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:id="@+id/layout_transaction_create"
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/light_gray"
+            android:cacheColorHint="@android:color/transparent"
+            android:orientation="vertical"
+            android:paddingBottom="?attr/actionBarSize"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:cacheColorHint="@android:color/transparent">
+
+                <!-- Layout Expense -->
+                <LinearLayout
+                    android:id="@+id/llExpense"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_money_input"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <org.droidparts.widget.ClearableEditText
+                            android:id="@+id/etExpenseAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="8.8"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:hint="@string/new_transaction_amount"
+                            android:inputType="numberDecimal"
+                            android:padding="5dp"
+                            android:textColorHint="@color/textcolor_hint"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvExpenseCurrencyIcon"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1.2"
+                            android:background="@drawable/background_icon_currency"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/currency_icon_vietnam"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llExpenseCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/transaction_category_expense"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvExpenseCategory"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llExpenseDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_description"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvExpenseDescription"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:singleLine="true"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llExpenseAccount"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_from_account"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvExpenseAccount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llExpenseDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_date"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvExpenseDate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llExpensePayee"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_payee"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvExpensePayee"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:text=""
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llExpenseEvent"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="8"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_event"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvExpenseEvent"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="11"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:text=""
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Layout Income -->
+                <LinearLayout
+                    android:id="@+id/llIncome"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_money_input"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <org.droidparts.widget.ClearableEditText
+                            android:id="@+id/etIncomeAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="8.8"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:hint="@string/new_transaction_amount"
+                            android:inputType="numberDecimal"
+                            android:padding="5dp"
+                            android:textColorHint="@color/textcolor_hint"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvIncomeCurrencyIcon"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1.2"
+                            android:background="@drawable/background_icon_currency"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/currency_icon_vietnam"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llIncomeCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/transaction_category_income"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvIncomeCategory"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llIncomeDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_description"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvIncomeDescription"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llToAccount"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_to_account"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvToAccount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llIncomeDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_date"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvIncomeDate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llIncomeEvent"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="8"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_event"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvIncomeEvent"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="11"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:text=""
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Layout Transfer -->
+                <LinearLayout
+                    android:id="@+id/llTransfer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_money_input"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <org.droidparts.widget.ClearableEditText
+                            android:id="@+id/etTransferAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="8.8"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:hint="@string/new_transaction_amount"
+                            android:inputType="numberDecimal"
+                            android:padding="5dp"
+                            android:textColorHint="@color/textcolor_hint"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvTransferCurrencyIcon"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1.2"
+                            android:background="@drawable/background_icon_currency"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/currency_icon_vietnam"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llTransferFromAccount"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_from_account"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvTransferFromAccount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llTransferToAccount"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_to_account"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvTransferToAccount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llTransferDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_description"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvTransferDescription"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:text=""
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llTransferDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_date"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvTransferDate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/new_transaction_transfer_fee"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_money_input"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <org.droidparts.widget.ClearableEditText
+                            android:id="@+id/etTransferFee"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="8.8"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:hint="@string/new_transaction_transfer_fee_hint"
+                            android:inputType="numberDecimal"
+                            android:padding="5dp"
+                            android:textColorHint="@color/textcolor_hint"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvTransferFeeCurrencyIcon"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1.2"
+                            android:background="@drawable/background_icon_currency"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/currency_icon_vietnam"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llTransferCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:weightSum="20">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="6"
+                            android:background="@android:color/transparent"
+                            android:text="@string/transaction_category_expense"
+                            android:textColor="@android:color/black"/>
+
+                        <TextView
+                            android:id="@+id/tvTransferCategory"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="13"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:textColor="@android:color/black"/>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/icon_next"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Layout Adjustment -->
+                <LinearLayout
+                    android:id="@+id/llAdjustment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/llAdjustmentAccount"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingTop="5dp"
+                        android:weightSum="20">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="6"
+                            android:background="@android:color/transparent"
+                            android:text="@string/new_transaction_account"
+                            android:textColor="@android:color/black"/>
+
+                        <TextView
+                            android:id="@+id/tvAdjustmentAccount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="13"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:textColor="@android:color/black"/>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/icon_next"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <org.droidparts.widget.ClearableEditText
+                            android:id="@+id/etAdjustmentBalance"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="8.8"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:hint="@string/new_transaction_remaining_amount"
+                            android:inputType="numberDecimal"
+                            android:padding="5dp"
+                            android:textColorHint="@color/textcolor_hint"
+                            android:textSize="28sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvAdjustmentCurrencyIcon"
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_weight="1.2"
+                            android:background="@drawable/background_icon_currency"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:text="@string/currency_icon_vietnam"
+                            android:textColor="@android:color/black"
+                            android:textSize="20sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.2dip"
+                        android:background="#504f4f"/>
+
+                    <TextView
+                        android:id="@+id/tvAdjustmentSpent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/background_linear_gray_corner_bottom"
+                        android:gravity="right"
+                        android:padding="5dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/background_linear_white_corner"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llAdjustmentCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:id="@+id/tvTitleAdjustmentCategory"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/transaction_category_expense"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvAdjustmentCategory"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llAdjustmentDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_description"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvAdjustmentDescription"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llAdjustmentDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_date"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvAdjustmentDate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llAdjustmentPayee"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="6"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_payee"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvAdjustmentPayee"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="13"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:text=""
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="fill_parent"
+                            android:layout_height="0.2dip"
+                            android:background="#504f4f"/>
+
+                        <LinearLayout
+                            android:id="@+id/llAdjustmentEvent"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingBottom="5dp"
+                            android:paddingTop="5dp"
+                            android:weightSum="20">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="8"
+                                android:background="@android:color/transparent"
+                                android:text="@string/new_transaction_event"
+                                android:textColor="@android:color/black"/>
+
+                            <TextView
+                                android:id="@+id/tvAdjustmentEvent"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="11"
+                                android:background="@android:color/transparent"
+                                android:gravity="right|center_vertical"
+                                android:text=""
+                                android:textColor="@android:color/black"/>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/icon_next"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- Button SAVE -->
+            <LinearLayout
+                android:id="@+id/llSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/background_button_save"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_save"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/Save"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

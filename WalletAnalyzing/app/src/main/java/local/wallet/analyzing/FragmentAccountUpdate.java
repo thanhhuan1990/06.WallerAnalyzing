@@ -27,24 +27,24 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentAccountUpdate extends Fragment {
 
-    private static final String TAG     = "FragmentAccountUpdate";
+    private static final String TAG     = "AccountUpdate";
 
     private DatabaseHelper db;
 
-    private Account mAccount;
-    private int mAccountId = 0;
+    private Account             mAccount;
+    private int                 mAccountId = 0;
 
-    private ClearableEditText etName;
-    private LinearLayout llType;
-    private TextView tvType;
-    private LinearLayout llCurrency;
-    private TextView tvCurrency;
-    private EditText etInitialBalance;
-    private TextView tvCurrencyIcon;
-    private LinearLayout llDescription;
-    private TextView tvDescription;
-    private LinearLayout llSave;
-    private LinearLayout llDelete;
+    private ClearableEditText   etName;
+    private LinearLayout        llType;
+    private TextView            tvType;
+    private LinearLayout        llCurrency;
+    private TextView            tvCurrency;
+    private EditText            etInitialBalance;
+    private TextView            tvCurrencyIcon;
+    private LinearLayout        llDescription;
+    private TextView            tvDescription;
+    private LinearLayout        llSave;
+    private LinearLayout        llDelete;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +80,7 @@ public class FragmentAccountUpdate extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountEdit(myTag);
+        ((ActivityMain)getActivity()).setFragmentAccountUpdate(myTag);
 
         LogUtils.logLeaveFunction(TAG, null, null);
 
@@ -112,7 +112,7 @@ public class FragmentAccountUpdate extends Fragment {
         etName.setText(mAccount.getName());
         tvType.setText(AccountType.getAccountTypeById(mAccount.getTypeId()).getName());
         tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
-        etInitialBalance.setText(mAccount.getInitBalance() + "");
+        etInitialBalance.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mAccount.getCurrencyId()), mAccount.getInitBalance()));
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mAccount.getCurrencyId())));
         tvDescription.setText(mAccount.getDescription());
 
@@ -121,7 +121,7 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountEdit());
+                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountUpdate());
                 bundle.putInt("AccountType", mAccount.getTypeId());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
@@ -136,7 +136,7 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountEdit());
+                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountUpdate());
                 bundle.putInt("Currency", mAccount.getCurrencyId());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
@@ -153,7 +153,7 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountEdit());
+                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountUpdate());
                 bundle.putString("Description", tvDescription.getText().toString());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
@@ -183,7 +183,7 @@ public class FragmentAccountUpdate extends Fragment {
                 db.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));
 
                 // Update list of Account in FragmentListAccount
-                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT);
                 fragmentListAccount.updateToAccountList(db.getAccount(mAccountId));
 
                 // Return to FragmentListAccount
@@ -197,7 +197,7 @@ public class FragmentAccountUpdate extends Fragment {
                 db.deleteAccount(mAccountId);
 
                 // Update list of Account in FragmentListAccount
-                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT);
                 fragmentListAccount.removeToAccountList(mAccountId);
 
                 // Return to FragmentListAccount
@@ -271,8 +271,7 @@ public class FragmentAccountUpdate extends Fragment {
                 if(inputted.equals("")) {
                     return;
                 }
-                String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mAccount.getCurrencyId())
-                                                                    , Double.parseDouble(inputted));
+                String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mAccount.getCurrencyId()), Double.parseDouble(inputted));
 
                 current = formatted;
                 etInitialBalance.setText(formatted);

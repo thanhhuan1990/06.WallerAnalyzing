@@ -82,19 +82,19 @@ public class FragmentAccountTypeSelect extends Fragment {
         lvAccountType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountAdd())) {
+                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
 
                     LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
                     // Return Type's Id to FragmentAccountCreate
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountAdd();
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
                     FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateAccountType(AccountType.Accounts.get(position).getId());
 
-                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountEdit())) {
+                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
 
                     LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
                     // Return Type's Id to FragmentAccountUpdate
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountEdit();
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
                     FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateAccountType(AccountType.Accounts.get(position).getId());
 

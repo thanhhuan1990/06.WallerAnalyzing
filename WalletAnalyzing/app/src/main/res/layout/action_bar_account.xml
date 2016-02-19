@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="12dp"
-                android:scaleType="fitEnd"
+                android:scaleType="fitCenter"
                 android:src="@drawable/icon_edit" />
 
 
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="12dp"
-                android:scaleType="fitEnd"
+                android:scaleType="fitCenter"
                 android:src="@drawable/icon_plus" />
 
 
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="12dp"
-                android:scaleType="fitEnd"
+                android:scaleType="fitCenter"
                 android:src="@drawable/icon_done"
                 android:visibility="gone" />
         </LinearLayout>

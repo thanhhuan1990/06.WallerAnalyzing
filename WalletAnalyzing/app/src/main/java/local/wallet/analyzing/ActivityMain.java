@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -31,9 +30,9 @@ public class ActivityMain extends AppCompatActivity {
     boolean doubleBackToExitPressedOnce = false;
 
     public static final int TAB_POSITION_TRANSACTIONS = 0;
-    public static final int TAB_POSITION_NEW_TRANSACTION = 1;
-    public static final int TAB_POSITION_ACCOUNTS = 2;
-    public static final int TAB_POSITION_BUDGET = 3;
+    public static final int TAB_POSITION_TRANSACTION_CREATE = 1;
+    public static final int TAB_POSITION_LIST_ACCOUNT = 2;
+    public static final int TAB_POSITION_LIST_BUDGET = 3;
     public static final int TAB_POSITION_REPORTS = 4;
     public static final int TAB_POSITION_UTILITIES = 5;
 
@@ -42,10 +41,10 @@ public class ActivityMain extends AppCompatActivity {
     private TabPagerAdapter adapter;
     private int lastTabPosition = 0;
 
-    private String fragmentAccountAdd;
-    private String fragmentAccountEdit;
+    private String fragmentAccountCreate;
+    private String fragmentAccountUpdate;
     private String fragmentNewTransactionSelectCategory;
-    private String fragmentCategoryAdd;
+    private String fragmentCategoryCreate;
     private String fragmentNewTransactionSelectAccount;
     private String fragmentTransactionUpdate;
     private String fragmentAccountTransactions;
@@ -85,6 +84,7 @@ public class ActivityMain extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(1);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -100,21 +100,21 @@ public class ActivityMain extends AppCompatActivity {
                 /* Todo: Update TabLayout Follow Current Position */
                 if (tab.getPosition() == TAB_POSITION_TRANSACTIONS) {                       //  TRANSACTION is showing, hide TRANSACTION, show NEW_TRANSACTION
 
-                    updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_NEW_TRANSACTION);
+                    updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_TRANSACTION_CREATE);
 
-                } else if (tab.getPosition() == TAB_POSITION_NEW_TRANSACTION) {             // NEW_TRANSACTION is showing, hide tab NEW_TRANSACTION, show tab TRANSACTIONS
+                } else if (tab.getPosition() == TAB_POSITION_TRANSACTION_CREATE) {             // NEW_TRANSACTION is showing, hide tab NEW_TRANSACTION, show tab TRANSACTIONS
 
-                    updateTabs(TAB_POSITION_NEW_TRANSACTION, TAB_POSITION_TRANSACTIONS);
+                    updateTabs(TAB_POSITION_TRANSACTION_CREATE, TAB_POSITION_TRANSACTIONS);
 
                 } else if(lastTabPosition == 0 || lastTabPosition == 1){ // Other tabs
 
-                    if (((ViewGroup) tabLayout.getChildAt(0)).getChildAt(TAB_POSITION_NEW_TRANSACTION).getVisibility() == View.VISIBLE) { // NEW_TRANSACTION is VISIBLE
+                    if (((ViewGroup) tabLayout.getChildAt(0)).getChildAt(TAB_POSITION_TRANSACTION_CREATE).getVisibility() == View.VISIBLE) { // NEW_TRANSACTION is VISIBLE
 
-                        updateTabs(TAB_POSITION_NEW_TRANSACTION, TAB_POSITION_TRANSACTIONS); // Gone tab NEW_TRANSACTION, tab Show TRANSACTIONS
+                        updateTabs(TAB_POSITION_TRANSACTION_CREATE, TAB_POSITION_TRANSACTIONS); // Gone tab NEW_TRANSACTION, tab Show TRANSACTIONS
 
                     } else if (((ViewGroup) tabLayout.getChildAt(0)).getChildAt(TAB_POSITION_TRANSACTIONS).getVisibility() == View.VISIBLE) { // TRANSACTION is VISIBLE
 
-                        updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_NEW_TRANSACTION); // Gone tab TRANSACTION, Show tab NEW_TRANSACTION
+                        updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_TRANSACTION_CREATE); // Gone tab TRANSACTION, Show tab NEW_TRANSACTION
 
                     }
 
@@ -144,18 +144,14 @@ public class ActivityMain extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            FragmentManager fm = getSupportFragmentManager();
-            for (Fragment frag : fm.getFragments()) {
-                if (frag.isVisible()) {
-                    FragmentManager childFm = frag.getChildFragmentManager();
-                    if (childFm.getBackStackEntryCount() > 0) {
-                        childFm.popBackStack();
-                        return;
-                    }
-                }
-            }
+
+        if(getCurrentVisibleItem() == 1) {
+            viewPager.setCurrentItem(0);
             return;
+        }
+
+        if (doubleBackToExitPressedOnce) {
+            finish();
         }
 
         int count = getSupportFragmentManager().getBackStackEntryCount();
@@ -175,6 +171,14 @@ public class ActivityMain extends AppCompatActivity {
             getSupportFragmentManager().popBackStack();
         }
 
+    }
+
+    public int getCurrentVisibleItem() {
+        return viewPager.getCurrentItem();
+    }
+
+    public void setCurrentVisibleItem(int page) {
+        viewPager.setCurrentItem(page);
     }
 
     /**
@@ -210,8 +214,16 @@ public class ActivityMain extends AppCompatActivity {
         toast.setView(layout);
         toast.show();
     }
+
+    public void updateTabs(int hide, int show) {
+        LogUtils.logEnterFunction(TAG, "Hide " + hide + ", Show " + show);
+        ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(hide).setVisibility(View.GONE);
+        ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(show).setVisibility(View.VISIBLE);
+        LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
+    }
+
     /**
-     * Retrieve fragment from TabPagerAdapter
+     * Retrieve fragment from FragmentPagerAdapter
      *
      * @param position
      * @return
@@ -227,40 +239,40 @@ public class ActivityMain extends AppCompatActivity {
         return fragment;
     }
 
-    public void setFragmentAccountAdd(String tag) {
+    public void setFragmentAccountCreate(String tag) {
         LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentAccountAdd = tag;
+        fragmentAccountCreate = tag;
         LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
     }
 
-    public String getFragmentAccountAdd() {
+    public String getFragmentAccountCreate() {
         LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentAccountAdd);
-        return fragmentAccountAdd;
+        LogUtils.logLeaveFunction(TAG, null, fragmentAccountCreate);
+        return fragmentAccountCreate;
     }
 
-    public void setFragmentAccountEdit(String tag) {
+    public void setFragmentAccountUpdate(String tag) {
         LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentAccountEdit = tag;
+        fragmentAccountUpdate = tag;
         LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
     }
 
-    public String getFragmentAccountEdit() {
+    public String getFragmentAccountUpdate() {
         LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentAccountEdit);
-        return fragmentAccountEdit;
+        LogUtils.logLeaveFunction(TAG, null, fragmentAccountUpdate);
+        return fragmentAccountUpdate;
     }
 
-    public void setFragmentCategoryAdd(String tag) {
+    public void setFragmentCategoryCreate(String tag) {
         LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentCategoryAdd = tag;
+        fragmentCategoryCreate = tag;
         LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
     }
 
-    public String getFragmentCategoryAdd() {
+    public String getFragmentCategoryCreate() {
         LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentCategoryAdd);
-        return fragmentCategoryAdd;
+        LogUtils.logLeaveFunction(TAG, null, fragmentCategoryCreate);
+        return fragmentCategoryCreate;
     }
 
     public void setFragmentNewTransactionSelectCategory(String tag) {
@@ -309,12 +321,5 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentAccountTransactions);
         return fragmentAccountTransactions;
-    }
-
-    public void updateTabs(int hide, int show) {
-        LogUtils.logEnterFunction(TAG, "Hide " + hide + ", Show " + show);
-        ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(hide).setVisibility(View.GONE);
-        ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(show).setVisibility(View.VISIBLE);
-        LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
     }
 }

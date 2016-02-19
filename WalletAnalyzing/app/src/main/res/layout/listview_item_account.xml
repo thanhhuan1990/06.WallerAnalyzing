@@ -52,5 +52,5 @@
         android:layout_height="30dp"
         android:layout_weight="1"
         android:scaleType="fitCenter"
-        android:src="@drawable/icon_list_edit" />
+        android:src="@drawable/icon_list_edit_2" />
 </LinearLayout>

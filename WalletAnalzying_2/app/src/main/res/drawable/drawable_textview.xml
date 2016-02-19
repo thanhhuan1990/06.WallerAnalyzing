@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="@android:color/white"/>
+            <stroke
+                android:width="2dp"
+                android:color="#adadad"
+                />
+            <corners android:radius="5dp"/>
+        </shape>
+    </item>
+    <item
+        android:bottom="2dp"
+        android:right="1dp"
+        android:top="2dp"
+        android:width="3dp"
+        android:height="5dp">
+        <bitmap
+            android:gravity="right"
+            android:src="@drawable/icon_shrinking"
+            />
+    </item>
+</layer-list>

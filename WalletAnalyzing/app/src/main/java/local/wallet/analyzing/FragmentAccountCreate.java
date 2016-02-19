@@ -27,7 +27,7 @@ import local.wallet.analyzing.model.AccountType;
  */
 public class FragmentAccountCreate extends Fragment {
 
-    private static final String TAG     = "FragmentAccountCreate";
+    private static final String TAG     = "AccountCreate";
 
     private Configurations              mConfigs;
     private DatabaseHelper              mDbHelper;
@@ -41,6 +41,7 @@ public class FragmentAccountCreate extends Fragment {
     private LinearLayout                llCurrency;
     private TextView                    tvCurrency;
     private EditText                    etInitialBalance;
+    private TextView                    tvCurrencyIcon;
     private LinearLayout                llDescription;
     private TextView                    tvDescription;
     private LinearLayout                llSave;
@@ -49,13 +50,16 @@ public class FragmentAccountCreate extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         setHasOptionsMenu(true);
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != 2) {
+            return;
+        }
+
         LogUtils.logEnterFunction(TAG, null);
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
@@ -75,7 +79,7 @@ public class FragmentAccountCreate extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountAdd(myTag);
+        ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
 
         LogUtils.logLeaveFunction(TAG, null, null);
 
@@ -101,6 +105,7 @@ public class FragmentAccountCreate extends Fragment {
         tvCurrency          = (TextView) getView().findViewById(R.id.tvCurrency);
         tvCurrency.setText(Currency.getCurrencyName(mCurrency));
         etInitialBalance    = (EditText) getView().findViewById(R.id.etInitialBalance);
+        tvCurrencyIcon      = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
         llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
         tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
         llSave              = (LinearLayout) getView().findViewById(R.id.llSave);
@@ -110,7 +115,7 @@ public class FragmentAccountCreate extends Fragment {
             public void onClick(View v) {
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountAdd());
+                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
                 bundle.putInt("AccountType", mAccountType.getId());
                 nextFrag.setArguments(bundle);
                 FragmentAccountCreate.this.getFragmentManager().beginTransaction()
@@ -125,7 +130,7 @@ public class FragmentAccountCreate extends Fragment {
             public void onClick(View v) {
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountAdd());
+                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
                 bundle.putInt("Currency", mCurrency.getValue());
                 nextFrag.setArguments(bundle);
                 FragmentAccountCreate.this.getFragmentManager().beginTransaction()
@@ -142,7 +147,7 @@ public class FragmentAccountCreate extends Fragment {
             public void onClick(View v) {
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountAdd());
+                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
                 bundle.putString("Description", tvDescription.getText().toString());
                 nextFrag.setArguments(bundle);
                 FragmentAccountCreate.this.getFragmentManager().beginTransaction()
@@ -171,76 +176,13 @@ public class FragmentAccountCreate extends Fragment {
                 long account_id = mDbHelper.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
 
                 // Update list of Account in FragmentListAccount
-                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_ACCOUNTS);
+                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT);
                 fragmentListAccount.addToAccountList(mDbHelper.getAccount(account_id));
 
                 // Return to FragmentListAccount
                 getFragmentManager().popBackStackImmediate();
             }
         });
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onAttach(activity);
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onStart() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onStart();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onResume() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onResume();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onPause() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onPause();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onStop() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onStop();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onDestroyView() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onDestroyView();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onDestroy() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onDestroy();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onDetach() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onDetach();
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Override
-    public void onDestroyOptionsMenu() {
-        LogUtils.logEnterFunction(TAG, null);
-        super.onDestroyOptionsMenu();
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
@@ -266,6 +208,7 @@ public class FragmentAccountCreate extends Fragment {
 
         mCurrency = currency;
         tvCurrency.setText(Currency.getCurrencyName(mCurrency));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mCurrency.getValue())));
 
         LogUtils.logLeaveFunction(TAG, "currencyId = " + currency.name(), null);
     }

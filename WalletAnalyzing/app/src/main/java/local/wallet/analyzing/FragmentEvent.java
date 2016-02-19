@@ -10,11 +10,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -35,6 +40,8 @@ public class FragmentEvent extends Fragment {
 
     private ClearableEditText   etEvent;
     private ListView            lvEvent;
+    private List<String>        events = new ArrayList<String>();
+    private ArrayAdapter<String> mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,7 +80,7 @@ public class FragmentEvent extends Fragment {
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
@@ -102,7 +109,7 @@ public class FragmentEvent extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountAdd(myTag);
+        ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
 
         LogUtils.logLeaveFunction(TAG, null, null);
 
@@ -119,6 +126,22 @@ public class FragmentEvent extends Fragment {
 
         etEvent = (ClearableEditText) getView().findViewById(R.id.etEvent);
         etEvent.setText(mEvent);
+        etEvent.addTextChangedListener(new EventTextWatcher());
+
+        lvEvent = (ListView) getView().findViewById(R.id.lvEvent);
+        events = db.getEvents("");
+        mAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_1,
+                android.R.id.text1,
+                events);
+        lvEvent.setAdapter(mAdapter);
+
+        lvEvent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                etEvent.setText(events.get(position));
+            }
+        });
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -139,6 +162,14 @@ public class FragmentEvent extends Fragment {
             LogUtils.logEnterFunction(TAG, null);
 
             if(!s.toString().equals(current)){
+                events.clear();
+                List<String> arTemp = db.getEvents(s.toString().trim());
+                for(int i = 0 ; i < arTemp.size(); i++) {
+                    events.add(arTemp.get(i));
+                }
+                mAdapter.notifyDataSetChanged();
+
+                current = s.toString().trim();
             }
 
             LogUtils.logLeaveFunction(TAG, null, null);

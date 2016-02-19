@@ -169,7 +169,7 @@ public class FragmentCategorySelect extends Fragment {
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
@@ -241,6 +241,7 @@ public class FragmentCategorySelect extends Fragment {
         btnExpense.performClick();
         LogUtils.logLeaveFunction(TAG, null, null);
     }
+
     /**
      * CategoryView: Use to control show/hide category in listview
      */

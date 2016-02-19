@@ -89,11 +89,11 @@ public class FragmentCategoryParentSelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentCategoryAdd())) {
+                if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentCategoryCreate())) {
 
                     LogUtils.trace(TAG, "Setup for FragmentCategoryCreate");
                     // Return ParentCategory's Id to FragmentCategoryCreate
-                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentCategoryAdd();
+                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentCategoryCreate();
                     FragmentCategoryCreate fragment = (FragmentCategoryCreate)getActivity()
                                                         .getSupportFragmentManager()
                                                             .findFragmentByTag(tagOfFragment);

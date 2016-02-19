@@ -102,7 +102,7 @@ public class FragmentAccountsSelect extends Fragment {
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_NEW_TRANSACTION);
+                    FragmentTransactionCreate fragment = (FragmentTransactionCreate) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updateAccount(mTransactionType, arAccounts.get(position).getId());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {

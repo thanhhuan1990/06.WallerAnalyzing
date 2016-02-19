@@ -82,6 +82,46 @@
     <string name="new_transaction_remaining_amount">Remaining amount</string>
     <string name="new_transaction_adjustment">Adjustment</string>
 
+    <string name="new_category_name">Name</string>
+    <string name="new_category_hint">Category name</string>
+    <string name="new_category_parent_category">Parent Category</string>
+    <string name="new_category_description">Description</string>
+    <string name="new_category_select_as_parent">(No item selected)</string>
+
+    <string name="new_budget_name">Name</string>
+    <string name="new_budget_name_hit">Name</string>
+    <string name="new_budget_amount">Amount</string>
+    <string name="new_budget_repeat">Repeat</string>
+    <string name="new_budget_from_date">From date</string>
+    <string name="new_budget_move_to_next">Move the remaining to next budget</string>
+    <string name="new_budget_move_to_next_description_not">(Balance or overspend will NOT be move to next period)</string>
+    <string name="new_budget_move_to_next_description">(Balance or overspend will be move to next period)</string>
+    <string-array name="budget_repeat_type">
+        <item>No repeat</item>
+        <item>By daily</item>
+        <item>By weekly</item>
+        <item>By monthly</item>
+        <item>By quaterly</item>
+        <item>By yearly</item>
+    </string-array>
+
+    <string name="title_category_expense">Expense categories</string>
+    <string name="title_category_expense_add">Add expense category</string>
+    <string name="title_category_expense_select_parent">Parent Category</string>
+    <string name="title_category_income">Income categories</string>
+    <string name="title_category_income_add">Add income category</string>
+    <string name="title_category_income_select_parent">Add income category</string>
+    <string name="title_account">Accounts</string>
+    <string name="title_account_add">Add account</string>
+    <string name="title_account_select_type">Add account</string>
+    <string name="title_account_select_currency">Select currency</string>
+    <string name="title_budget">Budget</string>
+    <string name="title_budget_create">Add budget</string>
+    <string name="title_utility">Utilities</string>
+    <string name="title_description">Description</string>
+    <string name="title_payee">Payee</string>
+    <string name="title_event">Event</string>
+
     <string name="Save">Save</string>
     <string name="Delete">Delete</string>
 
@@ -96,36 +136,15 @@
     <string name="income_category">Income Category</string>
     <string name="expense_category_lent">Lent/Borrowed</string>
 
-    <string name="new_category_name">Name</string>
-    <string name="new_category_hint">Category name</string>
-    <string name="new_category_parent_category">Parent Category</string>
-    <string name="new_category_description">Description</string>
-    <string name="new_category_select_as_parent">(No item selected)</string>
-
-    <string name="title_category_expense">Expense categories</string>
-    <string name="title_category_expense_add">Add expense category</string>
-    <string name="title_category_expense_select_parent">Parent Category</string>
-    <string name="title_category_income">Income categories</string>
-    <string name="title_category_income_add">Add income category</string>
-    <string name="title_category_income_select_parent">Add income category</string>
-    <string name="title_account">Accounts</string>
-    <string name="title_account_add">Add account</string>
-    <string name="title_account_select_type">Add account</string>
-    <string name="title_account_select_currency">Select currency</string>
-    <string name="title_budget">Budget</string>
-    <string name="title_budget_add">Add budget</string>
-    <string name="title_utility">Utilities</string>
-    <string name="title_description">Description</string>
-    <string name="title_payee">Payee</string>
-    <string name="title_event">Event</string>
-
     <string name="content_expense">Expense: %s</string>
     <string name="content_income">Income: %s</string>
-    <string name="content_transfer">Transfer to </string>
     <string name="content_today">Today</string>
     <string name="content_yesterday">Yesterday</string>
     <string name="content_expensed">Expensed: %s</string>
     <string name="content_adjustment_income">Income: %s</string>
+    <string name="content_transfer_to">Transfer to %s</string>
+    <string name="content_transfer_from">Transfer from %s</string>
+    <string name="content_transfer_fee">Transfer fee: %s</string>
 
     <string name="currency_icon_vietnam">₫</string>
     <string name="currency_icon_usd">$</string>

@@ -41,7 +41,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentTransactionCreate extends Fragment implements  View.OnClickListener {
-    public static final String Tag = "FragmentTransactionCreate";
+    public static final String Tag = "TransactionCreate";
 
     private Configurations      mConfigs;
     private DatabaseHelper      mDbHelper;
@@ -124,14 +124,18 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
     private Calendar            mCal;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
-
-        setRetainInstance(true);
-        setHasOptionsMenu(true);
-        getActivity().invalidateOptionsMenu();
 
         mConfigs    = new Configurations(getActivity());
         mDbHelper = new DatabaseHelper(getActivity());
@@ -139,18 +143,16 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-        super.onCreate(savedInstanceState);
         LogUtils.logLeaveFunction(Tag, null, null);
+        return inflater.inflate(R.layout.layout_fragment_transaction_create, container, false);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(menu.size() != 0) {
-            return;
-        }
         LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -181,21 +183,6 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_transaction_create, container, false);
-    }
-
-    @Override
-    public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onResume();
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -223,13 +210,13 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 startFragmentDescription(TransactionEnum.Expense, tvExpenseDescription.getText().toString());
                 break;
             case R.id.llIncomeDescription:
-                startFragmentDescription(TransactionEnum.Income, tvExpenseDescription.getText().toString());
+                startFragmentDescription(TransactionEnum.Income, tvIncomeDescription.getText().toString());
                 break;
             case R.id.llTransferDescription:
-                startFragmentDescription(TransactionEnum.Transfer, tvExpenseDescription.getText().toString());
+                startFragmentDescription(TransactionEnum.Transfer, tvTransferDescription.getText().toString());
                 break;
             case R.id.llAdjustmentDescription:
-                startFragmentDescription(TransactionEnum.Adjustment, tvExpenseDescription.getText().toString());
+                startFragmentDescription(TransactionEnum.Adjustment, tvAdjustmentDescription.getText().toString());
                 break;
             case R.id.llExpenseAccount:
                 startFragmentSelectAccount(TransactionEnum.Expense, mFromAccount != null ? mFromAccount.getId() : 0);
@@ -269,7 +256,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 startFragmentEvent(TransactionEnum.Adjustment, tvAdjustmentEvent.getText().toString());
                 break;
             case R.id.llSave:
-                save();
+                createTransaction();
                 break;
             default:
                 break;
@@ -461,6 +448,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         tvTransferDate.setText(getDateString(mCal));
 
         etTransferFee               = (ClearableEditText) getView().findViewById(R.id.etTransferFee);
+        etTransferFee.addTextChangedListener(new CurrencyTextWatcher(etTransferFee));
         tvTransferFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvTransferFeeCurrencyIcon);
 
         llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
@@ -681,7 +669,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
     }
 
-    private void save() {
+    private void createTransaction() {
         switch (mCurrentTransactionType) {
             case Expense: {
 
@@ -718,12 +706,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 long newTransactionId = mDbHelper.createTransaction(transaction);
 
                 if (newTransactionId != -1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
                 }
 
                 break;
@@ -761,12 +744,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 long newTransactionId = mDbHelper.createTransaction(transaction);
 
                 if (newTransactionId != -1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
                 }
                 break;
             }
@@ -795,35 +773,29 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 }
 
                 Double transferAmount       = Double.parseDouble(etTransferAmount.getText().toString().replaceAll(",", ""));
-
                 int fromAccountId           = mFromAccount.getId();
                 int toAccountId             = mToAccount.getId();
                 String transferDescription  = tvTransferDescription.getText().toString();
                 Double transferFee          = !etTransferFee.getText().toString().equals("") ?
-                        Double.parseDouble(etTransferFee.getText().toString().replaceAll(",", ""))
-                        : 0.0;
+                                                Double.parseDouble(etTransferFee.getText().toString().replaceAll(",", ""))
+                                                : 0.0;
                 int transferCategoryId      = mCategory != null ? mCategory.getId() : 0;
 
                 Transaction transaction     = new Transaction(0,
-                        TransactionEnum.Transfer.getValue(),
-                        transferAmount,
-                        transferCategoryId,
-                        transferDescription,
-                        fromAccountId,
-                        toAccountId,
-                        mCal,
-                        transferFee,
-                        "",
-                        "");
+                                                                TransactionEnum.Transfer.getValue(),
+                                                                transferAmount,
+                                                                transferCategoryId,
+                                                                transferDescription,
+                                                                fromAccountId,
+                                                                toAccountId,
+                                                                mCal,
+                                                                transferFee,
+                                                                "",
+                                                                "");
                 long newTransactionId = mDbHelper.createTransaction(transaction);
 
                 if (newTransactionId != -1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
                 }
 
                 break;
@@ -861,12 +833,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 long newTransactionId = mDbHelper.createTransaction(transaction);
 
                 if (newTransactionId != -1) {
-
                     cleanup();
-
-                    FragmentListTransaction fragmentListTransaction = (FragmentListTransaction) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTIONS);
-                    fragmentListTransaction.updateListTransaction();
-
                 }
 
                 break;
