@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/layout_select_category"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background_main_frame">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/background_main_frame"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,40 +14,44 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnExpense"
+            android:id="@+id/btnInProgress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/expense_category"
             android:background="@drawable/background_button_left_case_selected"
+            android:text="@string/report_event_in_progress"
             android:textColor="@color/button_textcolor_2"/>
 
         <Button
-            android:id="@+id/btnBorrow"
+            android:id="@+id/btnCompleted"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/expense_category_lent"
             android:background="@drawable/background_button_right_case"
-            android:textColor="@color/button_textcolor" />
+            android:text="@string/report_event_completed"
+            android:textColor="@color/button_textcolor"/>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/listview_divider"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:layout_marginTop="8dp">
+        android:background="@android:color/transparent">
 
         <ListView
-            android:id="@+id/lvCategory"
+            android:id="@+id/lvEvents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:cacheColorHint="@android:color/transparent"
             android:background="@android:color/white"
+            android:cacheColorHint="@android:color/transparent"
             android:divider="@color/listview_divider"
-            android:dividerHeight="0.5dp"/>
+            android:dividerHeight="0.2dp"/>
 
-        <!-- Here is the view to show if the list is emtpy -->
+        <!-- Here is the view to show if the list is empty -->
         <TextView
             android:id="@+id/tvEmpty"
             android:layout_width="match_parent"
@@ -59,4 +61,5 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone"/>
     </FrameLayout>
+
 </LinearLayout>

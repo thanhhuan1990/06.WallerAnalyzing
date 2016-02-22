@@ -25,6 +25,15 @@
         <item>Tính và ghi số tiền đã chi/thu theo số tiền bạn còn.</item>
     </string-array>
 
+    <string-array name="report_type">
+        <item>Tình hình thu chi</item>
+        <item>Phân tích chi tiêu</item>
+        <item>Tài chính hiện tại</item>
+        <item>Theo dõi vay nợ</item>
+        <item>Chuyến đi, sự kiện</item>
+        <item>Chi cho ai</item>
+    </string-array>
+
     <string-array name="data_file_extension">
         <item>xls</item>
         <item>xlsx</item>
@@ -86,6 +95,13 @@
         <item>Hàng quý</item>
         <item>Hàng năm</item>
     </string-array>
+
+    <string name="report_event_in_progress">Đang diễn ra</string>
+    <string name="report_event_completed">Đã kết thúc</string>
+    <string name="event_item_date">Từ %s</string>
+    <string name="event_total_expense">Σ Tổng chi</string>
+    <string name="event_total_income">Σ Tổng thu</string>
+    <string name="event_detail_complete">Kết thúc</string>
 
     <string name="title_category_expense">Hạng mục chi</string>
     <string name="title_category_expense_add">Thêm hạng mục chi</string>

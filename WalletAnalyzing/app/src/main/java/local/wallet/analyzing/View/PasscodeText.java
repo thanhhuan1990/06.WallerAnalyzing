@@ -5,11 +5,9 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import local.wallet.analyzing.OnInputPasscode;
+import local.wallet.analyzing.IPasscodeEnter;
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
 
@@ -17,7 +15,7 @@ import local.wallet.analyzing.Utils.LogUtils;
  * Created by huynh.thanh.huan on 1/4/2016.
  */
 public class PasscodeText implements View.OnClickListener  {
-    private static final String TAG = "PasscodeTextView";
+    private static final String TAG = "PasscodeText";
 
     private ImageView mPasscode1;
     private ImageView mPasscode2;
@@ -28,7 +26,7 @@ public class PasscodeText implements View.OnClickListener  {
 
     private String passcode = "";
     private Activity mActivity;
-    private OnInputPasscode mListener;
+    private IPasscodeEnter mListener;
 
     private Button[] mDial = new Button[10];
     private Button     mDelete;
@@ -49,7 +47,7 @@ public class PasscodeText implements View.OnClickListener  {
         Buttons.append(R.id.btnPasscode0, '0');
     }
 
-    public PasscodeText(Activity activity, OnInputPasscode mListener, String passcode) {
+    public PasscodeText(Activity activity, IPasscodeEnter mListener, String passcode) {
         LogUtils.logEnterFunction(TAG, null);
 
         this.mListener  = mListener;
@@ -91,7 +89,6 @@ public class PasscodeText implements View.OnClickListener  {
     @Override
     public void onClick(View v) {
         try {
-
             if(v != mDelete) {
                 char code = Buttons.get(v.getId());
                 updatePasscode(code + "");
@@ -121,12 +118,8 @@ public class PasscodeText implements View.OnClickListener  {
                 break;
             case 4:
                 mPasscode4.setImageResource(R.drawable.img_number_background);
-
-                if(inputtedContent.equals(passcode)) {
-                    mListener.onPasscodeOK();
-                } else {
-                    mListener.onPasscodeWrong();
-                }
+                // Notify login result
+                mListener.onPasscodeResult(inputtedContent.equals(passcode));
                 break;
             default:
                 break;

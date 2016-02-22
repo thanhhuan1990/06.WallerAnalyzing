@@ -105,6 +105,13 @@
         <item>By yearly</item>
     </string-array>
 
+    <string name="report_event_in_progress">In progress</string>
+    <string name="report_event_completed">Completed</string>
+    <string name="event_item_date">From %s</string>
+    <string name="event_total_expense">Σ Total Expense</string>
+    <string name="event_total_income">Σ Total Income</string>
+    <string name="event_detail_complete">Completed</string>
+
     <string name="title_category_expense">Expense categories</string>
     <string name="title_category_expense_add">Add expense category</string>
     <string name="title_category_expense_select_parent">Parent Category</string>

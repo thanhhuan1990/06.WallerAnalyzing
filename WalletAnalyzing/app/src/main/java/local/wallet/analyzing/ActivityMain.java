@@ -55,7 +55,9 @@ public class ActivityMain extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        /* Update Locale */
+        setContentView(R.layout.layout_activity_main);
+
+        /* Todo: Update Locale */
         Configurations config = new Configurations(getApplicationContext());
         String languageToLoad  = config.getString(Configurations.Key.Locale);
         Locale locale = new Locale(languageToLoad);
@@ -63,9 +65,6 @@ public class ActivityMain extends AppCompatActivity {
         Configuration androidConfigs = new Configuration();
         androidConfigs.locale = locale;
         getBaseContext().getResources().updateConfiguration(androidConfigs, getBaseContext().getResources().getDisplayMetrics());
-
-        // Update View
-        setContentView(R.layout.layout_activity_main);
 
         /* Todo: Init Views */
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -173,17 +172,24 @@ public class ActivityMain extends AppCompatActivity {
 
     }
 
+    /**
+     * Retry current visible tab
+     * @return
+     */
     public int getCurrentVisibleItem() {
         return viewPager.getCurrentItem();
     }
 
+    /**
+     * Update current visible tab
+     * @param page
+     */
     public void setCurrentVisibleItem(int page) {
         viewPager.setCurrentItem(page);
     }
 
     /**
      * Update ActionBar by layout's ID
-     *
      * @param view
      */
     public void updateActionBar(View view) {
@@ -198,6 +204,10 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    /**
+     * Show customize Toast
+     * @param error
+     */
     public void showError(String error) {
         LayoutInflater inflater = getLayoutInflater();
 
@@ -215,6 +225,11 @@ public class ActivityMain extends AppCompatActivity {
         toast.show();
     }
 
+    /**
+     * Update tabLayout
+     * @param hide
+     * @param show
+     */
     public void updateTabs(int hide, int show) {
         LogUtils.logEnterFunction(TAG, "Hide " + hide + ", Show " + show);
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(hide).setVisibility(View.GONE);
@@ -222,6 +237,7 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
     }
 
+    //region RETRY FRAGMENT from FragmentManager
     /**
      * Retrieve fragment from FragmentPagerAdapter
      *
@@ -322,4 +338,6 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logLeaveFunction(TAG, null, fragmentAccountTransactions);
         return fragmentAccountTransactions;
     }
+
+    //endregion
 }
