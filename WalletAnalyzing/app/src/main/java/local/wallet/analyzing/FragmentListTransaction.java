@@ -65,6 +65,7 @@ public class FragmentListTransaction extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         db = new DatabaseHelper(getActivity());
+        db.insertDefaultCategories();
 
         // Get all transaction
         List<Transaction> arTrans = db.getAllTransactions();

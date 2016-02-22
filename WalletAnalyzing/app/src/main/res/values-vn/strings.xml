@@ -79,6 +79,11 @@
     <string name="new_category_description">Diễn giải</string>
     <string name="new_category_select_as_parent">(Không chọn)</string>
 
+    <string name="budget_item_total">Hạn mức:</string>
+    <string name="budget_item_expensed">Đã chi:</string>
+    <string name="budget_item_balance">Còn:</string>
+    <string name="budget_item_over">Bội chi:</string>
+
     <string name="new_budget_name">Tên</string>
     <string name="new_budget_name_hit">Tên hạn mức</string>
     <string name="new_budget_amount">Số tiền</string>
@@ -129,6 +134,7 @@
     <string name="Input_Error_ToAccount_Empty">Tài khoản chuyển tới không được để trống!</string>
     <string name="Input_Error_Transfer_Same_Account">Không thể chuyển khoản trong cùng tài khoản!</string>
     <string name="Input_Error_Adjustment_Same_Amount">Số tiền bằng 0!</string>
+    <string name="Input_Error_budget_category_none">Xin mời chọn hạng mục chi tiêu!</string>
 
     <string name="expense_category">Chi Tiêu</string>
     <string name="income_category">Thu Vào</string>

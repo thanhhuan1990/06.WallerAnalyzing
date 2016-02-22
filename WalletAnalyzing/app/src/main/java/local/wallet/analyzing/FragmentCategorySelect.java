@@ -90,7 +90,6 @@ public class FragmentCategorySelect extends Fragment {
 
         /* Initialize Database, insert default category */
         db = new DatabaseHelper(getActivity());
-        db.insertDefaultCategories();
 
         btnExpense      = (Button) getView().findViewById(R.id.btnExpense);
         btnExpense.setText(getResources().getString((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer)

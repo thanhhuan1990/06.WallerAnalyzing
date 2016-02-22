@@ -21,6 +21,7 @@ import java.util.Locale;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
+import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Kind;
@@ -49,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_CATEGORY                  = "categories";
     private static final String TABLE_ACCOUNT                   = "accounts";
     private static final String TABLE_TRANSACTION               = "transactions";
+    private static final String TABLE_BUDGET                    = "budgets";
 
     // Common column names
     private static final String KEY_ID                          = "id";
@@ -78,10 +80,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TRANSACTION_EVENT           = "event";
 
     // BUDGET Table - column names
+    private static final String KEY_BUDGET_AMOUNT               = "amount";
     private static final String KEY_BUDGET_CATEGORY             = "category";
     private static final String KEY_BUDGET_REPEAT_TYPE          = "repeat";
     private static final String KEY_BUDGET_DATE                 = "date";
     private static final String KEY_BUDGET_INCREMENTAL          = "incremental";
+    private static final String KEY_BUDGET_INCREMENTAL_AMOUNT   = "incremental_amount";
 
     //region LogUtils
     private void enter(String tag, String param) {
@@ -145,6 +149,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_TRANSACTION_PAYEE + " TEXT,"
             + KEY_TRANSACTION_EVENT + " TEXT" + ")";
 
+    // BUDGET table create statement
+    private static final String CREATE_TABLE_BUDGET = "CREATE TABLE "
+            + TABLE_BUDGET + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_NAME + " TEXT,"
+            + KEY_BUDGET_AMOUNT + " DOUBLE,"
+            + KEY_BUDGET_CATEGORY + " TEXT,"
+            + KEY_BUDGET_REPEAT_TYPE + " INTEGER,"
+            + KEY_BUDGET_DATE + " DATETIME,"
+            + KEY_BUDGET_INCREMENTAL + " INTEGER,"
+            + KEY_BUDGET_INCREMENTAL_AMOUNT + " DOUBLE)";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -170,6 +186,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         trace(TAG, CREATE_TABLE_TRANSACTION);
         db.execSQL(CREATE_TABLE_TRANSACTION);
 
+        trace(TAG, CREATE_TABLE_BUDGET);
+        db.execSQL(CREATE_TABLE_BUDGET);
+
         leave(TAG, "onCreate", null);
     }
 
@@ -181,6 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_CATEGORY);
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_ACCOUNT);
         db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_TRANSACTION);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_BUDGET);
 
         // create new tables
         onCreate(db);
@@ -1095,6 +1115,90 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     //endregion
 
+    // ------------------------ BUDGET table methods ----------------//
+    //region Table BUDGET
+
+    public List<Budget> getAllBudgets() {
+        enter(TAG, null);
+
+        List<Budget> budgets = new ArrayList<Budget>();
+        String selectQuery = "SELECT  * FROM " + TABLE_BUDGET;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Budget budget = new Budget();
+                budget.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                budget.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                budget.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
+
+                String[] items = c.getString(c.getColumnIndex(KEY_BUDGET_CATEGORY)).replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+
+                int[] arCategories = new int[items.length];
+
+                for (int i = 0; i < items.length; i++) {
+                    try {
+                        arCategories[i] = Integer.parseInt(items[i].trim());
+                    } catch (NumberFormatException nfe) {};
+                }
+
+                budget.setCategories(arCategories);
+                budget.setRepeatType(c.getInt(c.getColumnIndex(KEY_BUDGET_REPEAT_TYPE)));
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_DATE))));
+                budget.setFromDate(calendar);
+
+                budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
+
+                budget.setIncrementalAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_INCREMENTAL_AMOUNT)));
+
+                // adding to kinds list
+                budgets.add(budget);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "Budgets = " + budgets.toString());
+
+        return budgets;
+    }
+
+    /*
+     * Creating a TRANSACTION
+     */
+    public long createBudget(Budget budget) {
+        enter(TAG, "budget = " + budget.toString());
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, budget.getName());
+        values.put(KEY_BUDGET_AMOUNT, budget.getAmount());
+        values.put(KEY_BUDGET_CATEGORY, budget.getCategories().toString());
+        values.put(KEY_BUDGET_REPEAT_TYPE, budget.getRepeatType());
+        values.put(KEY_BUDGET_DATE, getDateTime(budget.getFromDate().getTime()));
+        values.put(KEY_BUDGET_INCREMENTAL, budget.isIncremental() ? 1 : 0);
+        values.put(KEY_BUDGET_INCREMENTAL_AMOUNT, budget.getIncrementalAmount());
+
+        try {
+            // insert row
+            long budget_id = db.insert(TABLE_BUDGET, null, values);
+
+            leave(TAG, "budget = " + budget.toString(), "budget_id = " + budget_id);
+            return budget_id;
+
+        } catch (android.database.SQLException e) {
+            e.printStackTrace();
+            leave(TAG, "budget = " + budget.toString(), "budget_id = -1");
+            return -1;
+        }
+    }
+    //endregion
+
     //region UTILS method
     /**
      * get datetime
@@ -1107,7 +1211,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * get datetime
      * */
-    private java.util.Date getDateTime(String strDate) {
+    private Date getDateTime(String strDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         try {
             return dateFormat.parse(strDate);

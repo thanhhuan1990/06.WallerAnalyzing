@@ -37,6 +37,7 @@ import java.util.Locale;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
+import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -63,9 +64,11 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
     private TextView            tvFromDate;
     private CheckBox            cbMoveToNext;
     private TextView            tvDescription;
+    private LinearLayout        llSave;
 
+    private int[]               arCategories = new int[0];
     private List<String>        arRepeat;
-    private int                 repeatType  = 0;
+    private int                 repeatType  = 3;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,6 +80,10 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(TAG, null);
+
+        String myTag = getTag();
+        ((ActivityMain)getActivity()).setFragmentBudgetCreate(myTag);
+
         LogUtils.logLeaveFunction(TAG, null, null);
         return inflater.inflate(R.layout.layout_fragment_budget_create, container, false);
     }
@@ -104,6 +111,7 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         llRepeat        = (LinearLayout) getView().findViewById(R.id.llRepeat);
         llRepeat.setOnClickListener(this);
         tvRepeat        = (TextView) getView().findViewById(R.id.tvRepeat);
+        tvRepeat.setText(arTemp[repeatType]);
         llFromDate      = (LinearLayout) getView().findViewById(R.id.llFromDate);
         llFromDate.setOnClickListener(this);
         tvFromDate      = (TextView) getView().findViewById(R.id.tvFromDate);
@@ -111,12 +119,17 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         cbMoveToNext    = (CheckBox) getView().findViewById(R.id.cbMoveToNext);
         cbMoveToNext.setOnCheckedChangeListener(this);
         tvDescription   = (TextView) getView().findViewById(R.id.tvDescription);
+        llSave          = (LinearLayout) getView().findViewById(R.id.llSave);
+        llSave.setOnClickListener(this);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
+            return;
+        }
         LogUtils.logEnterFunction(TAG, null);
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -159,8 +172,30 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
             case R.id.llFromDate:
                 showDialogTime();
                 break;
+            case R.id.llSave:
+                createBudget();
+                break;
             default:
                 break;
+        }
+    }
+
+    private void createBudget() {
+        String name = etName.getText().toString();
+        Double amount =  etAmount.getText().toString().equals("") ? 0 : Double.parseDouble(etAmount.getText().toString().replaceAll(",", ""));
+
+        Budget budget = new Budget(0,
+                                    name,
+                                    amount,
+                                    arCategories,
+                                    repeatType,
+                                    mCal,
+                                    cbMoveToNext.isChecked(),
+                                    0.0);
+        LogUtils.trace(TAG, "Budget = " + budget.toString());
+        long budgetId = mDbHelper.createBudget(budget);
+        if(budgetId != 0) {
+            getFragmentManager().popBackStackImmediate();
         }
     }
 
@@ -206,14 +241,32 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
 
     private void startFragmentBudgetCategory() {
         FragmentBudgetCategory nextFrag = new FragmentBudgetCategory();
-//        Bundle bundle = new Bundle();
-//        bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
-//        bundle.putInt("Currency", mCurrency.getValue());
-//        nextFrag.setArguments(bundle);
+        Bundle bundle = new Bundle();
+        bundle.putIntArray("Categories", arCategories);
+        nextFrag.setArguments(bundle);
         FragmentBudgetCreate.this.getFragmentManager().beginTransaction()
                 .add(R.id.layout_budget, nextFrag, "FragmentBudgetCategory")
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void updateCategory(int[] categories) {
+        arCategories = categories;
+
+        if(arCategories.length == mDbHelper.getAllCategories(true, false).size()) {
+            tvCategory.setText("All");
+        } else {
+            String category = "";
+            for(int i = 0 ; i < arCategories.length; i++) {
+                if(i != 0) {
+                    category += ", ";
+                }
+                category += mDbHelper.getCategory(arCategories[i]).getName();
+            }
+
+            tvCategory.setText(category);
+        }
+
     }
 
     /**

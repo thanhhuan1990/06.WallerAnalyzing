@@ -6,6 +6,8 @@
 
     <string name="format_month_year">\%%02d/\%%02d</string>
     <string name="format_day_month_year">\%%02d/\%%02d/\%%02d</string>
+    <string name="format_budget_day_month_year">(\%%02d/\%%02d/\%%02d)</string>
+    <string name="format_budget_date">(\%%02d/\%%02d - \%%02d/\%%02d)</string>
 
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
@@ -88,6 +90,11 @@
     <string name="new_category_description">Description</string>
     <string name="new_category_select_as_parent">(No item selected)</string>
 
+    <string name="budget_item_total">Total:</string>
+    <string name="budget_item_expensed">Expensed:</string>
+    <string name="budget_item_balance">Balance:</string>
+    <string name="budget_item_over">Over:</string>
+
     <string name="new_budget_name">Name</string>
     <string name="new_budget_name_hit">Name</string>
     <string name="new_budget_amount">Amount</string>
@@ -101,7 +108,7 @@
         <item>By daily</item>
         <item>By weekly</item>
         <item>By monthly</item>
-        <item>By quaterly</item>
+        <item>By quarterly</item>
         <item>By yearly</item>
     </string-array>
 
@@ -138,6 +145,7 @@
     <string name="Input_Error_ToAccount_Empty">To Account can\'t be empty!</string>
     <string name="Input_Error_Transfer_Same_Account">Cannot transfer in same Account!</string>
     <string name="Input_Error_Adjustment_Same_Amount">Amount is 0!</string>
+    <string name="Input_Error_budget_category_none">Please select expense category!</string>
 
     <string name="expense_category">Expense Category</string>
     <string name="income_category">Income Category</string>

@@ -48,6 +48,7 @@ public class ActivityMain extends AppCompatActivity {
     private String fragmentNewTransactionSelectAccount;
     private String fragmentTransactionUpdate;
     private String fragmentAccountTransactions;
+    private String fragmentBudgetCreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -337,6 +338,18 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentAccountTransactions);
         return fragmentAccountTransactions;
+    }
+
+    public void setFragmentBudgetCreate(String tag) {
+        LogUtils.logEnterFunction(TAG, "tag = " + tag);
+        fragmentBudgetCreate = tag;
+        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
+    }
+
+    public String getFragmentBudgetCreate() {
+        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logLeaveFunction(TAG, null, fragmentBudgetCreate);
+        return fragmentBudgetCreate;
     }
 
     //endregion
