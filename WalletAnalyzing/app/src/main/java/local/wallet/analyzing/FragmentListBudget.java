@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -151,6 +152,12 @@ public class FragmentListBudget extends Fragment {
                 viewHolder.tvExpensed       = (TextView) convertView.findViewById(R.id.tvExpensed);
                 viewHolder.tvBalance        = (TextView) convertView.findViewById(R.id.tvBalance);
                 viewHolder.sbExpensed       = (SeekBar) convertView.findViewById(R.id.sbExpensed);
+                viewHolder.sbExpensed.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        return true;
+                    }
+                });
 
                 convertView.setTag(viewHolder);
             } else {
@@ -163,22 +170,26 @@ public class FragmentListBudget extends Fragment {
             }
 
             String date = "";
-            Calendar fromDate   = budget.getFromDate();
-            Calendar endDate    = budget.getFromDate();
             Calendar today      = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
+            today.set(Calendar.MINUTE, today.getActualMinimum(Calendar.MINUTE));
+            today.set(Calendar.SECOND, today.getActualMinimum(Calendar.SECOND));
+            today.set(Calendar.MILLISECOND, today.getActualMinimum(Calendar.MILLISECOND));
 
             int repeatType      = budget.getRepeatType();
 
             switch (repeatType) {
-                case 0: // No repeat
+                case 0: {// No repeat
+                    Calendar fromDate = budget.getFromDate();
                     date = String.format(getResources().getString(R.string.format_budget_day_month_year),
-                                            fromDate.get(Calendar.DAY_OF_MONTH),
-                                            fromDate.get(Calendar.MONTH) + 1,
-                                            fromDate.get(Calendar.YEAR));
+                            fromDate.get(Calendar.DAY_OF_MONTH),
+                            fromDate.get(Calendar.MONTH) + 1,
+                            fromDate.get(Calendar.YEAR));
 
                     viewHolder.tvDate.setText(date);
                     break;
-                case 1: // daily
+                }
+                case 1: {// daily
                     Calendar tomorow = Calendar.getInstance();
                     tomorow.add(Calendar.DAY_OF_MONTH, 1);
                     date = String.format(getResources().getString(R.string.format_budget_date),
@@ -189,8 +200,34 @@ public class FragmentListBudget extends Fragment {
                     viewHolder.tvDate.setText(date);
 
                     break;
-                case 2: // weekly
+                }
+                case 2: { // weekly
+                    LogUtils.trace(TAG, "Position " + position + ": Today     = " + today.getTimeInMillis());
+                    final Calendar fromDate = budget.getFromDate();
+                    final Calendar nextWeek = budget.getFromDate();
+                    LogUtils.trace(TAG, "Position " + position + ": Next week = " + nextWeek.getTimeInMillis());
+
+                    while (nextWeek.getTimeInMillis() <= today.getTimeInMillis()) {
+                        LogUtils.trace(TAG, "Add to NextWeek ");
+                        nextWeek.add(Calendar.WEEK_OF_MONTH, 1);
+
+                        if (nextWeek.getTimeInMillis() < today.getTimeInMillis()) {
+                            LogUtils.trace(TAG, "Add to fromDate ");
+                            fromDate.add(Calendar.WEEK_OF_MONTH, 1);
+                        }
+                    }
+                    LogUtils.trace(TAG, "Position " + position + ": Next week = " + nextWeek.getTimeInMillis());
+                    LogUtils.trace(TAG, "Position " + position + ": fromDate  = " + nextWeek.getTimeInMillis());
+
+                    date = String.format(getResources().getString(R.string.format_budget_date),
+                            fromDate.get(Calendar.DAY_OF_MONTH),
+                            fromDate.get(Calendar.MONTH) + 1,
+                            nextWeek.get(Calendar.DAY_OF_MONTH),
+                            nextWeek.get(Calendar.MONTH) + 1);
+                    viewHolder.tvDate.setText(date);
+
                     break;
+                }
                 case 3: // monthly
                     break;
                 case 4: //quarterly

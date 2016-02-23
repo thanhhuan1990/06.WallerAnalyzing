@@ -94,6 +94,11 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         super.onActivityCreated(savedInstanceState);
 
         mCal            = Calendar.getInstance();
+        mCal.set(Calendar.HOUR_OF_DAY, mCal.getActualMinimum(Calendar.HOUR_OF_DAY));
+        mCal.set(Calendar.MINUTE, mCal.getActualMinimum(Calendar.MINUTE));
+        mCal.set(Calendar.SECOND, mCal.getActualMinimum(Calendar.SECOND));
+        mCal.set(Calendar.MILLISECOND, mCal.getActualMinimum(Calendar.MILLISECOND));
+
         mConfigs        = new Configurations(getActivity());
         mDbHelper       = new DatabaseHelper(getActivity());
 
@@ -182,6 +187,10 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
 
     private void createBudget() {
         String name = etName.getText().toString();
+        if(name.equals("")) {
+            etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
+            return;
+        }
         Double amount =  etAmount.getText().toString().equals("") ? 0 : Double.parseDouble(etAmount.getText().toString().replaceAll(",", ""));
 
         Budget budget = new Budget(0,
@@ -193,6 +202,7 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
                                     cbMoveToNext.isChecked(),
                                     0.0);
         LogUtils.trace(TAG, "Budget = " + budget.toString());
+        LogUtils.trace(TAG, "Budget fromdate = " + budget.getFromDate().getTimeInMillis());
         long budgetId = mDbHelper.createBudget(budget);
         if(budgetId != 0) {
             getFragmentManager().popBackStackImmediate();

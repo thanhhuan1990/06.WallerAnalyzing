@@ -121,7 +121,8 @@
             android:layout_marginTop="5dp"
             android:alpha="@android:integer/config_longAnimTime"
             android:progress="90"
-            android:progressDrawable="@drawable/budget_progress_over" />
+            android:progressDrawable="@drawable/budget_progress_over"
+            />
 
     </LinearLayout>
 

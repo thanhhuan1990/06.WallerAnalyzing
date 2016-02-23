@@ -22,6 +22,7 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.View.CustomViewPager;
 
 public class ActivityMain extends AppCompatActivity {
 
@@ -37,7 +38,7 @@ public class ActivityMain extends AppCompatActivity {
     public static final int TAB_POSITION_UTILITIES = 5;
 
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private CustomViewPager viewPager;
     private TabPagerAdapter adapter;
     private int lastTabPosition = 0;
 
@@ -81,7 +82,7 @@ public class ActivityMain extends AppCompatActivity {
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager = (CustomViewPager) findViewById(R.id.pager);
         adapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(1);
