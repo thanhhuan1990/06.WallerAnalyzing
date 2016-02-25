@@ -99,6 +99,7 @@ public class FragmentPayee extends Fragment {
         lvPayee.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 etPayee.setText(payees.get(position));
             }
         });

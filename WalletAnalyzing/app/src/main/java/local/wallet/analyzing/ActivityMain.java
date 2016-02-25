@@ -1,5 +1,6 @@
 package local.wallet.analyzing;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -60,9 +61,9 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.layout_activity_main);
 
         /* Todo: Update Locale */
-        Configurations config = new Configurations(getApplicationContext());
-        String languageToLoad  = config.getString(Configurations.Key.Locale);
-        Locale locale = new Locale(languageToLoad);
+        Configurations config   = new Configurations(getApplicationContext());
+        String languageToLoad   = config.getString(Configurations.Key.Locale);
+        Locale locale           = new Locale(languageToLoad);
         Locale.setDefault(locale);
         Configuration androidConfigs = new Configuration();
         androidConfigs.locale = locale;
@@ -146,11 +147,6 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if(getCurrentVisibleItem() == 1) {
-            viewPager.setCurrentItem(0);
-            return;
-        }
-
         if (doubleBackToExitPressedOnce) {
             finish();
         }
@@ -204,6 +200,18 @@ public class ActivityMain extends AppCompatActivity {
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mActionBar.setCustomView(view, lp);
         LogUtils.logLeaveFunction(TAG, null, null);
+    }
+
+    public static void hideKeyboard(Context ctx) {
+        InputMethodManager inputManager = (InputMethodManager) ctx
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus:
+        View v = ((Activity) ctx).getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     /**

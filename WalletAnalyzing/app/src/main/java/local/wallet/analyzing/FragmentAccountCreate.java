@@ -113,6 +113,7 @@ public class FragmentAccountCreate extends Fragment {
         llType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
                 bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
@@ -128,6 +129,7 @@ public class FragmentAccountCreate extends Fragment {
         llCurrency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
                 bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
@@ -145,6 +147,7 @@ public class FragmentAccountCreate extends Fragment {
         llDescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
                 bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountCreate());
@@ -160,6 +163,7 @@ public class FragmentAccountCreate extends Fragment {
         llSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 LogUtils.trace(TAG, "Click button SAVE");
                 // Check Account's name
                 if(etName.getText().toString().equals("")) {
@@ -246,6 +250,10 @@ public class FragmentAccountCreate extends Fragment {
                 LogUtils.trace(TAG, "input: " + s.toString());
 
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
+
+                if(inputted.equals("")) {
+                    return;
+                }
                 String formatted = Currency.formatCurrencyDouble(mCurrency, Double.parseDouble(inputted));
 
                 current = formatted;

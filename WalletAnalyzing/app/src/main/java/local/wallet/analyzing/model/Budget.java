@@ -6,27 +6,27 @@ import java.util.Calendar;
  * Created by thanhhuan on 2/19/2016.
  */
 public class Budget {
-    private int id;
-    private String name;
-    private Double amount;
-    private int[] categories;
-    private int repeatType;
-    private Calendar fromDate;
-    private boolean isIncremental;
-    private Double incrementalAmount;
+    private int         id;
+    private String      name;
+    private Double      amount;
+    private int[]       categories;
+    private int         currency;
+    private int         repeatType;
+    private Calendar    fromDate;
+    private boolean     isIncremental;
 
     public Budget() {
     }
 
-    public Budget(int id, String name, Double amount, int[] categories, int repeatType, Calendar fromDate, boolean isIncremental, Double incrementalAmount) {
+    public Budget(int id, String name, Double amount, int[] categories, int currency, int repeatType, Calendar fromDate, boolean isIncremental) {
         this.id = id;
         this.name = name;
         this.amount = amount;
         this.categories = categories;
+        this.currency = currency;
         this.repeatType = repeatType;
         this.fromDate = fromDate;
         this.isIncremental = isIncremental;
-        this.incrementalAmount = incrementalAmount;
     }
 
     public int getId() {
@@ -61,6 +61,14 @@ public class Budget {
         this.categories = categories;
     }
 
+    public int getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(int currency) {
+        this.currency = currency;
+    }
+
     public int getRepeatType() {
         return repeatType;
     }
@@ -85,23 +93,15 @@ public class Budget {
         this.isIncremental = isIncremental;
     }
 
-    public Double getIncrementalAmount() {
-        return incrementalAmount;
-    }
-
-    public void setIncrementalAmount(Double incrementalAmount) {
-        this.incrementalAmount = incrementalAmount;
-    }
-
     @Override
     public String toString() {
         return "Budget = (" + id
                             + ", " + name
                             + ", " + amount
-                            + ", " + categories.length
+                            + ", " + categories.toString()
+                            + ", " + currency
                             + ", " + repeatType
                             + ", " + fromDate.get(Calendar.DAY_OF_MONTH) + "/" + (fromDate.get(Calendar.MONTH) + 1) + "/" +fromDate.get(Calendar.YEAR)
-                            + ", " + isIncremental
-                            + ", " + incrementalAmount + ")";
+                            + ", " + isIncremental + ")";
     }
 }

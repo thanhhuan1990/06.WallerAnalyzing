@@ -44,6 +44,7 @@
     <color name="budget_background_progress">#37A3A0</color>
     <color name="budget_background_progress_used_money">#AAAAAA</color>
     <color name="budget_background_progress_over">#AD1A1A</color>
+    <color name="budget_background_progress_warning">#ad751a</color>
     <color name="budget_background_date">#EDD3D1</color>
     <color name="budget_border">#909090</color>
 

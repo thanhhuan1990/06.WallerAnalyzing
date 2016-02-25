@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -22,7 +23,8 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Budget;
-import local.wallet.analyzing.model.TransactionGroup;
+import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
@@ -32,10 +34,13 @@ public class FragmentListBudget extends Fragment {
 
     private static final String TAG = "ListBudget";
 
-    private DatabaseHelper db;
-    private ListView lvBudget;
+    private DatabaseHelper  mDbHelper;
+    private Configurations  mConfigs;
+    private ListView        lvBudget;
     private BudgetAdapter   adapter;
-    private List<Budget> arBudgets = new ArrayList<>();
+    private List<Budget>    arBudgets = new ArrayList<>();
+
+    private int width;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,10 +63,17 @@ public class FragmentListBudget extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
+        mConfigs    = new Configurations(getActivity());
 
         lvBudget = (ListView) getView().findViewById(R.id.lvBudget);
-        arBudgets   = db.getAllBudgets();
+        lvBudget.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                width = lvBudget.getWidth();
+            }
+        });
+        arBudgets   = mDbHelper.getAllBudgets();
         adapter = new BudgetAdapter(getContext(), arBudgets);
         lvBudget.setAdapter(adapter);
 
@@ -70,6 +82,9 @@ public class FragmentListBudget extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
+            return;
+        }
         LogUtils.logEnterFunction(TAG, null);
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -103,7 +118,7 @@ public class FragmentListBudget extends Fragment {
 
         arBudgets.clear();
 
-        List<Budget> temp = db.getAllBudgets();
+        List<Budget> temp = mDbHelper.getAllBudgets();
 
         for(int i = 0 ; i < temp.size(); i++) {
             arBudgets.add(temp.get(i));
@@ -124,14 +139,16 @@ public class FragmentListBudget extends Fragment {
     private class BudgetAdapter extends ArrayAdapter<Budget> {
 
         private class ViewHolder {
-            private TextView    tvCategory;
+            private TextView    tvName;
             private TextView    tvDate;
             private TextView    tvBudgetAmount;
             private TextView    tvExpensed;
+            private TextView    tvBalanceTitle;
             private TextView    tvBalance;
             private SeekBar     sbExpensed;
         }
 
+        private int width = 0;
         List<Budget> mBudgets;
         public BudgetAdapter(Context context, List<Budget> items) {
             super(context, R.layout.listview_item_budget, items);
@@ -139,17 +156,18 @@ public class FragmentListBudget extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder; // view lookup cache stored in tag
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final ViewHolder viewHolder; // view lookup cache stored in tag
             if (convertView == null) {
                 viewHolder                  = new ViewHolder();
                 LayoutInflater inflater     = LayoutInflater.from(getContext());
                 convertView                 = inflater.inflate(R.layout.listview_item_budget, parent, false);
 
-                viewHolder.tvCategory       = (TextView) convertView.findViewById(R.id.tvCategory);
+                viewHolder.tvName           = (TextView) convertView.findViewById(R.id.tvName);
                 viewHolder.tvDate           = (TextView) convertView.findViewById(R.id.tvDate);
                 viewHolder.tvBudgetAmount   = (TextView) convertView.findViewById(R.id.tvBudgetAmount);
                 viewHolder.tvExpensed       = (TextView) convertView.findViewById(R.id.tvExpensed);
+                viewHolder.tvBalanceTitle   = (TextView) convertView.findViewById(R.id.tvBalanceTitle);
                 viewHolder.tvBalance        = (TextView) convertView.findViewById(R.id.tvBalance);
                 viewHolder.sbExpensed       = (SeekBar) convertView.findViewById(R.id.sbExpensed);
                 viewHolder.sbExpensed.setOnTouchListener(new View.OnTouchListener() {
@@ -166,79 +184,231 @@ public class FragmentListBudget extends Fragment {
 
             Budget budget = mBudgets.get(position);
             if(budget != null) {
-                viewHolder.tvCategory.setText(budget.getName());
-            }
+                viewHolder.tvName.setText(budget.getName());
+                viewHolder.tvBudgetAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(budget.getCurrency()), budget.getAmount()));
 
-            String date = "";
-            Calendar today      = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
-            today.set(Calendar.MINUTE, today.getActualMinimum(Calendar.MINUTE));
-            today.set(Calendar.SECOND, today.getActualMinimum(Calendar.SECOND));
-            today.set(Calendar.MILLISECOND, today.getActualMinimum(Calendar.MILLISECOND));
+                double incremental = 0.0;
 
-            int repeatType      = budget.getRepeatType();
+                String date = "";
+                Calendar today      = Calendar.getInstance();
+                today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
+                today.set(Calendar.MINUTE,      today.getActualMinimum(Calendar.MINUTE));
+                today.set(Calendar.SECOND,      today.getActualMinimum(Calendar.SECOND));
+                today.set(Calendar.MILLISECOND, today.getActualMinimum(Calendar.MILLISECOND));
 
-            switch (repeatType) {
-                case 0: {// No repeat
-                    Calendar fromDate = budget.getFromDate();
-                    date = String.format(getResources().getString(R.string.format_budget_day_month_year),
-                            fromDate.get(Calendar.DAY_OF_MONTH),
-                            fromDate.get(Calendar.MONTH) + 1,
-                            fromDate.get(Calendar.YEAR));
+                Calendar startDate = Calendar.getInstance();
+                startDate.setTimeInMillis(budget.getFromDate().getTimeInMillis());
+                Calendar endDate = Calendar.getInstance();
+                endDate.setTimeInMillis(budget.getFromDate().getTimeInMillis());
 
-                    viewHolder.tvDate.setText(date);
-                    break;
-                }
-                case 1: {// daily
-                    Calendar tomorow = Calendar.getInstance();
-                    tomorow.add(Calendar.DAY_OF_MONTH, 1);
-                    date = String.format(getResources().getString(R.string.format_budget_date),
-                            today.get(Calendar.DAY_OF_MONTH),
-                            today.get(Calendar.MONTH) + 1,
-                            tomorow.get(Calendar.DAY_OF_MONTH),
-                            tomorow.get(Calendar.MONTH) + 1);
-                    viewHolder.tvDate.setText(date);
+                int repeatType      = budget.getRepeatType();
 
-                    break;
-                }
-                case 2: { // weekly
-                    LogUtils.trace(TAG, "Position " + position + ": Today     = " + today.getTimeInMillis());
-                    final Calendar fromDate = budget.getFromDate();
-                    final Calendar nextWeek = budget.getFromDate();
-                    LogUtils.trace(TAG, "Position " + position + ": Next week = " + nextWeek.getTimeInMillis());
+                switch (repeatType) {
+                    case 0: {// No repeat
+                        Calendar fromDate = budget.getFromDate();
+                        date = String.format(getResources().getString(R.string.format_budget_day_month_year),
+                                fromDate.get(Calendar.DAY_OF_MONTH),
+                                fromDate.get(Calendar.MONTH) + 1,
+                                fromDate.get(Calendar.YEAR));
 
-                    while (nextWeek.getTimeInMillis() <= today.getTimeInMillis()) {
-                        LogUtils.trace(TAG, "Add to NextWeek ");
-                        nextWeek.add(Calendar.WEEK_OF_MONTH, 1);
-
-                        if (nextWeek.getTimeInMillis() < today.getTimeInMillis()) {
-                            LogUtils.trace(TAG, "Add to fromDate ");
-                            fromDate.add(Calendar.WEEK_OF_MONTH, 1);
-                        }
+                        viewHolder.tvDate.setText(date);
+                        break;
                     }
-                    LogUtils.trace(TAG, "Position " + position + ": Next week = " + nextWeek.getTimeInMillis());
-                    LogUtils.trace(TAG, "Position " + position + ": fromDate  = " + nextWeek.getTimeInMillis());
+                    case 1: {// daily
+                        Calendar tomorow = Calendar.getInstance();
+                        tomorow.add(Calendar.DAY_OF_MONTH, 1);
+                        date = String.format(getResources().getString(R.string.format_budget_date),
+                                today.get(Calendar.DAY_OF_MONTH),
+                                today.get(Calendar.MONTH) + 1,
+                                tomorow.get(Calendar.DAY_OF_MONTH),
+                                tomorow.get(Calendar.MONTH) + 1);
+                        viewHolder.tvDate.setText(date);
 
-                    date = String.format(getResources().getString(R.string.format_budget_date),
-                            fromDate.get(Calendar.DAY_OF_MONTH),
-                            fromDate.get(Calendar.MONTH) + 1,
-                            nextWeek.get(Calendar.DAY_OF_MONTH),
-                            nextWeek.get(Calendar.MONTH) + 1);
-                    viewHolder.tvDate.setText(date);
+                        break;
+                    }
+                    case 2: { // weekly
 
-                    break;
+                        while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                            endDate.add(Calendar.DAY_OF_YEAR, 6);
+
+                            if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                                if(budget.isIncremental()) {
+                                    List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(budget.getCategories(), startDate, endDate);
+
+                                    Double expensed = 0.0;
+                                    for(Transaction tran : arTransactions) {
+                                        expensed += tran.getAmount();
+                                    }
+
+                                    incremental += (budget.getAmount() - expensed);
+                                }
+                                startDate.add(Calendar.DAY_OF_YEAR, 6);
+                            }
+                        }
+
+                        date = String.format(getResources().getString(R.string.format_budget_date),
+                                startDate.get(Calendar.DAY_OF_MONTH),
+                                startDate.get(Calendar.MONTH) + 1,
+                                endDate.get(Calendar.DAY_OF_MONTH),
+                                endDate.get(Calendar.MONTH) + 1);
+                        viewHolder.tvDate.setText(date);
+
+                        break;
+                    }
+                    case 3: { // monthly
+                        while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                            endDate.add(Calendar.MONTH, 1);
+
+                            if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                                if(budget.isIncremental()) {
+                                    List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(budget.getCategories(), startDate, endDate);
+
+                                    Double expensed = 0.0;
+                                    for(Transaction tran : arTransactions) {
+                                        expensed += tran.getAmount();
+                                    }
+
+                                    incremental += (budget.getAmount() - expensed);
+                                }
+                                startDate.add(Calendar.MONTH, 1);
+                            }
+                        }
+
+                        endDate.add(Calendar.DAY_OF_YEAR, -1);
+                        date = String.format(getResources().getString(R.string.format_budget_date),
+                                startDate.get(Calendar.DAY_OF_MONTH),
+                                startDate.get(Calendar.MONTH) + 1,
+                                endDate.get(Calendar.DAY_OF_MONTH),
+                                endDate.get(Calendar.MONTH) + 1);
+                        viewHolder.tvDate.setText(date);
+                        break;
+                    }
+                    case 4: { // quarterly
+                        while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                            endDate.add(Calendar.MONTH, 3);
+
+                            if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                                if(budget.isIncremental()) {
+                                    List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(budget.getCategories(), startDate, endDate);
+
+                                    Double expensed = 0.0;
+                                    for(Transaction tran : arTransactions) {
+                                        expensed += tran.getAmount();
+                                    }
+
+                                    incremental += (budget.getAmount() - expensed);
+                                }
+                                startDate.add(Calendar.MONTH, 3);
+                            }
+                        }
+
+                        endDate.add(Calendar.DAY_OF_YEAR, -1);
+                        date = String.format(getResources().getString(R.string.format_budget_date),
+                                startDate.get(Calendar.DAY_OF_MONTH),
+                                startDate.get(Calendar.MONTH) + 1,
+                                endDate.get(Calendar.DAY_OF_MONTH),
+                                endDate.get(Calendar.MONTH) + 1);
+                        viewHolder.tvDate.setText(date);
+                        break;
+                    }
+                    case 5: { // yearly
+                        while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                            endDate.add(Calendar.YEAR, 1);
+
+                            if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                                if(budget.isIncremental()) {
+                                    List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(budget.getCategories(), startDate, endDate);
+
+                                    Double expensed = 0.0;
+                                    for(Transaction tran : arTransactions) {
+                                        expensed += tran.getAmount();
+                                    }
+
+                                    incremental += (budget.getAmount() - expensed);
+                                }
+                                startDate.add(Calendar.YEAR, 1);
+                            }
+                        }
+
+                        endDate.add(Calendar.DAY_OF_YEAR, -1);
+                        date = String.format(getResources().getString(R.string.format_budget_date),
+                                startDate.get(Calendar.DAY_OF_MONTH),
+                                startDate.get(Calendar.MONTH) + 1,
+                                endDate.get(Calendar.DAY_OF_MONTH),
+                                endDate.get(Calendar.MONTH) + 1);
+                        viewHolder.tvDate.setText(date);
+                        break;
+                    }
+                    default:
+                        break;
+                } // end switch
+
+                Double amount = budget.getAmount() + incremental;
+
+                List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(budget.getCategories(), startDate, endDate);
+
+                Double expensed = 0.0;
+                for(Transaction tran : arTransactions) {
+                    expensed += tran.getAmount();
                 }
-                case 3: // monthly
-                    break;
-                case 4: //quarterly
-                    break;
-                case 5: // yearly
-                    break;
-                default:
-                    break;
-            }
+
+                viewHolder.tvExpensed.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(budget.getCurrency()), expensed));
+
+                viewHolder.sbExpensed.setMax(amount.intValue());
+                // Set date
+                double numOfDaysOne = (double)getDays(startDate, today);
+                double numOfDaysTwo = (double)getDays(startDate, endDate);
+                int progress = (int)((numOfDaysOne / numOfDaysTwo) * viewHolder.sbExpensed.getMax());
+                viewHolder.sbExpensed.setProgress(progress);
+
+                // Set expensed
+                viewHolder.sbExpensed.setSecondaryProgress(expensed.intValue());
+
+                Double balance = amount - expensed;
+                if(balance > 0) {
+                    if(expensed <= progress) {
+                        viewHolder.tvBalanceTitle.setText(getResources().getString(R.string.budget_item_balance));
+                        viewHolder.tvBalanceTitle.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(budget.getCurrency()), balance));
+                        viewHolder.tvBalance.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    } else {
+                        viewHolder.tvBalanceTitle.setText(getResources().getString(R.string.budget_item_balance));
+                        viewHolder.tvBalanceTitle.setTextColor(getResources().getColor(R.color.budget_background_progress_warning));
+                        viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(budget.getCurrency()), balance));
+                        viewHolder.tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_warning));
+                        viewHolder.sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_warning));
+                    }
+                } else if(balance == 0) {
+                    viewHolder.tvBalanceTitle.setText(getResources().getString(R.string.budget_item_balance));
+                    viewHolder.tvBalanceTitle.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
+                    viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(budget.getCurrency()), balance));
+                    viewHolder.tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
+                    viewHolder.sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_over));
+                } else {
+                    viewHolder.tvBalanceTitle.setText(getResources().getString(R.string.budget_item_over));
+                    viewHolder.tvBalanceTitle.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
+                    viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(budget.getCurrency()), Math.abs(balance)));
+                    viewHolder.tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
+                    viewHolder.sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_over));
+                }
+
+            } // End check null
 
             return convertView;
+        } // End getView
+
+        public int getDays(Calendar start, Calendar end)
+        {
+            // Get the represented date in milliseconds
+            long milis1 = start.getTimeInMillis();
+            long milis2 = end.getTimeInMillis();
+
+            // Calculate difference in milliseconds
+            long diff = Math.abs(milis2 - milis1);
+
+            return (int)(diff / (24 * 60 * 60 * 1000));
         }
-    }
+
+    } // End Adapter
+
 }

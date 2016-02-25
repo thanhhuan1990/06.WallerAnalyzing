@@ -169,15 +169,19 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.llCategory:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentBudgetCategory();
                 break;
             case R.id.llRepeat:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 showDialogRepeatType();
                 break;
             case R.id.llFromDate:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 showDialogTime();
                 break;
             case R.id.llSave:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 createBudget();
                 break;
             default:
@@ -191,12 +195,24 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
             etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
             return;
         }
+
+        if(arCategories.length == 0) {
+            ((ActivityMain) getActivity()).showError("Please select Category!");
+            return;
+        }
+
         Double amount =  etAmount.getText().toString().equals("") ? 0 : Double.parseDouble(etAmount.getText().toString().replaceAll(",", ""));
+
+        if(amount == 0) {
+            ((ActivityMain) getActivity()).showError("Please input Budget Amount!");
+            return;
+        }
 
         Budget budget = new Budget(0,
                                     name,
                                     amount,
                                     arCategories,
+                                    mConfigs.getInt(Configurations.Key.Currency),
                                     repeatType,
                                     mCal,
                                     cbMoveToNext.isChecked(),

@@ -82,10 +82,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // BUDGET Table - column names
     private static final String KEY_BUDGET_AMOUNT               = "amount";
     private static final String KEY_BUDGET_CATEGORY             = "category";
+    private static final String KEY_BUDGET_CURRENCY             = "currency";
     private static final String KEY_BUDGET_REPEAT_TYPE          = "repeat";
     private static final String KEY_BUDGET_DATE                 = "date";
     private static final String KEY_BUDGET_INCREMENTAL          = "incremental";
-    private static final String KEY_BUDGET_INCREMENTAL_AMOUNT   = "incremental_amount";
 
     //region LogUtils
     private void enter(String tag, String param) {
@@ -156,10 +156,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_NAME + " TEXT,"
             + KEY_BUDGET_AMOUNT + " DOUBLE,"
             + KEY_BUDGET_CATEGORY + " TEXT,"
+            + KEY_BUDGET_CURRENCY + " INTEGER, "
             + KEY_BUDGET_REPEAT_TYPE + " INTEGER,"
             + KEY_BUDGET_DATE + " DATETIME,"
-            + KEY_BUDGET_INCREMENTAL + " INTEGER,"
-            + KEY_BUDGET_INCREMENTAL_AMOUNT + " DOUBLE)";
+            + KEY_BUDGET_INCREMENTAL + " INTEGER)";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -735,7 +735,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Double getAccountRemainAfter(int accountId, Calendar time) {
-        enter(TAG, "accountId = " + accountId + ", time = "  + time.toString());
+        enter(TAG, "accountId = " + accountId + ", time = " + time.toString());
 
         Double remain = getAccount(accountId).getInitBalance();
 
@@ -811,13 +811,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void deleteAccount(long account_id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_ACCOUNT, KEY_ID + " = ?", new String[] { String.valueOf(account_id) });
+        db.delete(TABLE_ACCOUNT, KEY_ID + " = ?", new String[]{String.valueOf(account_id)});
     }
     //endregion
 
     // ------------------------ TRANSACTION table methods ----------------//
     //region Table TRANSACTION
-    /*
+
+    /**
      * Creating a TRANSACTION
      */
     public long createTransaction(Transaction transaction) {
@@ -887,7 +888,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return null;
     }
-    /*
+
+    /**
      * get single TRANSACTION
      */
     public Transaction getTransaction(long transaction_id) {
@@ -927,6 +929,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         leave(TAG, "transaction_id = " + transaction_id, null);
 
         return null;
+
+    }
+
+    /**
+     * get TRANSACTION by time
+     */
+    public List<Transaction> getBudgetTransactions(int[] categories, Calendar startDate, Calendar endDate) {
+        enter(TAG, "categories = " + categories.toString() + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate);
+
+        endDate.add(Calendar.DAY_OF_YEAR, 1);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String condition = " WHERE " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[0];
+
+        for(int i = 1 ; i < categories.length; i++) {
+            condition += " OR " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[i];
+        }
+
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition;
+
+        trace(TAG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+
+                if (startDate.getTimeInMillis() <= calendar.getTimeInMillis() && calendar.getTimeInMillis() < endDate.getTimeInMillis()) {
+
+                    Transaction transaction = new Transaction();
+                    transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                    transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
+                    transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                    transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
+                    transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                    transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
+                    transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
+                    transaction.setTime(calendar);
+                    transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
+                    transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                    transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+
+                    transactions.add(transaction);
+                }
+            } while (c.moveToNext()) ;
+        }
+
+        leave(TAG, "categories = " + categories.toString() + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
+
+        return transactions;
 
     }
     /**
@@ -1003,7 +1059,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
                 transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
 
-                // adding to kinds list
                 transactions.add(transaction);
             } while (c.moveToNext());
         }
@@ -1156,8 +1211,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
 
-                budget.setIncrementalAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_INCREMENTAL_AMOUNT)));
-
                 // adding to kinds list
                 budgets.add(budget);
             } while (c.moveToNext());
@@ -1173,16 +1226,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public long createBudget(Budget budget) {
         enter(TAG, "budget = " + budget.toString());
+
+        String categories = "[" + budget.getCategories()[0];
+
+        for(int i = 1 ; i < budget.getCategories().length; i++) {
+            categories += ", " + budget.getCategories()[i];
+        }
+        categories += "]";
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, budget.getName());
         values.put(KEY_BUDGET_AMOUNT, budget.getAmount());
-        values.put(KEY_BUDGET_CATEGORY, budget.getCategories().toString());
+        values.put(KEY_BUDGET_CATEGORY, categories);
         values.put(KEY_BUDGET_REPEAT_TYPE, budget.getRepeatType());
         values.put(KEY_BUDGET_DATE, getDateTime(budget.getFromDate().getTime()));
         values.put(KEY_BUDGET_INCREMENTAL, budget.isIncremental() ? 1 : 0);
-        values.put(KEY_BUDGET_INCREMENTAL_AMOUNT, budget.getIncrementalAmount());
 
         try {
             // insert row

@@ -62,7 +62,7 @@ public class FragmentDescription extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Done.");
-
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");

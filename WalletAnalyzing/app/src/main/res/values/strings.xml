@@ -6,6 +6,7 @@
 
     <string name="format_month_year">\%%02d/\%%02d</string>
     <string name="format_day_month_year">\%%02d/\%%02d/\%%02d</string>
+    <string name="format_budget_day_month">\%%02d/\%%02d</string>
     <string name="format_budget_day_month_year">(\%%02d/\%%02d/\%%02d)</string>
     <string name="format_budget_date">(\%%02d/\%%02d - \%%02d/\%%02d)</string>
 

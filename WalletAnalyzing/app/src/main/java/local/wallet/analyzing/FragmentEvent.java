@@ -76,7 +76,7 @@ public class FragmentEvent extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click Menu Action Done.");
-
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
                     LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
@@ -139,6 +139,7 @@ public class FragmentEvent extends Fragment {
         lvEvent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 etEvent.setText(events.get(position));
             }
         });

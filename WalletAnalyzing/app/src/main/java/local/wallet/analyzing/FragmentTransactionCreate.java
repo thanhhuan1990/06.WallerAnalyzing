@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -138,7 +139,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
         super.onActivityCreated(savedInstanceState);
 
         mConfigs    = new Configurations(getActivity());
-        mDbHelper = new DatabaseHelper(getActivity());
+        mDbHelper   = new DatabaseHelper(getActivity());
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -153,6 +154,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
+            return;
+        }
         LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -187,15 +191,19 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.llExpenseCategory:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectCategory(TransactionEnum.Expense, mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llIncomeCategory:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectCategory(TransactionEnum.Income, mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llTransferCategory:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectCategory(TransactionEnum.Transfer, mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llAdjustmentCategory: {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 Double balance      = !etAdjustmentBalance.getText().toString().equals("") ?
                                             Double.parseDouble(etAdjustmentBalance.getText().toString().replaceAll(",", ""))
                                             : 0;
@@ -207,55 +215,71 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 break;
             }
             case R.id.llExpenseDescription:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentDescription(TransactionEnum.Expense, tvExpenseDescription.getText().toString());
                 break;
             case R.id.llIncomeDescription:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentDescription(TransactionEnum.Income, tvIncomeDescription.getText().toString());
                 break;
             case R.id.llTransferDescription:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentDescription(TransactionEnum.Transfer, tvTransferDescription.getText().toString());
                 break;
             case R.id.llAdjustmentDescription:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentDescription(TransactionEnum.Adjustment, tvAdjustmentDescription.getText().toString());
                 break;
             case R.id.llExpenseAccount:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectAccount(TransactionEnum.Expense, mFromAccount != null ? mFromAccount.getId() : 0);
                 break;
             case R.id.llToAccount:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectAccount(TransactionEnum.Income, mToAccount != null ? mToAccount.getId() : 0);
                 break;
             case R.id.llTransferFromAccount:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectAccount(TransactionEnum.TransferFrom, mFromAccount != null ? mFromAccount.getId() : 0);
                 break;
             case R.id.llTransferToAccount:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectAccount(TransactionEnum.TransferTo, mToAccount != null ? mToAccount.getId() : 0);
                 break;
             case R.id.llAdjustmentAccount:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectAccount(TransactionEnum.Adjustment, mFromAccount != null ? mFromAccount.getId() : 0);
                 break;
             case R.id.llExpenseDate:
             case R.id.llIncomeDate:
             case R.id.llTransferDate:
             case R.id.llAdjustmentDate: {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 showDialogTime();
                 break;
             }
             case R.id.llExpensePayee:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentPayee(TransactionEnum.Expense, tvExpensePayee.getText().toString());
                 break;
             case R.id.llAdjustmentPayee:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentPayee(TransactionEnum.Adjustment, tvAdjustmentPayee.getText().toString());
                 break;
             case R.id.llExpenseEvent:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentEvent(TransactionEnum.Expense, tvExpenseEvent.getText().toString());
                 break;
             case R.id.llIncomeEvent:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentEvent(TransactionEnum.Income, tvIncomeEvent.getText().toString());
                 break;
             case R.id.llAdjustmentEvent:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentEvent(TransactionEnum.Adjustment, tvAdjustmentEvent.getText().toString());
                 break;
             case R.id.llSave:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 createTransaction();
                 break;
             default:

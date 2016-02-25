@@ -130,6 +130,9 @@ public class FragmentAccountsSelect extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
+            return;
+        }
         LogUtils.logEnterFunction(TAG, null);
         super.onCreateOptionsMenu(menu, inflater);
 

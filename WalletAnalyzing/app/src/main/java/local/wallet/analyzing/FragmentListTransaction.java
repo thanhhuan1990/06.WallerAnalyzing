@@ -84,6 +84,9 @@ public class FragmentListTransaction extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTIONS) {
+            return;
+        }
         LogUtils.logEnterFunction(TAG, null);
 
         super.onCreateOptionsMenu(menu, inflater);

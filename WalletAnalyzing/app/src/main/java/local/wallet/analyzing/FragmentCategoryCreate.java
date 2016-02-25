@@ -107,6 +107,7 @@ public class FragmentCategoryCreate extends Fragment {
         llParentCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentCategoryParentSelect nextFrag = new FragmentCategoryParentSelect();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mTransactionType);
@@ -124,7 +125,7 @@ public class FragmentCategoryCreate extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(TAG, "Click button SAVE");
-
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 // Check Category's name
                 if (etName.getText().toString().equals("")) {
                     LogUtils.trace(TAG, "Name is empty");

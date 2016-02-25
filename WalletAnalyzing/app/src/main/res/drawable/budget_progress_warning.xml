@@ -10,7 +10,7 @@
         <clip>
             <shape>
                 <corners android:radius="2dip" />
-                <solid android:color="@color/budget_background_progress_over" />
+                <solid android:color="@color/budget_background_progress_warning" />
             </shape>
         </clip>
     </item>
