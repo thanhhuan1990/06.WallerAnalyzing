@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:gravity="fill_horizontal">
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:clickable="true"
+                android:gravity="fill_horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +16,7 @@
         <View
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/tvTitle"
@@ -26,7 +27,7 @@
             android:text="@string/title_account"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -43,7 +44,7 @@
                 android:layout_weight="1"
                 android:padding="12dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_edit" />
+                android:src="@drawable/icon_edit"/>
 
 
             <ImageView
@@ -53,7 +54,7 @@
                 android:layout_weight="1"
                 android:padding="12dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_plus" />
+                android:src="@drawable/icon_plus"/>
 
 
             <ImageView
@@ -64,7 +65,7 @@
                 android:padding="12dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/icon_done"
-                android:visibility="gone" />
+                android:visibility="gone"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

@@ -4,8 +4,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background_main_frame">
+    android:background="@color/background_main_frame"
+    android:clickable="true"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +21,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/expense_category"
             android:background="@drawable/background_button_left_case_selected"
+            android:text="@string/expense_category"
             android:textColor="@color/button_textcolor_2"/>
 
         <Button
@@ -29,23 +30,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/expense_category_lent"
             android:background="@drawable/background_button_right_case"
-            android:textColor="@color/button_textcolor" />
+            android:text="@string/expense_category_lent"
+            android:textColor="@color/button_textcolor"/>
     </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent">
 
         <ListView
             android:id="@+id/lvCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:cacheColorHint="@android:color/transparent"
             android:background="@android:color/white"
+            android:cacheColorHint="@android:color/transparent"
             android:divider="@color/listview_divider"
             android:dividerHeight="0.5dp"/>
 

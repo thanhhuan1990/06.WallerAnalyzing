@@ -2,7 +2,6 @@ package local.wallet.analyzing;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,32 +23,27 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import org.droidparts.widget.ClearableEditText;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.Account;
-import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Currency;
-import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 2/19/2016.
  */
-public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class FragmentBudgetCreateUpdateDelete extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
-    private static final String TAG = "BudgetCreate";
+    private static final String Tag = "BudgetCreateUpdateDelete";
 
-    private Calendar            mCal;
+    private Calendar            mStartCal;
+    private Calendar            mEndCal;
     private Configurations      mConfigs;
     private DatabaseHelper      mDbHelper;
 
@@ -60,44 +54,66 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
     private TextView            tvCategory;
     private LinearLayout        llRepeat;
     private TextView            tvRepeat;
-    private LinearLayout        llFromDate;
-    private TextView            tvFromDate;
-    private CheckBox            cbMoveToNext;
+    private LinearLayout        llStartDate;
+    private TextView            tvStartDate;
+    private LinearLayout        llEndDate;
+    private TextView            tvEndDate;
+    private LinearLayout        llIncremental;
+    private CheckBox            cbIncremental;
     private TextView            tvDescription;
     private LinearLayout        llSave;
+    private LinearLayout        llDelete;
 
+    private Budget              mBudget;
     private int[]               arCategories = new int[0];
     private List<String>        arRepeat;
     private int                 repeatType  = 3;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        Bundle  bundle              = this.getArguments();
+        if(bundle != null) {
+            mBudget                 = (Budget)bundle.get("Budget");
+
+            if(mBudget != null) {
+                LogUtils.trace(Tag, mBudget.toString());
+            }
+        }
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         String myTag = getTag();
         ((ActivityMain)getActivity()).setFragmentBudgetCreate(myTag);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_budget_create, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
-        mCal            = Calendar.getInstance();
-        mCal.set(Calendar.HOUR_OF_DAY, mCal.getActualMinimum(Calendar.HOUR_OF_DAY));
-        mCal.set(Calendar.MINUTE, mCal.getActualMinimum(Calendar.MINUTE));
-        mCal.set(Calendar.SECOND, mCal.getActualMinimum(Calendar.SECOND));
-        mCal.set(Calendar.MILLISECOND, mCal.getActualMinimum(Calendar.MILLISECOND));
+        mStartCal = Calendar.getInstance();
+        mStartCal.set(Calendar.HOUR_OF_DAY, mStartCal.getActualMinimum(Calendar.HOUR_OF_DAY));
+        mStartCal.set(Calendar.MINUTE, mStartCal.getActualMinimum(Calendar.MINUTE));
+        mStartCal.set(Calendar.SECOND, mStartCal.getActualMinimum(Calendar.SECOND));
+        mStartCal.set(Calendar.MILLISECOND, mStartCal.getActualMinimum(Calendar.MILLISECOND));
+
+        mEndCal = Calendar.getInstance();
+        mEndCal.set(Calendar.HOUR_OF_DAY, mStartCal.getActualMinimum(Calendar.HOUR_OF_DAY));
+        mEndCal.set(Calendar.MINUTE, mStartCal.getActualMinimum(Calendar.MINUTE));
+        mEndCal.set(Calendar.SECOND, mStartCal.getActualMinimum(Calendar.SECOND));
+        mEndCal.set(Calendar.MILLISECOND, mStartCal.getActualMinimum(Calendar.MILLISECOND));
 
         mConfigs        = new Configurations(getActivity());
         mDbHelper       = new DatabaseHelper(getActivity());
@@ -117,17 +133,31 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         llRepeat.setOnClickListener(this);
         tvRepeat        = (TextView) getView().findViewById(R.id.tvRepeat);
         tvRepeat.setText(arTemp[repeatType]);
-        llFromDate      = (LinearLayout) getView().findViewById(R.id.llFromDate);
-        llFromDate.setOnClickListener(this);
-        tvFromDate      = (TextView) getView().findViewById(R.id.tvFromDate);
-        tvFromDate.setText(String.format("%02d-%02d-%02d", mCal.get(Calendar.DAY_OF_MONTH), mCal.get(Calendar.MONTH) + 1, mCal.get(Calendar.YEAR)));
-        cbMoveToNext    = (CheckBox) getView().findViewById(R.id.cbMoveToNext);
-        cbMoveToNext.setOnCheckedChangeListener(this);
+        llStartDate = (LinearLayout) getView().findViewById(R.id.llStartDate);
+        llStartDate.setOnClickListener(this);
+        tvStartDate = (TextView) getView().findViewById(R.id.tvStartDate);
+        tvStartDate.setText(String.format("%02d-%02d-%02d", mStartCal.get(Calendar.DAY_OF_MONTH), mStartCal.get(Calendar.MONTH) + 1, mStartCal.get(Calendar.YEAR)));
+
+        llEndDate       = (LinearLayout) getView().findViewById(R.id.llEndDate);
+        llEndDate.setOnClickListener(this);
+        tvEndDate       = (TextView) getView().findViewById(R.id.tvEndDate);
+        tvEndDate.setText(String.format("%02d-%02d-%02d", mStartCal.get(Calendar.DAY_OF_MONTH), mStartCal.get(Calendar.MONTH) + 1, mStartCal.get(Calendar.YEAR)));
+
+        llIncremental   = (LinearLayout) getView().findViewById(R.id.llIncremental);
+        cbIncremental = (CheckBox) getView().findViewById(R.id.cbIncremental);
+        cbIncremental.setOnCheckedChangeListener(this);
         tvDescription   = (TextView) getView().findViewById(R.id.tvDescription);
         llSave          = (LinearLayout) getView().findViewById(R.id.llSave);
         llSave.setOnClickListener(this);
+        llDelete        = (LinearLayout) getView().findViewById(R.id.llDelete);
+        llDelete.setOnClickListener(this);
+        if(mBudget == null) {
+            llDelete.setVisibility(View.GONE);
+        }
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        setViewData();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -135,7 +165,7 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
             return;
         }
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
@@ -153,7 +183,7 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -176,20 +206,71 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 showDialogRepeatType();
                 break;
-            case R.id.llFromDate:
+            case R.id.llStartDate:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                showDialogTime();
+                showDialogTime(R.id.llStartDate);
+                break;
+            case R.id.llEndDate:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                showDialogTime(R.id.llEndDate);
                 break;
             case R.id.llSave:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                createBudget();
+                if(mBudget == null) {
+                    createBudget();
+                } else {
+                    updateBudget();
+                }
+                break;
+            case R.id.llDelete:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                deleteBudget();
                 break;
             default:
                 break;
         }
     }
 
+    private void setViewData() {
+        LogUtils.logEnterFunction(Tag, null);
+        if(mBudget == null) {
+            LogUtils.trace(Tag, "Create Budget");
+            return;
+        }
+
+        mStartCal   = mBudget.getStartDate();
+        mEndCal     = mBudget.getEndDate();
+
+        etName.setText(mBudget.getName());
+
+        String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), mBudget.getAmount());
+        etAmount.setText(formatted);
+
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mBudget.getCurrency())));
+        updateCategory(mBudget.getCategories());
+
+        repeatType  = mBudget.getRepeatType();
+        tvRepeat.setText(arRepeat.get(repeatType));
+
+        tvStartDate.setText(String.format("%02d-%02d-%02d", mBudget.getStartDate().get(Calendar.DAY_OF_MONTH), mBudget.getStartDate().get(Calendar.MONTH) + 1, mBudget.getStartDate().get(Calendar.YEAR)));
+
+        if(repeatType == 0) {
+            llEndDate.setVisibility(View.VISIBLE);
+            tvEndDate.setText(String.format("%02d-%02d-%02d", mBudget.getEndDate().get(Calendar.DAY_OF_MONTH), mBudget.getEndDate().get(Calendar.MONTH) + 1, mBudget.getEndDate().get(Calendar.YEAR)));
+
+            llIncremental.setVisibility(View.GONE);
+        } else {
+            llEndDate.setVisibility(View.GONE);
+            llIncremental.setVisibility(View.VISIBLE);
+        }
+
+        cbIncremental.setChecked(mBudget.isIncremental());
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
     private void createBudget() {
+        LogUtils.trace(Tag, null);
         String name = etName.getText().toString();
         if(name.equals("")) {
             etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
@@ -214,15 +295,61 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
                                     arCategories,
                                     mConfigs.getInt(Configurations.Key.Currency),
                                     repeatType,
-                                    mCal,
-                                    cbMoveToNext.isChecked(),
-                                    0.0);
-        LogUtils.trace(TAG, "Budget = " + budget.toString());
-        LogUtils.trace(TAG, "Budget fromdate = " + budget.getFromDate().getTimeInMillis());
+                                    mStartCal,
+                                    mEndCal,
+                                    cbIncremental.isChecked());
+        LogUtils.trace(Tag, "Budget = " + budget.toString());
         long budgetId = mDbHelper.createBudget(budget);
         if(budgetId != 0) {
             getFragmentManager().popBackStackImmediate();
         }
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void updateBudget() {
+        LogUtils.trace(Tag, null);
+        String name = etName.getText().toString();
+        if(name.equals("")) {
+            etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
+            return;
+        }
+
+        if(arCategories.length == 0) {
+            ((ActivityMain) getActivity()).showError("Please select Category!");
+            return;
+        }
+
+        Double amount =  etAmount.getText().toString().equals("") ? 0 : Double.parseDouble(etAmount.getText().toString().replaceAll(",", ""));
+
+        if(amount == 0) {
+            ((ActivityMain) getActivity()).showError("Please input Budget Amount!");
+            return;
+        }
+
+        mBudget.setName(name);
+        mBudget.setCategories(arCategories);
+        mBudget.setAmount(amount);
+        mBudget.setRepeatType(repeatType);
+        mBudget.setStartDate(mStartCal);
+        mBudget.setEndDate(mEndCal);
+        mBudget.setIsIncremental(cbIncremental.isChecked());
+
+        int result = mDbHelper.updateBudget(mBudget);
+
+        getFragmentManager().popBackStackImmediate();
+
+        LogUtils.logLeaveFunction(Tag, null, "Result = " + result);
+
+    }
+
+    private void deleteBudget() {
+        LogUtils.trace(Tag, null);
+
+        mDbHelper.deleteBudget(mBudget.getId());
+
+        getFragmentManager().popBackStackImmediate();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     private void showDialogRepeatType() {
@@ -239,6 +366,15 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 repeatType  = position;
                 tvRepeat.setText(arRepeat.get(repeatType));
+                if(repeatType == 0) {
+                    llEndDate.setVisibility(View.VISIBLE);
+                    tvEndDate.setText(String.format("%02d-%02d-%02d", mEndCal.get(Calendar.DAY_OF_MONTH), mEndCal.get(Calendar.MONTH) + 1, mEndCal.get(Calendar.YEAR)));
+                    llIncremental.setVisibility(View.GONE);
+                } else {
+                    llEndDate.setVisibility(View.GONE);
+                    llIncremental.setVisibility(View.VISIBLE);
+                }
+
                 dialog.dismiss();
             }
         });
@@ -246,23 +382,46 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         dialog.show();
     }
 
-    private void showDialogTime() {
+    private void showDialogTime(final int id) {
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
-                new DatePickerDialog.OnDateSetListener() {
+        if(id == R.id.llStartDate) {
 
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                    new DatePickerDialog.OnDateSetListener() {
 
-                        mCal.set(Calendar.YEAR, year);
-                        mCal.set(Calendar.MONTH, monthOfYear);
-                        mCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-                        tvFromDate.setText(String.format("%02d-%02d-%02d", mCal.get(Calendar.DAY_OF_MONTH), mCal.get(Calendar.MONTH) + 1, mCal.get(Calendar.YEAR)));
+                            mStartCal.set(Calendar.YEAR, year);
+                            mStartCal.set(Calendar.MONTH, monthOfYear);
+                            mStartCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                    }
-                }, mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), mCal.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.show();
+                            tvStartDate.setText(String.format("%02d-%02d-%02d", mStartCal.get(Calendar.DAY_OF_MONTH), mStartCal.get(Calendar.MONTH) + 1, mStartCal.get(Calendar.YEAR)));
+
+                        }
+                    }, mStartCal.get(Calendar.YEAR), mStartCal.get(Calendar.MONTH), mStartCal.get(Calendar.DAY_OF_MONTH));
+
+            datePickerDialog.show();
+        } else if(id == R.id.llEndDate) {
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                    new DatePickerDialog.OnDateSetListener() {
+
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                            mEndCal.set(Calendar.YEAR, year);
+                            mEndCal.set(Calendar.MONTH, monthOfYear);
+                            mEndCal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                            tvEndDate.setText(String.format("%02d-%02d-%02d", mEndCal.get(Calendar.DAY_OF_MONTH), mEndCal.get(Calendar.MONTH) + 1, mEndCal.get(Calendar.YEAR)));
+
+                        }
+                    }, mEndCal.get(Calendar.YEAR), mEndCal.get(Calendar.MONTH), mEndCal.get(Calendar.DAY_OF_MONTH));
+
+            datePickerDialog.show();
+        }
+
     }
 
     private void startFragmentBudgetCategory() {
@@ -270,7 +429,7 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         Bundle bundle = new Bundle();
         bundle.putIntArray("Categories", arCategories);
         nextFrag.setArguments(bundle);
-        FragmentBudgetCreate.this.getFragmentManager().beginTransaction()
+        FragmentBudgetCreateUpdateDelete.this.getFragmentManager().beginTransaction()
                 .add(R.id.layout_budget, nextFrag, "FragmentBudgetCategory")
                 .addToBackStack(null)
                 .commit();
@@ -308,14 +467,15 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(TAG, null);
+            LogUtils.logEnterFunction(Tag, null);
 
             if(!s.toString().equals(current)){
                 etAmount.removeTextChangedListener(this);
 
-                LogUtils.trace(TAG, "input: " + s.toString());
-
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
+                if(inputted.equals("")) {
+                    return;
+                }
                 String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), Double.parseDouble(inputted));
 
                 current = formatted;
@@ -325,7 +485,7 @@ public class FragmentBudgetCreate extends Fragment implements CompoundButton.OnC
                 etAmount.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(TAG, null, null);
+            LogUtils.logLeaveFunction(Tag, null, null);
         }
     }
 

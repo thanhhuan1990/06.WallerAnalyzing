@@ -1,31 +1,34 @@
 package local.wallet.analyzing.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  * Created by thanhhuan on 2/19/2016.
  */
-public class Budget {
+public class Budget implements Serializable {
     private int         id;
     private String      name;
     private Double      amount;
     private int[]       categories;
     private int         currency;
     private int         repeatType;
-    private Calendar    fromDate;
+    private Calendar    startDate;
+    private Calendar    endDate;
     private boolean     isIncremental;
 
     public Budget() {
     }
 
-    public Budget(int id, String name, Double amount, int[] categories, int currency, int repeatType, Calendar fromDate, boolean isIncremental) {
+    public Budget(int id, String name, Double amount, int[] categories, int currency, int repeatType, Calendar startDate, Calendar endDate, boolean isIncremental) {
         this.id = id;
         this.name = name;
         this.amount = amount;
         this.categories = categories;
         this.currency = currency;
         this.repeatType = repeatType;
-        this.fromDate = fromDate;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.isIncremental = isIncremental;
     }
 
@@ -77,12 +80,20 @@ public class Budget {
         this.repeatType = repeatType;
     }
 
-    public Calendar getFromDate() {
-        return fromDate;
+    public Calendar getStartDate() {
+        return startDate;
     }
 
-    public void setFromDate(Calendar fromDate) {
-        this.fromDate = fromDate;
+    public void setStartDate(Calendar startDate) {
+        this.startDate = startDate;
+    }
+
+    public Calendar getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Calendar endDate) {
+        this.endDate = endDate;
     }
 
     public boolean isIncremental() {
@@ -101,7 +112,8 @@ public class Budget {
                             + ", " + categories.toString()
                             + ", " + currency
                             + ", " + repeatType
-                            + ", " + fromDate.get(Calendar.DAY_OF_MONTH) + "/" + (fromDate.get(Calendar.MONTH) + 1) + "/" +fromDate.get(Calendar.YEAR)
+                            + ", " + startDate.get(Calendar.DAY_OF_MONTH) + "/" + (startDate.get(Calendar.MONTH) + 1) + "/" + startDate.get(Calendar.YEAR)
+                            + ", " + endDate.get(Calendar.DAY_OF_MONTH) + "/" + (endDate.get(Calendar.MONTH) + 1) + "/" + endDate.get(Calendar.YEAR)
                             + ", " + isIncremental + ")";
     }
 }

@@ -8,7 +8,9 @@
     <string name="format_day_month_year">\%%02d/\%%02d/\%%02d</string>
     <string name="format_budget_day_month">\%%02d/\%%02d</string>
     <string name="format_budget_day_month_year">(\%%02d/\%%02d/\%%02d)</string>
+    <string name="format_budget_day_month_year_2">\%%02d/\%%02d/\%%02d</string>
     <string name="format_budget_date">(\%%02d/\%%02d - \%%02d/\%%02d)</string>
+    <string name="format_budget_date_2">\%%02d/\%%02d ~ \%%02d/\%%02d</string>
 
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
@@ -91,16 +93,27 @@
     <string name="new_category_description">Description</string>
     <string name="new_category_select_as_parent">(No item selected)</string>
 
-    <string name="budget_item_total">Total:</string>
-    <string name="budget_item_expensed">Expensed:</string>
-    <string name="budget_item_balance">Balance:</string>
-    <string name="budget_item_over">Over:</string>
+    <string name="budget_detail_description">Budget: \%%s \%%s for expense category: \%%s</string>
+    <string name="budget_detail_description_many">Budget: \%%s \%%s for expense categories: \%%s</string>
+    <string name="budget_detail_description_all">Budget: \%%s \%%s for all expense categories</string>
+    <string name="budget_detail_history">Budget history</string>
+    <string name="budget_history_description">Budget history of %s</string>
+
+    <string name="budget_item_total">Total: %s</string>
+    <string name="budget_item_incremental">Incremental: %s</string>
+    <string name="budget_item_expensed">Expensed: %s</string>
+    <string name="budget_item_balance">Balance: %s</string>
+    <string name="budget_item_over">Over: %s</string>
+    <string name="budget_item_expensed_no_format">Expensed:</string>
+    <string name="budget_item_balance_no_format">Balance:</string>
+    <string name="budget_item_over_no_format">Over:</string>
 
     <string name="new_budget_name">Name</string>
     <string name="new_budget_name_hit">Name</string>
     <string name="new_budget_amount">Amount</string>
     <string name="new_budget_repeat">Repeat</string>
     <string name="new_budget_from_date">From date</string>
+    <string name="new_budget_to_date">To date</string>
     <string name="new_budget_move_to_next">Move the remaining to next budget</string>
     <string name="new_budget_move_to_next_description_not">(Balance or overspend will NOT be move to next period)</string>
     <string name="new_budget_move_to_next_description">(Balance or overspend will be move to next period)</string>
@@ -131,6 +144,7 @@
     <string name="title_account_select_type">Add account</string>
     <string name="title_account_select_currency">Select currency</string>
     <string name="title_budget">Budget</string>
+    <string name="title_budget_history">Budget history</string>
     <string name="title_budget_create">Add budget</string>
     <string name="title_utility">Utilities</string>
     <string name="title_description">Description</string>

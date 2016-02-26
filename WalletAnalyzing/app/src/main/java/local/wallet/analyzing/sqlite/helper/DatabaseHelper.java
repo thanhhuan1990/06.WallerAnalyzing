@@ -84,7 +84,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_BUDGET_CATEGORY             = "category";
     private static final String KEY_BUDGET_CURRENCY             = "currency";
     private static final String KEY_BUDGET_REPEAT_TYPE          = "repeat";
-    private static final String KEY_BUDGET_DATE                 = "date";
+    private static final String KEY_BUDGET_START_DATE           = "start_date";
+    private static final String KEY_BUDGET_END_DATE             = "end_date";
     private static final String KEY_BUDGET_INCREMENTAL          = "incremental";
 
     //region LogUtils
@@ -158,7 +159,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_BUDGET_CATEGORY + " TEXT,"
             + KEY_BUDGET_CURRENCY + " INTEGER, "
             + KEY_BUDGET_REPEAT_TYPE + " INTEGER,"
-            + KEY_BUDGET_DATE + " DATETIME,"
+            + KEY_BUDGET_START_DATE + " DATETIME,"
+            + KEY_BUDGET_END_DATE + " DATETIME,"
             + KEY_BUDGET_INCREMENTAL + " INTEGER)";
 
     public DatabaseHelper(Context context) {
@@ -935,10 +937,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * get TRANSACTION by time
      */
-    public List<Transaction> getBudgetTransactions(int[] categories, Calendar startDate, Calendar endDate) {
-        enter(TAG, "categories = " + categories.toString() + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate);
+    public List<Transaction> getBudgetTransactions(int[] categories, Calendar startDate, Calendar endDate, int numOfDays) {
+        enter(TAG, "categories = " + categories.toString() + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate + ", numOfDays = " + numOfDays);
 
-        endDate.add(Calendar.DAY_OF_YEAR, 1);
+        endDate.add(Calendar.DATE, numOfDays);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -1205,9 +1207,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 budget.setCategories(arCategories);
                 budget.setRepeatType(c.getInt(c.getColumnIndex(KEY_BUDGET_REPEAT_TYPE)));
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_DATE))));
-                budget.setFromDate(calendar);
+                Calendar startDate = Calendar.getInstance();
+                startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_START_DATE))));
+                budget.setStartDate(startDate);
+                Calendar endDate = Calendar.getInstance();
+                endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_END_DATE))));
+                budget.setEndDate(endDate);
 
                 budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
 
@@ -1225,7 +1230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a TRANSACTION
      */
     public long createBudget(Budget budget) {
-        enter(TAG, "budget = " + budget.toString());
+        enter(TAG, budget.toString());
 
         String categories = "[" + budget.getCategories()[0];
 
@@ -1241,7 +1246,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_BUDGET_AMOUNT, budget.getAmount());
         values.put(KEY_BUDGET_CATEGORY, categories);
         values.put(KEY_BUDGET_REPEAT_TYPE, budget.getRepeatType());
-        values.put(KEY_BUDGET_DATE, getDateTime(budget.getFromDate().getTime()));
+        values.put(KEY_BUDGET_START_DATE, getDateTime(budget.getStartDate().getTime()));
+        values.put(KEY_BUDGET_END_DATE, getDateTime(budget.getEndDate().getTime()));
         values.put(KEY_BUDGET_INCREMENTAL, budget.isIncremental() ? 1 : 0);
 
         try {
@@ -1256,6 +1262,106 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             leave(TAG, "budget = " + budget.toString(), "budget_id = -1");
             return -1;
         }
+    }
+
+    /**
+     * Update budget
+     *
+     * @param budget
+     * @return
+     */
+    public int updateBudget(Budget budget) {
+        enter(TAG, "budget = " + budget.toString());
+        String categories = "[" + budget.getCategories()[0];
+
+        for(int i = 1 ; i < budget.getCategories().length; i++) {
+            categories += ", " + budget.getCategories()[i];
+        }
+        categories += "]";
+
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, budget.getName());
+        values.put(KEY_BUDGET_AMOUNT, budget.getAmount());
+        values.put(KEY_BUDGET_CATEGORY, categories);
+        values.put(KEY_BUDGET_REPEAT_TYPE, budget.getRepeatType());
+        values.put(KEY_BUDGET_START_DATE, getDateTime(budget.getStartDate().getTime()));
+        values.put(KEY_BUDGET_END_DATE, getDateTime(budget.getEndDate().getTime()));
+        values.put(KEY_BUDGET_INCREMENTAL, budget.isIncremental() ? 1 : 0);
+
+        // updating row
+        int result = db.update(TABLE_BUDGET, values, KEY_ID + " = ?", new String[] { String.valueOf(budget.getId()) });
+
+        leave(TAG, "budget = " + budget.toString(), "Result = " + result);
+        return result;
+    }
+
+    /**
+     * Delete Budget
+     * @param budget_id
+     */
+    public void deleteBudget(long budget_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_BUDGET, KEY_ID + " = ?", new String[] { String.valueOf(budget_id) });
+    }
+
+    /**
+     * Get Budget
+     * @param budget_id
+     * @return
+     */
+    public Budget getBudget(long budget_id) {
+        enter(TAG, "budget_id = " + budget_id);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_BUDGET + " WHERE " + KEY_ID + " = " + budget_id;
+
+        trace(TAG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+            c.moveToFirst();
+
+            Budget budget = new Budget();
+            budget.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+            budget.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+            budget.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
+
+            String[] items = c.getString(c.getColumnIndex(KEY_BUDGET_CATEGORY)).replaceAll("\\[", "").replaceAll("\\]", "").split(",");
+
+            int[] arCategories = new int[items.length];
+
+            for (int i = 0; i < items.length; i++) {
+                try {
+                    arCategories[i] = Integer.parseInt(items[i].trim());
+                } catch (NumberFormatException nfe) {};
+            }
+
+            budget.setCategories(arCategories);
+            budget.setRepeatType(c.getInt(c.getColumnIndex(KEY_BUDGET_REPEAT_TYPE)));
+
+            Calendar startDate = Calendar.getInstance();
+            startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_START_DATE))));
+            budget.setStartDate(startDate);
+            Calendar endDate = Calendar.getInstance();
+            endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_END_DATE))));
+            budget.setEndDate(endDate);
+
+            budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
+
+            leave(TAG, "budget_id = " + budget_id, budget.toString());
+
+            return budget;
+        }
+
+        leave(TAG, "budget_id = " + budget_id, null);
+
+        return null;
+
     }
     //endregion
 

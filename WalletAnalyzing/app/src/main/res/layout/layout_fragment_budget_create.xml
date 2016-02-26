@@ -3,6 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/background_main_frame"
+              android:clickable="true"
               android:orientation="vertical"
               android:padding="8dp">
 
@@ -102,8 +103,8 @@
             android:layout_weight="13"
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
-            android:textColor="@android:color/black"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:textColor="@android:color/black"/>
 
         <ImageView
             android:layout_width="0dp"
@@ -163,7 +164,7 @@
             android:background="#504f4f"/>
 
         <LinearLayout
-            android:id="@+id/llFromDate"
+            android:id="@+id/llStartDate"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_margin="5dp"
@@ -183,7 +184,50 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/tvFromDate"
+                android:id="@+id/tvStartDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="13"
+                android:background="@android:color/transparent"
+                android:gravity="right|center_vertical"
+                android:textColor="@android:color/black"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <LinearLayout
+            android:id="@+id/llEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:weightSum="20"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:background="@android:color/transparent"
+                android:text="@string/new_budget_to_date"
+                android:textColor="@color/textcolor_title_attribute"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvEndDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="13"
@@ -201,13 +245,14 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llIncremental"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/cbMoveToNext"
+            android:id="@+id/cbIncremental"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:gravity="center"/>
@@ -235,31 +280,71 @@
 
     <!-- Button SAVE -->
     <LinearLayout
-        android:id="@+id/llSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/background_button_save"
-        android:clickable="true"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
 
-        <ImageView
-            android:id="@+id/img"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_gravity="center_vertical"
-            android:scaleType="fitCenter"
-            android:src="@drawable/icon_save"/>
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/llSave"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:text="@string/Save"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"/>
+            android:layout_weight="1"
+            android:background="@drawable/background_button_save"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/img"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_save"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:text="@string/Save"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/llDelete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_button_delete"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_delete"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:text="@string/Delete"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

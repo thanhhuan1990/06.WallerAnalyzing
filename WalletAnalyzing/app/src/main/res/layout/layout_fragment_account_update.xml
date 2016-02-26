@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
+    android:clickable="true"
     android:orientation="vertical"
     android:paddingBottom="3dp"
     android:paddingLeft="5dp"
@@ -43,10 +44,10 @@
                 android:layout_weight="3"
                 android:background="@android:color/transparent"
                 android:gravity="right"
-                android:textColorHint="@color/textcolor_hint"
                 android:hint="@string/account_add_name_hint"
                 android:paddingRight="5dp"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColorHint="@color/textcolor_hint"/>
         </LinearLayout>
 
         <View
@@ -154,9 +155,9 @@
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
             android:hint="@string/account_add_initial_balance"
-            android:textColorHint="@color/textcolor_hint"
             android:inputType="numberDecimal"
             android:padding="5dp"
+            android:textColorHint="@color/textcolor_hint"
             android:textSize="28sp"
             android:textStyle="bold"/>
 
@@ -171,7 +172,7 @@
             android:paddingRight="10dp"
             android:text="@string/currency_icon_vietnam"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <LinearLayout
@@ -216,8 +217,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/llSave"
@@ -251,13 +252,13 @@
             android:id="@+id/llDelete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:background="@drawable/background_button_delete"
             android:clickable="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="10dp"
-            android:layout_marginLeft="20dp">
+            android:padding="10dp">
 
             <ImageView
                 android:layout_width="30dp"

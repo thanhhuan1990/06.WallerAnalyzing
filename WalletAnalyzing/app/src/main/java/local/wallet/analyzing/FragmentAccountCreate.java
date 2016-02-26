@@ -247,8 +247,6 @@ public class FragmentAccountCreate extends Fragment {
             if(!s.toString().equals(current)){
                 etInitialBalance.removeTextChangedListener(this);
 
-                LogUtils.trace(TAG, "input: " + s.toString());
-
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
 
                 if(inputted.equals("")) {

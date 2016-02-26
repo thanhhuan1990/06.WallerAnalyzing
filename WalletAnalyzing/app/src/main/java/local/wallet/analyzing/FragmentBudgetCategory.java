@@ -1,7 +1,6 @@
 package local.wallet.analyzing;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,7 +25,6 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
-import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
@@ -60,6 +58,16 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         LogUtils.logLeaveFunction(TAG, null, null);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(TAG, null);
+
+        LogUtils.logLeaveFunction(TAG, null, null);
+
+        return inflater.inflate(R.layout.layout_fragment_budget_category, container, false);
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(TAG, null);
@@ -83,7 +91,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
                     }
 
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentBudgetCreate();
-                    FragmentBudgetCreate fragment = (FragmentBudgetCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    FragmentBudgetCreateUpdateDelete fragment = (FragmentBudgetCreateUpdateDelete) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateCategory(categories);
 
                     getFragmentManager().popBackStackImmediate();
@@ -98,16 +106,6 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-
-        return inflater.inflate(R.layout.layout_fragment_budget_category, container, false);
     }
 
     @Override

@@ -127,21 +127,6 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     private Calendar            mCal;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        setHasOptionsMenu(true);
-        getActivity().invalidateOptionsMenu();
-
-        mConfigs    = new Configurations(getActivity());
-        mDbHelper   = new DatabaseHelper(getActivity());
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
@@ -152,6 +137,33 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         mContainerViewId        = bundle.getInt("ContainerViewId");
 
         LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        String myTag = getTag();
+        ((ActivityMain)getActivity()).setFragmentTransactionUpdate(myTag);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return inflater.inflate(R.layout.layout_fragment_transaction_update, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        super.onActivityCreated(savedInstanceState);
+
+        setHasOptionsMenu(true);
+        getActivity().invalidateOptionsMenu();
+
+        mConfigs    = new Configurations(getActivity());
+        mDbHelper   = new DatabaseHelper(getActivity());
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -203,18 +215,6 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentTransactionUpdate(myTag);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_transaction_update, container, false);
     }
 
     @Override

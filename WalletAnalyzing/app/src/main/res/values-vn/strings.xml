@@ -79,16 +79,27 @@
     <string name="new_category_description">Diễn giải</string>
     <string name="new_category_select_as_parent">(Không chọn)</string>
 
-    <string name="budget_item_total">Hạn mức:</string>
-    <string name="budget_item_expensed">Đã chi:</string>
-    <string name="budget_item_balance">Còn:</string>
-    <string name="budget_item_over">Bội chi:</string>
+    <string name="budget_item_total">Hạn mức: %s</string>
+    <string name="budget_item_incremental">Số dư kỳ trước: %s</string>
+    <string name="budget_item_expensed">Đã chi: %s</string>
+    <string name="budget_item_balance">Còn: %s</string>
+    <string name="budget_item_over">Bội chi: %s</string>
+    <string name="budget_item_expensed_no_format">Đã chi:</string>
+    <string name="budget_item_balance_no_format">Còn:</string>
+    <string name="budget_item_over_no_format">Bội chi:</string>
+
+    <string name="budget_detail_description">Hạn mức chi: \%%s \%%s cho hạng mục: \%%s</string>
+    <string name="budget_detail_description_many">Hạn mức chi: \%%s \%%s cho các hạng mục: \%%s</string>
+    <string name="budget_detail_description_all">Hạn mức chi: \%%s \%%s cho tất cả các hạng mục</string>
+    <string name="budget_detail_history">Hạn mức chi các kỳ trước</string>
+    <string name="budget_history_description">Hạn mức chi kỳ trước của %s</string>
 
     <string name="new_budget_name">Tên</string>
     <string name="new_budget_name_hit">Tên hạn mức</string>
     <string name="new_budget_amount">Số tiền</string>
     <string name="new_budget_repeat">Lặp lại</string>
     <string name="new_budget_from_date">Ngày bắt đầu</string>
+    <string name="new_budget_to_date">Ngày kết thúc</string>
     <string name="new_budget_move_to_next">Dồn sang kỳ sau</string>
     <string name="new_budget_move_to_next_description_not">(Số tiền dư hoặc bội chi sẽ KHÔNG được chuyển sang kỳ sau)</string>
     <string name="new_budget_move_to_next_description">(Số tiền dư hoặc bội chi sẽ được chuyển sang kỳ sau)</string>
@@ -119,6 +130,7 @@
     <string name="title_account_select_type">Thuộc loại</string>
     <string name="title_account_select_currency">Loại tiền tệ</string>
     <string name="title_budget">Hạn mức chi</string>
+    <string name="title_budget_history">Hạn mức chi các kỳ trước</string>
     <string name="title_budget_create">Thêm hạn mức</string>
     <string name="title_utility">Utilities</string>
     <string name="title_description">Description</string>

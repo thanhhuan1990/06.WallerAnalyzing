@@ -7,7 +7,8 @@
     android:background="@color/background_main_frame"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingBottom="?attr/actionBarSize">
+    android:paddingBottom="?attr/actionBarSize"
+    android:clickable="true">
 
     <ListView
         android:id="@+id/lvAccount"

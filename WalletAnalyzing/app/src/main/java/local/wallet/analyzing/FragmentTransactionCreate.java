@@ -641,10 +641,9 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             if(!s.toString().equals(current)){
                 mEdittext.removeTextChangedListener(this);
 
-                LogUtils.trace(Tag, "input: " + s.toString());
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
                 if(inputted.equals("")) {
-                    inputted = "0";
+                    return;
                 }
                 String formatted = Currency.formatCurrencyDouble(mFromAccount != null ?
                                                                         Currency.getCurrencyById(mFromAccount.getCurrencyId())
