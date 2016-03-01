@@ -81,6 +81,7 @@ public class FragmentBudgetDetail extends Fragment {
         tvExpensed      = (TextView) getView().findViewById(R.id.tvExpensed);
         tvBalance       = (TextView) getView().findViewById(R.id.tvBalance);
         sbExpensed      = (SeekBar) getView().findViewById(R.id.sbExpensed);
+        sbExpensed.setEnabled(false);
         llHistory       = (LinearLayout) getView().findViewById(R.id.llHistory);
         if(mBudget.getRepeatType() == 0) {
             llHistory.setVisibility(View.GONE);
@@ -113,11 +114,11 @@ public class FragmentBudgetDetail extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_update, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_budget));
+        View mCustomView    = mInflater.inflate(R.layout.action_bar_with_button_update, null);
+        TextView tvTitle    = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(mBudget.getName());
 
-        ImageView ivUpdate = (ImageView) mCustomView.findViewById(R.id.ivUpdate);
+        ImageView ivUpdate  = (ImageView) mCustomView.findViewById(R.id.ivUpdate);
         ivUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -96,6 +96,7 @@
     <string name="budget_detail_description">Budget: \%%s \%%s for expense category: \%%s</string>
     <string name="budget_detail_description_many">Budget: \%%s \%%s for expense categories: \%%s</string>
     <string name="budget_detail_description_all">Budget: \%%s \%%s for all expense categories</string>
+    <string name="budget_detail_detail">Details</string>
     <string name="budget_detail_history">Budget history</string>
     <string name="budget_history_description">Budget history of %s</string>
 

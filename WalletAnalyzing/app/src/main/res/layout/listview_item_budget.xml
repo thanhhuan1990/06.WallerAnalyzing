@@ -85,9 +85,10 @@
             android:id="@+id/sbExpensed"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="30dp"
             android:layout_marginTop="5dp"
-            android:padding="0dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:progress="10"
             android:progressDrawable="@drawable/budget_progress_ok"
             android:secondaryProgress="90"
@@ -97,7 +98,6 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/ivDetail"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

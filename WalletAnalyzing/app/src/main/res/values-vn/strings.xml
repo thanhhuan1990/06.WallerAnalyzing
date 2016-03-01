@@ -91,6 +91,7 @@
     <string name="budget_detail_description">Hạn mức chi: \%%s \%%s cho hạng mục: \%%s</string>
     <string name="budget_detail_description_many">Hạn mức chi: \%%s \%%s cho các hạng mục: \%%s</string>
     <string name="budget_detail_description_all">Hạn mức chi: \%%s \%%s cho tất cả các hạng mục</string>
+    <string name="budget_detail_detail">Chi tiết khoản chi</string>
     <string name="budget_detail_history">Hạn mức chi các kỳ trước</string>
     <string name="budget_history_description">Hạn mức chi kỳ trước của %s</string>
 

@@ -291,17 +291,6 @@ public class FragmentBudgetHistory extends Fragment {
             return convertView;
         } // End getView
 
-        public int getDays(Calendar start, Calendar end) {
-            // Get the represented date in milliseconds
-            long milis1 = start.getTimeInMillis();
-            long milis2 = end.getTimeInMillis();
-
-            // Calculate difference in milliseconds
-            long diff = Math.abs(milis2 - milis1);
-
-            return (int)(diff / (24 * 60 * 60 * 1000));
-        } // End getDays
-
     } // End Adapter
 
 }

@@ -151,7 +151,6 @@ public class FragmentListBudget extends Fragment {
             private TextView    tvExpensed;
             private TextView    tvBalance;
             private SeekBar     sbExpensed;
-            private ImageView   ivDetail;
         }
 
         List<Budget> mBudgets;
@@ -176,20 +175,6 @@ public class FragmentListBudget extends Fragment {
                 viewHolder.tvBalance        = (TextView) convertView.findViewById(R.id.tvBalance);
                 viewHolder.sbExpensed       = (SeekBar) convertView.findViewById(R.id.sbExpensed);
                 viewHolder.sbExpensed.setEnabled(false);
-                viewHolder.ivDetail         = (ImageView) convertView.findViewById(R.id.ivDetail);
-                viewHolder.ivDetail.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        FragmentBudgetDetail nextFrag = new FragmentBudgetDetail();
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("Budget", arBudgets.get(position));
-                        nextFrag.setArguments(bundle);
-                        FragmentListBudget.this.getFragmentManager().beginTransaction()
-                                .add(R.id.layout_budget, nextFrag, "FragmentBudgetDetail")
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                });
 
                 convertView.setTag(viewHolder);
             } else {
