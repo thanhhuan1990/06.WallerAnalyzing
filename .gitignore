@@ -7,3 +7,4 @@ WalletAnalyzing/WalletAnalyzing.iml
 WalletAnalyzing/local.properties
 WalletAnalyzing/local.properties
 *.properties
+*.name
