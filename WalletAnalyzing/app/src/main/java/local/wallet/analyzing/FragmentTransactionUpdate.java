@@ -785,6 +785,8 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     }
 
     private void updateTransaction() {
+        LogUtils.logEnterFunction(Tag, null);
+        Transaction transaction = new Transaction();
 
         switch (mCurrentTransactionType) {
             case Expense: {
@@ -807,22 +809,17 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 String expensePayee         = tvExpensePayee.getText().toString();
                 String expenseEvent         = tvExpenseEvent.getText().toString();
 
-                Transaction transaction     = new Transaction(mTransaction.getId(),
-                                                                TransactionEnum.Expense.getValue(),
-                                                                expenseAmount,
-                                                                expenseCategoryId,
-                                                                expenseDescription,
-                                                                expenseAccountId,
-                                                                0,
-                                                                mCal,
-                                                                0.0,
-                                                                expensePayee,
-                                                                expenseEvent);
-                int row = mDbHelper.updateTransaction(transaction);
-                if (row == 1) {
-                    cleanup();
-                }
-
+                transaction     = new Transaction(mTransaction.getId(),
+                                                    TransactionEnum.Expense.getValue(),
+                                                    expenseAmount,
+                                                    expenseCategoryId,
+                                                    expenseDescription,
+                                                    expenseAccountId,
+                                                    0,
+                                                    mCal,
+                                                    0.0,
+                                                    expensePayee,
+                                                    expenseEvent);
                 break;
             }
             case Income: {
@@ -845,21 +842,17 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 int incomeAccountId             = mToAccount.getId();
                 String incomeEvent              = tvIncomeEvent.getText().toString();
 
-                Transaction transaction = new Transaction(mTransaction.getId(),
-                                                            TransactionEnum.Income.getValue(),
-                                                            incomeAmount,
-                                                            incomeCategoryId,
-                                                            incomeDescription,
-                                                            0,
-                                                            incomeAccountId,
-                                                            mCal,
-                                                            0.0,
-                                                            "",
-                                                            incomeEvent);
-                int row = mDbHelper.updateTransaction(transaction);
-                if (row == 1) {
-                    cleanup();
-                }
+                transaction = new Transaction(mTransaction.getId(),
+                                                TransactionEnum.Income.getValue(),
+                                                incomeAmount,
+                                                incomeCategoryId,
+                                                incomeDescription,
+                                                0,
+                                                incomeAccountId,
+                                                mCal,
+                                                0.0,
+                                                "",
+                                                incomeEvent);
                 break;
             }
             case Transfer: {
@@ -896,22 +889,17 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                 int transferCategoryId      = mCategory != null ? mCategory.getId() : 0;
 
-                Transaction transaction = new Transaction(mTransaction.getId(),
-                                                            TransactionEnum.Transfer.getValue(),
-                                                            transferAmount,
-                                                            transferCategoryId,
-                                                            transferDescription,
-                                                            fromAccountId,
-                                                            toAccountId,
-                                                            mCal,
-                                                            transferFee,
-                                                            "",
-                                                            "");
-                int row = mDbHelper.updateTransaction(transaction);
-                if (row == 1) {
-                    cleanup();
-                }
-
+                transaction = new Transaction(mTransaction.getId(),
+                                                TransactionEnum.Transfer.getValue(),
+                                                transferAmount,
+                                                transferCategoryId,
+                                                transferDescription,
+                                                fromAccountId,
+                                                toAccountId,
+                                                mCal,
+                                                transferFee,
+                                                "",
+                                                "");
                 break;
             }
             case Adjustment: {
@@ -932,28 +920,30 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 String adjustmentDescription    = tvAdjustmentDescription.getText().toString();
                 String adjustmentPayee          = tvAdjustmentPayee.getText().toString();
                 String adjustmentEvent          = tvAdjustmentEvent.getText().toString();
-                Transaction transaction = new Transaction(mTransaction.getId(),
-                                                            TransactionEnum.Adjustment.getValue(),
-                                                            Math.abs(remain - balance),
-                                                            adjustmentCategoryId,
-                                                            adjustmentDescription,
-                                                            remain > balance ? mFromAccount.getId() : 0,
-                                                            remain > balance ? 0 : mFromAccount.getId(),
-                                                            mCal,
-                                                            0.0,
-                                                            adjustmentPayee,
-                                                            adjustmentEvent);
-                int row = mDbHelper.updateTransaction(transaction);
-                if (row == 1) {
-                    cleanup();
-                }
-
+                transaction = new Transaction(mTransaction.getId(),
+                                                TransactionEnum.Adjustment.getValue(),
+                                                Math.abs(remain - balance),
+                                                adjustmentCategoryId,
+                                                adjustmentDescription,
+                                                remain > balance ? mFromAccount.getId() : 0,
+                                                remain > balance ? 0 : mFromAccount.getId(),
+                                                mCal,
+                                                0.0,
+                                                adjustmentPayee,
+                                                adjustmentEvent);
                 break;
             }
             default:
                 break;
         }
 
+        int row = mDbHelper.updateTransaction(transaction);
+        if (row == 1) {
+            ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_update_successful));
+            cleanup();
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
         // Return to last fragment
         getFragmentManager().popBackStackImmediate();
     }

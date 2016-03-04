@@ -99,6 +99,9 @@
     <string name="budget_detail_detail">Details</string>
     <string name="budget_detail_history">Budget history</string>
     <string name="budget_history_description">Budget history of %s</string>
+    <string name="budget_detail_transaction_description">Budget \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
+    <string name="budget_detail_transaction_category_sum">Σ %s</string>
+    <string name="budget_detail_transaction_total">Total: %s</string>
 
     <string name="budget_item_total">Total: %s</string>
     <string name="budget_item_incremental">Incremental: %s</string>
@@ -162,6 +165,9 @@
     <string name="Input_Error_Transfer_Same_Account">Cannot transfer in same Account!</string>
     <string name="Input_Error_Adjustment_Same_Amount">Amount is 0!</string>
     <string name="Input_Error_budget_category_none">Please select expense category!</string>
+
+    <string name="message_transaction_create_successful">Saved</string>
+    <string name="message_transaction_update_successful">Saved</string>
 
     <string name="expense_category">Expense Category</string>
     <string name="income_category">Income Category</string>

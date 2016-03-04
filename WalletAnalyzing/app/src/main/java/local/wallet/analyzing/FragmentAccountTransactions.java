@@ -128,6 +128,7 @@ public class FragmentAccountTransactions extends Fragment {
     }
 
     private void updateListTransactions() {
+        LogUtils.logEnterFunction(TAG, null);
 
         Account account = mDbHelper.getAccount(mAccountId);
         tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), mDbHelper.getAccountRemain(mAccountId)));
@@ -163,66 +164,68 @@ public class FragmentAccountTransactions extends Fragment {
             Category cate = mDbHelper.getCategory(tran.getCategoryId());
             Account fromAcc, toAcc;
             switch (TransactionEnum.getTransactionEnum(tran.getTransactionType())) {
-                case Expense:
+                case Expense: {
                     fromAcc = mDbHelper.getAccount(tran.getFromAccountId());
 
                     tvCategory.setText(String.format(getResources().getString(R.string.content_expense), cate != null ? cate.getName() : ""));
                     tvDescription.setText(tran.getDescription());
                     tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAcc.getCurrencyId()), tran.getAmount()));
                     tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
-                                                    Currency.formatCurrency(getContext(),
-                                                                            Currency.getCurrencyById(fromAcc.getCurrencyId()),
-                                                                            mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
+                            Currency.formatCurrency(getContext(),
+                                    Currency.getCurrencyById(fromAcc.getCurrencyId()),
+                                    mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
                     break;
-                case Income:
-                    toAcc   = mDbHelper.getAccount(tran.getToAccountId());
+                } // End case Expense
+                case Income: {
+                    toAcc = mDbHelper.getAccount(tran.getToAccountId());
 
                     tvCategory.setText(String.format(getResources().getString(R.string.content_income), cate != null ? cate.getName() : ""));
                     tvDescription.setText(tran.getDescription());
                     tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(toAcc.getCurrencyId()), tran.getAmount()));
                     tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
-                                                    Currency.formatCurrency(getContext(),
-                                                                            Currency.getCurrencyById(toAcc.getCurrencyId()),
-                                                                            mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
+                            Currency.formatCurrency(getContext(),
+                                    Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                    mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
 
                     tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
                     tvDescription.setTextColor(getResources().getColor(R.color.colorPrimary));
                     tvAmount.setTextColor(getResources().getColor(R.color.colorPrimary));
                     break;
-                case Transfer:
+                } // End case Income
+                case Transfer: {
                     fromAcc = mDbHelper.getAccount(tran.getFromAccountId());
-                    toAcc   = mDbHelper.getAccount(tran.getToAccountId());
+                    toAcc = mDbHelper.getAccount(tran.getToAccountId());
 
                     tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAcc.getCurrencyId()), tran.getAmount()));
 
-                    if(mAccountId == fromAcc.getId()) {
+                    if (mAccountId == fromAcc.getId()) {
                         tvCategory.setText(String.format(getResources().getString(R.string.content_transfer_to), toAcc.getName()));
                         String description = tran.getDescription();
 
-                        if(tran.getFee() != 0) {
-                            if(!description.equals("")) {
+                        if (tran.getFee() != 0) {
+                            if (!description.equals("")) {
                                 description += "\n";
                             }
                             description += String.format(getResources().getString(R.string.content_transfer_fee),
-                                                        Currency.formatCurrency(getContext(),
-                                                                                Currency.getCurrencyById(toAcc.getCurrencyId()),
-                                                                                tran.getFee()));
+                                    Currency.formatCurrency(getContext(),
+                                            Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                            tran.getFee()));
                         }
 
                         tvDescription.setText(description);
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
-                                                        Currency.formatCurrency(getContext(),
-                                                                                Currency.getCurrencyById(fromAcc.getCurrencyId()),
-                                                                                mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
+                                Currency.formatCurrency(getContext(),
+                                        Currency.getCurrencyById(fromAcc.getCurrencyId()),
+                                        mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
 
-                    } else if(mAccountId == toAcc.getId()) {
+                    } else if (mAccountId == toAcc.getId()) {
 
                         tvCategory.setText(String.format(getResources().getString(R.string.content_transfer_from), fromAcc.getName()));
                         tvDescription.setText(tran.getDescription());
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
-                                                        Currency.formatCurrency(getContext(),
-                                                                                Currency.getCurrencyById(toAcc.getCurrencyId()),
-                                                                                mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
+                                Currency.formatCurrency(getContext(),
+                                        Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                        mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
 
                         tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
                         tvDescription.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -230,19 +233,20 @@ public class FragmentAccountTransactions extends Fragment {
 
                     }
                     break;
-                case Adjustment:
+                } // End case Transfer
+                case Adjustment: {
                     fromAcc = mDbHelper.getAccount(tran.getFromAccountId());
-                    toAcc   = mDbHelper.getAccount(tran.getToAccountId());
+                    toAcc = mDbHelper.getAccount(tran.getToAccountId());
 
-                    if(fromAcc != null) {
+                    if (fromAcc != null) {
                         tvCategory.setText(String.format(getResources().getString(R.string.content_expense), cate != null ? cate.getName() : ""));
                         tvDescription.setText(tran.getDescription());
                         tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAcc.getCurrencyId()), tran.getAmount()));
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
-                                                        Currency.formatCurrency(getContext(),
-                                                                                Currency.getCurrencyById(fromAcc.getCurrencyId()),
-                                                                                mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
-                    } else if(toAcc != null) {
+                                Currency.formatCurrency(getContext(),
+                                        Currency.getCurrencyById(fromAcc.getCurrencyId()),
+                                        mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
+                    } else if (toAcc != null) {
                         tvCategory.setText(String.format(getResources().getString(R.string.content_income), cate != null ? cate.getName() : ""));
                         tvDescription.setText(tran.getDescription());
                         tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(toAcc.getCurrencyId()), tran.getAmount()));
@@ -256,9 +260,10 @@ public class FragmentAccountTransactions extends Fragment {
                         tvAmount.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                     break;
+                } // End Adjustment
                 default:
                     break;
-            }
+            } // End Switch
 
             if(tvDescription.getText().toString().equals("")) {
                 tvDescription.setVisibility(View.GONE);
@@ -280,6 +285,6 @@ public class FragmentAccountTransactions extends Fragment {
             });
             llTransactions.addView(mTransactionView);
             position++;
-        }
-    }
+        } // End loop arTransactions
+    } // End updateTransactionList
 }

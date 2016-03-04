@@ -14,6 +14,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,25 +34,23 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentCategorySelect extends Fragment {
 
-    private static final String TAG = "FragmentCategorySelect";
+    private static final String Tag = "FragmentCategorySelect";
 
-    private String mTagOfSource = "";
-    private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
-    private int mUsingCategoryId;
+    private String              mTagOfSource = "";
+    private TransactionEnum     mCurrentTransactionType     = TransactionEnum.Expense;
+    private int                 mUsingCategoryId;
 
-    private DatabaseHelper db;
-    private List<CategoryView> arCategoriesView = new ArrayList<CategoryView>();
-    private CategoryAdapter categoryAdapter;
+    private DatabaseHelper      db;
+    private List<CategoryView>  arCategoriesView = new ArrayList<CategoryView>();
+    private LinearLayout        llCategories;
+    private TextView            tvEmpty;
 
-    private ListView lvCategory;
-    private TextView tvEmpty;
-
-    private Button  btnExpense;
-    private Button  btnBorrow;
+    private Button              btnExpense;
+    private Button              btnBorrow;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -62,29 +62,29 @@ public class FragmentCategorySelect extends Fragment {
         mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mUsingCategoryId                = bundle.getInt("CategoryID", 0);
 
-        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(TAG, "mCurrentTransactionType = " + mCurrentTransactionType);
-        LogUtils.trace(TAG, "mUsingCategoryId = " + mUsingCategoryId);
+        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
+        LogUtils.trace(Tag, "mUsingCategoryId = " + mUsingCategoryId);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         // Set this fragment tag to ActivityMain
         String myTag = getTag();
         ((ActivityMain)getActivity()).setFragmentNewTransactionSelectCategory(myTag);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_category_select, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -106,16 +106,16 @@ public class FragmentCategorySelect extends Fragment {
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
                 List<Category> arParentCategories = db.getAllParentCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
-                for(Category category : arParentCategories) {
+                for (Category category : arParentCategories) {
                     arCategoriesView.add(new CategoryView(category, true));
                     List<Category> arCategories = db.getCategoriesByParent(category.getId());
-                    for(Category cate : arCategories) {
+                    for (Category cate : arCategories) {
                         arCategoriesView.add(new CategoryView(cate, true));
                     }
                 }
 
-                categoryAdapter = new CategoryAdapter(getActivity(), arCategoriesView);
-                lvCategory.setAdapter(categoryAdapter);
+                updateListCategories();
+
             }
         });
 
@@ -139,64 +139,20 @@ public class FragmentCategorySelect extends Fragment {
                         arCategoriesView.add(new CategoryView(cate, true));
                     }
                 }
-                categoryAdapter = new CategoryAdapter(getActivity(), arCategoriesView);
-                lvCategory.setAdapter(categoryAdapter);
+
+                updateListCategories();
             }
         });
 
+        llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
         tvEmpty         = (TextView) getView().findViewById(R.id.tvEmpty);
-        lvCategory      = (ListView) getView().findViewById(R.id.lvCategory);
 
-        /* Change datasource and update listview */
-        arCategoriesView.clear();
-        List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
-        for(Category category : arParentCategories) {
-            arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
-            List<Category> arCategories = db.getCategoriesByParent(category.getId());
-            for(Category cate : arCategories) {
-                arCategoriesView.add(new CategoryView(cate, true));
-            }
-        }
-        categoryAdapter = new CategoryAdapter(getActivity(), arCategoriesView);
-        lvCategory.setAdapter(categoryAdapter);
-
-        /* Click on listview item to select category*/
-        lvCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
-
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
-                    fragment.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
-
-                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
-
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updateCategory(mCurrentTransactionType, arCategoriesView.get(position).category.getId());
-
-                }
-
-                // Back to FragmentTransactionNew
-                getFragmentManager().popBackStackImmediate();
-            }
-        });
-
-        /* Show/Hide TextView Empty Category */
-        if(arParentCategories.size() > 0) {
-            tvEmpty.setVisibility(View.GONE);
-        } else {
-            tvEmpty.setVisibility(View.VISIBLE);
-        }
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
         /* Init ActionBar */
@@ -218,7 +174,7 @@ public class FragmentCategorySelect extends Fragment {
         ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Add Category.");
+                LogUtils.trace(Tag, "Click Menu Action Add Category.");
                 FragmentCategoryCreate nextFrag = new FragmentCategoryCreate();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mCurrentTransactionType);
@@ -232,13 +188,26 @@ public class FragmentCategorySelect extends Fragment {
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+        arCategoriesView.clear();
+        List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
+        for(Category category : arParentCategories) {
+            arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
+            List<Category> arCategories = db.getCategoriesByParent(category.getId());
+            for(Category cate : arCategories) {
+                arCategoriesView.add(new CategoryView(cate, true));
+            }
+        }
 
-    public void updateListCategory() {
-        LogUtils.logEnterFunction(TAG, null);
-        btnExpense.performClick();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        /* Show/Hide TextView Empty Category */
+        if(arParentCategories.size() > 0) {
+            tvEmpty.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.VISIBLE);
+        }
+
+        updateListCategories();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -262,54 +231,45 @@ public class FragmentCategorySelect extends Fragment {
         }
     }
 
-    /**
-     * CategoryAdapter: Adapter of category's listview
-     */
-    private class CategoryAdapter extends ArrayAdapter<CategoryView> {
+    private void updateListCategories() {
+        LogUtils.logEnterFunction(Tag, null);
+        llCategories.removeAllViews();
 
-        private class ViewHolder {
-            LinearLayout    llCategory;
-            ImageView       ivExpand;
-            TextView        tvName;
-            ImageView       ivUsing;
-        }
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
 
-        private List<CategoryView> arCategoriesView;
+        for(final CategoryView category : arCategoriesView) {
 
-        public CategoryAdapter(Context context, List<CategoryView> items) {
-            super(context, R.layout.listview_item_category,items);
-            this.arCategoriesView = items;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-
-            if(!arCategoriesView.get(position).isShow) {
-                return inflater.inflate(R.layout.listview_item_null, null);
+            if(!category.isShow) {
+                continue;
             }
+            View cateView               = mInflater.inflate(R.layout.listview_item_category, null);
+            LinearLayout llCategory     = (LinearLayout) cateView.findViewById(R.id.llCategory);
+            final ImageView ivExpand    = (ImageView) cateView.findViewById(R.id.ivExpand);
+            TextView tvName             = (TextView) cateView.findViewById(R.id.tvParentCategory);
+            ImageView ivUsing           = (ImageView) cateView.findViewById(R.id.ivUsing);
 
-            final ViewHolder viewHolder;
+            llCategory.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
-            if (convertView == null || convertView.getTag() == null) {
-                viewHolder = new ViewHolder();
+                        LogUtils.trace(Tag, "Setup for TransactionCreate");
+                        FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
+                        fragment.updateCategory(mCurrentTransactionType, category.category.getId());
 
-                convertView = inflater.inflate(R.layout.listview_item_category, parent, false);
-                viewHolder.llCategory   = (LinearLayout) convertView.findViewById(R.id.llCategory);
-                viewHolder.ivExpand     = (ImageView) convertView.findViewById(R.id.ivExpand);
-                viewHolder.tvName       = (TextView) convertView.findViewById(R.id.tvParentCategory);
-                viewHolder.ivUsing      = (ImageView) convertView.findViewById(R.id.ivUsing);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
+                    } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
 
-            if(arCategoriesView.get(position).category.getParentId() == 0) {
-                viewHolder.llCategory.setBackgroundColor(getResources().getColor(R.color.listview_parent_item_background));
-            } else {
-                viewHolder.llCategory.setBackgroundColor(getResources().getColor(android.R.color.white));
-            }
+                        LogUtils.trace(Tag, "Setup for TransactionUpdate");
+                        String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+                        FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                        fragment.updateCategory(mCurrentTransactionType, category.category.getId());
+
+                    }
+
+                    // Back to FragmentTransactionNew
+                    getFragmentManager().popBackStackImmediate();
+                }
+            });
 
             final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
             expand.setAnimationListener(new Animation.AnimationListener() {
@@ -318,13 +278,14 @@ public class FragmentCategorySelect extends Fragment {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    LogUtils.trace(Tag, "expand Animation");
                     for (CategoryView cate : arCategoriesView) {
-                        if (cate.category.getParentId() == arCategoriesView.get(position).category.getId()) {
+                        if (cate.category.getParentId() == category.category.getId()) {
                             cate.isShow = true;
                         }
                     }
 
-                    notifyDataSetChanged();
+                    updateListCategories();
                 }
 
                 @Override
@@ -334,60 +295,73 @@ public class FragmentCategorySelect extends Fragment {
             final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);
             shrink.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
+                public void onAnimationStart(Animation animation) {}
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    LogUtils.trace(Tag, "shrink Animation");
                     for (CategoryView cate : arCategoriesView) {
-                        if (cate.category.getParentId() == arCategoriesView.get(position).category.getId()) {
+                        if (cate.category.getParentId() == category.category.getId()) {
                             cate.isShow = false;
                         }
                     }
 
-                    notifyDataSetChanged();
+                    updateListCategories();
                 }
 
                 @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
+                public void onAnimationRepeat(Animation animation) {}
             });
 
-            viewHolder.ivExpand.setOnClickListener(new View.OnClickListener() {
+            ivExpand.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    for (CategoryView cate : arCategoriesView) {
+                        if (cate.category.getParentId() == category.category.getId()) {
+                            if(cate.isShow) {
+                                v.startAnimation(shrink);
+                            } else {
+                                v.startAnimation(expand);
+                            }
 
-                    if (viewHolder.ivExpand.getTag().toString().equals("shrink")) {
-                        viewHolder.ivExpand.startAnimation(expand);
-                        viewHolder.ivExpand.setTag("expand");
-
-                    } else if (viewHolder.ivExpand.getTag().toString().equals("expand")) {
-                        viewHolder.ivExpand.startAnimation(shrink);
-                        viewHolder.ivExpand.setTag("shrink");
+                            break;
+                        }
                     }
-
                 }
             });
 
-            if(arCategoriesView.get(position).category.getParentId() != 0) {
-                viewHolder.ivExpand.setVisibility(View.INVISIBLE);
-            } else {
-                viewHolder.ivExpand.setVisibility(View.VISIBLE);
+            for (CategoryView cate : arCategoriesView) {
+                if (cate.category.getParentId() == category.category.getId()) {
+                    if(cate.isShow) {
+                        ivExpand.setImageResource(R.drawable.icon_expanding);
+                    } else {
+                        ivExpand.setImageResource(R.drawable.icon_shrinking);
+                    }
+                    break;
+                }
             }
 
-            viewHolder.tvName.setText(arCategoriesView.get(position).category.getName());
-
-            if(mUsingCategoryId == arCategoriesView.get(position).category.getId()) {
-                viewHolder.ivUsing.setVisibility(View.VISIBLE);
+            if(category.category.getParentId() != 0) {
+                ivExpand.setVisibility(View.INVISIBLE);
+                llCategory.setBackgroundColor(getResources().getColor(android.R.color.white));
             } else {
-                viewHolder.ivUsing.setVisibility(View.INVISIBLE);
+                ivExpand.setVisibility(View.VISIBLE);
+                llCategory.setBackgroundColor(getResources().getColor(R.color.listview_parent_item_background));
             }
 
-            return convertView;
+            tvName.setText(category.category.getName());
+
+            if(mUsingCategoryId == category.category.getId()) {
+                ivUsing.setVisibility(View.VISIBLE);
+            } else {
+                ivUsing.setVisibility(View.INVISIBLE);
+            }
+
+            llCategories.addView(cateView);
         }
 
-    }
+        LogUtils.logLeaveFunction(Tag, null, null);
+
+    } // End updateListCategories
 
 }

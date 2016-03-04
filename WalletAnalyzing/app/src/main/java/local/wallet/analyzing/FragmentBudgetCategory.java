@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
@@ -32,20 +33,18 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentBudgetCategory extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
-    private static final String TAG     = "BudgetCategory";
+    private static final String Tag = "BudgetCategory";
 
     private DatabaseHelper      db;
 
     private ToggleButton        tbAllCategory;
-    private ListView            lvCategory;
+    private LinearLayout        llCategories;
     private List<CategoryView>  arCategoriesView = new ArrayList<CategoryView>();
-    private CategoryAdapter     categoryAdapter;
-    private List<Integer>       arSelectedCategory = new ArrayList<Integer>();
     private int[]               arCategories;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -53,24 +52,24 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         Bundle bundle                   = this.getArguments();
         arCategories                    = bundle.getIntArray("Categories");
 
-        LogUtils.trace(TAG, "Categories = " + arCategories != null ? arCategories.toString() : "''");
+        LogUtils.trace(Tag, "Categories = " + arCategories != null ? Arrays.toString(arCategories) : "''");
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_budget_category, container, false);
-    }
+    } // End onCreateView
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -81,14 +80,21 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Categories: " + arSelectedCategory.toString());
 
-                if(arSelectedCategory.size() > 0) {
-
-                    int[] categories = new int[arSelectedCategory.size()];
-                    for(int i = 0 ; i < arSelectedCategory.size(); i++) {
-                        categories[i] = arSelectedCategory.get(i);
+                List<Integer> arSelectedId = new ArrayList<Integer>();
+                for(int i = 0; i < arCategoriesView.size(); i++) {
+                    if(arCategoriesView.get(i).isChecked) {
+                        arSelectedId.add(arCategoriesView.get(i).category.getId());
                     }
+                }
+
+                if(arSelectedId.size() > 0) {
+                    int[] categories = new int[arSelectedId.size()];
+                    for(int i = 0 ; i < arSelectedId.size(); i++) {
+                        categories[i] = arSelectedId.get(i);
+                    }
+
+                    LogUtils.trace(Tag, "Categories: " + Arrays.toString(categories));
 
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentBudgetCreate();
                     FragmentBudgetCreateUpdateDelete fragment = (FragmentBudgetCreateUpdateDelete) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
@@ -98,6 +104,8 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
                 } else {
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_budget_category_none));
                 }
+
+
             }
         });
 
@@ -105,40 +113,34 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreateOptionsMenu
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
         db = new DatabaseHelper(getActivity());
 
-        lvCategory      = (ListView) getView().findViewById(R.id.lvCategory);
+        llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
         arCategoriesView.clear();
         List<Category> arParentCategories = db.getAllParentCategories(true, false);
         for(Category category : arParentCategories) {
-            if(checkContain(category.getId())) {
-                arCategoriesView.add(new CategoryView(category, true, true));
-                arSelectedCategory.add(category.getId());
-            } else {
-                arCategoriesView.add(new CategoryView(category, true, false));
-            }
+
+            arCategoriesView.add(new CategoryView(category, true, checkContain(category.getId())));
 
             List<Category> arChildCategories = db.getCategoriesByParent(category.getId());
+
             for(Category cate : arChildCategories) {
-                if(checkContain(category.getId())) {
-                    arCategoriesView.add(new CategoryView(cate, true, true));
-                    arSelectedCategory.add(category.getId());
-                } else {
-                    arCategoriesView.add(new CategoryView(category, true, false));
-                }
+
+                arCategoriesView.add(new CategoryView(cate, true, checkContain(cate.getId())));
+
             }
         }
-        categoryAdapter     = new CategoryAdapter(getActivity(), arCategoriesView);
-        lvCategory.setAdapter(categoryAdapter);
+
+        updateListCategories();
 
         tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
         tbAllCategory.setOnCheckedChangeListener(this);
@@ -148,27 +150,180 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
             tbAllCategory.setChecked(false);
         }
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onActivityCreated
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        LogUtils.logEnterFunction(TAG, "isChecked = " + isChecked);
+        LogUtils.logEnterFunction(Tag, "isChecked = " + isChecked);
         for(int i = 0 ; i < arCategoriesView.size(); i++) {
             arCategoriesView.get(i).isChecked = isChecked;
         }
 
-        arSelectedCategory.clear();
-        if(isChecked) {
-            for(int i = 0 ; i < arCategoriesView.size(); i++) {
-                arSelectedCategory.add(arCategoriesView.get(i).category.getId());
+        updateListCategories();
+        LogUtils.logLeaveFunction(Tag, "isChecked = " + isChecked, null);
+    } // End onCheckedChanged
+
+    /**
+     * Update list of Category
+     */
+    private void updateListCategories() {
+        LogUtils.logEnterFunction(Tag, null);
+        llCategories.removeAllViews();
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+
+        for(final CategoryView category : arCategoriesView) {
+
+            if(!category.isShow) {
+                continue;
             }
+            View cateView               = mInflater.inflate(R.layout.listview_item_budget_category, null);
+            LinearLayout llCategory     = (LinearLayout) cateView.findViewById(R.id.llCategory);
+            ImageView ivExpand          = (ImageView) cateView.findViewById(R.id.ivExpand);
+            TextView tvName             = (TextView) cateView.findViewById(R.id.tvParentCategory);
+            CheckBox cbSelected         = (CheckBox) cateView.findViewById(R.id.cbSelected);
+
+            final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
+            expand.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    LogUtils.trace(Tag, "expand Animation");
+                    for (CategoryView cate : arCategoriesView) {
+                        if (cate.category.getParentId() == category.category.getId()) {
+                            cate.isShow = true;
+                        }
+                    }
+
+                    updateListCategories();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+
+            final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);
+            shrink.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    LogUtils.trace(Tag, "shrink Animation");
+                    for (CategoryView cate : arCategoriesView) {
+                        if (cate.category.getParentId() == category.category.getId()) {
+                            cate.isShow = false;
+                        }
+                    }
+
+                    updateListCategories();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+
+            ivExpand.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (CategoryView cate : arCategoriesView) {
+                        if (cate.category.getParentId() == category.category.getId()) {
+                            if(cate.isShow) {
+                                v.startAnimation(shrink);
+                            } else {
+                                v.startAnimation(expand);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            });
+
+            for (CategoryView cate : arCategoriesView) {
+                if (cate.category.getParentId() == category.category.getId()) {
+                    if(cate.isShow) {
+                        ivExpand.setImageResource(R.drawable.icon_expanding);
+                    } else {
+                        ivExpand.setImageResource(R.drawable.icon_shrinking);
+                    }
+                    break;
+                }
+            }
+
+            if(category.category.getParentId() != 0) {
+                ivExpand.setVisibility(View.INVISIBLE);
+                llCategory.setBackgroundColor(getResources().getColor(android.R.color.white));
+            } else {
+                ivExpand.setVisibility(View.VISIBLE);
+                llCategory.setBackgroundColor(getResources().getColor(R.color.listview_category_parent_item_background));
+            }
+
+            tvName.setText(category.category.getName());
+
+            cbSelected.setChecked(category.isChecked);
+            cbSelected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    LogUtils.trace(Tag, "cbSelected.setOnCheckedChange");
+                    llCategories.removeAllViews();
+                    category.isChecked = isChecked;
+
+                    if (category.category.getParentId() == 0) { // Click on parent category
+                        for (CategoryView cate : arCategoriesView) {
+                            if (cate.category.getParentId() == category.category.getId()) {
+                                cate.isChecked = isChecked;
+                            }
+                        }
+                    } else { // Click on child category
+                        boolean isSame = true;
+                        boolean isMany = false;
+                        for (CategoryView cateView : arCategoriesView) {
+                            if (cateView.category.getParentId() == category.category.getParentId() &&
+                                    cateView.category.getId() != category.category.getId()) {
+                                isMany = true;
+                                if (cateView.isChecked != category.isChecked) {
+                                    isSame = false;
+                                }
+                            }
+                        }
+
+                        for (CategoryView cateView : arCategoriesView) {
+                            if (cateView.category.getId() == category.category.getParentId()) {
+                                cateView.isChecked = isSame & isMany & isChecked;
+                            }
+                        }
+                    }
+
+                    boolean isAll = true;
+                    for (CategoryView cateView : arCategoriesView) {
+                        if (cateView.isChecked == false) {
+                            isAll = false;
+                            break;
+                        }
+                    }
+
+                    tbAllCategory.setChecked(isAll);
+
+                    updateListCategories();
+                } // End onCheckedChanged
+            }); // End setOnCheckedChangeListener
+
+            llCategories.addView(cateView);
         }
 
-        categoryAdapter.notifyDataSetChanged();
-        LogUtils.logLeaveFunction(TAG, "isChecked = " + isChecked, null);
-    }
+        LogUtils.logLeaveFunction(Tag, null, null);
 
+    } // End updateListCategories
+
+    /**
+     * Check ID is contain in list from BudgetCreateUpdateDelete
+     * @param id
+     * @return
+     */
     private boolean checkContain(int id) {
         for(int i = 0 ; i < arCategories.length; i++) {
             if(arCategories[i] == id) {
@@ -177,7 +332,8 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         }
 
         return false;
-    }
+    } // End checkContain
+
     /**
      * CategoryView: Use to control show/hide category in listview
      */
@@ -200,153 +356,6 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
                     ", isChecked = " + isChecked +
                     '}';
         }
-    }
+    } // End class CategoryView
 
-    /**
-     * CategoryAdapter: Adapter of category's listview
-     */
-    private class CategoryAdapter extends ArrayAdapter<CategoryView> {
-
-        private class ViewHolder {
-            LinearLayout    llCategory;
-            ImageView       ivExpand;
-            TextView        tvName;
-            CheckBox        cbSelected;
-        }
-
-        private List<CategoryView> arCategoriesView;
-
-        public CategoryAdapter(Context context, List<CategoryView> items) {
-            super(context, R.layout.listview_item_budget_category,items);
-            this.arCategoriesView = items;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-
-            if(!arCategoriesView.get(position).isShow) {
-                return inflater.inflate(R.layout.listview_item_null, null);
-            }
-
-            final ViewHolder viewHolder;
-
-            if (convertView == null || convertView.getTag() == null) {
-
-                convertView = inflater.inflate(R.layout.listview_item_budget_category, parent, false);
-
-                viewHolder = new ViewHolder();
-                viewHolder.llCategory   = (LinearLayout) convertView.findViewById(R.id.llCategory);
-                viewHolder.ivExpand     = (ImageView) convertView.findViewById(R.id.ivExpand);
-                viewHolder.tvName       = (TextView) convertView.findViewById(R.id.tvParentCategory);
-                viewHolder.cbSelected   = (CheckBox) convertView.findViewById(R.id.cbSelected);
-
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
-            expand.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    for (CategoryView cate : arCategoriesView) {
-                        if (cate.category.getParentId() == arCategoriesView.get(position).category.getId()) {
-                            cate.isShow = true;
-                        }
-                    }
-
-                    notifyDataSetChanged();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-
-            final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);
-            shrink.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    for (CategoryView cate : arCategoriesView) {
-                        if (cate.category.getParentId() == arCategoriesView.get(position).category.getId()) {
-                            cate.isShow = false;
-                        }
-                    }
-
-                    notifyDataSetChanged();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            });
-
-            viewHolder.ivExpand.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if (viewHolder.ivExpand.getTag().toString().equals("shrink")) {
-                        viewHolder.ivExpand.startAnimation(expand);
-                        viewHolder.ivExpand.setTag("expand");
-
-                    } else if (viewHolder.ivExpand.getTag().toString().equals("expand")) {
-                        viewHolder.ivExpand.startAnimation(shrink);
-                        viewHolder.ivExpand.setTag("shrink");
-                    }
-
-                }
-            });
-
-            if(arCategoriesView.get(position).category.getParentId() != 0) {
-                viewHolder.ivExpand.setVisibility(View.INVISIBLE);
-            } else {
-                viewHolder.ivExpand.setVisibility(View.VISIBLE);
-            }
-
-            viewHolder.cbSelected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    arCategoriesView.get(position).isChecked = isChecked;
-                    if (isChecked) {
-                        boolean check = false;
-                        for (int i = 0; i < arSelectedCategory.size(); i++) {
-                            if (arCategoriesView.get(position).category.getId() == arSelectedCategory.get(i)) {
-                                check = true;
-                                break;
-                            }
-                        }
-                        if(!check) {
-                            arSelectedCategory.add(arCategoriesView.get(position).category.getId());
-                        }
-
-                    } else {
-                        for (int i = 0; i < arSelectedCategory.size(); i++) {
-                            if (arCategoriesView.get(position).category.getId() == arSelectedCategory.get(i)) {
-                                arSelectedCategory.remove(i);
-                            }
-                        }
-                    }
-                    notifyDataSetChanged();
-                }
-            });
-            viewHolder.cbSelected.setChecked(arCategoriesView.get(position).isChecked);
-
-            viewHolder.tvName.setText(arCategoriesView.get(position).category.getName());
-
-            return convertView;
-        }
-
-    }
 }

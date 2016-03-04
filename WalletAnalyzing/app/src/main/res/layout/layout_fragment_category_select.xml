@@ -41,14 +41,26 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent">
 
-        <ListView
+        <!--<ListView
             android:id="@+id/lvCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
             android:cacheColorHint="@android:color/transparent"
             android:divider="@color/listview_divider"
-            android:dividerHeight="0.5dp"/>
+            android:dividerHeight="0.5dp"/>-->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/llCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@android:color/white"/>
+
+        </ScrollView>
 
         <!-- Here is the view to show if the list is emtpy -->
         <TextView

@@ -144,17 +144,14 @@ public class FragmentCategoryCreate extends Fragment {
 
                 if (categoryId <= 0) {
                     LogUtils.error(TAG, "Create Category Failed.");
+                    ((ActivityMain) getActivity()).showError("Create Category Failed.");
                 } else {
+                    ((ActivityMain) getActivity()).showToastSuccessful("Category created successful.");
                     // Todo: Update list Category in FragmentCategorySelect
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentNewTransactionSelectCategory();
-                    FragmentCategorySelect fragment = (FragmentCategorySelect) getActivity()
-                                                                        .getSupportFragmentManager()
-                                                                            .findFragmentByTag(tagOfFragment);
-                    fragment.updateListCategory();
-                }
 
-                // Return to FragmentCategorySelect
-                getFragmentManager().popBackStackImmediate();
+                    // Return to CategorySelect
+                    getFragmentManager().popBackStackImmediate();
+                }
             }
         });
         LogUtils.logLeaveFunction(TAG, null, null);

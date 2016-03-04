@@ -146,6 +146,10 @@ public class FragmentBudgetHistory extends Fragment {
                     break;
             } // end switch
 
+            if(endDate.getTimeInMillis() > today.getTimeInMillis()) {
+                break;
+            }
+
             List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
 
             Double expensed = 0.0;

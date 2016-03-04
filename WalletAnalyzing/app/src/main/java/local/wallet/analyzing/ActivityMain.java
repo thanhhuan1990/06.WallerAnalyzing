@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -221,11 +220,32 @@ public class ActivityMain extends AppCompatActivity {
     public void showError(String error) {
         LayoutInflater inflater = getLayoutInflater();
 
-        View layout = inflater.inflate(R.layout.layout_error_toast, (ViewGroup) findViewById(R.id.llCustomToast));
+        View layout = inflater.inflate(R.layout.layout_toast_error, (ViewGroup) findViewById(R.id.llCustomToast));
 
         // set a message
         TextView text = (TextView) layout.findViewById(R.id.tvError);
         text.setText(error);
+
+        // Toast...
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
+        toast.show();
+    }
+
+    /**
+     * Show customize Toast
+     * @param message
+     */
+    public void showToastSuccessful(String message) {
+        LayoutInflater inflater = getLayoutInflater();
+
+        View layout = inflater.inflate(R.layout.layout_toast_successful, (ViewGroup) findViewById(R.id.llCustomToast));
+
+        // set a message
+        TextView text = (TextView) layout.findViewById(R.id.tvMessage);
+        text.setText(message);
 
         // Toast...
         Toast toast = new Toast(getApplicationContext());

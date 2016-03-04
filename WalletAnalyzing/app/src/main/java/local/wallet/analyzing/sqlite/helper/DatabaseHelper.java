@@ -987,6 +987,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return transactions;
 
     }
+
+    /**
+     * get TRANSACTION by time
+     */
+    public List<Transaction> getBudgetTransactions(int category, Calendar startDate, Calendar endDate, int numOfDays) {
+        enter(TAG, "category = " + category + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate + ", numOfDays = " + numOfDays);
+
+        endDate.add(Calendar.DATE, numOfDays);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String condition = " WHERE " + KEY_TRANSACTION_CATEGORY_ID + " = " + category;
+
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition;
+
+        trace(TAG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+
+                if (startDate.getTimeInMillis() <= calendar.getTimeInMillis() && calendar.getTimeInMillis() < endDate.getTimeInMillis()) {
+
+                    Transaction transaction = new Transaction();
+                    transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                    transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
+                    transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                    transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
+                    transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                    transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
+                    transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
+                    transaction.setTime(calendar);
+                    transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
+                    transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                    transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+
+                    transactions.add(transaction);
+                }
+            } while (c.moveToNext()) ;
+        }
+
+        leave(TAG, "category = " + category + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
+
+        return transactions;
+
+    }
+
     /**
      * getting all TRANSACTION follow Account
      * */

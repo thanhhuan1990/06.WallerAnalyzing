@@ -86,14 +86,14 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="30dp"
+            android:maxHeight="1000dp"
             android:layout_marginTop="5dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:progress="10"
             android:progressDrawable="@drawable/budget_progress_ok"
             android:secondaryProgress="90"
-            android:thumb="@drawable/budget_progress_thumb"
-            />
+            android:thumb="@drawable/budget_progress_thumb" />
 
     </LinearLayout>
 

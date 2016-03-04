@@ -1,6 +1,7 @@
 package local.wallet.analyzing.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -109,7 +110,7 @@ public class Budget implements Serializable {
         return "Budget = (" + id
                             + ", " + name
                             + ", " + amount
-                            + ", " + categories.toString()
+                            + ", " + Arrays.toString(categories)
                             + ", " + currency
                             + ", " + repeatType
                             + ", " + startDate.get(Calendar.DAY_OF_MONTH) + "/" + (startDate.get(Calendar.MONTH) + 1) + "/" + startDate.get(Calendar.YEAR)

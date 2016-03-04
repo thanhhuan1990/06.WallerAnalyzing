@@ -94,6 +94,8 @@
     <string name="budget_detail_detail">Chi tiết khoản chi</string>
     <string name="budget_detail_history">Hạn mức chi các kỳ trước</string>
     <string name="budget_history_description">Hạn mức chi kỳ trước của %s</string>
+    <string name="budget_detail_transaction_description">Kỳ hạn mức \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
+    <string name="budget_detail_transaction_total">Tổng cộng: %s</string>
 
     <string name="new_budget_name">Tên</string>
     <string name="new_budget_name_hit">Tên hạn mức</string>
@@ -148,6 +150,9 @@
     <string name="Input_Error_Transfer_Same_Account">Không thể chuyển khoản trong cùng tài khoản!</string>
     <string name="Input_Error_Adjustment_Same_Amount">Số tiền bằng 0!</string>
     <string name="Input_Error_budget_category_none">Xin mời chọn hạng mục chi tiêu!</string>
+
+    <string name="message_transaction_create_successful">Đã tạo ghi chép thành công</string>
+    <string name="message_transaction_update_successful">Đã sửa đổi ghi chép thành công</string>
 
     <string name="expense_category">Chi Tiêu</string>
     <string name="income_category">Thu Vào</string>

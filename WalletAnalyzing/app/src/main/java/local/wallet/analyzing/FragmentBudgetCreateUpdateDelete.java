@@ -269,6 +269,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    /**
+     * Create Budget
+     */
     private void createBudget() {
         LogUtils.trace(Tag, null);
         String name = etName.getText().toString();
@@ -306,6 +309,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    /**
+     * Update Budget
+     */
     private void updateBudget() {
         LogUtils.trace(Tag, null);
         String name = etName.getText().toString();
@@ -342,6 +348,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
 
     }
 
+    /**
+     * Delete Budget
+     */
     private void deleteBudget() {
         LogUtils.trace(Tag, null);
 
@@ -352,6 +361,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    /**
+     * Show dialog RepeatType
+     */
     private void showDialogRepeatType() {
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_repeat);
@@ -364,9 +376,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         lvRepeat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                repeatType  = position;
+                repeatType = position;
                 tvRepeat.setText(arRepeat.get(repeatType));
-                if(repeatType == 0) {
+                if (repeatType == 0) {
                     llEndDate.setVisibility(View.VISIBLE);
                     tvEndDate.setText(String.format("%02d-%02d-%02d", mEndCal.get(Calendar.DAY_OF_MONTH), mEndCal.get(Calendar.MONTH) + 1, mEndCal.get(Calendar.YEAR)));
                     llIncremental.setVisibility(View.GONE);
@@ -382,6 +394,10 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         dialog.show();
     }
 
+    /**
+     * Show dialog Time
+     * @param id
+     */
     private void showDialogTime(final int id) {
 
         if(id == R.id.llStartDate) {
@@ -424,6 +440,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
 
     }
 
+    /**
+     * Start fragment BudgetCategory ti select category
+     */
     private void startFragmentBudgetCategory() {
         FragmentBudgetCategory nextFrag = new FragmentBudgetCategory();
         Bundle bundle = new Bundle();
@@ -435,7 +454,12 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
                 .commit();
     }
 
+    /**
+     * Update category from return value from BudgetCategory
+     * @param categories
+     */
     public void updateCategory(int[] categories) {
+        LogUtils.logEnterFunction(Tag, Arrays.toString(categories));
         arCategories = categories;
 
         if(arCategories.length == mDbHelper.getAllCategories(true, false).size()) {
@@ -443,7 +467,10 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         } else {
             String category = "";
             for(int i = 0 ; i < arCategories.length; i++) {
-                if(i != 0) {
+                if(checkContain(mDbHelper.getCategory(arCategories[i]).getParentId())) {
+                    continue;
+                }
+                if(!categories.equals("")) {
                     category += ", ";
                 }
                 category += mDbHelper.getCategory(arCategories[i]).getName();
@@ -453,6 +480,21 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         }
 
     }
+
+    /**
+     * Check ID is contain in list from BudgetCreateUpdateDelete
+     * @param id
+     * @return
+     */
+    private boolean checkContain(int id) {
+        for(int i = 0 ; i < arCategories.length; i++) {
+            if(arCategories[i] == id) {
+                return true;
+            }
+        }
+
+        return false;
+    } // End checkContain
 
     /**
      * EditText's TextWatcher
@@ -487,8 +529,11 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
 
             LogUtils.logLeaveFunction(Tag, null, null);
         }
-    }
+    } // End CurrencyTextWatcher
 
+    /**
+     * Adapter of Repeat Type
+     */
     private class RepeatAdapter extends ArrayAdapter<String> {
         private class ViewHolder {
             TextView tvRepeatName;
@@ -540,6 +585,6 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
             }
 
             return convertView;
-        }
-    }
+        } // End getView
+    } // End RepeatAdapter
 }

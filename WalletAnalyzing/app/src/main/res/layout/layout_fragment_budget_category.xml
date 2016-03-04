@@ -11,7 +11,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
         android:orientation="horizontal"
         android:padding="5dp">
 
@@ -41,12 +40,15 @@
         android:layout_height="0.4dp"
         android:background="@color/listview_divider"/>
 
-    <ListView
-        android:id="@+id/lvCategory"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:cacheColorHint="@android:color/transparent"
-        android:divider="@color/listview_divider"
-        android:dividerHeight="0.2dp"/>
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/llCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"/>
+    </ScrollView>
 </LinearLayout>
