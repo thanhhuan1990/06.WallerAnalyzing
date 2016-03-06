@@ -1,9 +1,9 @@
 package local.wallet.analyzing;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,27 +11,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
-import local.wallet.analyzing.model.TransactionGroup;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
@@ -46,8 +42,8 @@ public class FragmentBudgetDetailTransactions extends Fragment {
     private Budget                  mBudget;
 
     private TextView                tvDescription;
-    private LinearLayout            llTransactions;
-    private List<BudgetTransaction> arBudgetTransaction;
+    private LinearLayout            llCategoryTransactions;
+    private List<BudgetTransaction> arBudgetTransaction = new ArrayList<BudgetTransaction>();
     private TextView                tvAmount;
 
     @Override
@@ -81,7 +77,8 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         mConfigs                    = new Configurations(getActivity());
 
         tvDescription               = (TextView) getView().findViewById(R.id.tvDescription);
-        llTransactions              = (LinearLayout) getView().findViewById(R.id.llTransactions);
+        llCategoryTransactions      = (LinearLayout) getView().findViewById(R.id.llCategoryTransactions);
+        tvAmount                    = (TextView) getView().findViewById(R.id.tvAmount);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onActivityCreated
@@ -103,14 +100,24 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
         updateDataSource();
 
-        Calendar startDate  = getStartDate(mBudget);
-        Calendar endDate    = getEndDate(mBudget);
+        Calendar startDate;
+        Calendar endDate;
+        if(mBudget.getRepeatType() == 0) {
+            startDate   = mBudget.getStartDate();
+            endDate     = mBudget.getEndDate();
+        } else {
+            startDate   = getStartDate(mBudget);
+            endDate     = getEndDate(mBudget);
+        }
+
         tvDescription.setText(String.format(getResources().getString(R.string.budget_detail_transaction_description),
                                             startDate.get(Calendar.DAY_OF_MONTH),
                                             startDate.get(Calendar.MONTH),
                                             endDate.get(Calendar.DAY_OF_MONTH),
                                             endDate.get(Calendar.MONTH),
-                                            mBudget.getAmount() + ""));
+                                            Currency.formatCurrency(getContext(),
+                                                                    Currency.getCurrencyById(mBudget.getCurrency()),
+                                                                    mBudget.getAmount())));
 
         updateListTransactions();
 
@@ -140,35 +147,46 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         }
     }
 
+    /**
+     * Update data from Database
+     */
     private void updateDataSource() {
         LogUtils.logEnterFunction(Tag, null);
         arBudgetTransaction.clear();
         for(int i = 0 ; i < mBudget.getCategories().length; i++) {
             Category category = mDbHelper.getCategory(mBudget.getCategories()[i]);
 
-            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(category.getId(), getStartDate(mBudget), getEndDate(mBudget), 0);
+            List<Transaction> arTransactions = new ArrayList<Transaction>();
+            if(mBudget.getRepeatType() == 0) {
+                arTransactions = mDbHelper.getBudgetTransactions(category.getId(), mBudget.getStartDate(), mBudget.getEndDate(), 0);
+            } else {
+                arTransactions = mDbHelper.getBudgetTransactions(category.getId(), getStartDate(mBudget), getEndDate(mBudget), 0);
+            }
 
             arBudgetTransaction.add(new BudgetTransaction(category, arTransactions, true));
 
         }
         LogUtils.logLeaveFunction(Tag, null, null);
-    }
+    } // End updateDataSource
 
+    /**
+     * Update list Transactions
+     */
     private void updateListTransactions() {
         LogUtils.logEnterFunction(Tag, null);
-        llTransactions.removeAllViews();
+        llCategoryTransactions.removeAllViews();
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        for(BudgetTransaction item : arBudgetTransaction) {
+        for(BudgetTransaction category : arBudgetTransaction) {
 
-            View            categoryItem    = mInflater.inflate(R.layout.listview_item_budget_transaction_category, null);
-            LinearLayout    llCategory      = (LinearLayout) categoryItem.findViewById(R.id.llCategory);
-            final ImageView ivExpand        = (ImageView) categoryItem.findViewById(R.id.ivExpand);
-            TextView        tvCategory      = (TextView) categoryItem.findViewById(R.id.tvCategory);
-            TextView        tvAmount        = (TextView) categoryItem.findViewById(R.id.tvAmount);
-            final ListView  lvTransaction   = (ListView) categoryItem.findViewById(R.id.lvTransactions);
+            View                    categoryView    = mInflater.inflate(R.layout.listview_item_budget_transaction_category, null);
+            LinearLayout            llCategory      = (LinearLayout) categoryView.findViewById(R.id.llCategory);
+            final ImageView         ivExpand        = (ImageView) categoryView.findViewById(R.id.ivExpand);
+            TextView                tvCategory      = (TextView) categoryView.findViewById(R.id.tvCategory);
+            TextView                tvAmount        = (TextView) categoryView.findViewById(R.id.tvAmount);
+            final LinearLayout      llTransactions  = (LinearLayout) categoryView.findViewById(R.id.llTransactions);
 
-            final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
+            final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand_no_refresh);
             expand.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {}
@@ -176,15 +194,14 @@ public class FragmentBudgetDetailTransactions extends Fragment {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     LogUtils.trace(Tag, "expand Animation");
-                    lvTransaction.setVisibility(View.VISIBLE);
-                    ivExpand.setImageResource(R.drawable.icon_expanding);
+                    llTransactions.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {}
             });
 
-            final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);
+            final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink_no_refresh);
             shrink.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {}
@@ -192,8 +209,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     LogUtils.trace(Tag, "shrink Animation");
-                    lvTransaction.setVisibility(View.GONE);
-                    ivExpand.setImageResource(R.drawable.icon_shrinking);
+                    llTransactions.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -203,7 +219,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             llCategory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (lvTransaction.getVisibility() == View.GONE) {
+                    if (llTransactions.getVisibility() == View.GONE) {
                         ivExpand.startAnimation(expand);
                     } else {
                         ivExpand.startAnimation(shrink);
@@ -212,221 +228,46 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             });
 
             tvCategory.setText(String.format(getResources().getString(R.string.budget_detail_transaction_category_sum),
-                    item.category.getName()));
+                    category.category.getName()));
             Double expensed = 0.0;
-            for(Transaction tran : item.arTransactions) {
+            for(Transaction tran : category.arTransactions) {
                 expensed += tran.getAmount();
             }
 
             tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), expensed));
 
-            TransactionAdapter adapter = new TransactionAdapter(getActivity(), item.arTransactions);
-            lvTransaction.setAdapter(adapter);
+            /* Todo: Add list of transaction for category */
+            for(Transaction transaction : category.arTransactions) {
+                View        transactionView     = mInflater.inflate(R.layout.listview_item_budget_transaction_detail, null);
+                TextView    tvTranCategory      = (TextView) transactionView.findViewById(R.id.tvCategory);
+                TextView    tvTranAmount        = (TextView) transactionView.findViewById(R.id.tvAmount);
+                TextView    tvDescription       = (TextView) transactionView.findViewById(R.id.tvDescription);
+                TextView    tvDate              = (TextView) transactionView.findViewById(R.id.tvDate);
+                TextView    tvAccount           = (TextView) transactionView.findViewById(R.id.tvAccount);
+                ImageView   ivAccountIcon       = (ImageView) transactionView.findViewById(R.id.ivAccountIcon);
 
-            llTransactions.addView(categoryItem);
+                tvTranCategory.setText(String.format(getResources().getString(R.string.content_expense),
+                                                   mDbHelper.getCategory(transaction.getCategoryId()).getName()));
+                tvTranAmount.setText(Currency.formatCurrency(getActivity(), Currency.getCurrencyById(mBudget.getCurrency()), transaction.getAmount()));
+                tvDescription.setText(transaction.getDescription());
+                tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
+                                                transaction.getTime().get(Calendar.DAY_OF_MONTH),
+                                                transaction.getTime().get(Calendar.MONTH),
+                                                transaction.getTime().get(Calendar.YEAR)));
+                tvAccount.setText(mDbHelper.getAccount(transaction.getFromAccountId()).getName());
+                ivAccountIcon.setImageResource(AccountType.getAccountTypeById(mDbHelper.getAccount(transaction.getFromAccountId()).getTypeId()).getIcon());
+
+                llTransactions.addView(transactionView);
+            }
+
+            llCategoryTransactions.addView(categoryView);
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    private class TransactionAdapter extends ArrayAdapter<TransactionGroup> {
-        private class ViewHolder {
-            TextView    tvDate;
-            TextView    tvDate1;
-            TextView    tvDate2;
-            TextView    tvIncome;
-            TextView    tvExpense;
-            LinearLayout llTransactionDetail;
-        }
-
-        List<TransactionGroup> mTransactions;
-        public TransactionAdapter(Context context, List<TransactionGroup> items) {
-            super(context, R.layout.listview_item_transaction_date, items);
-            this.mTransactions  = items;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            ViewHolder viewHolder; // view lookup cache stored in tag
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(R.layout.listview_item_transaction_date, parent, false);
-                viewHolder.tvDate               = (TextView) convertView.findViewById(R.id.tvDate);
-                viewHolder.tvDate1              = (TextView) convertView.findViewById(R.id.tvDate1);
-                viewHolder.tvDate2              = (TextView) convertView.findViewById(R.id.tvDate2);
-                viewHolder.tvIncome             = (TextView) convertView.findViewById(R.id.tvIncome);
-                viewHolder.tvExpense            = (TextView) convertView.findViewById(R.id.tvExpense);
-                viewHolder.llTransactionDetail  = (LinearLayout) convertView.findViewById(R.id.llTransactionDetail);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            if(mTransactions.get(position) != null) {
-                Calendar car = Calendar.getInstance();
-                Calendar time = mTransactions.get(position).getTime();
-
-                viewHolder.tvDate.setText(time.get(Calendar.DATE) + "");
-
-                if(car.get(Calendar.DAY_OF_YEAR) == time.get(Calendar.DAY_OF_YEAR)) {
-                    viewHolder.tvDate1.setText(getResources().getString(R.string.content_today));
-                } else if((car.get(Calendar.DAY_OF_YEAR) - 1) == time.get(Calendar.DAY_OF_YEAR)) {
-                    viewHolder.tvDate1.setText(getResources().getString(R.string.content_yesterday));
-                } else if((car.get(Calendar.DAY_OF_YEAR) - 2) == time.get(Calendar.DAY_OF_YEAR)
-                        && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
-                    viewHolder.tvDate1.setText(getResources().getString(R.string.content_before_yesterday));
-                } else {
-                    viewHolder.tvDate1.setText(mTransactions.get(position).getTime().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
-                }
-
-                viewHolder.tvDate2.setText(String.format(getResources().getString(R.string.format_month_year),
-                        mTransactions.get(position).getTime().get(Calendar.MONTH) + 1,
-                        mTransactions.get(position).getTime().get(Calendar.YEAR)));
-
-                Double expense = 0.0, income = 0.0;
-                for(Transaction tran : mTransactions.get(position).getArTrans()) {
-                    Account fromAccount = mDbHelper.getAccount(tran.getFromAccountId());
-                    Account toAccount   = mDbHelper.getAccount(tran.getToAccountId());
-                    if(fromAccount != null && toAccount == null) {
-                        expense += tran.getAmount();
-                    } else if(fromAccount == null && toAccount != null) {
-                        income += tran.getAmount();
-                    }
-                }
-
-                if(expense != 0) {
-                    viewHolder.tvExpense.setVisibility(View.VISIBLE);
-                    viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense),
-                            Currency.formatCurrency(getContext(),
-                                    Currency.CurrencyList.VND,
-                                    (expense.longValue() == expense ? expense.longValue() : expense))));
-                } else {
-                    viewHolder.tvExpense.setVisibility(View.GONE);
-                }
-
-                if(income != 0) {
-                    viewHolder.tvIncome.setVisibility(View.VISIBLE);
-                    viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income),
-                            Currency.formatCurrency(getContext(),
-                                    Currency.CurrencyList.VND,
-                                    (income.longValue() == income ? income.longValue() :  income))));
-                } else {
-                    viewHolder.tvIncome.setVisibility(View.GONE);
-                }
-
-                viewHolder.llTransactionDetail.removeAllViews();
-                List<Transaction> arTrans = mTransactions.get(position).getArTrans();
-                Collections.sort(arTrans);
-                int pos = 0;
-                for(final Transaction tran : arTrans) {
-                    pos++;
-
-                    Account fromAccount     = mDbHelper.getAccount(tran.getFromAccountId());
-                    Account toAccount       = mDbHelper.getAccount(tran.getToAccountId());
-                    Category cate           = mDbHelper.getCategory(tran.getCategoryId());
-
-                    LayoutInflater inflater = LayoutInflater.from(getContext());
-                    View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
-
-                    TextView tvCategory         = (TextView) transactionDetailView.findViewById(R.id.tvCategory);
-                    String strCategory          = "";
-                    if(tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
-                        strCategory += getResources().getString(R.string.content_expense);
-                    } else if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
-                        strCategory += getResources().getString(R.string.content_income);
-                    } else if(tran.getTransactionType() == Transaction.TransactionEnum.Transfer.getValue()) {
-                        strCategory += String.format(getResources().getString(R.string.content_transfer_to), toAccount.getName());
-                    } else if(tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
-                        if(fromAccount != null) {
-                            strCategory += getResources().getString(R.string.content_expense);
-                        } else {
-                            strCategory += getResources().getString(R.string.content_income);
-                        }
-                    }
-
-                    tvCategory.setText(String.format(strCategory, cate != null ? cate.getName() : ""));
-
-                    TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
-                    if(fromAccount != null) {
-                        tvAmount.setText(Currency.formatCurrency(getContext(),
-                                Currency.getCurrencyById(fromAccount.getCurrencyId()),
-                                tran.getAmount()));
-                    } else if(toAccount != null) {
-                        tvAmount.setText(Currency.formatCurrency(getContext(),
-                                Currency.getCurrencyById(toAccount.getCurrencyId()),
-                                tran.getAmount()));
-                    }
-
-                    TextView tvDescription      = (TextView) transactionDetailView.findViewById(R.id.tvDescription);
-                    String description = tran.getDescription();
-
-                    if(tran.getFee() != 0) {
-                        if(!description.equals("")) {
-                            description += "\n";
-                        }
-                        description += String.format(getResources().getString(R.string.content_transfer_fee),
-                                Currency.formatCurrency(getContext(),
-                                        Currency.getCurrencyById(fromAccount.getCurrencyId()),
-                                        tran.getFee()));
-                    }
-
-                    if(!description.equals("")) {
-                        tvDescription.setText(description);
-                    } else {
-                        tvDescription.setVisibility(View.GONE);
-                    }
-
-
-                    TextView tvAccount          = (TextView) transactionDetailView.findViewById(R.id.tvAccount);
-                    ImageView ivAccountIcon     = (ImageView) transactionDetailView.findViewById(R.id.ivAccountIcon);
-
-                    if(fromAccount != null) {
-                        tvAccount.setText(fromAccount.getName());
-                        ivAccountIcon.setImageResource(AccountType.getAccountTypeById(fromAccount.getTypeId()).getIcon());
-                    } else if(toAccount != null) {
-                        tvAccount.setText(toAccount.getName());
-                        ivAccountIcon.setImageResource(AccountType.getAccountTypeById(toAccount.getTypeId()).getIcon());
-                    }
-
-                    if(tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue() ||
-                            (tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue() && tran.getToAccountId() > 0)) {
-                        tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
-                        tvDescription.setTextColor(getResources().getColor(R.color.colorPrimary));
-                        tvAccount.setTextColor(getResources().getColor(R.color.colorPrimary));
-                        tvAmount.setTextColor(getResources().getColor(R.color.colorPrimary));
-                    }
-
-                    if(pos == mTransactions.get(position).getArTrans().size()) {
-                        transactionDetailView.findViewById(R.id.vDivider).setVisibility(View.GONE);
-                    }
-
-                    transactionDetailView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("Transaction", tran);
-                            bundle.putInt("ContainerViewId", R.id.ll_transactions);
-                            nextFrag.setArguments(bundle);
-                            FragmentListTransaction.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-                    });
-
-                    viewHolder.llTransactionDetail.addView(transactionDetailView);
-                }
-
-            }
-
-            return convertView;
-        }
-    }
+    } // End updateListTransactions
 
     private Calendar getStartDate(Budget budget) {
+        LogUtils.logEnterFunction(Tag, null);
         Calendar today      = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
         today.set(Calendar.MINUTE,      today.getActualMinimum(Calendar.MINUTE));
@@ -434,13 +275,15 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         today.set(Calendar.MILLISECOND, today.getActualMinimum(Calendar.MILLISECOND));
 
         Calendar startDate  = Calendar.getInstance();
-        startDate.setTimeInMillis(mBudget.getStartDate().getTimeInMillis());
+        startDate.setTimeInMillis(budget.getStartDate().getTimeInMillis());
         Calendar endDate    = Calendar.getInstance();
-        endDate.setTimeInMillis(mBudget.getStartDate().getTimeInMillis());
+        endDate.setTimeInMillis(budget.getStartDate().getTimeInMillis());
 
-        int repeatType      = mBudget.getRepeatType();
+        int repeatType      = budget.getRepeatType();
 
         while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+            LogUtils.trace(Tag, "End Date = " + endDate.getTimeInMillis());
+            LogUtils.trace(Tag, "today = " + today.getTimeInMillis());
             switch (repeatType) {
                 case 1: {// daily
                     endDate.add(Calendar.DATE, 1);
@@ -498,10 +341,12 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             } // End IF endDate < today
         } // End While endDate < today
 
+        LogUtils.logLeaveFunction(Tag, null, null);
         return startDate;
     }
 
     private Calendar getEndDate(Budget budget) {
+        LogUtils.logEnterFunction(Tag, null);
         Calendar today      = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
         today.set(Calendar.MINUTE,      today.getActualMinimum(Calendar.MINUTE));
@@ -509,11 +354,11 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         today.set(Calendar.MILLISECOND, today.getActualMinimum(Calendar.MILLISECOND));
 
         Calendar startDate  = Calendar.getInstance();
-        startDate.setTimeInMillis(mBudget.getStartDate().getTimeInMillis());
+        startDate.setTimeInMillis(budget.getStartDate().getTimeInMillis());
         Calendar endDate    = Calendar.getInstance();
-        endDate.setTimeInMillis(mBudget.getStartDate().getTimeInMillis());
+        endDate.setTimeInMillis(budget.getStartDate().getTimeInMillis());
 
-        int repeatType      = mBudget.getRepeatType();
+        int repeatType      = budget.getRepeatType();
 
         while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
             switch (repeatType) {
@@ -573,6 +418,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             } // End IF endDate < today
         } // End While endDate < today
 
+        LogUtils.logLeaveFunction(Tag, null, null);
         return endDate;
     }
 }

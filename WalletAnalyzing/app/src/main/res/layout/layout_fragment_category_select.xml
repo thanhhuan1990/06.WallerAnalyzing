@@ -41,17 +41,10 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/transparent">
 
-        <!--<ListView
-            android:id="@+id/lvCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:cacheColorHint="@android:color/transparent"
-            android:divider="@color/listview_divider"
-            android:dividerHeight="0.5dp"/>-->
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:id="@+id/llCategories"

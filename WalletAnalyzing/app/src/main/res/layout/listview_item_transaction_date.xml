@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/listview_transaction_parent_background"
+        android:background="@color/listview_parent_item_background"
         android:orientation="horizontal"
         android:padding="5dp"
         android:weightSum="7">
@@ -93,6 +93,11 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/listview_divider"/>
 
     <LinearLayout
         android:id="@+id/llTransactionDetail"

@@ -11,6 +11,9 @@
         android:id="@+id/lvTransaction"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="@android:color/transparent"/>
+        android:cacheColorHint="@android:color/transparent"
+        android:dividerHeight="0.1dp"
+        android:divider="@color/listview_divider"
+        android:scrollbars="none"/>
 
 </FrameLayout>

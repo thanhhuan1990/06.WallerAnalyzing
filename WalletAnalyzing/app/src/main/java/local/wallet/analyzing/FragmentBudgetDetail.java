@@ -89,6 +89,20 @@ public class FragmentBudgetDetail extends Fragment {
         if(mBudget.getRepeatType() == 0) {
             llHistory.setVisibility(View.GONE);
         }
+
+        llBudgetDetailTransactions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentBudgetDetailTransactions nextFrag = new FragmentBudgetDetailTransactions();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Budget", mBudget);
+                nextFrag.setArguments(bundle);
+                FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_budget, nextFrag, "FragmentBudgetDetailTransactions")
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         llHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

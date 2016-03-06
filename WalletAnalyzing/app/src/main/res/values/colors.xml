@@ -19,12 +19,10 @@
     <color name="textcolor_hint">#c7c7cd</color>
     <color name="textcolor_title_attribute">#40454E</color>
 
-    <color name="listview_transaction_parent_background">#E6E6E6</color>
     <color name="listview_account_transactions_parent_background">#e9e9e9</color>
     <color name="listview_account_transactions_event_background">#FFFFFF</color>
     <color name="listview_account_transactions_odd_background">#F7F7F7</color>
-    <color name="listview_category_parent_item_background">#FAFAFA</color>
-    <color name="listview_parent_item_background">#e6e6e6</color>
+    <color name="listview_parent_item_background">#FAFAFA</color>
     <color name="listview_divider">#C2C2C2</color>
 
     <color name="description_border">#5A7A77</color>
