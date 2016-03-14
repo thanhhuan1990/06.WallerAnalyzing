@@ -70,12 +70,12 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
         lvEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentReportEventDetail nextFrag = new FragmentReportEventDetail();
+                FragmentReportEventTransactions nextFrag = new FragmentReportEventTransactions();
                 Bundle bundle = new Bundle();
                 bundle.putInt("EventID", arEvents.get(position).getId());
                 nextFrag.setArguments(bundle);
                 FragmentReportEvent.this.getFragmentManager().beginTransaction()
-                        .replace(R.id.ll_report, nextFrag, "FragmentReportEventDetail")
+                        .replace(R.id.ll_report, nextFrag, "FragmentReportEventTransactions")
                         .addToBackStack(null)
                         .commit();
             }

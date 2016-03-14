@@ -28,7 +28,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 2/22/2016.
  */
-public class FragmentReportEventDetail extends Fragment implements View.OnClickListener {
+public class FragmentReportEventTransactions extends Fragment implements View.OnClickListener {
     private static final String Tag = "ReportEventDetail";
 
     private DatabaseHelper  mDbHelper;
@@ -61,7 +61,7 @@ public class FragmentReportEventDetail extends Fragment implements View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_report_event_detail, container, false);
+        return inflater.inflate(R.layout.layout_fragment_report_event_transactions, container, false);
     } // End onCreateView
 
     @Override
@@ -254,7 +254,7 @@ public class FragmentReportEventDetail extends Fragment implements View.OnClickL
                     bundle.putSerializable("Transaction", transaction);
                     bundle.putInt("ContainerViewId", R.id.layout_account);
                     nextFrag.setArguments(bundle);
-                    FragmentReportEventDetail.this.getFragmentManager().beginTransaction()
+                    FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
                             .replace(R.id.ll_report, nextFrag, "FragmentTransactionUpdate")
                             .addToBackStack(null)
                             .commit();
@@ -306,4 +306,4 @@ public class FragmentReportEventDetail extends Fragment implements View.OnClickL
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End updateListTransactions
-} // End class FragmentReportEventDetail
+} // End class FragmentReportEventTransactions
