@@ -133,9 +133,9 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         llRepeat.setOnClickListener(this);
         tvRepeat        = (TextView) getView().findViewById(R.id.tvRepeat);
         tvRepeat.setText(arTemp[repeatType]);
-        llStartDate = (LinearLayout) getView().findViewById(R.id.llStartDate);
+        llStartDate     = (LinearLayout) getView().findViewById(R.id.llStartDate);
         llStartDate.setOnClickListener(this);
-        tvStartDate = (TextView) getView().findViewById(R.id.tvStartDate);
+        tvStartDate     = (TextView) getView().findViewById(R.id.tvStartDate);
         tvStartDate.setText(String.format("%02d-%02d-%02d", mStartCal.get(Calendar.DAY_OF_MONTH), mStartCal.get(Calendar.MONTH) + 1, mStartCal.get(Calendar.YEAR)));
 
         llEndDate       = (LinearLayout) getView().findViewById(R.id.llEndDate);
@@ -144,7 +144,7 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         tvEndDate.setText(String.format("%02d-%02d-%02d", mStartCal.get(Calendar.DAY_OF_MONTH), mStartCal.get(Calendar.MONTH) + 1, mStartCal.get(Calendar.YEAR)));
 
         llIncremental   = (LinearLayout) getView().findViewById(R.id.llIncremental);
-        cbIncremental = (CheckBox) getView().findViewById(R.id.cbIncremental);
+        cbIncremental   = (CheckBox) getView().findViewById(R.id.cbIncremental);
         cbIncremental.setOnCheckedChangeListener(this);
         tvDescription   = (TextView) getView().findViewById(R.id.tvDescription);
         llSave          = (LinearLayout) getView().findViewById(R.id.llSave);
@@ -470,7 +470,7 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
                 if(checkContain(mDbHelper.getCategory(arCategories[i]).getParentId())) {
                     continue;
                 }
-                if(!categories.equals("")) {
+                if(!category.equals("")) {
                     category += ", ";
                 }
                 category += mDbHelper.getCategory(arCategories[i]).getName();

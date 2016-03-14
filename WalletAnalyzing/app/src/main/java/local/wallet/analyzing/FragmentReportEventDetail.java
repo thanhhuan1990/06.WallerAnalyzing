@@ -14,16 +14,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.List;
+
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.model.Account;
+import local.wallet.analyzing.model.AccountType;
+import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Event;
+import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEventDetail extends Fragment implements View.OnClickListener {
-    private static final String TAG = "ReportEventDetail";
+    private static final String Tag = "ReportEventDetail";
 
     private DatabaseHelper  mDbHelper;
+    private Configurations  mConfigs;
+
+    private int             mEventId;
+    private Event           mEvent;
 
     private ImageView       ivExpandExpense;
     private TextView        tvTotalExpense;
@@ -31,30 +43,35 @@ public class FragmentReportEventDetail extends Fragment implements View.OnClickL
     private ImageView       ivExpandIncome;
     private TextView        tvTotalIncome;
     private LinearLayout    llIncomes;
-    private LinearLayout    llComplete;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+
+        Bundle bundle = this.getArguments();
+        mEventId      = bundle.getInt("EventID", 0);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_report_event_detail, container, false);
-    }
+    } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
+        mEvent          = mDbHelper.getEvent(mEventId);
 
         ivExpandExpense = (ImageView) getView().findViewById(R.id.ivExpandExpense);
         ivExpandExpense.setOnClickListener(this);
@@ -64,13 +81,9 @@ public class FragmentReportEventDetail extends Fragment implements View.OnClickL
         ivExpandIncome.setOnClickListener(this);
         tvTotalIncome   = (TextView) getView().findViewById(R.id.tvTotalIncome);
         llIncomes       = (LinearLayout) getView().findViewById(R.id.llIncomes);
-        llComplete      = (LinearLayout) getView().findViewById(R.id.llComplete);
-        llComplete.setOnClickListener(this);
 
-        /* Todo: Update view by data from mDbHelper */
-
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onActivityCreated
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -78,36 +91,219 @@ public class FragmentReportEventDetail extends Fragment implements View.OnClickL
             return;
         }
 
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_update, null);
+        View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_update_export, null);
+        TextView  tvTitle           = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(mEvent.getName());
         ImageView ivUpdate          = (ImageView) mCustomView.findViewById(R.id.ivUpdate);
         ivUpdate.setOnClickListener(this);
+        ImageView ivExport          = (ImageView) mCustomView.findViewById(R.id.ivExport);
+        ivExport.setOnClickListener(this);
 
-         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
+        // Todo: Update view by data from mDbHelper
+        updateListTransactions();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreateOptionsMenu
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivUpdate:
                 break;
+            case R.id.ivExport:
+                break;
             case R.id.ivExpandExpense:
-                final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
-                final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);
+                final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand_no_refresh);
+                expand.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        LogUtils.trace(Tag, "expand Animation");
+                        llExpenses.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
+
+                final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink_no_refresh);
+                shrink.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        LogUtils.trace(Tag, "shrink Animation");
+                        llExpenses.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
+
+                if (llExpenses.getVisibility() == View.VISIBLE) {
+                    v.startAnimation(shrink);
+                } else {
+                    v.startAnimation(expand);
+                }
+
                 break;
             case R.id.ivExpandIncome:
-                final Animation expandIncome = AnimationUtils.loadAnimation(getActivity(), R.anim.expand);
-                final Animation shrinkIncome = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink);
-                break;
-            case R.id.llComplete:
+                final Animation expandIncome = AnimationUtils.loadAnimation(getActivity(), R.anim.expand_no_refresh);
+                expandIncome.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        LogUtils.trace(Tag, "expand Animation");
+                        llIncomes.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
+
+                final Animation shrinkIncome = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink_no_refresh);
+                shrinkIncome.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {}
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        LogUtils.trace(Tag, "shrink Animation");
+                        llIncomes.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {}
+                });
+
+                if (llIncomes.getVisibility() == View.VISIBLE) {
+                    v.startAnimation(shrinkIncome);
+                } else {
+                    v.startAnimation(expandIncome);
+                }
+
                 break;
             default:
                 break;
         }
     }
-}
+
+    /**
+     * Update list Transactions
+     */
+    private void updateListTransactions() {
+        LogUtils.logEnterFunction(Tag, null);
+        llExpenses.removeAllViews();
+        llIncomes.removeAllViews();
+
+        Double expense = 0.0, income = 0.0;
+
+        List<Transaction> arTransactions = mDbHelper.getTransactionsByEvent(mEventId);
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        for(final Transaction transaction : arTransactions) {
+
+            View        transactionView     = mInflater.inflate(R.layout.listview_item_budget_transaction_detail, null);
+            TextView    tvTranCategory      = (TextView) transactionView.findViewById(R.id.tvCategory);
+            TextView    tvTranAmount        = (TextView) transactionView.findViewById(R.id.tvAmount);
+            TextView    tvDescription       = (TextView) transactionView.findViewById(R.id.tvDescription);
+            TextView    tvDate              = (TextView) transactionView.findViewById(R.id.tvDate);
+            TextView    tvAccount           = (TextView) transactionView.findViewById(R.id.tvAccount);
+            ImageView   ivAccountIcon       = (ImageView) transactionView.findViewById(R.id.ivAccountIcon);
+
+            // CATEGORY
+            tvTranCategory.setText(String.format(getResources().getString(R.string.content_expense),
+                                                    mDbHelper.getCategory(transaction.getCategoryId()).getName()));
+
+            // AMOUNT
+            Account fromAccount     = mDbHelper.getAccount(transaction.getFromAccountId());
+            Account toAccount       = mDbHelper.getAccount(transaction.getToAccountId());
+            tvTranAmount.setText(Currency.formatCurrency(getActivity(),
+                                                        Currency.getCurrencyById(fromAccount != null ? fromAccount.getCurrencyId() : toAccount.getCurrencyId()),
+                                                        transaction.getAmount()));
+
+            // DESCRIPTION
+            if(!transaction.getDescription().equals("")) {
+                tvDescription.setText(transaction.getDescription());
+            } else {
+                tvDescription.setVisibility(View.GONE);
+            }
+
+            // DATE
+            tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
+                    transaction.getTime().get(Calendar.DAY_OF_MONTH),
+                    transaction.getTime().get(Calendar.MONTH),
+                    transaction.getTime().get(Calendar.YEAR)));
+
+            transactionView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("Transaction", transaction);
+                    bundle.putInt("ContainerViewId", R.id.layout_account);
+                    nextFrag.setArguments(bundle);
+                    FragmentReportEventDetail.this.getFragmentManager().beginTransaction()
+                            .replace(R.id.ll_report, nextFrag, "FragmentTransactionUpdate")
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+
+            if (transaction.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
+
+                // ACCOUNT
+                tvAccount.setText(fromAccount.getName());
+                ivAccountIcon.setImageResource(AccountType.getAccountTypeById(fromAccount.getTypeId()).getIcon());
+
+                expense += transaction.getAmount();
+                llExpenses.addView(transactionView);
+            } else if (transaction.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
+
+                // ACCOUNT
+                tvAccount.setText(toAccount.getName());
+                ivAccountIcon.setImageResource(AccountType.getAccountTypeById(toAccount.getTypeId()).getIcon());
+
+                income += transaction.getAmount();
+                llIncomes.addView(transactionView);
+            } else if (transaction.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+                if(transaction.getFromAccountId() != 0) {
+
+                    // ACCOUNT
+                    tvAccount.setText(fromAccount.getName());
+                    ivAccountIcon.setImageResource(AccountType.getAccountTypeById(fromAccount.getTypeId()).getIcon());
+
+                    expense += transaction.getAmount();
+                    llExpenses.addView(transactionView);
+                } else if(transaction.getToAccountId() != 0) {
+
+                    // ACCOUNT
+                    tvAccount.setText(toAccount.getName());
+                    ivAccountIcon.setImageResource(AccountType.getAccountTypeById(toAccount.getTypeId()).getIcon());
+
+                    income += transaction.getAmount();
+                    llIncomes.addView(transactionView);
+                }
+            }
+
+        } // End for(final Transaction transaction : arTransactions)
+
+        tvTotalExpense.setText(String.format(getResources().getString(R.string.content_expense,
+                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), expense))));
+        tvTotalIncome.setText(String.format(getResources().getString(R.string.content_income,
+                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), income))));
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End updateListTransactions
+} // End class FragmentReportEventDetail

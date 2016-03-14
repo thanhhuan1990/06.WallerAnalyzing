@@ -24,7 +24,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentCategoryCreate extends Fragment {
 
-    private static final String TAG     = "FragmentCategoryCreate";
+    private static final String Tag = "CategoryCreate";
 
     private DatabaseHelper db;
 
@@ -42,21 +42,21 @@ public class FragmentCategoryCreate extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
         mTransactionType                = (TransactionEnum)bundle.get("TransactionType");
 
-        LogUtils.trace(TAG, "mTransactionType = " + mTransactionType);
+        LogUtils.trace(Tag, "mTransactionType = " + mTransactionType);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -73,25 +73,25 @@ public class FragmentCategoryCreate extends Fragment {
 
         // Update ActionBar
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         String myTag = getTag();
         ((ActivityMain)getActivity()).setFragmentCategoryCreate(myTag);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_category_create, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -121,29 +121,44 @@ public class FragmentCategoryCreate extends Fragment {
             }
         });
 
+        etDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentDescription fragmentDescription = new FragmentDescription();
+                Bundle bundle = new Bundle();
+                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryCreate());
+                bundle.putString("Description", etDescription.getText().toString());
+                fragmentDescription.setArguments(bundle);
+                FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_transaction_create, fragmentDescription, "FragmentDescription")
+                        .addToBackStack(Tag)
+                        .commit();
+            }
+        });
+
         llSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click button SAVE");
+                LogUtils.trace(Tag, "Click button SAVE");
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 // Check Category's name
                 if (etName.getText().toString().equals("")) {
-                    LogUtils.trace(TAG, "Name is empty");
+                    LogUtils.trace(Tag, "Name is empty");
                     etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
                     return;
                 }
 
                 // Todo: Insert new Category to DB
                 long categoryId = db.createCategory(mParentCategory != null ? mParentCategory.getId() : 0,    // ParentID
-                                                        etName.getText().toString(),                            // Name
-                                                        (mTransactionType == TransactionEnum.Expense
-                                                                    || mTransactionType == TransactionEnum.Transfer
-                                                                    || mTransactionType == TransactionEnum.Adjustment)
-                                                                                ? true : false,                   // Expense
-                                                        mBorrow);                                                 // Borrow
+                        etName.getText().toString(),                            // Name
+                        (mTransactionType == TransactionEnum.Expense
+                                || mTransactionType == TransactionEnum.Transfer
+                                || mTransactionType == TransactionEnum.Adjustment)
+                                ? true : false,                   // Expense
+                        mBorrow);                                                 // Borrow
 
                 if (categoryId <= 0) {
-                    LogUtils.error(TAG, "Create Category Failed.");
+                    LogUtils.error(Tag, "Create Category Failed.");
                     ((ActivityMain) getActivity()).showError("Create Category Failed.");
                 } else {
                     ((ActivityMain) getActivity()).showToastSuccessful("Category created successful.");
@@ -154,7 +169,7 @@ public class FragmentCategoryCreate extends Fragment {
                 }
             }
         });
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -162,7 +177,7 @@ public class FragmentCategoryCreate extends Fragment {
      * @param parentCategoryId
      */
     public void updateParentCategory(int parentCategoryId, boolean borrow) {
-        LogUtils.logEnterFunction(TAG, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow);
+        LogUtils.logEnterFunction(Tag, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow);
 
         mBorrow = borrow;
         mParentCategory = db.getCategory(parentCategoryId);
@@ -172,7 +187,17 @@ public class FragmentCategoryCreate extends Fragment {
             tvParentCategory.setText("");
         }
 
-        LogUtils.logLeaveFunction(TAG, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow, null);
+        LogUtils.logLeaveFunction(Tag, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow, null);
+    }
+
+    /**
+     * Update Description, call from ActivityMain
+     * @param description
+     */
+    public void updateDescription(String description) {
+        LogUtils.logEnterFunction(Tag, "description = " + description);
+        etDescription.setText(description);
+        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
     }
 
 }

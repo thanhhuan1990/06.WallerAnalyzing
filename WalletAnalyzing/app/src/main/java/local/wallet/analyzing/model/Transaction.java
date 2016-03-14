@@ -45,12 +45,12 @@ public class Transaction implements Comparable<Transaction>, Serializable {
     private Calendar time;
     private Double fee;
     private String payee;
-    private String event;
+    private Event event;
 
     public Transaction() {
     }
 
-    public Transaction(int id, int transactionType, Double amount, int categoryId, String description, int fromAccountId, int toAccountId, Calendar time, Double fee, String payee, String event) {
+    public Transaction(int id, int transactionType, Double amount, int categoryId, String description, int fromAccountId, int toAccountId, Calendar time, Double fee, String payee, Event event) {
         this.id = id;
         this.transactionType = transactionType;
         this.amount = amount;
@@ -149,11 +149,11 @@ public class Transaction implements Comparable<Transaction>, Serializable {
         this.payee = payee;
     }
 
-    public String getEvent() {
+    public Event getEvent() {
         return event;
     }
 
-    public void setEvent(String event) {
+    public void setEvent(Event event) {
         this.event = event;
     }
 

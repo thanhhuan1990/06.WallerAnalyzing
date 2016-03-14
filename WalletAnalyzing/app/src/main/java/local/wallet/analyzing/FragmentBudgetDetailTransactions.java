@@ -237,7 +237,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), expensed));
 
             /* Todo: Add list of transaction for category */
-            for(Transaction transaction : category.arTransactions) {
+            for(final Transaction transaction : category.arTransactions) {
                 View        transactionView     = mInflater.inflate(R.layout.listview_item_budget_transaction_detail, null);
                 TextView    tvTranCategory      = (TextView) transactionView.findViewById(R.id.tvCategory);
                 TextView    tvTranAmount        = (TextView) transactionView.findViewById(R.id.tvAmount);
@@ -247,15 +247,35 @@ public class FragmentBudgetDetailTransactions extends Fragment {
                 ImageView   ivAccountIcon       = (ImageView) transactionView.findViewById(R.id.ivAccountIcon);
 
                 tvTranCategory.setText(String.format(getResources().getString(R.string.content_expense),
-                                                   mDbHelper.getCategory(transaction.getCategoryId()).getName()));
+                        mDbHelper.getCategory(transaction.getCategoryId()).getName()));
                 tvTranAmount.setText(Currency.formatCurrency(getActivity(), Currency.getCurrencyById(mBudget.getCurrency()), transaction.getAmount()));
-                tvDescription.setText(transaction.getDescription());
+                if(!transaction.getDescription().equals("")) {
+                    tvDescription.setText(transaction.getDescription());
+                } else {
+                    tvDescription.setVisibility(View.GONE);
+                }
+
                 tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
                                                 transaction.getTime().get(Calendar.DAY_OF_MONTH),
                                                 transaction.getTime().get(Calendar.MONTH),
                                                 transaction.getTime().get(Calendar.YEAR)));
                 tvAccount.setText(mDbHelper.getAccount(transaction.getFromAccountId()).getName());
                 ivAccountIcon.setImageResource(AccountType.getAccountTypeById(mDbHelper.getAccount(transaction.getFromAccountId()).getTypeId()).getIcon());
+
+                transactionView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Transaction", transaction);
+                        bundle.putInt("ContainerViewId", R.id.layout_account);
+                        nextFrag.setArguments(bundle);
+                        FragmentBudgetDetailTransactions.this.getFragmentManager().beginTransaction()
+                                .add(R.id.layout_budget, nextFrag, "FragmentTransactionUpdate")
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
 
                 llTransactions.addView(transactionView);
             }

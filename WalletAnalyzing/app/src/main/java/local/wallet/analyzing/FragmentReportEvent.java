@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,17 +21,21 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Event;
+import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEvent extends Fragment implements View.OnClickListener {
-    private static final String TAG = "ReportEvent";
+    private static final String Tag = "ReportEvent";
 
     private DatabaseHelper  mDbHelper;
+    private Configurations  mConfigs;
 
+    private boolean         isRunning   = true;
     private Button          btnInProgress;
     private Button          btnCompleted;
     private ListView        lvEvents;
@@ -39,17 +45,20 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
-        return inflater.inflate(R.layout.layout_fragment_report_event_list, container, false);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return inflater.inflate(R.layout.layout_fragment_report_event, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
+
+        arEvents        = mDbHelper.getRunningEvents();
 
         btnInProgress   = (Button) getView().findViewById(R.id.btnInProgress);
         btnInProgress.setOnClickListener(this);
@@ -61,28 +70,68 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
         lvEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                FragmentReportEventDetail nextFrag = new FragmentReportEventDetail();
+                Bundle bundle = new Bundle();
+                bundle.putInt("EventID", arEvents.get(position).getId());
+                nextFrag.setArguments(bundle);
+                FragmentReportEvent.this.getFragmentManager().beginTransaction()
+                        .replace(R.id.ll_report, nextFrag, "FragmentReportEventDetail")
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        arEvents.clear();
+        List<Event> arTmp = isRunning ? mDbHelper.getRunningEvents() : mDbHelper.getFinishedEvents();
+        for (Event event : arTmp) {
+            arEvents.add(event);
+        }
+        adapter.notifyDataSetChanged();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnInProgress:
+            case R.id.btnInProgress: {
+                isRunning = true;
                 btnInProgress.setBackgroundResource(R.drawable.background_button_left_case_selected);
                 btnInProgress.setTextColor(getResources().getColorStateList(R.color.button_textcolor_2));
                 btnCompleted.setBackgroundResource(R.drawable.background_button_right_case);
                 btnCompleted.setTextColor(getResources().getColorStateList(R.color.button_textcolor));
+
+                arEvents.clear();
+                List<Event> arTmp = mDbHelper.getRunningEvents();
+                for (Event event : arTmp) {
+                    arEvents.add(event);
+                }
+                adapter.notifyDataSetChanged();
                 break;
-            case R.id.btnCompleted:
-                btnCompleted.setBackgroundResource(R.drawable.background_button_left_case_selected);
-                btnCompleted.setTextColor(getResources().getColorStateList(R.color.button_textcolor_2));
-                btnInProgress.setBackgroundResource(R.drawable.background_button_right_case);
+            }
+            case R.id.btnCompleted: {
+                isRunning = false;
+                btnInProgress.setBackgroundResource(R.drawable.background_button_left_case);
                 btnInProgress.setTextColor(getResources().getColorStateList(R.color.button_textcolor));
+                btnCompleted.setBackgroundResource(R.drawable.background_button_right_case_selected);
+                btnCompleted.setTextColor(getResources().getColorStateList(R.color.button_textcolor_2));
+
+                arEvents.clear();
+                List<Event> arTmp = mDbHelper.getFinishedEvents();
+                for (Event event : arTmp) {
+                    arEvents.add(event);
+                }
+                adapter.notifyDataSetChanged();
                 break;
+            }
             default:
                 break;
         }
@@ -127,21 +176,43 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
             Event event = mEvents.get(position);
             if(event != null) {
 
-                viewHolder.llEvent.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-
                 viewHolder.tvEventName.setText(event.getName());
                 viewHolder.tvDate.setText(String.format(getResources().getString(R.string.event_item_date),
                                                         String.format(getResources().getString(R.string.format_day_month_year),
                                                                         event.getStartDate().get(Calendar.DAY_OF_MONTH),
                                                                         event.getStartDate().get(Calendar.MONTH) + 1,
                                                                         event.getStartDate().get(Calendar.YEAR))));
-                viewHolder.tvExpense.setText("");
-                viewHolder.tvIncome.setText("");
+
+                List<Transaction> arTransactions = mDbHelper.getTransactionsByEvent(event.getId());
+                Double expense = 0.0, income = 0.0;
+
+                for (Transaction tran : arTransactions) {
+                    if (tran.getTransactionType() == Transaction.TransactionEnum.Expense.getValue()) {
+                        expense += tran.getAmount();
+                    } else if (tran.getTransactionType() == Transaction.TransactionEnum.Income.getValue()) {
+                        income += tran.getAmount();
+                    } else if (tran.getTransactionType() == Transaction.TransactionEnum.Adjustment.getValue()) {
+                        if(tran.getFromAccountId() != 0) {
+                            expense += tran.getAmount();
+                        } else if(tran.getToAccountId() != 0) {
+                            income += tran.getAmount();
+                        }
+                    }
+                }
+
+                if(expense != 0) {
+                    viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense,
+                                                                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), expense))));
+                } else {
+                    viewHolder.tvExpense.setVisibility(View.GONE);
+                }
+                if(income != 0) {
+                    viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income,
+                                                            Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), income))));
+                } else {
+                    viewHolder.tvIncome.setVisibility(View.GONE);
+                }
+
             }
 
             return convertView;

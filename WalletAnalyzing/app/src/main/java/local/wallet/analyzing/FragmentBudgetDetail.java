@@ -379,6 +379,16 @@ public class FragmentBudgetDetail extends Fragment {
         tvExpensed.setText(String.format(getResources().getString(R.string.budget_item_expensed),
                                         Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), expensed)));
 
+        // Hide/Show layout Transactions
+        if(expensed == 0) {
+            llBudgetDetailTransactions.setVisibility(View.GONE);
+        }
+
+        // Hide/Show layout History
+        if(startDate.getTimeInMillis() == mBudget.getStartDate().getTimeInMillis()) {
+            llHistory.setVisibility(View.GONE);
+        }
+
         sbExpensed.setMax(amount.intValue());
         // Set date
         double numOfDaysOne = (double)getDays(startDate, today);

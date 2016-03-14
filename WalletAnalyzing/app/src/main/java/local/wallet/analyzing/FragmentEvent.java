@@ -129,11 +129,8 @@ public class FragmentEvent extends Fragment {
         etEvent.addTextChangedListener(new EventTextWatcher());
 
         lvEvent = (ListView) getView().findViewById(R.id.lvEvent);
-        events = db.getEvents("");
-        mAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                events);
+        events = db.getEvents(mEvent);
+        mAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, events);
         lvEvent.setAdapter(mAdapter);
 
         lvEvent.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -34,6 +34,7 @@ import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -175,13 +176,12 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
             llSave.setOnClickListener(this);
             mCal        = Calendar.getInstance();
-
-            initViewExpense();
-            initViewIncome();
-            initViewTransfer();
-            initViewAdjustment();
         }
 
+        initViewExpense();
+        initViewIncome();
+        initViewTransfer();
+        initViewAdjustment();
         initActionBar();
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -642,46 +642,45 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 mEdittext.removeTextChangedListener(this);
 
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
-                if(inputted.equals("")) {
-                    return;
-                }
-                String formatted = Currency.formatCurrencyDouble(mFromAccount != null ?
-                                                                        Currency.getCurrencyById(mFromAccount.getCurrencyId())
-                                                                        : Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)),
-                                                                Double.parseDouble(inputted));
+                if(!inputted.equals("")) {
+                    String formatted = Currency.formatCurrencyDouble(mFromAccount != null ?
+                                    Currency.getCurrencyById(mFromAccount.getCurrencyId())
+                                    : Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)),
+                            Double.parseDouble(inputted));
 
-                current = formatted;
-                mEdittext.setText(formatted);
-                mEdittext.setSelection(formatted.length());
+                    current = formatted;
+                    mEdittext.setText(formatted);
+                    mEdittext.setSelection(formatted.length());
 
-                if(mCurrentTransactionType == TransactionEnum.Adjustment) {
-                    Double balance = !mEdittext.getText().toString().equals("") ?
-                                            Double.parseDouble(mEdittext.getText().toString().replaceAll(",", ""))
-                                            : 0;
-                    Double remain   = mDbHelper.getAccountRemainBefore(mFromAccount.getId(), mCal);
+                    if(mCurrentTransactionType == TransactionEnum.Adjustment) {
+                        Double balance = !mEdittext.getText().toString().equals("") ?
+                                Double.parseDouble(mEdittext.getText().toString().replaceAll(",", ""))
+                                : 0;
+                        Double remain   = mDbHelper.getAccountRemainBefore(mFromAccount.getId(), mCal);
 
-                    if(remain > balance) {
-                        tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                                                                Currency.formatCurrency(getContext(),
-                                                                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                                            remain - balance)));
-                        ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
-                        if(mCategory != null && !mCategory.isExpense()) {
-                            tvAdjustmentCategory.setText("");
-                            mCategory   = null;
+                        if(remain > balance) {
+                            tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
+                                    Currency.formatCurrency(getContext(),
+                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                            remain - balance)));
+                            ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
+                            if(mCategory != null && !mCategory.isExpense()) {
+                                tvAdjustmentCategory.setText("");
+                                mCategory   = null;
+                            }
+                        } else {
+                            tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
+                                    Currency.formatCurrency(getContext(),
+                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                            balance - remain)));
+                            ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
+                            if(mCategory != null && mCategory.isExpense()) {
+                                tvAdjustmentCategory.setText("");
+                                mCategory   = null;
+                            }
                         }
-                    } else {
-                        tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
-                                                                Currency.formatCurrency(getContext(),
-                                                                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                                            balance - remain)));
-                        ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
-                        if(mCategory != null && mCategory.isExpense()) {
-                            tvAdjustmentCategory.setText("");
-                            mCategory   = null;
-                        }
+
                     }
-
                 }
 
                 mEdittext.addTextChangedListener(this);
@@ -690,8 +689,11 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             LogUtils.logLeaveFunction(Tag, null, null);
         }
 
-    }
+    } // End CurrencyTextWatcher
 
+    /**
+     * Save Transaction to Database
+     */
     private void createTransaction() {
         Transaction transaction = new Transaction();
         switch (mCurrentTransactionType) {
@@ -715,6 +717,17 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 int expenseAccountId        = mFromAccount.getId();
                 String expensePayee         = tvExpensePayee.getText().toString();
                 String expenseEvent         = tvExpenseEvent.getText().toString();
+                Event event = null;
+
+                if(!expenseEvent.equals("")) {
+                    event = mDbHelper.getEventByName(expenseEvent);
+                    if(event == null) {
+                        long eventId = mDbHelper.createEvent(new Event(0, expenseEvent, mCal, null));
+                        if(eventId != -1) {
+                            event = mDbHelper.getEvent(eventId);
+                        }
+                    }
+                }
 
                 transaction = new Transaction(0,
                                                 TransactionEnum.Expense.getValue(),
@@ -726,7 +739,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                                                 mCal,
                                                 0.0,
                                                 expensePayee,
-                                                expenseEvent);
+                                                event);
                 break;
             }
             case Income: {
@@ -747,6 +760,17 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 String incomeDescription    = tvIncomeDescription.getText().toString();
                 int incomeAccountId         = mToAccount.getId();
                 String incomeEvent          = tvIncomeEvent.getText().toString();
+                Event event = null;
+
+                if(!incomeEvent.equals("")) {
+                    event = mDbHelper.getEventByName(incomeEvent);
+                    if(event == null) {
+                        long eventId = mDbHelper.createEvent(new Event(0, incomeEvent, mCal, null));
+                        if(eventId != -1) {
+                            event = mDbHelper.getEvent(eventId);
+                        }
+                    }
+                }
 
                 transaction = new Transaction(0,
                                                 TransactionEnum.Income.getValue(),
@@ -758,7 +782,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                                                 mCal,
                                                 0.0,
                                                 "",
-                                                incomeEvent);
+                                                event);
                 break;
             }
             case Transfer: {
@@ -804,7 +828,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                                                     mCal,
                                                     transferFee,
                                                     "",
-                                                    "");
+                                                    null);
                 break;
             }
             case Adjustment: {
@@ -825,6 +849,17 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                 String adjustmentDescription    = tvAdjustmentDescription.getText().toString();
                 String adjustmentPayee          = tvAdjustmentPayee.getText().toString();
                 String adjustmentEvent          = tvAdjustmentEvent.getText().toString();
+                Event event = null;
+
+                if(!adjustmentEvent.equals("")) {
+                    event = mDbHelper.getEventByName(adjustmentEvent);
+                    if(event == null) {
+                        long eventId = mDbHelper.createEvent(new Event(0, adjustmentEvent, mCal, null));
+                        if(eventId != -1) {
+                            event = mDbHelper.getEvent(eventId);
+                        }
+                    }
+                }
 
                 transaction         = new Transaction(0,
                                                         TransactionEnum.Adjustment.getValue(),
@@ -836,7 +871,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                                                         mCal,
                                                         0.0,
                                                         adjustmentPayee,
-                                                        adjustmentEvent);
+                                                        event);
                 break;
             }
             default:
@@ -850,8 +885,11 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
             cleanup();
         }
 
-    }
+    } // End createTransaction
 
+    /**
+     * Show Dialog to select Time
+     */
     private void showDialogTime() {
         final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
                 new TimePickerDialog.OnTimeSetListener() {
@@ -910,7 +948,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                     }
                 }, mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), mCal.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
-    }
+    } // End showDialogTime
 
     /**
      * Start fragment to select Category

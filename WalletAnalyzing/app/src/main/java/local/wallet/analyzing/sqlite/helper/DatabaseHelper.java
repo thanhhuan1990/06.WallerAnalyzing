@@ -5,9 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.nfc.Tag;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,12 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
-import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category;
-import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Kind;
 import local.wallet.analyzing.model.Transaction;
 
@@ -51,10 +47,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_ACCOUNT                   = "accounts";
     private static final String TABLE_TRANSACTION               = "transactions";
     private static final String TABLE_BUDGET                    = "budgets";
+    private static final String TABLE_EVENT                     = "events";
 
     // Common column names
     private static final String KEY_ID                          = "id";
     private static final String KEY_NAME                        = "name";
+    private static final String KEY_START_DATE                  = "start_date";
+    private static final String KEY_END_DATE                    = "end_date";
 
     // CATEGORY Table - column names
     private static final String KEY_CATEGORY_PARENT_ID          = "parent_id";
@@ -84,9 +83,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_BUDGET_CATEGORY             = "category";
     private static final String KEY_BUDGET_CURRENCY             = "currency";
     private static final String KEY_BUDGET_REPEAT_TYPE          = "repeat";
-    private static final String KEY_BUDGET_START_DATE           = "start_date";
-    private static final String KEY_BUDGET_END_DATE             = "end_date";
     private static final String KEY_BUDGET_INCREMENTAL          = "incremental";
+
+    // EVENT table - column name
 
     //region LogUtils
     private void enter(String tag, String param) {
@@ -148,7 +147,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_TRANSACTION_TIME + " DATETIME,"
             + KEY_TRANSACTION_FEE + " DOUBLE,"
             + KEY_TRANSACTION_PAYEE + " TEXT,"
-            + KEY_TRANSACTION_EVENT + " TEXT" + ")";
+            + KEY_TRANSACTION_EVENT + " INTEGER" + ")";
 
     // BUDGET table create statement
     private static final String CREATE_TABLE_BUDGET = "CREATE TABLE "
@@ -159,9 +158,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_BUDGET_CATEGORY + " TEXT,"
             + KEY_BUDGET_CURRENCY + " INTEGER, "
             + KEY_BUDGET_REPEAT_TYPE + " INTEGER,"
-            + KEY_BUDGET_START_DATE + " DATETIME,"
-            + KEY_BUDGET_END_DATE + " DATETIME,"
+            + KEY_START_DATE + " DATETIME,"
+            + KEY_END_DATE + " DATETIME,"
             + KEY_BUDGET_INCREMENTAL + " INTEGER)";
+
+    // EVENT table create statement
+    private static final String CREATE_TABLE_EVENT= "CREATE TABLE "
+            + TABLE_EVENT + "("
+            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_NAME + " TEXT,"
+            + KEY_START_DATE + " DATETIME,"
+            + KEY_END_DATE + " DATETIME)";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -190,6 +198,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         trace(TAG, CREATE_TABLE_BUDGET);
         db.execSQL(CREATE_TABLE_BUDGET);
+
+        trace(TAG, CREATE_TABLE_EVENT);
+        db.execSQL(CREATE_TABLE_EVENT);
 
         leave(TAG, "onCreate", null);
     }
@@ -834,10 +845,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TRANSACTION_CATEGORY_ID, transaction.getCategoryId());
         values.put(KEY_TRANSACTION_FROM_ACCOUNT_ID, transaction.getFromAccountId());
         values.put(KEY_TRANSACTION_TO_ACCOUNT_ID, transaction.getToAccountId());
-        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime().getTime()));
+        values.put(KEY_TRANSACTION_TIME, getStringDateTime(transaction.getTime().getTime()));
         values.put(KEY_TRANSACTION_FEE, transaction.getFee());
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
-        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
+        values.put(KEY_TRANSACTION_EVENT, transaction != null ? transaction.getEvent().getId() : 0);
 
         try {
             // insert row
@@ -879,7 +890,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             transaction.setTime(calendar);
             transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
             transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-            transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+            transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
             leave(TAG, null, transaction.toString());
 
@@ -921,7 +932,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             transaction.setTime(calendar);
             transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
             transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-            transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+            transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
             leave(TAG, "transaction_id = " + transaction_id, transaction.toString());
 
@@ -975,7 +986,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     transaction.setTime(calendar);
                     transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
                     transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-                    transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+                    transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
                     transactions.add(transaction);
                 }
@@ -1025,7 +1036,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     transaction.setTime(calendar);
                     transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
                     transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-                    transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+                    transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
                     transactions.add(transaction);
                 }
@@ -1045,7 +1056,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         enter(TAG, null);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
-        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_FROM_ACCOUNT_ID + " = " + accountId + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accountId;
+        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_FROM_ACCOUNT_ID + " = " + accountId + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accountId;
 
         trace(TAG, selectQuery);
 
@@ -1069,7 +1080,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 transaction.setTime(calendar);
                 transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
                 transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-                transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+                transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
                 // adding to kinds list
                 transactions.add(transaction);
@@ -1079,6 +1090,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         leave(TAG, null, transactions.toString());
         return transactions;
     }
+
     /**
      * getting all TRANSACTIONs
      * */
@@ -1110,7 +1122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 transaction.setTime(calendar);
                 transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
                 transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-                transaction.setEvent(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
+                transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
                 transactions.add(transaction);
             } while (c.moveToNext());
@@ -1120,7 +1132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return transactions;
     }
 
-    /*
+    /**
      * Getting TRANSACTION count
      */
     public int getTransactionCount() {
@@ -1135,7 +1147,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    /*
+    /**
      * Updating a TRANSACTION
      */
     public int updateTransaction(Transaction transaction) {
@@ -1148,16 +1160,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TRANSACTION_CATEGORY_ID, transaction.getCategoryId());
         values.put(KEY_TRANSACTION_FROM_ACCOUNT_ID, transaction.getFromAccountId());
         values.put(KEY_TRANSACTION_TO_ACCOUNT_ID, transaction.getToAccountId());
-        values.put(KEY_TRANSACTION_TIME, getDateTime(transaction.getTime().getTime()));
+        values.put(KEY_TRANSACTION_TIME, getStringDateTime(transaction.getTime().getTime()));
         values.put(KEY_TRANSACTION_FEE, transaction.getFee());
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
-        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent());
+        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent().getId());
 
         // updating row
         return db.update(TABLE_TRANSACTION, values, KEY_ID + " = ?", new String[] { String.valueOf(transaction.getId()) });
     }
 
-    /*
+    /**
      * Deleting a TRANSACTION
      */
     public void deleteTransaction(long transaction_id) {
@@ -1195,14 +1207,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Get list of EVENT from list Transaction
+     * Get List of Transaction follow Event
+     * @param eventId
+     * @return
      */
-    public List<String> getEvents(String contain) {
-        List<String> events = new ArrayList<String>();
-        String selectQuery = "SELECT DISTINCT(" + KEY_TRANSACTION_EVENT + ") FROM " + TABLE_TRANSACTION;
-        if(!contain.equals("")) {
-            selectQuery += " WHERE " + KEY_TRANSACTION_EVENT + " LIKE '%" + contain + "%'";
-        }
+    public List<Transaction> getTransactionsByEvent(int eventId) {
+        enter(TAG, null);
+
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_EVENT + " = " + eventId;
 
         trace(TAG, selectQuery);
 
@@ -1212,15 +1225,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                String event = c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)).trim();
-                if(!event.equals("")) {
-                    events.add(c.getString(c.getColumnIndex(KEY_TRANSACTION_EVENT)));
-                }
+
+                Transaction transaction = new Transaction();
+                transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
+                transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
+                transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
+                transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+                transaction.setTime(calendar);
+                transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
+                transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
+
+                // adding to transaction list
+                transactions.add(transaction);
             } while (c.moveToNext());
         }
 
-        return events;
+        leave(TAG, null, transactions.toString());
+        return transactions;
     }
+
     //endregion
 
     // ------------------------ BUDGET table methods ----------------//
@@ -1259,10 +1288,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 budget.setRepeatType(c.getInt(c.getColumnIndex(KEY_BUDGET_REPEAT_TYPE)));
 
                 Calendar startDate = Calendar.getInstance();
-                startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_START_DATE))));
+                startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
                 budget.setStartDate(startDate);
                 Calendar endDate = Calendar.getInstance();
-                endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_END_DATE))));
+                endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_END_DATE))));
                 budget.setEndDate(endDate);
 
                 budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
@@ -1278,7 +1307,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /*
-     * Creating a TRANSACTION
+     * Creating a BUDGET
      */
     public long createBudget(Budget budget) {
         enter(TAG, budget.toString());
@@ -1297,8 +1326,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_BUDGET_AMOUNT, budget.getAmount());
         values.put(KEY_BUDGET_CATEGORY, categories);
         values.put(KEY_BUDGET_REPEAT_TYPE, budget.getRepeatType());
-        values.put(KEY_BUDGET_START_DATE, getDateTime(budget.getStartDate().getTime()));
-        values.put(KEY_BUDGET_END_DATE, getDateTime(budget.getEndDate().getTime()));
+        values.put(KEY_START_DATE, getStringDateTime(budget.getStartDate().getTime()));
+        values.put(KEY_END_DATE, getStringDateTime(budget.getEndDate().getTime()));
         values.put(KEY_BUDGET_INCREMENTAL, budget.isIncremental() ? 1 : 0);
 
         try {
@@ -1338,12 +1367,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_BUDGET_AMOUNT, budget.getAmount());
         values.put(KEY_BUDGET_CATEGORY, categories);
         values.put(KEY_BUDGET_REPEAT_TYPE, budget.getRepeatType());
-        values.put(KEY_BUDGET_START_DATE, getDateTime(budget.getStartDate().getTime()));
-        values.put(KEY_BUDGET_END_DATE, getDateTime(budget.getEndDate().getTime()));
+        values.put(KEY_START_DATE, getStringDateTime(budget.getStartDate().getTime()));
+        values.put(KEY_END_DATE, getStringDateTime(budget.getEndDate().getTime()));
         values.put(KEY_BUDGET_INCREMENTAL, budget.isIncremental() ? 1 : 0);
 
         // updating row
-        int result = db.update(TABLE_BUDGET, values, KEY_ID + " = ?", new String[] { String.valueOf(budget.getId()) });
+        int result = db.update(TABLE_BUDGET, values, KEY_ID + " = ?", new String[]{String.valueOf(budget.getId())});
 
         leave(TAG, "budget = " + budget.toString(), "Result = " + result);
         return result;
@@ -1355,7 +1384,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void deleteBudget(long budget_id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_BUDGET, KEY_ID + " = ?", new String[] { String.valueOf(budget_id) });
+        db.delete(TABLE_BUDGET, KEY_ID + " = ?", new String[]{String.valueOf(budget_id)});
     }
 
     /**
@@ -1396,10 +1425,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             budget.setRepeatType(c.getInt(c.getColumnIndex(KEY_BUDGET_REPEAT_TYPE)));
 
             Calendar startDate = Calendar.getInstance();
-            startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_START_DATE))));
+            startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
             budget.setStartDate(startDate);
             Calendar endDate = Calendar.getInstance();
-            endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_BUDGET_END_DATE))));
+            endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_END_DATE))));
             budget.setEndDate(endDate);
 
             budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
@@ -1416,11 +1445,290 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     //endregion
 
+    // ------------------------ EVENT table methods ----------------//
+    //region Table EVENT
+    public List<Event> getAllEvents() {
+        enter(TAG, null);
+
+        List<Event> events = new ArrayList<Event>();
+        String selectQuery = "SELECT * FROM " + TABLE_EVENT;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Event event = new Event();
+                event.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                event.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+
+                Calendar startDate = Calendar.getInstance();
+                startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
+                event.setStartDate(startDate);
+                Calendar endDate = Calendar.getInstance();
+                endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_END_DATE))));
+                event.setEndDate(endDate);
+
+                // adding to kinds list
+                events.add(event);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "Events = " + events.toString());
+
+        return events;
+    }
+
+    public List<Event> getRunningEvents() {
+        enter(TAG, null);
+
+        List<Event> events = new ArrayList<Event>();
+        String selectQuery = "SELECT * FROM " + TABLE_EVENT;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                if(c.getString(c.getColumnIndex(KEY_END_DATE)).equals("")) {
+                    Event event = new Event();
+                    event.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                    event.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+
+                    Calendar startDate = Calendar.getInstance();
+                    startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
+                    event.setStartDate(startDate);
+                    event.setEndDate(null);
+
+                    // adding to kinds list
+                    events.add(event);
+                }
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "Events = " + events.toString());
+
+        return events;
+    }
+
+    public List<Event> getFinishedEvents() {
+        enter(TAG, null);
+
+        List<Event> events = new ArrayList<Event>();
+        String selectQuery = "SELECT * FROM " + TABLE_EVENT;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                if(!c.getString(c.getColumnIndex(KEY_END_DATE)).equals("")) {
+                    Event event = new Event();
+                    event.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                    event.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+
+                    Calendar startDate = Calendar.getInstance();
+                    startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
+                    event.setStartDate(startDate);
+                    Calendar endDate = Calendar.getInstance();
+                    endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_END_DATE))));
+                    event.setEndDate(endDate);
+
+                    // adding to kinds list
+                    events.add(event);
+                }
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "Events = " + events.toString());
+
+        return events;
+    }
+
+    /**
+     * Get list of EVENT
+     */
+    public List<String> getEvents(String contain) {
+        List<String> events = new ArrayList<String>();
+        String selectQuery = "SELECT " + KEY_NAME  + " FROM " + TABLE_EVENT;
+        if(!contain.equals("")) {
+            selectQuery += " WHERE " + KEY_NAME + " LIKE '%" + contain + "%'";
+        }
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                String event = c.getString(c.getColumnIndex(KEY_NAME)).trim();
+                if(!event.equals("")) {
+                    events.add(c.getString(c.getColumnIndex(KEY_NAME)));
+                }
+            } while (c.moveToNext());
+        }
+
+        return events;
+    }
+
+    public Event getEventByName(String name) {
+        enter(TAG, "name = " + name);
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_EVENT + " WHERE " + KEY_NAME + " = '" + name + "'";
+
+        trace(TAG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+            c.moveToFirst();
+
+            Event event = new Event();
+            event.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+            event.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+
+            Calendar startDate = Calendar.getInstance();
+            startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
+            event.setStartDate(startDate);
+            if(!c.getString(c.getColumnIndex(KEY_END_DATE)).equals("")) {
+                Calendar endDate = Calendar.getInstance();
+                endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_END_DATE))));
+                event.setEndDate(endDate);
+            } else {
+                event.setEndDate(null);
+            }
+
+            leave(TAG, "name = " + name, event.toString());
+
+            return event;
+        }
+
+        leave(TAG, "name = " + name, null);
+        return null;
+    }
+
+    /**
+     * Creating a EVENT
+     */
+    public long createEvent(Event event) {
+        enter(TAG, event.toString());
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, event.getName());
+        values.put(KEY_START_DATE, getStringDateTime(event.getStartDate().getTime()));
+        values.put(KEY_END_DATE, "");
+
+        try {
+            // insert row
+            long event_id = db.insert(TABLE_EVENT, null, values);
+
+            leave(TAG, "event = " + event.toString(), "event_id = " + event_id);
+            return event_id;
+
+        } catch (android.database.SQLException e) {
+            e.printStackTrace();
+            leave(TAG, "event = " + event.toString(), "event_id = -1");
+            return -1;
+        }
+    }
+
+    /**
+     * Update Event
+     *
+     * @param event
+     * @return
+     */
+    public int updateEvent(Event event) {
+        enter(TAG, "event = " + event.toString());
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_NAME, event.getName());
+        values.put(KEY_START_DATE, getStringDateTime(event.getStartDate().getTime()));
+        values.put(KEY_END_DATE, event.getEndDate() != null ? getStringDateTime(event.getEndDate().getTime()) : "");
+
+        // updating row
+        int result = db.update(TABLE_EVENT, values, KEY_ID + " = ?", new String[] { String.valueOf(event.getId()) });
+
+        leave(TAG, "event = " + event.toString(), "Result = " + result);
+        return result;
+    }
+
+    /**
+     * Delete Event
+     * @param event_id
+     */
+    public void deleteEvent(long event_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EVENT, KEY_ID + " = ?", new String[] { String.valueOf(event_id) });
+    }
+
+    /**
+     * Get Event
+     * @param event_id
+     * @return
+     */
+    public Event getEvent(long event_id) {
+        enter(TAG, "event_id = " + event_id);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_EVENT + " WHERE " + KEY_ID + " = " + event_id;
+
+        trace(TAG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+            c.moveToFirst();
+
+            Event event = new Event();
+            event.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+            event.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+
+            Calendar startDate = Calendar.getInstance();
+            startDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_START_DATE))));
+            event.setStartDate(startDate);
+            if(!c.getString(c.getColumnIndex(KEY_END_DATE)).equals("")) {
+                Calendar endDate = Calendar.getInstance();
+                endDate.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_END_DATE))));
+                event.setEndDate(endDate);
+            } else {
+                event.setEndDate(null);
+            }
+
+            leave(TAG, "event_id = " + event_id, event.toString());
+
+            return event;
+        }
+
+        leave(TAG, "event_id = " + event_id, null);
+
+        return null;
+
+    }
+    //endregion
+
     //region UTILS method
     /**
      * get datetime
      * */
-    private String getDateTime(Date date) {
+    private String getStringDateTime(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return dateFormat.format(date);
     }

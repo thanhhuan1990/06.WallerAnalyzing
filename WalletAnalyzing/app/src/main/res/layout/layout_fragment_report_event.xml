@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ll_report_event"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/background_main_frame"
@@ -36,7 +37,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/listview_divider"/>
+        android:background="@color/listview_divider"
+        android:layout_marginTop="8dp"/>
 
     <FrameLayout
         android:layout_width="match_parent"

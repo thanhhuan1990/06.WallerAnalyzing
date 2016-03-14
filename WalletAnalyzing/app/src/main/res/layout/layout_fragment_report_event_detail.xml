@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:clickable="true"
-              android:orientation="vertical">
+              android:orientation="vertical"
+              android:background="@color/background_main_frame">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_weight="8"
+                    android:layout_weight="5"
                     android:text="@string/event_total_expense"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
@@ -49,8 +49,9 @@
                     android:id="@+id/tvTotalExpense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:text="1.000.000đ"
+                    android:layout_weight="7"
+                    android:gravity="right"
+                    android:text="1.000.000 đ"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
@@ -67,11 +68,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"
-                android:background="@color/listview_divider"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -95,7 +91,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_weight="8"
+                    android:layout_weight="5"
                     android:text="@string/event_total_income"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
@@ -105,8 +101,9 @@
                     android:id="@+id/tvTotalIncome"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:text="1.000.000đ"
+                    android:layout_weight="7"
+                    android:gravity="right"
+                    android:text="1.000.000 đ"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
@@ -125,28 +122,5 @@
                 android:orientation="vertical"/>
         </LinearLayout>
     </ScrollView>
-
-    <!-- Button COMPLETE -->
-    <LinearLayout
-        android:id="@+id/llComplete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/background_button_save"
-        android:clickable="true"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:text="@string/event_detail_complete"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
-    </LinearLayout>
 
 </LinearLayout>
