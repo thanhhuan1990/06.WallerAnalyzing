@@ -163,7 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_BUDGET_INCREMENTAL + " INTEGER)";
 
     // EVENT table create statement
-    private static final String CREATE_TABLE_EVENT= "CREATE TABLE "
+    private static final String CREATE_TABLE_EVENT = "CREATE TABLE "
             + TABLE_EVENT + "("
             + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + KEY_NAME + " TEXT,"
@@ -848,7 +848,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TRANSACTION_TIME, getStringDateTime(transaction.getTime().getTime()));
         values.put(KEY_TRANSACTION_FEE, transaction.getFee());
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
-        values.put(KEY_TRANSACTION_EVENT, transaction != null ? transaction.getEvent().getId() : 0);
+        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent() != null ? transaction.getEvent().getId() : 0);
 
         try {
             // insert row
@@ -1163,7 +1163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_TRANSACTION_TIME, getStringDateTime(transaction.getTime().getTime()));
         values.put(KEY_TRANSACTION_FEE, transaction.getFee());
         values.put(KEY_TRANSACTION_PAYEE, transaction.getPayee());
-        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent().getId());
+        values.put(KEY_TRANSACTION_EVENT, transaction.getEvent() != null ? transaction.getEvent().getId() : 0);
 
         // updating row
         return db.update(TABLE_TRANSACTION, values, KEY_ID + " = ?", new String[] { String.valueOf(transaction.getId()) });
@@ -1675,6 +1675,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void deleteEvent(long event_id) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        String updateTransaction = "UPDATE " + TABLE_TRANSACTION + " SET " + KEY_TRANSACTION_EVENT + " = 0 WHERE " + KEY_TRANSACTION_EVENT + " = " + event_id;
+
+        db.execSQL(updateTransaction);
+
         db.delete(TABLE_EVENT, KEY_ID + " = ?", new String[] { String.valueOf(event_id) });
     }
 

@@ -166,17 +166,6 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         mConfigs    = new Configurations(getActivity());
         mDbHelper   = new DatabaseHelper(getActivity());
 
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
-        initActionBar();
-
         if(mCal == null && mTransaction != null) {
             mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
             mFromAccount    = mTransaction.getFromAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getFromAccountId()) : mDbHelper.getAccount(mTransaction.getToAccountId());
@@ -194,6 +183,17 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         initViewIncome();
         initViewTransfer();
         initViewAdjustment();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+        initActionBar();
 
         switch (mCurrentTransactionType) {
             case Expense:
@@ -462,7 +462,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llExpenseEvent          = (LinearLayout) getView().findViewById(R.id.llExpenseEvent);
         llExpenseEvent.setOnClickListener(this);
         tvExpenseEvent          = (TextView) getView().findViewById(R.id.tvExpenseEvent);
-        tvExpenseEvent.setText(mTransaction.getEvent().getName());
+        tvExpenseEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -502,7 +502,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llIncomeEvent           = (LinearLayout) getView().findViewById(R.id.llIncomeEvent);
         llIncomeEvent.setOnClickListener(this);
         tvIncomeEvent           = (TextView) getView().findViewById(R.id.tvIncomeEvent);
-        tvIncomeEvent.setText(mTransaction.getEvent().getName());
+        tvIncomeEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -612,7 +612,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llAdjustmentEvent           = (LinearLayout) getView().findViewById(R.id.llAdjustmentEvent);
         llAdjustmentEvent.setOnClickListener(this);
         tvAdjustmentEvent           = (TextView) getView().findViewById(R.id.tvAdjustmentEvent);
-        tvAdjustmentEvent.setText(mTransaction.getEvent().getName());
+        tvAdjustmentEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

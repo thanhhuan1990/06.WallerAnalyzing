@@ -29,7 +29,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEventTransactions extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportEventDetail";
+    private static final String Tag = "ReportEventTransactions";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -71,7 +71,6 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
-        mEvent          = mDbHelper.getEvent(mEventId);
 
         ivExpandExpense = (ImageView) getView().findViewById(R.id.ivExpandExpense);
         ivExpandExpense.setOnClickListener(this);
@@ -88,6 +87,12 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            return;
+        }
+
+        mEvent = mDbHelper.getEvent(mEventId);
+        if(mEvent == null) {
+            getFragmentManager().popBackStackImmediate();
             return;
         }
 
@@ -115,7 +120,15 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivUpdate:
-                break;
+                FragmentReportEventUpdate nextFrag = new FragmentReportEventUpdate();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("EventID", mEventId);
+                nextFrag.setArguments(bundle);
+                FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
+                        .replace(R.id.ll_report, nextFrag, "FragmentReportEventUpdate")
+                        .addToBackStack(null)
+                        .commit();
+            break;
             case R.id.ivExport:
                 break;
             case R.id.ivExpandExpense:
@@ -242,9 +255,9 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
             // DATE
             tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
-                    transaction.getTime().get(Calendar.DAY_OF_MONTH),
-                    transaction.getTime().get(Calendar.MONTH),
-                    transaction.getTime().get(Calendar.YEAR)));
+                                        transaction.getTime().get(Calendar.DAY_OF_MONTH),
+                                        transaction.getTime().get(Calendar.MONTH),
+                                        transaction.getTime().get(Calendar.YEAR)));
 
             transactionView.setOnClickListener(new View.OnClickListener() {
                 @Override

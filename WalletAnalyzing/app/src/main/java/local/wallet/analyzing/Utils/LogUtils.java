@@ -20,7 +20,7 @@ public class LogUtils {
 	/****************************************************************************************************
 	 * Private members
 	 ***************************************************************************************************/
-    private static int MAX_TAG  = 20;
+    private static int MAX_TAG  = 30;
 	private static final String PADDING_STRING = " ";
 	private static int sMethodStackLevel = 0;
 
