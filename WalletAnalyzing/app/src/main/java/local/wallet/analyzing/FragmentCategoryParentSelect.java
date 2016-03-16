@@ -28,19 +28,19 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentCategoryParentSelect extends Fragment {
 
-    private static final String TAG = "FragmentCategoryParentSelect";
+    private static final String Tag = "FragmentCategoryParentSelect";
 
     private TransactionEnum mTransactionType     = TransactionEnum.Expense;
 
-    private DatabaseHelper db;
-    private List<Category> arParentCategories = new ArrayList<Category>();
+    private DatabaseHelper  mDbHelper;
+    private List<Category>  arParentCategories = new ArrayList<Category>();
 
-    private String mTagOfSource = "";
-    private int mCurrentParentCategoryId;
+    private String          mTagOfSource = "";
+    private int             mCurrentParentCategoryId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -51,35 +51,35 @@ public class FragmentCategoryParentSelect extends Fragment {
         mTagOfSource                    = bundle.getString("Tag");
         mCurrentParentCategoryId        = bundle.getInt("ParentCategoryId", 0);
 
-        LogUtils.trace(TAG, "mTransactionType = " + mTransactionType);
-        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(TAG, "mCurrentParentCategoryId = " + mCurrentParentCategoryId);
+        LogUtils.trace(Tag, "mTransactionType = " + mTransactionType);
+        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(Tag, "mCurrentParentCategoryId = " + mCurrentParentCategoryId);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_category_parent, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
         arParentCategories.add(new Category(0, 0, getResources().getString(R.string.new_category_select_as_parent), true, false, null));
-        arParentCategories.addAll(db.getAllParentCategories((mTransactionType == TransactionEnum.Expense
-                                                            || mTransactionType == TransactionEnum.Transfer
-                                                            || mTransactionType == TransactionEnum.Adjustment)
-                                                                        ? true : false
-                                                                , false));
+        arParentCategories.addAll(mDbHelper.getAllParentCategories((mTransactionType == TransactionEnum.Expense
+                || mTransactionType == TransactionEnum.Transfer
+                || mTransactionType == TransactionEnum.Adjustment)
+                ? true : false
+                , false));
 
         ListView lvParentCategory   = (ListView) getView().findViewById(R.id.lvParentCategory);
         ParentCategoryAdapter accountTypeAdapter = new ParentCategoryAdapter(getActivity(), arParentCategories);
@@ -91,7 +91,7 @@ public class FragmentCategoryParentSelect extends Fragment {
 
                 if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentCategoryCreate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentCategoryCreate");
+                    LogUtils.trace(Tag, "Setup for FragmentCategoryCreate");
                     // Return ParentCategory's Id to FragmentCategoryCreate
                     String tagOfFragment = ((ActivityMain)getActivity()).getFragmentCategoryCreate();
                     FragmentCategoryCreate fragment = (FragmentCategoryCreate)getActivity()
@@ -106,12 +106,12 @@ public class FragmentCategoryParentSelect extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -127,7 +127,7 @@ public class FragmentCategoryParentSelect extends Fragment {
         // Update ActionBar
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -152,8 +152,8 @@ public class FragmentCategoryParentSelect extends Fragment {
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 convertView = inflater.inflate(R.layout.listview_item_category_parent, parent, false);
-                viewHolder.tvCategoryName = (TextView) convertView.findViewById(R.id.tvCategoryName);
-                viewHolder.ivUsing  = (ImageView) convertView.findViewById(R.id.ivUsing);
+                viewHolder.tvCategoryName   = (TextView) convertView.findViewById(R.id.tvCategoryName);
+                viewHolder.ivUsing          = (ImageView) convertView.findViewById(R.id.ivUsing);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();

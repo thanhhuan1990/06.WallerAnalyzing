@@ -86,6 +86,9 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            return;
+        }
         LogUtils.logEnterFunction(Tag, null);
 
         arEvents.clear();

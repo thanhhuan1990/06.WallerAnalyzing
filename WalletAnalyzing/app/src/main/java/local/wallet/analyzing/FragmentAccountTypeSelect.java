@@ -25,16 +25,14 @@ import local.wallet.analyzing.model.AccountType;
  */
 public class FragmentAccountTypeSelect extends Fragment {
 
-    private static final String TAG = "FragmentAccountTypeSelect";
+    private static final String Tag = "FragmentAccountTypeSelect";
 
-    private String mTagOfSource = "";
-    private int mUsingAccountTypeId;
-    private int myExpenseUsingMode = 0;
-    private int myIncomeUsingMode = 0;
+    private String  mTagOfSource = "";
+    private int     mUsingAccountTypeId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -44,12 +42,12 @@ public class FragmentAccountTypeSelect extends Fragment {
         mTagOfSource        = bundle.getString("Tag");
         mUsingAccountTypeId = bundle.getInt("AccountType", 1);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -58,20 +56,20 @@ public class FragmentAccountTypeSelect extends Fragment {
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         super.onCreateOptionsMenu(menu, inflater);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_accounttype, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -84,7 +82,7 @@ public class FragmentAccountTypeSelect extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
+                    LogUtils.trace(Tag, "Setup for FragmentAccountCreate");
                     // Return Type's Id to FragmentAccountCreate
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
                     FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
@@ -92,7 +90,7 @@ public class FragmentAccountTypeSelect extends Fragment {
 
                 } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
+                    LogUtils.trace(Tag, "Setup for FragmentAccountUpdate");
                     // Return Type's Id to FragmentAccountUpdate
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
                     FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
@@ -104,7 +102,7 @@ public class FragmentAccountTypeSelect extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**

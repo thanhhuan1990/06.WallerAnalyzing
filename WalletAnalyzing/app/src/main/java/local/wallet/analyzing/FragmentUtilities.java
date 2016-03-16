@@ -34,22 +34,19 @@ public class FragmentUtilities extends Fragment {
 
     private static final String Tag = "FragmentUtilities";
 
-    /** Select File Id */
-    private static final int SelectFile = 100;
+    private ImageButton         btnFileBrowser;
 
-    private ImageButton btnFileBrowser;
+    private TextView            txtCheckDB;
 
-    private TextView txtCheckDB;
+    private Button              btnAccount;
+    private Button              btnCategory;
 
-    private Button btnAccount;
-    private Button          btnCategory;
-
-    private ListView        lvAccount;
-    private AccountAdapter  accAdapter;
-    private List<Account>   listAccount = new ArrayList<Account>();
-    private ListView        lvCategory;
-    private CategoryAdapter categoryAdapter;
-    private List<Category>  listCategory = new ArrayList<Category>();
+    private ListView            lvAccount;
+    private AccountAdapter      accAdapter;
+    private List<Account>       listAccount = new ArrayList<Account>();
+    private ListView            lvCategory;
+    private CategoryAdapter     categoryAdapter;
+    private List<Category>      listCategory = new ArrayList<Category>();
 
     DatabaseHelper db;
 

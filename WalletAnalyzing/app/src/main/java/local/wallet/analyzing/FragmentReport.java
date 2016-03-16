@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,37 +24,40 @@ import local.wallet.analyzing.Utils.LogUtils;
  */
 public class FragmentReport extends Fragment {
 
-    private static final String TAG = "Report";
+    private static final String Tag = "Report";
 
-    private Spinner         spReportType;
+    private Spinner             spReportType;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_report, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            return;
+        }
         super.onCreateOptionsMenu(menu, inflater);
 
         /* Todo: Update ActionBar: Spinner ReportType */
@@ -70,8 +72,11 @@ public class FragmentReport extends Fragment {
         spReportType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                LogUtils.trace(TAG, "onItemSelected: " + position);
+                LogUtils.trace(Tag, "onItemSelected: " + position);
                 switch (position) {
+                    case 0:
+                        showExpenseVsIncome();
+                        break;
                     case 4:
                         showListEvents();
                         break;
@@ -88,10 +93,25 @@ public class FragmentReport extends Fragment {
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
     }
 
+    /**
+     * Start Fragment ReportEvent
+     */
+    private void showExpenseVsIncome() {
+        FragmentReportEVI nextFrag = new FragmentReportEVI();
+        FragmentReport.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_report, nextFrag, "FragmentReportEVI")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /**
+     * Start Fragment ReportEvent
+     */
     private void showListEvents() {
         FragmentReportEvent nextFrag = new FragmentReportEvent();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, "FragmentReportEvent")
+                .add(R.id.ll_report, nextFrag, "FragmentReportEvent")
+                .addToBackStack(null)
                 .commit();
     }
 

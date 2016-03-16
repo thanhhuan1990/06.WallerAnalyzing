@@ -32,9 +32,6 @@ public class FragmentAccountTransactions extends Fragment {
 
     private static final String TAG = "AccountTransactions";
 
-    /** to prevent multiple calls to inflate menu */
-    private boolean menuIsInflated;
-
     private String              mTagOfSource = "";
     private int                 mAccountId;
 
@@ -58,8 +55,8 @@ public class FragmentAccountTransactions extends Fragment {
         mTagOfSource                    = bundle.getString("Tag");
         mAccountId                      = bundle.getInt("AccountID", 0);
 
-        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(TAG, "mAccountId = " + mAccountId);
+        LogUtils.trace(TAG, "mTagOfSource   = " + mTagOfSource);
+        LogUtils.trace(TAG, "mAccountId     = " + mAccountId);
 
         LogUtils.logLeaveFunction(TAG, null, null);
     }
@@ -84,9 +81,9 @@ public class FragmentAccountTransactions extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         /* Initialize Database, insert default category */
-        mDbHelper = new DatabaseHelper(getActivity());
+        mDbHelper           = new DatabaseHelper(getActivity());
 
-        Account account = mDbHelper.getAccount(mAccountId);
+        Account account     = mDbHelper.getAccount(mAccountId);
         tvInitBalance       = (TextView) getView().findViewById(R.id.tvAccountInitBalance);
         tvInitBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), mDbHelper.getAccount(mAccountId).getInitBalance()));
 
@@ -122,6 +119,7 @@ public class FragmentAccountTransactions extends Fragment {
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
+        // Update list Transactions
         updateListTransactions();
 
         LogUtils.logLeaveFunction(TAG, null, null);

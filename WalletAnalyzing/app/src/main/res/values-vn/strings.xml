@@ -150,6 +150,7 @@
     <string name="Input_Error_Transfer_Same_Account">Không thể chuyển khoản trong cùng tài khoản!</string>
     <string name="Input_Error_Adjustment_Same_Amount">Số tiền bằng 0!</string>
     <string name="Input_Error_budget_category_none">Xin mời chọn hạng mục chi tiêu!</string>
+    <string name="Input_Error_account_none">Xin mời chọn tài khoản!</string>
 
     <string name="message_transaction_create_successful">Đã tạo ghi chép thành công</string>
     <string name="message_transaction_update_successful">Đã sửa đổi ghi chép thành công</string>

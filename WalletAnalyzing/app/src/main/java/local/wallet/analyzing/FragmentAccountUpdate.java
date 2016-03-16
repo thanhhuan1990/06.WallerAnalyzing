@@ -27,9 +27,9 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentAccountUpdate extends Fragment {
 
-    private static final String TAG     = "AccountUpdate";
+    private static final String Tag = "AccountUpdate";
 
-    private DatabaseHelper db;
+    private DatabaseHelper      mDbHelper;
 
     private Account             mAccount;
     private int                 mAccountId = 0;
@@ -48,7 +48,7 @@ public class FragmentAccountUpdate extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -56,12 +56,12 @@ public class FragmentAccountUpdate extends Fragment {
         Bundle bundle = this.getArguments();
         mAccountId = bundle.getInt("AccountID", 0);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -71,30 +71,30 @@ public class FragmentAccountUpdate extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         String myTag = getTag();
         ((ActivityMain)getActivity()).setFragmentAccountUpdate(myTag);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_account_update, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
-        mAccount = db.getAccount(mAccountId);
+        mDbHelper           = new DatabaseHelper(getActivity());
+        mAccount            = mDbHelper.getAccount(mAccountId);
 
         // Initialize View
         etName = (ClearableEditText) getView().findViewById(R.id.etName);
@@ -166,10 +166,10 @@ public class FragmentAccountUpdate extends Fragment {
         llSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click button SAVE");
+                LogUtils.trace(Tag, "Click button SAVE");
                 // Check Account's name
                 if(etName.getText().toString().equals("")) {
-                    LogUtils.trace(TAG, "Name is empty");
+                    LogUtils.trace(Tag, "Name is empty");
                     etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
                     return;
                 }
@@ -180,11 +180,11 @@ public class FragmentAccountUpdate extends Fragment {
 
 
                 // Update account in DB
-                db.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));
+                mDbHelper.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));
 
                 // Update list of Account in FragmentListAccount
                 FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT);
-                fragmentListAccount.updateToAccountList(db.getAccount(mAccountId));
+                fragmentListAccount.updateToAccountList(mDbHelper.getAccount(mAccountId));
 
                 // Return to FragmentListAccount
                 getFragmentManager().popBackStackImmediate();
@@ -194,7 +194,7 @@ public class FragmentAccountUpdate extends Fragment {
         llDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.deleteAccount(mAccountId);
+                mDbHelper.deleteAccount(mAccountId);
 
                 // Update list of Account in FragmentListAccount
                 FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT);
@@ -206,7 +206,7 @@ public class FragmentAccountUpdate extends Fragment {
         });
 
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -214,12 +214,12 @@ public class FragmentAccountUpdate extends Fragment {
      * @param accountTypeId
      */
     public void updateAccountType(int accountTypeId) {
-        LogUtils.logEnterFunction(TAG, "accountTypeId = " + accountTypeId);
+        LogUtils.logEnterFunction(Tag, "accountTypeId = " + accountTypeId);
 
         mAccount.setTypeId(accountTypeId);
         tvType.setText(AccountType.getAccountTypeById(accountTypeId).getName());
 
-        LogUtils.logLeaveFunction(TAG, "accountTypeId = " + accountTypeId, null);
+        LogUtils.logLeaveFunction(Tag, "accountTypeId = " + accountTypeId, null);
     }
 
     /**
@@ -227,13 +227,13 @@ public class FragmentAccountUpdate extends Fragment {
      * @param currency
      */
     public void updateCurrency(Currency.CurrencyList currency) {
-        LogUtils.logEnterFunction(TAG, "currency = " + currency);
+        LogUtils.logEnterFunction(Tag, "currency = " + currency);
 
         mAccount.setCurrencyId(currency.getValue());
         tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mAccount.getCurrencyId())));
 
-        LogUtils.logLeaveFunction(TAG, "currency = " + currency, null);
+        LogUtils.logLeaveFunction(Tag, "currency = " + currency, null);
     }
 
     /**
@@ -241,11 +241,11 @@ public class FragmentAccountUpdate extends Fragment {
      * @param description
      */
     public void updateDescription(String description) {
-        LogUtils.logEnterFunction(TAG, "description = " + description);
+        LogUtils.logEnterFunction(Tag, "description = " + description);
 
         tvDescription.setText(description);
 
-        LogUtils.logLeaveFunction(TAG, "description = " + description, null);
+        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
     }
 
     /**
@@ -261,12 +261,12 @@ public class FragmentAccountUpdate extends Fragment {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(TAG, null);
+            LogUtils.logEnterFunction(Tag, null);
 
             if(!s.toString().equals(current)){
                 etInitialBalance.removeTextChangedListener(this);
 
-                LogUtils.trace(TAG, "input: " + s.toString());
+                LogUtils.trace(Tag, "input: " + s.toString());
                 String inputted = s.toString().trim().replaceAll(",", "").replaceAll(" ", "");
                 if(inputted.equals("")) {
                     return;
@@ -280,7 +280,7 @@ public class FragmentAccountUpdate extends Fragment {
                 etInitialBalance.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(TAG, null, null);
+            LogUtils.logLeaveFunction(Tag, null, null);
         }
 
     }

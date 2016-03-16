@@ -34,7 +34,7 @@ public class FragmentCategorySelect extends Fragment {
     private TransactionEnum     mCurrentTransactionType     = TransactionEnum.Expense;
     private int                 mUsingCategoryId;
 
-    private DatabaseHelper      db;
+    private DatabaseHelper      mDbHelper;
     private List<CategoryView>  arCategoriesView = new ArrayList<CategoryView>();
     private LinearLayout        llCategories;
     private TextView            tvEmpty;
@@ -83,7 +83,7 @@ public class FragmentCategorySelect extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         /* Initialize Database, insert default category */
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
         btnExpense      = (Button) getView().findViewById(R.id.btnExpense);
         btnExpense.setText(getResources().getString((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer)
@@ -99,10 +99,10 @@ public class FragmentCategorySelect extends Fragment {
 
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
-                List<Category> arParentCategories = db.getAllParentCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
+                List<Category> arParentCategories = mDbHelper.getAllParentCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
                 for (Category category : arParentCategories) {
                     arCategoriesView.add(new CategoryView(category, true));
-                    List<Category> arCategories = db.getCategoriesByParent(category.getId());
+                    List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
                     for (Category cate : arCategories) {
                         arCategoriesView.add(new CategoryView(cate, true));
                     }
@@ -125,10 +125,10 @@ public class FragmentCategorySelect extends Fragment {
 
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
-                List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), true);
+                List<Category> arParentCategories = mDbHelper.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), true);
                 for(Category category : arParentCategories) {
                     arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
-                    List<Category> arCategories = db.getCategoriesByParent(category.getId());
+                    List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
                     for(Category cate : arCategories) {
                         arCategoriesView.add(new CategoryView(cate, true));
                     }
@@ -183,10 +183,10 @@ public class FragmentCategorySelect extends Fragment {
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
         arCategoriesView.clear();
-        List<Category> arParentCategories = db.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
+        List<Category> arParentCategories = mDbHelper.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
         for(Category category : arParentCategories) {
             arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
-            List<Category> arCategories = db.getCategoriesByParent(category.getId());
+            List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
             for(Category cate : arCategories) {
                 arCategoriesView.add(new CategoryView(cate, true));
             }

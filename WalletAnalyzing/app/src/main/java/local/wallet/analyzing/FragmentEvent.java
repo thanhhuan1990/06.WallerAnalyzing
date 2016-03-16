@@ -30,22 +30,22 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentEvent extends Fragment {
 
-    private static final String TAG     = "FragmentEvent";
+    private static final String     Tag                     = "FragmentEvent";
 
-    private DatabaseHelper db;
+    private DatabaseHelper          mDbHelper;
 
-    private String mTagOfSource = "";
-    private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
-    private String mEvent;
+    private String                  mTagOfSource            = "";
+    private TransactionEnum         mCurrentTransactionType = TransactionEnum.Expense;
+    private String                  mEvent;
 
-    private ClearableEditText   etEvent;
-    private ListView            lvEvent;
-    private List<String>        events = new ArrayList<String>();
-    private ArrayAdapter<String> mAdapter;
+    private ClearableEditText       etEvent;
+    private ListView                lvEvent;
+    private List<String>            events                  = new ArrayList<String>();
+    private ArrayAdapter<String>    mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -56,16 +56,16 @@ public class FragmentEvent extends Fragment {
         mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mEvent                          = bundle.getString("Event", "");
 
-        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(TAG, "mCurrentTransactionType = " + mCurrentTransactionType);
-        LogUtils.trace(TAG, "mEvent = " + mEvent);
+        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
+        LogUtils.trace(Tag, "mEvent = " + mEvent);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -75,17 +75,17 @@ public class FragmentEvent extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Done.");
+                LogUtils.trace(Tag, "Click Menu Action Done.");
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
+                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreate");
                     FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
                     FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
@@ -100,37 +100,37 @@ public class FragmentEvent extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         String myTag = getTag();
         ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_event, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
-        etEvent = (ClearableEditText) getView().findViewById(R.id.etEvent);
+        etEvent     = (ClearableEditText) getView().findViewById(R.id.etEvent);
         etEvent.setText(mEvent);
         etEvent.addTextChangedListener(new EventTextWatcher());
 
-        lvEvent = (ListView) getView().findViewById(R.id.lvEvent);
-        events = db.getEvents(mEvent);
-        mAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, events);
+        lvEvent     = (ListView) getView().findViewById(R.id.lvEvent);
+        events      = mDbHelper.getEvents(mEvent);
+        mAdapter    = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, events);
         lvEvent.setAdapter(mAdapter);
 
         lvEvent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -141,7 +141,7 @@ public class FragmentEvent extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -157,11 +157,11 @@ public class FragmentEvent extends Fragment {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(TAG, null);
+            LogUtils.logEnterFunction(Tag, null);
 
             if(!s.toString().equals(current)){
                 events.clear();
-                List<String> arTemp = db.getEvents(s.toString().trim());
+                List<String> arTemp = mDbHelper.getEvents(s.toString().trim());
                 for(int i = 0 ; i < arTemp.size(); i++) {
                     events.add(arTemp.get(i));
                 }
@@ -170,7 +170,7 @@ public class FragmentEvent extends Fragment {
                 current = s.toString().trim();
             }
 
-            LogUtils.logLeaveFunction(TAG, null, null);
+            LogUtils.logLeaveFunction(Tag, null, null);
         }
 
     }

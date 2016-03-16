@@ -28,21 +28,21 @@ import local.wallet.analyzing.model.Account;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentListAccount extends Fragment {
-    private static final String TAG = "ListAccount";
+    private static final String Tag         = "ListAccount";
 
     private static FragmentListAccount instance;
 
-    private static final int NORMAL_MODE = 1;
-    private static final int EDIT_MODE = 2;
+    private static final int NORMAL_MODE    = 1;
+    private static final int EDIT_MODE      = 2;
 
-    private int mCurrentMode = NORMAL_MODE;
+    private int             mCurrentMode    = NORMAL_MODE;
 
-    private DatabaseHelper db;
-    private ListView lvAccount;
-    private AccountAdapter accAdapter;
-    private List<Account> listAccount = new ArrayList<Account>();
+    private DatabaseHelper  mDbHelper;
+    private ListView        lvAccount;
+    private AccountAdapter  accAdapter;
+    private List<Account>   listAccount     = new ArrayList<Account>();
 
-    private TextView tvEmpty;
+    private TextView        tvEmpty;
 
     public static FragmentListAccount getInstance() {
         if(instance == null) {
@@ -54,39 +54,39 @@ public class FragmentListAccount extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_list_account, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper   = new DatabaseHelper(getActivity());
 
-        lvAccount = (ListView) getView().findViewById(R.id.lvAccount);
-        tvEmpty = (TextView) getView().findViewById(R.id.tvEmpty);
+        lvAccount   = (ListView) getView().findViewById(R.id.lvAccount);
+        tvEmpty     = (TextView) getView().findViewById(R.id.tvEmpty);
 
-        listAccount = db.getAllAccounts();
-        accAdapter = new AccountAdapter(getActivity(), listAccount);
+        listAccount = mDbHelper.getAllAccounts();
+        accAdapter  = new AccountAdapter(getActivity(), listAccount);
         lvAccount.setAdapter(accAdapter);
 
         lvAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LogUtils.trace(TAG, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
+                LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
                 // Go to list of transaction related with this Account
                 FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
                 Bundle bundle = new Bundle();
@@ -106,7 +106,7 @@ public class FragmentListAccount extends Fragment {
             tvEmpty.setVisibility(View.GONE);
         }
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class FragmentListAccount extends Fragment {
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_ACCOUNT) {
             return;
         }
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -122,9 +122,9 @@ public class FragmentListAccount extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_account, null);
 
-        ImageView ivAdd = (ImageView) mCustomView.findViewById(R.id.ivAdd);
-        ImageView ivEdit = (ImageView) mCustomView.findViewById(R.id.ivEdit);
-        ImageView ivDone = (ImageView) mCustomView.findViewById(R.id.ivDone);
+        ImageView ivAdd     = (ImageView) mCustomView.findViewById(R.id.ivAdd);
+        ImageView ivEdit    = (ImageView) mCustomView.findViewById(R.id.ivEdit);
+        ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
 
         if (mCurrentMode == NORMAL_MODE) {
             ivEdit.setVisibility(listAccount.size() > 0 ? View.VISIBLE : View.GONE);
@@ -139,7 +139,7 @@ public class FragmentListAccount extends Fragment {
         ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Add Account.");
+                LogUtils.trace(Tag, "Click Menu Action Add Account.");
                 FragmentAccountCreate nextFrag = new FragmentAccountCreate();
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, "FragmentAccountCreate")
@@ -151,7 +151,7 @@ public class FragmentListAccount extends Fragment {
         ivEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Edit.");
+                LogUtils.trace(Tag, "Click Menu Action Edit.");
                 accAdapter.notifyDataSetChanged();
                 mCurrentMode = EDIT_MODE;
                 getActivity().invalidateOptionsMenu();
@@ -161,7 +161,7 @@ public class FragmentListAccount extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Done.");
+                LogUtils.trace(Tag, "Click Menu Action Done.");
                 accAdapter.notifyDataSetChanged();
                 mCurrentMode = NORMAL_MODE;
                 getActivity().invalidateOptionsMenu();
@@ -172,20 +172,20 @@ public class FragmentListAccount extends Fragment {
 
         // Update list Accounts
         listAccount.clear();
-        List<Account> arTemp = db.getAllAccounts();
+        List<Account> arTemp = mDbHelper.getAllAccounts();
         for(int i = 0 ; i < arTemp.size(); i++) {
             listAccount.add(arTemp.get(i));
         }
         accAdapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
      * Update AccountType, call from ActivityMain
      */
     public void addToAccountList(Account account) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         listAccount.add(account);
         // Reload list Account
@@ -193,11 +193,11 @@ public class FragmentListAccount extends Fragment {
 
         tvEmpty.setVisibility(View.GONE);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     public void updateToAccountList(Account account) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         for (int i = 0; i < listAccount.size(); i++) {
             if (listAccount.get(i).getId() == account.getId()) {
@@ -207,11 +207,11 @@ public class FragmentListAccount extends Fragment {
         // Reload list Account
         accAdapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     public void removeToAccountList(int accountId) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         // Remove Account
         for (Account account : listAccount) {
@@ -228,7 +228,7 @@ public class FragmentListAccount extends Fragment {
             tvEmpty.setVisibility(View.VISIBLE);
         }
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -285,7 +285,7 @@ public class FragmentListAccount extends Fragment {
             viewHolder.ivIcon.setImageResource(AccountType.getAccountTypeById(mList.get(position).getTypeId()).getIcon());
             viewHolder.tvAccountName.setText(mList.get(position).getName());
 
-            Double remain = db.getAccountRemain(mList.get(position).getId());
+            Double remain = mDbHelper.getAccountRemain(mList.get(position).getId());
             viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mList.get(position).getCurrencyId()), remain));
 
             if (mCurrentMode == NORMAL_MODE) {
@@ -293,7 +293,7 @@ public class FragmentListAccount extends Fragment {
                 viewHolder.ivEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        LogUtils.trace(TAG, "Edit item number " + position + " -> AccountID = " + listAccount.get(position));
+                        LogUtils.trace(Tag, "Edit item number " + position + " -> AccountID = " + listAccount.get(position));
                         FragmentAccountUpdate nextFrag = new FragmentAccountUpdate();
                         Bundle bundle = new Bundle();
                         bundle.putInt("AccountID", listAccount.get(position).getId());
@@ -309,8 +309,8 @@ public class FragmentListAccount extends Fragment {
                 viewHolder.ivEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        LogUtils.trace(TAG, "Delete item number " + position + " -> AccountID = " + listAccount.get(position));
-                        db.deleteAccount(listAccount.get(position).getId());
+                        LogUtils.trace(Tag, "Delete item number " + position + " -> AccountID = " + listAccount.get(position));
+                        mDbHelper.deleteAccount(listAccount.get(position).getId());
                         listAccount.remove(position);
                         accAdapter.notifyDataSetChanged();
 

@@ -26,19 +26,19 @@ public class FragmentCategoryCreate extends Fragment {
 
     private static final String Tag = "CategoryCreate";
 
-    private DatabaseHelper db;
+    private DatabaseHelper      mDbHelper;
 
-    private TransactionEnum mTransactionType     = TransactionEnum.Expense;
+    private TransactionEnum     mTransactionType     = TransactionEnum.Expense;
 
     // Keep return value from FragmentCategoryParentSelect
-    private Category mParentCategory;
-    private boolean mBorrow = false;
+    private Category            mParentCategory;
+    private boolean             mBorrow = false;
 
-    private ClearableEditText etName;
-    private LinearLayout llParentCategory;
-    private TextView tvParentCategory;
-    private EditText etDescription;
-    private LinearLayout llSave;
+    private ClearableEditText   etName;
+    private LinearLayout        llParentCategory;
+    private TextView            tvParentCategory;
+    private EditText            etDescription;
+    private LinearLayout        llSave;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,8 +61,8 @@ public class FragmentCategoryCreate extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        View mCustomView        = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle        = (TextView) mCustomView.findViewById(R.id.tvTitle);
         if(mTransactionType == TransactionEnum.Expense ||
                 mTransactionType == TransactionEnum.Transfer ||
                 mTransactionType == TransactionEnum.Adjustment) {
@@ -95,7 +95,7 @@ public class FragmentCategoryCreate extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
         // Initialize View
         etName              = (ClearableEditText) getView().findViewById(R.id.etName);
@@ -149,7 +149,7 @@ public class FragmentCategoryCreate extends Fragment {
                 }
 
                 // Todo: Insert new Category to DB
-                long categoryId = db.createCategory(mParentCategory != null ? mParentCategory.getId() : 0,    // ParentID
+                long categoryId = mDbHelper.createCategory(mParentCategory != null ? mParentCategory.getId() : 0,    // ParentID
                         etName.getText().toString(),                            // Name
                         (mTransactionType == TransactionEnum.Expense
                                 || mTransactionType == TransactionEnum.Transfer
@@ -180,7 +180,7 @@ public class FragmentCategoryCreate extends Fragment {
         LogUtils.logEnterFunction(Tag, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow);
 
         mBorrow = borrow;
-        mParentCategory = db.getCategory(parentCategoryId);
+        mParentCategory = mDbHelper.getCategory(parentCategoryId);
         if(mParentCategory != null) {
             tvParentCategory.setText(mParentCategory.getName());
         } else {

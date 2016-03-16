@@ -26,29 +26,29 @@ import local.wallet.analyzing.model.Currency;
  */
 public class FragmentCurrencySelect extends Fragment {
 
-    private static final String TAG = "FragmentCurrencySelect";
+    private static final String Tag = "FragmentCurrencySelect";
 
-    private String mTagOfSource = "";
-    private int mUsingCurrencyId;
+    private String  mTagOfSource = "";
+    private int     mUsingCurrencyId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
 
-        Bundle bundle = this.getArguments();
+        Bundle bundle       = this.getArguments();
         mTagOfSource        = bundle.getString("Tag");
-        mUsingCurrencyId = bundle.getInt("Currency", 1);
+        mUsingCurrencyId    = bundle.getInt("Currency", 1);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -57,20 +57,20 @@ public class FragmentCurrencySelect extends Fragment {
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         super.onCreateOptionsMenu(menu, inflater);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_currency, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -84,7 +84,7 @@ public class FragmentCurrencySelect extends Fragment {
 
                 if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentAccountCreate");
+                    LogUtils.trace(Tag, "Setup for FragmentAccountCreate");
                     // Return Type's Id to FragmentAccountCreate
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
                     FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity()
@@ -96,7 +96,7 @@ public class FragmentCurrencySelect extends Fragment {
 
                 } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentAccountUpdate");
+                    LogUtils.trace(Tag, "Setup for FragmentAccountUpdate");
                     // Return Type's Id to FragmentAccountUpdate
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
                     FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity()
@@ -108,7 +108,7 @@ public class FragmentCurrencySelect extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**

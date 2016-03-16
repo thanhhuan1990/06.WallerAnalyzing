@@ -60,12 +60,12 @@ public class FragmentListBudget extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getActivity());
+        mDbHelper   = new DatabaseHelper(getActivity());
         mConfigs    = new Configurations(getActivity());
 
-        lvBudget = (ListView) getView().findViewById(R.id.lvBudget);
+        lvBudget    = (ListView) getView().findViewById(R.id.lvBudget);
         arBudgets   = mDbHelper.getAllBudgets();
-        adapter = new BudgetAdapter(getContext(), arBudgets);
+        adapter     = new BudgetAdapter(getContext(), arBudgets);
         lvBudget.setAdapter(adapter);
         lvBudget.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -33,16 +33,17 @@ public class FragmentAccountsSelect extends Fragment {
 
     private static final String TAG = "FragmentAccountsSelect";
 
-    private String mTagOfSource = "";
-    private int mUsingAccountId;
+    private String          mTagOfSource = "";
+    private int             mUsingAccountId;
     private TransactionEnum mTransactionType;
 
-    private DatabaseHelper db;
-    private List<Account> arAccounts = new ArrayList<Account>();
-    private AccountAdapter accountAdapter;
+    private DatabaseHelper  mDbHelper;
 
-    private ListView lvAccount;
-    private TextView tvEmpty;
+    private List<Account>   arAccounts = new ArrayList<Account>();
+    private AccountAdapter  accountAdapter;
+
+    private ListView        lvAccount;
+    private TextView        tvEmpty;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,13 +86,13 @@ public class FragmentAccountsSelect extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         /* Initialize Database, insert default category */
-        db = new DatabaseHelper(getActivity());
+        mDbHelper       = new DatabaseHelper(getActivity());
 
         tvEmpty         = (TextView) getView().findViewById(R.id.tvEmpty);
         lvAccount       = (ListView) getView().findViewById(R.id.lvAccount);
 
-        arAccounts = db.getAllAccounts();
-        accountAdapter = new AccountAdapter(getActivity(), arAccounts);
+        arAccounts      = mDbHelper.getAllAccounts();
+        accountAdapter  = new AccountAdapter(getActivity(), arAccounts);
         lvAccount.setAdapter(accountAdapter);
 
         /* Click on listview item to select category*/
@@ -190,7 +191,7 @@ public class FragmentAccountsSelect extends Fragment {
             viewHolder.ivIcon.setImageResource(AccountType.getAccountTypeById(arAccounts.get(position).getTypeId()).getIcon());
             viewHolder.tvAccount.setText(arAccounts.get(position).getName());
 
-            Double remain = db.getAccountRemain(arAccounts.get(position).getId());
+            Double remain = mDbHelper.getAccountRemain(arAccounts.get(position).getId());
             viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, remain));
 
             if(mUsingAccountId == arAccounts.get(position).getId()) {

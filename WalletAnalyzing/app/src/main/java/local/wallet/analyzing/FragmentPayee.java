@@ -30,22 +30,22 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentPayee extends Fragment {
 
-    private static final String TAG     = "FragmentPayee";
+    private static final String     Tag                     = "FragmentPayee";
 
-    private DatabaseHelper db;
+    private DatabaseHelper          mDbHelper;
 
-    private String mTagOfSource = "";
-    private TransactionEnum mCurrentTransactionType     = TransactionEnum.Expense;
-    private String mPayee;
+    private String                  mTagOfSource            = "";
+    private TransactionEnum         mCurrentTransactionType = TransactionEnum.Expense;
+    private String                  mPayee;
 
-    private ClearableEditText   etPayee;
-    private ListView            lvPayee;
-    private List<String>        payees = new ArrayList<String>();
-    private ArrayAdapter<String> mAdapter;
+    private ClearableEditText       etPayee;
+    private ListView                lvPayee;
+    private List<String>            payees                  = new ArrayList<String>();
+    private ArrayAdapter<String>    mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -56,40 +56,40 @@ public class FragmentPayee extends Fragment {
         mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mPayee                          = bundle.getString("Payee", "");
 
-        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(TAG, "mCurrentTransactionType = " + mCurrentTransactionType);
-        LogUtils.trace(TAG, "mPayee = " + mPayee);
+        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
+        LogUtils.trace(Tag, "mPayee = " + mPayee);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         String myTag = getTag();
         ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_payee, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
         etPayee = (ClearableEditText) getView().findViewById(R.id.etPayee);
         etPayee.setText(mPayee);
         etPayee.addTextChangedListener(new PayeeTextWatcher());
 
         lvPayee = (ListView) getView().findViewById(R.id.lvPayee);
-        payees = db.getPayees("");
+        payees = mDbHelper.getPayees("");
         mAdapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_list_item_1,
                 android.R.id.text1,
@@ -104,12 +104,12 @@ public class FragmentPayee extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -119,17 +119,17 @@ public class FragmentPayee extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Done.");
+                LogUtils.trace(Tag, "Click Menu Action Done.");
 
                 if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
+                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreate");
                     FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
                     fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
                     FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
@@ -144,7 +144,7 @@ public class FragmentPayee extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -160,11 +160,11 @@ public class FragmentPayee extends Fragment {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(TAG, null);
+            LogUtils.logEnterFunction(Tag, null);
 
             if(!s.toString().trim().equals(current)){
                 payees.clear();
-                List<String> arTemp = db.getPayees(s.toString().trim());
+                List<String> arTemp = mDbHelper.getPayees(s.toString().trim());
                 for(int i = 0 ; i < arTemp.size(); i++) {
                     payees.add(arTemp.get(i));
                 }
@@ -173,7 +173,7 @@ public class FragmentPayee extends Fragment {
                 current = s.toString().trim();
             }
 
-            LogUtils.logLeaveFunction(TAG, null, null);
+            LogUtils.logLeaveFunction(Tag, null, null);
         }
 
     }

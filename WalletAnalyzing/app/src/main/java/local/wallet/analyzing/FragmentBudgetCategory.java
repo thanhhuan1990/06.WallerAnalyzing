@@ -32,7 +32,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
     private static final String Tag = "BudgetCategory";
 
-    private DatabaseHelper      db;
+    private DatabaseHelper      mDbHelper;
 
     private ToggleButton        tbAllCategory;
     private LinearLayout        llCategories;
@@ -119,16 +119,16 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
         llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
         arCategoriesView.clear();
-        List<Category> arParentCategories = db.getAllParentCategories(true, false);
+        List<Category> arParentCategories = mDbHelper.getAllParentCategories(true, false);
         for(Category category : arParentCategories) {
 
             arCategoriesView.add(new CategoryView(category, true, checkContain(category.getId())));
 
-            List<Category> arChildCategories = db.getCategoriesByParent(category.getId());
+            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
 
             for(Category cate : arChildCategories) {
 
@@ -141,7 +141,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
         tbAllCategory.setOnCheckedChangeListener(this);
-        if(arCategories == null || arCategories.length == db.getAllCategories(true, false).size()) {
+        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories(true, false).size()) {
             tbAllCategory.setChecked(true);
         } else {
             tbAllCategory.setChecked(false);

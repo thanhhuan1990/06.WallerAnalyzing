@@ -35,15 +35,6 @@
         <item>Calculate and record a transaction according to balance.</item>
     </string-array>
 
-    <string-array name="report_type">
-        <item>Expense vs Income</item>
-        <item>Expense analysis</item>
-        <item>Money lent/borrowed</item>
-        <item>Financial statement</item>
-        <item>Event expense</item>
-        <item>Payee</item>
-    </string-array>
-
     <string-array name="data_file_extension">
         <item>xls</item>
         <item>xlsx</item>
@@ -130,13 +121,48 @@
         <item>By yearly</item>
     </string-array>
 
+    <!-- 5_REPORT_1_REPORT_TYPE-->
+    <string-array name="report_type">
+        <item>Expense vs Income</item>
+        <item>Expense analysis</item>
+        <item>Money lent/borrowed</item>
+        <item>Financial statement</item>
+        <item>Event expense</item>
+        <item>Payee</item>
+    </string-array>
+
+    <!-- 5_REPORT_2_Expense_Vs_Income -->
+    <string name="report_evi_accounts">Accounts:</string>
+    <string name="report_evi_accounts_all_accounts">All Accounts</string>
+    <string name="report_evi_accounts_select_all_accounts">Select all accounts</string>
+    <string name="report_evi_viewedby">Viewed by:</string>
+    <string-array name="report_evi_ar_viewedby">
+        <item>Current</item>
+        <item>Monthly</item>
+        <item>Quarterly</item>
+        <item>Yearly</item>
+        <item>Period</item>
+    </string-array>
+
+    <string name="report_evi_today">Today (\%%02d/\%%02d/\%%02d)</string>
+    <string name="report_evi_this_week">This Week (\%%02d/\%%02d - \%%02d/\%%02d)</string>
+    <string name="report_evi_this_month">This Month (\%%02d/\%%02d)</string>
+    <string name="report_evi_this_year">This Year (\%%02d)</string>
+
+    <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
     <string name="report_event_completed">Completed</string>
+
     <string name="event_item_date">From %s</string>
     <string name="event_total_expense">Σ Total Expense</string>
     <string name="event_total_income">Σ Total Income</string>
     <string name="event_detail_complete">Completed</string>
 
+    <string name="event_update_name">Name</string>
+    <string name="event_update_finished">Finished</string>
+    <string name="event_update_end_date">Finish Date</string>
+
+    <!-- TITLE -->
     <string name="title_category_expense">Expense categories</string>
     <string name="title_category_expense_add">Add expense category</string>
     <string name="title_category_expense_select_parent">Parent Category</string>
@@ -154,6 +180,7 @@
     <string name="title_description">Description</string>
     <string name="title_payee">Payee</string>
     <string name="title_event">Event</string>
+    <string name="title_report_evi_account">Account</string>
 
     <string name="Save">Save</string>
     <string name="Delete">Delete</string>
@@ -165,6 +192,7 @@
     <string name="Input_Error_Transfer_Same_Account">Cannot transfer in same Account!</string>
     <string name="Input_Error_Adjustment_Same_Amount">Amount is 0!</string>
     <string name="Input_Error_budget_category_none">Please select expense category!</string>
+    <string name="Input_Error_account_none">Please select account!</string>
 
     <string name="message_transaction_create_successful">Saved</string>
     <string name="message_transaction_update_successful">Saved</string>

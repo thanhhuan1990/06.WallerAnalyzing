@@ -34,9 +34,9 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentListTransaction extends Fragment {
 
-    private static final String TAG = "ListTransaction";
+    private static final String     Tag = "ListTransaction";
 
-    private DatabaseHelper          db;
+    private DatabaseHelper          mDbHelper;
 
     private List<TransactionGroup>  arGroupTrans;
     private ListView                lvTransaction;
@@ -44,31 +44,31 @@ public class FragmentListTransaction extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_list_transaction, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
-        db = new DatabaseHelper(getActivity());
-        db.insertDefaultCategories();
+        mDbHelper       = new DatabaseHelper(getActivity());
+        mDbHelper.insertDefaultCategories();
 
         // Get all transaction
-        List<Transaction> arTrans = db.getAllTransactions();
+        List<Transaction> arTrans = mDbHelper.getAllTransactions();
         // Sort transaction
         Collections.sort(arTrans);
 
@@ -79,7 +79,7 @@ public class FragmentListTransaction extends Fragment {
         mAdapter = new TransactionAdapter(getActivity(), arGroupTrans);
         lvTransaction.setAdapter(mAdapter);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class FragmentListTransaction extends Fragment {
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTIONS) {
             return;
         }
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -96,7 +96,7 @@ public class FragmentListTransaction extends Fragment {
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
         updateListTransaction();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     private class TransactionAdapter extends ArrayAdapter<TransactionGroup> {
@@ -157,8 +157,8 @@ public class FragmentListTransaction extends Fragment {
 
                 Double expense = 0.0, income = 0.0;
                 for(Transaction tran : mTransactions.get(position).getArTrans()) {
-                    Account fromAccount = db.getAccount(tran.getFromAccountId());
-                    Account toAccount   = db.getAccount(tran.getToAccountId());
+                    Account fromAccount = mDbHelper.getAccount(tran.getFromAccountId());
+                    Account toAccount   = mDbHelper.getAccount(tran.getToAccountId());
                     if(fromAccount != null && toAccount == null) {
                         expense += tran.getAmount();
                     } else if(fromAccount == null && toAccount != null) {
@@ -193,9 +193,9 @@ public class FragmentListTransaction extends Fragment {
                 for(final Transaction tran : arTrans) {
                     pos++;
 
-                    Account fromAccount     = db.getAccount(tran.getFromAccountId());
-                    Account toAccount       = db.getAccount(tran.getToAccountId());
-                    Category cate           = db.getCategory(tran.getCategoryId());
+                    Account fromAccount     = mDbHelper.getAccount(tran.getFromAccountId());
+                    Account toAccount       = mDbHelper.getAccount(tran.getToAccountId());
+                    Category cate           = mDbHelper.getCategory(tran.getCategoryId());
 
                     LayoutInflater inflater = LayoutInflater.from(getContext());
                     View transactionDetailView = inflater.inflate(R.layout.listview_item_transaction_detail, parent, false);
@@ -298,7 +298,7 @@ public class FragmentListTransaction extends Fragment {
 
     public void updateListTransaction() {
         // Get all transaction
-        List<Transaction> arTrans = db.getAllTransactions();
+        List<Transaction> arTrans = mDbHelper.getAllTransactions();
         // Sort transaction
         Collections.sort(arTrans);
 
