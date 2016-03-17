@@ -143,11 +143,18 @@
         <item>Yearly</item>
         <item>Period</item>
     </string-array>
+    <string name="report_evi_viewedby_fromdate">From Date:</string>
+    <string name="report_evi_viewedby_todate">To Date:</string>
 
     <string name="report_evi_today">Today (\%%02d/\%%02d/\%%02d)</string>
     <string name="report_evi_this_week">This Week (\%%02d/\%%02d - \%%02d/\%%02d)</string>
     <string name="report_evi_this_month">This Month (\%%02d/\%%02d)</string>
     <string name="report_evi_this_year">This Year (\%%02d)</string>
+    <string name="report_evi_period">\%%02d/\%%02d/\%%02d - \%%02d/\%%02d/\%%02d</string>
+    <string name="report_evi_income">Income</string>
+    <string name="report_evi_expense">Expense</string>
+    <string name="report_evi_all">All</string>
+    <string name="report_evi_net_income">Net income</string>
 
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
@@ -181,6 +188,7 @@
     <string name="title_payee">Payee</string>
     <string name="title_event">Event</string>
     <string name="title_report_evi_account">Account</string>
+    <string name="title_report_evi_time">Time</string>
 
     <string name="Save">Save</string>
     <string name="Delete">Delete</string>
@@ -193,6 +201,7 @@
     <string name="Input_Error_Adjustment_Same_Amount">Amount is 0!</string>
     <string name="Input_Error_budget_category_none">Please select expense category!</string>
     <string name="Input_Error_account_none">Please select account!</string>
+    <string name="Input_Error_todate_invalid">To Date Invalid!</string>
 
     <string name="message_transaction_create_successful">Saved</string>
     <string name="message_transaction_update_successful">Saved</string>

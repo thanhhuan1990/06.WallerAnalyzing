@@ -661,7 +661,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                         if(remain > balance) {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
                                     Currency.formatCurrency(getContext(),
-                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
+                                            mFromAccount.getCurrencyId(),
                                             remain - balance)));
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
                             if(mCategory != null && !mCategory.isExpense()) {
@@ -670,9 +670,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                             }
                         } else {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
-                                    Currency.formatCurrency(getContext(),
-                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                            balance - remain)));
+                                                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), balance - remain)));
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
                             if(mCategory != null && mCategory.isExpense()) {
                                 tvAdjustmentCategory.setText("");
@@ -914,7 +912,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
                         if (remain.doubleValue() > balance.doubleValue()) {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                                                                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), remain - balance)));
+                                                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), remain - balance)));
 
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
                             if(mCategory != null && !mCategory.isExpense()) {
@@ -923,7 +921,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                             }
                         } else {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_income),
-                                                                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), balance - remain)));
+                                                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), balance - remain)));
 
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
                             if(mCategory != null && mCategory.isExpense()) {
@@ -1111,9 +1109,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
 
                 if(remain.doubleValue() > balance.doubleValue()) {
                     tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                                                            Currency.formatCurrency(getContext(),
-                                                                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                                    remain - balance)));
+                                                            Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), remain - balance)));
                     ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
                     if(mCategory != null && mCategory.isExpense()) {
                         tvAdjustmentCategory.setText("");
@@ -1121,9 +1117,7 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
                     }
                 } else {
                     tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
-                                                            Currency.formatCurrency(getContext(),
-                                                                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                                    balance - remain)));
+                                                            Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), balance - remain)));
                     ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
                     if(mCategory != null && mCategory.isExpense()) {
                         tvAdjustmentCategory.setText("");

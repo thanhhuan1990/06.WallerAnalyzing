@@ -205,13 +205,13 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
 
                 if(expense != 0) {
                     viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense,
-                                                                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), expense))));
+                                                                Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), expense))));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
                 }
                 if(income != 0) {
                     viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income,
-                                                            Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), income))));
+                                                            Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), income))));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
                 }

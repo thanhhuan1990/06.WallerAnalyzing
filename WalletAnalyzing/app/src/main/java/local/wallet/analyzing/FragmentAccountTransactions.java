@@ -85,7 +85,7 @@ public class FragmentAccountTransactions extends Fragment {
 
         Account account     = mDbHelper.getAccount(mAccountId);
         tvInitBalance       = (TextView) getView().findViewById(R.id.tvAccountInitBalance);
-        tvInitBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), mDbHelper.getAccount(mAccountId).getInitBalance()));
+        tvInitBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccount(mAccountId).getInitBalance()));
 
         tvBalance           = (TextView) getView().findViewById(R.id.tvAccountRemain);
 
@@ -129,9 +129,9 @@ public class FragmentAccountTransactions extends Fragment {
         LogUtils.logEnterFunction(TAG, null);
 
         Account account = mDbHelper.getAccount(mAccountId);
-        tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(account.getCurrencyId()), mDbHelper.getAccountRemain(mAccountId)));
+        tvBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccountRemain(mAccountId)));
 
-        arTransactions = mDbHelper.getAllTransactions(mAccountId);
+        arTransactions = mDbHelper.getTransactionsByAccount(mAccountId);
         Collections.sort(arTransactions);
 
         LinearLayout    llTransactions = (LinearLayout) getView().findViewById(R.id.llTransactions);
@@ -167,10 +167,10 @@ public class FragmentAccountTransactions extends Fragment {
 
                     tvCategory.setText(String.format(getResources().getString(R.string.content_expense), cate != null ? cate.getName() : ""));
                     tvDescription.setText(tran.getDescription());
-                    tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAcc.getCurrencyId()), tran.getAmount()));
+                    tvAmount.setText(Currency.formatCurrency(getContext(), fromAcc.getCurrencyId(), tran.getAmount()));
                     tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
                             Currency.formatCurrency(getContext(),
-                                    Currency.getCurrencyById(fromAcc.getCurrencyId()),
+                                    fromAcc.getCurrencyId(),
                                     mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
                     break;
                 } // End case Expense
@@ -179,10 +179,10 @@ public class FragmentAccountTransactions extends Fragment {
 
                     tvCategory.setText(String.format(getResources().getString(R.string.content_income), cate != null ? cate.getName() : ""));
                     tvDescription.setText(tran.getDescription());
-                    tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(toAcc.getCurrencyId()), tran.getAmount()));
+                    tvAmount.setText(Currency.formatCurrency(getContext(), toAcc.getCurrencyId(), tran.getAmount()));
                     tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
                             Currency.formatCurrency(getContext(),
-                                    Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                    toAcc.getCurrencyId(),
                                     mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
 
                     tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -194,7 +194,7 @@ public class FragmentAccountTransactions extends Fragment {
                     fromAcc = mDbHelper.getAccount(tran.getFromAccountId());
                     toAcc = mDbHelper.getAccount(tran.getToAccountId());
 
-                    tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAcc.getCurrencyId()), tran.getAmount()));
+                    tvAmount.setText(Currency.formatCurrency(getContext(), fromAcc.getCurrencyId(), tran.getAmount()));
 
                     if (mAccountId == fromAcc.getId()) {
                         tvCategory.setText(String.format(getResources().getString(R.string.content_transfer_to), toAcc.getName()));
@@ -206,14 +206,14 @@ public class FragmentAccountTransactions extends Fragment {
                             }
                             description += String.format(getResources().getString(R.string.content_transfer_fee),
                                     Currency.formatCurrency(getContext(),
-                                            Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                            toAcc.getCurrencyId(),
                                             tran.getFee()));
                         }
 
                         tvDescription.setText(description);
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
                                 Currency.formatCurrency(getContext(),
-                                        Currency.getCurrencyById(fromAcc.getCurrencyId()),
+                                        fromAcc.getCurrencyId(),
                                         mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
 
                     } else if (mAccountId == toAcc.getId()) {
@@ -222,7 +222,7 @@ public class FragmentAccountTransactions extends Fragment {
                         tvDescription.setText(tran.getDescription());
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
                                 Currency.formatCurrency(getContext(),
-                                        Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                        toAcc.getCurrencyId(),
                                         mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
 
                         tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -239,18 +239,18 @@ public class FragmentAccountTransactions extends Fragment {
                     if (fromAcc != null) {
                         tvCategory.setText(String.format(getResources().getString(R.string.content_expense), cate != null ? cate.getName() : ""));
                         tvDescription.setText(tran.getDescription());
-                        tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(fromAcc.getCurrencyId()), tran.getAmount()));
+                        tvAmount.setText(Currency.formatCurrency(getContext(), fromAcc.getCurrencyId(), tran.getAmount()));
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
                                 Currency.formatCurrency(getContext(),
-                                        Currency.getCurrencyById(fromAcc.getCurrencyId()),
+                                        fromAcc.getCurrencyId(),
                                         mDbHelper.getAccountRemainAfter(fromAcc.getId(), tran.getTime()))));
                     } else if (toAcc != null) {
                         tvCategory.setText(String.format(getResources().getString(R.string.content_income), cate != null ? cate.getName() : ""));
                         tvDescription.setText(tran.getDescription());
-                        tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(toAcc.getCurrencyId()), tran.getAmount()));
+                        tvAmount.setText(Currency.formatCurrency(getContext(), toAcc.getCurrencyId(), tran.getAmount()));
                         tvBalance.setText(String.format(getResources().getString(R.string.account_list_balance),
                                 Currency.formatCurrency(getContext(),
-                                        Currency.getCurrencyById(toAcc.getCurrencyId()),
+                                        toAcc.getCurrencyId(),
                                         mDbHelper.getAccountRemainAfter(toAcc.getId(), tran.getTime()))));
 
                         tvCategory.setTextColor(getResources().getColor(R.color.colorPrimary));

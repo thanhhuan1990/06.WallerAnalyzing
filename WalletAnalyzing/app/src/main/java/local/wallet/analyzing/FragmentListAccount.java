@@ -286,7 +286,7 @@ public class FragmentListAccount extends Fragment {
             viewHolder.tvAccountName.setText(mList.get(position).getName());
 
             Double remain = mDbHelper.getAccountRemain(mList.get(position).getId());
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mList.get(position).getCurrencyId()), remain));
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mList.get(position).getCurrencyId(), remain));
 
             if (mCurrentMode == NORMAL_MODE) {
                 viewHolder.ivEdit.setImageResource(R.drawable.icon_list_edit);

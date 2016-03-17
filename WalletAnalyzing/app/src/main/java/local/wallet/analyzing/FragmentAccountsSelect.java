@@ -38,6 +38,7 @@ public class FragmentAccountsSelect extends Fragment {
     private TransactionEnum mTransactionType;
 
     private DatabaseHelper  mDbHelper;
+    private Configurations  mConfigs;
 
     private List<Account>   arAccounts = new ArrayList<Account>();
     private AccountAdapter  accountAdapter;
@@ -87,6 +88,7 @@ public class FragmentAccountsSelect extends Fragment {
 
         /* Initialize Database, insert default category */
         mDbHelper       = new DatabaseHelper(getActivity());
+        mConfigs        = new Configurations(getActivity());
 
         tvEmpty         = (TextView) getView().findViewById(R.id.tvEmpty);
         lvAccount       = (ListView) getView().findViewById(R.id.lvAccount);
@@ -192,7 +194,7 @@ public class FragmentAccountsSelect extends Fragment {
             viewHolder.tvAccount.setText(arAccounts.get(position).getName());
 
             Double remain = mDbHelper.getAccountRemain(arAccounts.get(position).getId());
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, remain));
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), remain));
 
             if(mUsingAccountId == arAccounts.get(position).getId()) {
                 viewHolder.ivUsing.setVisibility(View.VISIBLE);

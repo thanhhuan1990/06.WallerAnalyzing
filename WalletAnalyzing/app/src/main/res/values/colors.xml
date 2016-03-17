@@ -46,4 +46,16 @@
     <color name="budget_background_date">#EDD3D1</color>
     <color name="budget_border">#909090</color>
 
+    <color name="progress_today_income">#00C633</color>
+    <color name="progress_today_expense">#FFA200</color>
+    <color name="progress_thisweek_income">#2599EB</color>
+    <color name="progress_thisweek_expense">#D2025A</color>
+    <color name="progress_thismonth_income">#37A3A0</color>
+    <color name="progress_thismonth_expense">#FF6C00</color>
+    <color name="progress_thisyear_income">#8EBF26</color>
+    <color name="progress_thisyear_expense">#8628B2</color>
+    <color name="progress_all_income">#41BC92</color>
+    <color name="progress_all_expense">#DF3555</color>
+
+
 </resources>

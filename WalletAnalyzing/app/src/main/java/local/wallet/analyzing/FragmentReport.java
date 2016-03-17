@@ -97,10 +97,13 @@ public class FragmentReport extends Fragment {
      * Start Fragment ReportEvent
      */
     private void showExpenseVsIncome() {
+        FragmentReportEVI myFragment = (FragmentReportEVI)getFragmentManager().findFragmentByTag("FragmentReportEVI");
+        if (myFragment != null && myFragment.isVisible()) {
+            return;
+        }
         FragmentReportEVI nextFrag = new FragmentReportEVI();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEVI")
-                .addToBackStack(null)
+                .replace(R.id.ll_report, nextFrag, "FragmentReportEVI")
                 .commit();
     }
 
@@ -108,10 +111,13 @@ public class FragmentReport extends Fragment {
      * Start Fragment ReportEvent
      */
     private void showListEvents() {
+        FragmentReportEvent myFragment = (FragmentReportEvent)getFragmentManager().findFragmentByTag("FragmentReportEvent");
+        if (myFragment != null && myFragment.isVisible()) {
+            return;
+        }
         FragmentReportEvent nextFrag = new FragmentReportEvent();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEvent")
-                .addToBackStack(null)
+                .replace(R.id.ll_report, nextFrag, "FragmentReportEvent")
                 .commit();
     }
 

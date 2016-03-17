@@ -679,7 +679,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Double remain = getAccount(accountId).getInitBalance();
 
-        List<Transaction> arTransactions = getAllTransactions(accountId);
+        List<Transaction> arTransactions = getTransactionsByAccount(accountId);
 
         Collections.sort(arTransactions, new Comparator<Transaction>() {
             public int compare(Transaction o1, Transaction o2) {
@@ -713,7 +713,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Double remain = getAccount(accountId).getInitBalance();
 
-        List<Transaction> arTransactions = getAllTransactions(accountId);
+        List<Transaction> arTransactions = getTransactionsByAccount(accountId);
 
         Collections.sort(arTransactions, new Comparator<Transaction>() {
             public int compare(Transaction o1, Transaction o2) {
@@ -752,7 +752,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Double remain = getAccount(accountId).getInitBalance();
 
-        List<Transaction> arTransactions = getAllTransactions(accountId);
+        List<Transaction> arTransactions = getTransactionsByAccount(accountId);
 
         Collections.sort(arTransactions, new Comparator<Transaction>() {
             public int compare(Transaction o1, Transaction o2) {
@@ -946,23 +946,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * get TRANSACTION by time
+     * Get All transaction from startDate to endDate
+     * @param categories
+     * @param startDate
+     * @param endDate
+     * @return
      */
-    public List<Transaction> getBudgetTransactions(int[] categories, Calendar startDate, Calendar endDate, int numOfDays) {
-        enter(TAG, "categories = " + categories.toString() + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate + ", numOfDays = " + numOfDays);
-
-        endDate.add(Calendar.DATE, numOfDays);
+    public List<Transaction> getTransactionsByTimeAndCategory(int[] categories, Calendar startDate, Calendar endDate) {
+        enter(TAG, "categories = " + (categories != null ? categories.toString() : "") + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String condition = " WHERE " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[0];
+        String condition ="";
+        if(categories != null) {
+            condition = " WHERE " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[0];
 
-        for(int i = 1 ; i < categories.length; i++) {
-            condition += " OR " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[i];
+            for(int i = 1 ; i < categories.length; i++) {
+                condition += " OR " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[i];
+            }
         }
 
         List<Transaction> transactions = new ArrayList<Transaction>();
-        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition;
+        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
         trace(TAG, selectQuery);
 
@@ -993,26 +998,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext()) ;
         }
 
-        leave(TAG, "categories = " + categories.toString() + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
+        leave(TAG, "categories = " + (categories != null ? categories.toString() : "") + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
 
         return transactions;
 
     }
 
     /**
-     * get TRANSACTION by time
+     * Get All transaction from startDate to endDate
+     * @param accounts
+     * @param startDate
+     * @param endDate
+     * @return
      */
-    public List<Transaction> getBudgetTransactions(int category, Calendar startDate, Calendar endDate, int numOfDays) {
-        enter(TAG, "category = " + category + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate + ", numOfDays = " + numOfDays);
-
-        endDate.add(Calendar.DATE, numOfDays);
+    public List<Transaction> getTransactionsByTimeAndAccount(int[] accounts, Calendar startDate, Calendar endDate) {
+        enter(TAG, "accounts = " + (accounts != null ? accounts.toString() : "")
+                + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "0")
+                + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "0"));
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String condition = " WHERE " + KEY_TRANSACTION_CATEGORY_ID + " = " + category;
+        String condition ="";
+        if(accounts != null) {
+            condition = " WHERE " + KEY_TRANSACTION_FROM_ACCOUNT_ID + " = " + accounts[0] + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accounts[0];
+
+            for(int i = 1 ; i < accounts.length; i++) {
+                condition += " OR " + KEY_TRANSACTION_CATEGORY_ID + " = " + accounts[i] + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accounts[i];
+            }
+        }
 
         List<Transaction> transactions = new ArrayList<Transaction>();
-        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition;
+        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
         trace(TAG, selectQuery);
 
@@ -1023,27 +1039,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
 
-                if (startDate.getTimeInMillis() <= calendar.getTimeInMillis() && calendar.getTimeInMillis() < endDate.getTimeInMillis()) {
-
-                    Transaction transaction = new Transaction();
-                    transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                    transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
-                    transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
-                    transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
-                    transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
-                    transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
-                    transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
-                    transaction.setTime(calendar);
-                    transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
-                    transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-                    transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
-
-                    transactions.add(transaction);
+                if(startDate != null && endDate != null) {
+                    if (calendar.getTimeInMillis() < startDate.getTimeInMillis() || endDate.getTimeInMillis() <= calendar.getTimeInMillis()  ) {
+                        continue;
+                    }
                 }
+
+                Transaction transaction = new Transaction();
+                transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
+                transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
+                transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
+                transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
+                transaction.setTime(calendar);
+                transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
+                transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
+
+                transactions.add(transaction);
             } while (c.moveToNext()) ;
         }
 
-        leave(TAG, "category = " + category + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
+        leave(TAG, "accounts = " + (accounts != null ? accounts.toString() : "")
+                + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "0")
+                + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "0"), transactions.toString());
 
         return transactions;
 
@@ -1052,7 +1073,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * getting all TRANSACTION follow Account
      * */
-    public List<Transaction> getAllTransactions(int accountId) {
+    public List<Transaction> getTransactionsByAccount(int accountId) {
         enter(TAG, null);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
@@ -1098,7 +1119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         enter(TAG, null);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
-        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION;
+        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
         trace(TAG, selectQuery);
 
@@ -1215,7 +1236,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         enter(TAG, null);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
-        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_EVENT + " = " + eventId;
+        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_EVENT + " = " + eventId + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
         trace(TAG, selectQuery);
 

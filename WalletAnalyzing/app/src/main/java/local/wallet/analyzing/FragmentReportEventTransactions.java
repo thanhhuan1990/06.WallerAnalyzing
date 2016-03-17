@@ -243,7 +243,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
             Account fromAccount     = mDbHelper.getAccount(transaction.getFromAccountId());
             Account toAccount       = mDbHelper.getAccount(transaction.getToAccountId());
             tvTranAmount.setText(Currency.formatCurrency(getActivity(),
-                                                        Currency.getCurrencyById(fromAccount != null ? fromAccount.getCurrencyId() : toAccount.getCurrencyId()),
+                                                        fromAccount != null ? fromAccount.getCurrencyId() : toAccount.getCurrencyId(),
                                                         transaction.getAmount()));
 
             // DESCRIPTION
@@ -313,9 +313,9 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
         } // End for(final Transaction transaction : arTransactions)
 
         tvTotalExpense.setText(String.format(getResources().getString(R.string.content_expense,
-                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), expense))));
+                Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), expense))));
         tvTotalIncome.setText(String.format(getResources().getString(R.string.content_income,
-                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), income))));
+                Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), income))));
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End updateListTransactions

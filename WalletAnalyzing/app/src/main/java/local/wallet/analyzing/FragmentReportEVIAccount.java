@@ -35,9 +35,12 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
     private static final String Tag = "ReportEVIAccount";
 
     private DatabaseHelper          mDbHelper;
+    private Configurations          mConfigs;
+
+    // List of selected Account from ReportEVI
+    private int[]                   currentAccounts;
 
     private ToggleButton            tbAllAccount;
-
     private ListView                lvAccount;
     private AccountAdapter          accAdapter;
     private List<AccountItem>       arAccounts = new ArrayList<AccountItem>();
@@ -49,6 +52,10 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        Bundle bundle = this.getArguments();
+        currentAccounts = bundle.getIntArray("Accounts");
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -67,13 +74,21 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
         super.onActivityCreated(savedInstanceState);
 
         mDbHelper       = new DatabaseHelper(getActivity());
+        mConfigs        = new Configurations(getActivity());
 
         lvAccount       = (ListView) getView().findViewById(R.id.lvAccount);
         tvEmpty         = (TextView) getView().findViewById(R.id.tvEmpty);
 
         List<Account> listAccount     = mDbHelper.getAllAccounts();
         for(Account acc : listAccount) {
-            arAccounts.add(new AccountItem(acc));
+            boolean isSelected = false;
+            for(int i = 0 ; i < currentAccounts.length; i++) {
+                if(acc.getId() == currentAccounts[i]) {
+                    isSelected = true;
+                    break;
+                }
+            }
+            arAccounts.add(new AccountItem(acc, isSelected));
         }
 
         accAdapter      = new AccountAdapter(getActivity(), arAccounts);
@@ -85,6 +100,16 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
                 // Todo: set check/uncheck
                 arAccounts.get(position).isChecked = !arAccounts.get(position).isChecked;
                 accAdapter.notifyDataSetChanged();
+
+                // Todo: update tbAllAccounts
+                boolean isAll = true;
+                for(AccountItem account : arAccounts) {
+                    if(!account.isChecked) {
+                        isAll = false;
+                    }
+                }
+
+                tbAllAccount.setChecked(isAll);
             }
         });
 
@@ -112,6 +137,12 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
                 }
             }
         });
+
+        if(currentAccounts.length == arAccounts.size()) {
+            tbAllAccount.setChecked(true);
+        } else {
+            tbAllAccount.setChecked(false);
+        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -181,9 +212,9 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
         Account account;
         boolean isChecked;
 
-        public AccountItem(Account account) {
-            this.account = account;
-            this.isChecked = true;
+        public AccountItem(Account account, boolean isChecked) {
+            this.account    = account;
+            this.isChecked  = isChecked;
         }
     }
 
@@ -232,7 +263,7 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
             viewHolder.tvAccount.setText(arAccounts.get(position).account.getName());
 
             Double remain = mDbHelper.getAccountRemain(arAccounts.get(position).account.getId());
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), Currency.CurrencyList.VND, remain));
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), remain));
 
             if(arAccounts.get(position).isChecked) {
                 viewHolder.ivUsing.setVisibility(View.VISIBLE);

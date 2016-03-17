@@ -3,7 +3,6 @@ package local.wallet.analyzing;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,12 +14,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.AccountType;
@@ -108,16 +104,17 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         } else {
             startDate   = getStartDate(mBudget);
             endDate     = getEndDate(mBudget);
+            endDate.add(Calendar.DATE, -1);
         }
 
         tvDescription.setText(String.format(getResources().getString(R.string.budget_detail_transaction_description),
                                             startDate.get(Calendar.DAY_OF_MONTH),
-                                            startDate.get(Calendar.MONTH),
+                                            startDate.get(Calendar.MONTH) + 1,
                                             endDate.get(Calendar.DAY_OF_MONTH),
-                                            endDate.get(Calendar.MONTH),
+                                            endDate.get(Calendar.MONTH) + 1,
                                             Currency.formatCurrency(getContext(),
-                                                                    Currency.getCurrencyById(mBudget.getCurrency()),
-                                                                    mBudget.getAmount())));
+                                                    mBudget.getCurrency(),
+                                                    mBudget.getAmount())));
 
         updateListTransactions();
 
@@ -130,7 +127,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         }
 
         tvAmount.setText(String.format(getResources().getString(R.string.budget_detail_transaction_total),
-                                        Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), expensed)));
+                                        Currency.formatCurrency(getContext(), mBudget.getCurrency(), expensed)));
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onCreateOptionsMenu
@@ -158,9 +155,9 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
             List<Transaction> arTransactions = new ArrayList<Transaction>();
             if(mBudget.getRepeatType() == 0) {
-                arTransactions = mDbHelper.getBudgetTransactions(category.getId(), mBudget.getStartDate(), mBudget.getEndDate(), 0);
+                arTransactions = mDbHelper.getTransactionsByTimeAndCategory(new int[]{category.getId()}, mBudget.getStartDate(), mBudget.getEndDate());
             } else {
-                arTransactions = mDbHelper.getBudgetTransactions(category.getId(), getStartDate(mBudget), getEndDate(mBudget), 0);
+                arTransactions = mDbHelper.getTransactionsByTimeAndCategory(new int[]{category.getId()}, getStartDate(mBudget), getEndDate(mBudget));
             }
 
             arBudgetTransaction.add(new BudgetTransaction(category, arTransactions, true));
@@ -234,7 +231,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
                 expensed += tran.getAmount();
             }
 
-            tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), expensed));
+            tvAmount.setText(Currency.formatCurrency(getContext(), mBudget.getCurrency(), expensed));
 
             /* Todo: Add list of transaction for category */
             for(final Transaction transaction : category.arTransactions) {
@@ -248,7 +245,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
                 tvTranCategory.setText(String.format(getResources().getString(R.string.content_expense),
                         mDbHelper.getCategory(transaction.getCategoryId()).getName()));
-                tvTranAmount.setText(Currency.formatCurrency(getActivity(), Currency.getCurrencyById(mBudget.getCurrency()), transaction.getAmount()));
+                tvTranAmount.setText(Currency.formatCurrency(getActivity(), mBudget.getCurrency(), transaction.getAmount()));
                 if(!transaction.getDescription().equals("")) {
                     tvDescription.setText(transaction.getDescription());
                 } else {
@@ -257,7 +254,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
                 tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
                                                 transaction.getTime().get(Calendar.DAY_OF_MONTH),
-                                                transaction.getTime().get(Calendar.MONTH),
+                                                transaction.getTime().get(Calendar.MONTH) + 1,
                                                 transaction.getTime().get(Calendar.YEAR)));
                 tvAccount.setText(mDbHelper.getAccount(transaction.getFromAccountId()).getName());
                 ivAccountIcon.setImageResource(AccountType.getAccountTypeById(mDbHelper.getAccount(transaction.getFromAccountId()).getTypeId()).getIcon());
@@ -307,58 +304,42 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             switch (repeatType) {
                 case 1: {// daily
                     endDate.add(Calendar.DATE, 1);
+                    if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                        startDate.add(Calendar.DATE, 1);
+                    }
                     break;
                 }
                 case 2: { // weekly
                     endDate.add(Calendar.WEEK_OF_YEAR, 1);
+                    if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                        startDate.add(Calendar.WEEK_OF_MONTH, 1);
+                    }
                     break;
                 }
                 case 3: { // monthly
                     endDate.add(Calendar.MONTH, 1);
+                    if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                        startDate.add(Calendar.MONTH, 1);
+                    }
                     break;
                 }
                 case 4: { // quarterly
                     endDate.add(Calendar.MONTH, 3);
+                    if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                        startDate.add(Calendar.MONTH, 3);
+                    }
                     break;
                 }
                 case 5: { // yearly
                     endDate.add(Calendar.YEAR, 1);
+                    if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
+                        startDate.add(Calendar.YEAR, 1);
+                    }
                     break;
                 }
                 default:
                     break;
             } // end switch
-
-            if(endDate.getTimeInMillis() > today.getTimeInMillis()) {
-                break;
-            }
-
-            if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
-                switch (repeatType) {
-                    case 1: {// daily
-                        startDate.add(Calendar.DATE, 1);
-                        break;
-                    }
-                    case 2: { // weekly
-                        startDate.add(Calendar.WEEK_OF_MONTH, 1);
-                        break;
-                    }
-                    case 3: { // monthly
-                        startDate.add(Calendar.MONTH, 1);
-                        break;
-                    }
-                    case 4: { // quarterly
-                        startDate.add(Calendar.MONTH, 3);
-                        break;
-                    }
-                    case 5: { // yearly
-                        startDate.add(Calendar.YEAR, 1);
-                        break;
-                    }
-                    default:
-                        break;
-                } // end switch
-            } // End IF endDate < today
         } // End While endDate < today
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -378,10 +359,9 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         Calendar endDate    = Calendar.getInstance();
         endDate.setTimeInMillis(budget.getStartDate().getTimeInMillis());
 
-        int repeatType      = budget.getRepeatType();
 
         while (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
-            switch (repeatType) {
+            switch (budget.getRepeatType()) {
                 case 1: {// daily
                     endDate.add(Calendar.DATE, 1);
                     break;
@@ -406,36 +386,6 @@ public class FragmentBudgetDetailTransactions extends Fragment {
                     break;
             } // end switch
 
-            if(endDate.getTimeInMillis() > today.getTimeInMillis()) {
-                break;
-            }
-
-            if(endDate.getTimeInMillis() <= today.getTimeInMillis()) {
-                switch (repeatType) {
-                    case 1: {// daily
-                        startDate.add(Calendar.DATE, 1);
-                        break;
-                    }
-                    case 2: { // weekly
-                        startDate.add(Calendar.WEEK_OF_MONTH, 1);
-                        break;
-                    }
-                    case 3: { // monthly
-                        startDate.add(Calendar.MONTH, 1);
-                        break;
-                    }
-                    case 4: { // quarterly
-                        startDate.add(Calendar.MONTH, 3);
-                        break;
-                    }
-                    case 5: { // yearly
-                        startDate.add(Calendar.YEAR, 1);
-                        break;
-                    }
-                    default:
-                        break;
-                } // end switch
-            } // End IF endDate < today
         } // End While endDate < today
 
         LogUtils.logLeaveFunction(Tag, null, null);

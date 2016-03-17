@@ -119,7 +119,7 @@ public class Currency {
         return strResource;
     }
 
-    public static String formatCurrency(Context context, CurrencyList currency, Double amount) {
+    public static String formatCurrency(Context context, int currencyId, Double amount) {
         String strResource = "";
 
         DecimalFormat df = new DecimalFormat();
@@ -129,7 +129,7 @@ public class Currency {
         } else {
             df = new DecimalFormat("##,##0.00 ");
         }
-        switch (currency) {
+        switch (getCurrencyById(currencyId)) {
             case VND:
                 strResource = df.format(amount) + context.getResources().getString(R.string.currency_icon_vietnam);
                 break;

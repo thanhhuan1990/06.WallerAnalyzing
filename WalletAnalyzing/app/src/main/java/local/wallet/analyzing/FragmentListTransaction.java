@@ -37,6 +37,7 @@ public class FragmentListTransaction extends Fragment {
     private static final String     Tag = "ListTransaction";
 
     private DatabaseHelper          mDbHelper;
+    private Configurations          mConfigs;
 
     private List<TransactionGroup>  arGroupTrans;
     private ListView                lvTransaction;
@@ -66,6 +67,7 @@ public class FragmentListTransaction extends Fragment {
 
         mDbHelper       = new DatabaseHelper(getActivity());
         mDbHelper.insertDefaultCategories();
+        mConfigs        = new Configurations(getActivity());
 
         // Get all transaction
         List<Transaction> arTrans = mDbHelper.getAllTransactions();
@@ -170,7 +172,7 @@ public class FragmentListTransaction extends Fragment {
                     viewHolder.tvExpense.setVisibility(View.VISIBLE);
                     viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense),
                                                                 Currency.formatCurrency(getContext(),
-                                                                        Currency.CurrencyList.VND,
+                                                                        mConfigs.getInt(Configurations.Key.Currency),
                                                                         (expense.longValue() == expense ? expense.longValue() : expense))));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
@@ -180,7 +182,7 @@ public class FragmentListTransaction extends Fragment {
                     viewHolder.tvIncome.setVisibility(View.VISIBLE);
                     viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income),
                                                                 Currency.formatCurrency(getContext(),
-                                                                        Currency.CurrencyList.VND,
+                                                                        mConfigs.getInt(Configurations.Key.Currency),
                                                                         (income.longValue() == income ? income.longValue() :  income))));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
@@ -221,11 +223,11 @@ public class FragmentListTransaction extends Fragment {
                     TextView tvAmount           = (TextView) transactionDetailView.findViewById(R.id.tvAmount);
                     if(fromAccount != null) {
                         tvAmount.setText(Currency.formatCurrency(getContext(),
-                                                                    Currency.getCurrencyById(fromAccount.getCurrencyId()),
+                                                                    fromAccount.getCurrencyId(),
                                                                     tran.getAmount()));
                     } else if(toAccount != null) {
                         tvAmount.setText(Currency.formatCurrency(getContext(),
-                                                                    Currency.getCurrencyById(toAccount.getCurrencyId()),
+                                                                    toAccount.getCurrencyId(),
                                                                     tran.getAmount()));
                     }
 
@@ -238,7 +240,7 @@ public class FragmentListTransaction extends Fragment {
                         }
                         description += String.format(getResources().getString(R.string.content_transfer_fee),
                                 Currency.formatCurrency(getContext(),
-                                        Currency.getCurrencyById(fromAccount.getCurrencyId()),
+                                        fromAccount.getCurrencyId(),
                                         tran.getFee()));
                     }
 

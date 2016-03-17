@@ -573,14 +573,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
         if(mTransaction.getFromAccountId() > 0) {
             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                                                    Currency.formatCurrency(getContext(),
-                                                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                            mTransaction.getAmount())));
+                                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), mTransaction.getAmount())));
         } else {
             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
-                                                    Currency.formatCurrency(getContext(),
-                                                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                            mTransaction.getAmount())));
+                                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), mTransaction.getAmount())));
         }
 
         llAdjustmentCategory        = (LinearLayout) getView().findViewById(R.id.llAdjustmentCategory);
@@ -754,9 +750,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                         if(remain.doubleValue() > balance.doubleValue()) {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                                    Currency.formatCurrency(getContext(),
-                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                            remain - balance)));
+                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), remain - balance)));
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
                             if(mCategory != null && !mCategory.isExpense()) {
                                 tvAdjustmentCategory.setText("");
@@ -764,9 +758,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                             }
                         } else {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
-                                    Currency.formatCurrency(getContext(),
-                                            Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                            balance - remain)));
+                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), balance - remain)));
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
                             if(mCategory != null && mCategory.isExpense()) {
                                 tvAdjustmentCategory.setText("");
@@ -1005,7 +997,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
                         if (remain.doubleValue() > balance.doubleValue()) {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), remain - balance)));
+                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), remain - balance)));
 
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
                             if(mCategory != null && !mCategory.isExpense()) {
@@ -1014,7 +1006,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                             }
                         } else {
                             tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_income),
-                                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mFromAccount.getCurrencyId()), balance - remain)));
+                                    Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), balance - remain)));
 
                             ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
                             if(mCategory != null && mCategory.isExpense()) {
@@ -1185,9 +1177,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 Double remain   = mDbHelper.getAccountRemainBefore(accountId, mCal);
                 if(remain.doubleValue() > balance.doubleValue()) {
                     tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_expensed),
-                            Currency.formatCurrency(getContext(),
-                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                    remain - balance)));
+                            Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), remain - balance)));
                     ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_expense));
                     if(mCategory != null && !mCategory.isExpense()) {
                         tvAdjustmentCategory.setText("");
@@ -1195,9 +1185,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                     }
                 } else {
                     tvAdjustmentSpent.setText(String.format(getResources().getString(R.string.content_adjustment_income),
-                            Currency.formatCurrency(getContext(),
-                                    Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                    balance - remain)));
+                            Currency.formatCurrency(getContext(), mFromAccount.getCurrencyId(), balance - remain)));
                     ((TextView) getView().findViewById(R.id.tvTitleAdjustmentCategory)).setText(getResources().getString(R.string.transaction_category_income));
                     if(mCategory != null && mCategory.isExpense()) {
                         tvAdjustmentCategory.setText("");

@@ -25,7 +25,7 @@ class Configurations {
 		}
 	}
 
-	static enum Key {
+	public static enum Key {
         Locale,
         Passcode,
         Currency;

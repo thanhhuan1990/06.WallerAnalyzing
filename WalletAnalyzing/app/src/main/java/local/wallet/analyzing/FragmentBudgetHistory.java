@@ -150,7 +150,7 @@ public class FragmentBudgetHistory extends Fragment {
                 break;
             }
 
-            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
+            List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
             Double expensed = 0.0;
             for(Transaction tran : arTransactions) {
@@ -274,19 +274,19 @@ public class FragmentBudgetHistory extends Fragment {
                             budget.endDate.get(Calendar.MONTH) + 1));
                 }
 
-                viewHolder.tvAmount.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), budget.amount));
-                viewHolder.tvExpensed.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), budget.expensed));
+                viewHolder.tvAmount.setText(Currency.formatCurrency(getContext(), mBudget.getCurrency(), budget.amount));
+                viewHolder.tvExpensed.setText(Currency.formatCurrency(getContext(), mBudget.getCurrency(), budget.expensed));
 
                 Double balance = budget.amount - budget.expensed;
                 if(balance > 0) {
                     viewHolder.tvBalanceTitle.setText(getResources().getString(R.string.budget_item_balance_no_format));
                     viewHolder.tvBalanceTitle.setTextColor(getResources().getColor(R.color.colorPrimary));
-                    viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), balance));
+                    viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), mBudget.getCurrency(), balance));
                     viewHolder.tvBalance.setTextColor(getResources().getColor(R.color.colorPrimary));
                 } else {
                     viewHolder.tvBalanceTitle.setText(getResources().getString(R.string.budget_item_over_no_format));
                     viewHolder.tvBalanceTitle.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
-                    viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), Math.abs(balance)));
+                    viewHolder.tvBalance.setText(Currency.formatCurrency(getContext(), mBudget.getCurrency(), Math.abs(balance)));
                     viewHolder.tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
                 } // End if
 

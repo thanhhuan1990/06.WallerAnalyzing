@@ -104,16 +104,16 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         super.onActivityCreated(savedInstanceState);
 
         mStartCal = Calendar.getInstance();
-        mStartCal.set(Calendar.HOUR_OF_DAY, mStartCal.getActualMinimum(Calendar.HOUR_OF_DAY));
-        mStartCal.set(Calendar.MINUTE, mStartCal.getActualMinimum(Calendar.MINUTE));
-        mStartCal.set(Calendar.SECOND, mStartCal.getActualMinimum(Calendar.SECOND));
-        mStartCal.set(Calendar.MILLISECOND, mStartCal.getActualMinimum(Calendar.MILLISECOND));
+        mStartCal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
+        mStartCal.clear(Calendar.MINUTE);
+        mStartCal.clear(Calendar.SECOND);
+        mStartCal.clear(Calendar.MILLISECOND);
 
         mEndCal = Calendar.getInstance();
-        mEndCal.set(Calendar.HOUR_OF_DAY, mStartCal.getActualMinimum(Calendar.HOUR_OF_DAY));
-        mEndCal.set(Calendar.MINUTE, mStartCal.getActualMinimum(Calendar.MINUTE));
-        mEndCal.set(Calendar.SECOND, mStartCal.getActualMinimum(Calendar.SECOND));
-        mEndCal.set(Calendar.MILLISECOND, mStartCal.getActualMinimum(Calendar.MILLISECOND));
+        mEndCal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
+        mEndCal.clear(Calendar.MINUTE);
+        mEndCal.clear(Calendar.SECOND);
+        mEndCal.clear(Calendar.MILLISECOND);
 
         mConfigs        = new Configurations(getActivity());
         mDbHelper       = new DatabaseHelper(getActivity());

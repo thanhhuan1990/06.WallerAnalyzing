@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_current"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <!-- Today -->
+        <LinearLayout
+            android:id="@+id/llToday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_date"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="16"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvToday"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Today (DD/MM/YYYY)"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_income"
+                        android:textColor="@color/textcolor_income"/>
+
+                    <SeekBar
+                        android:id="@+id/sbTodayIncome"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_today_income"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvTodayIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@color/textcolor_income"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_expense"
+                        android:textColor="@android:color/black"/>
+
+                    <SeekBar
+                        android:id="@+id/sbTodayExpense"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_today_expense"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvTodayExpense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@android:color/black"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <!-- This Week -->
+        <LinearLayout
+            android:id="@+id/llThisWeek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_date"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="16"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvThisWeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This Week (DD/MM - DD/MM)"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_income"
+                        android:textColor="@color/textcolor_income"/>
+
+                    <SeekBar
+                        android:id="@+id/sbThisWeekIncome"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_thisweek_income"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvThisWeekIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@color/textcolor_income"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_expense"
+                        android:textColor="@android:color/black"/>
+
+                    <SeekBar
+                        android:id="@+id/sbThisWeekExpense"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_thisweek_expense"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvThisWeekExpense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@android:color/black"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <!-- This Month -->
+        <LinearLayout
+            android:id="@+id/llThisMonth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_date"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="16"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvThisMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This Month (MM/YYYY)"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_income"
+                        android:textColor="@color/textcolor_income"/>
+
+                    <SeekBar
+                        android:id="@+id/sbThisMonthIncome"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_thismonth_income"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvThisMonthIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@color/textcolor_income"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_expense"
+                        android:textColor="@android:color/black"/>
+
+                    <SeekBar
+                        android:id="@+id/sbThisMonthExpense"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_thismonth_expense"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvThisMonthExpense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@android:color/black"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <!-- This Year-->
+        <LinearLayout
+            android:id="@+id/llThisYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_date"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="16"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvThisYear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This Year (YYYY)"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_income"
+                        android:textColor="@color/textcolor_income"/>
+
+                    <SeekBar
+                        android:id="@+id/sbThisYearIncome"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_thisyear_income"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvThisYearIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@color/textcolor_income"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="8">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/report_evi_expense"
+                        android:textColor="@android:color/black"/>
+
+                    <SeekBar
+                        android:id="@+id/sbThisYearExpense"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="3"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_thisyear_expense"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvThisYearExpense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@android:color/black"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <!-- All -->
+        <LinearLayout
+            android:id="@+id/llAll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_date"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/report_evi_all"
+                    android:textColor="@color/textcolor_hint"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="17"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="17">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:text="@string/report_evi_income"
+                        android:textColor="@color/textcolor_income"/>
+
+                    <SeekBar
+                        android:id="@+id/sbIncome"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="6"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_all_income"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@color/textcolor_income"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="17">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:text="@string/report_evi_expense"
+                        android:textColor="@android:color/black"/>
+
+                    <SeekBar
+                        android:id="@+id/sbExpense"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="6"
+                        android:maxHeight="1000dp"
+                        android:progress="10"
+                        android:progressDrawable="@drawable/progress_evi_all_expense"
+                        android:secondaryProgress="90"
+                        android:thumb="@android:color/transparent"/>
+
+                    <TextView
+                        android:id="@+id/tvExpense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@android:color/black"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/report_evi_net_income"
+                        android:textColor="@android:color/black"/>
+
+                    <TextView
+                        android:id="@+id/tvNetIncome"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right|center_vertical"
+                        android:text="0 đ"
+                        android:textColor="@android:color/black"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+    </LinearLayout>
+</ScrollView>

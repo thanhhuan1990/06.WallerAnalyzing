@@ -65,7 +65,7 @@ public class FragmentCurrencySelect extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_currency, container, false);
+        return inflater.inflate(R.layout.layout_fragment_listview_only, container, false);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class FragmentCurrencySelect extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-        ListView lvCurrency   = (ListView) getView().findViewById(R.id.lvCurrency);
+        ListView lvCurrency   = (ListView) getView().findViewById(R.id.listview);
         CurrencyAdapter accountTypeAdapter = new CurrencyAdapter(getActivity(), Arrays.asList(Currency.CurrencyList.values()));
         lvCurrency.setAdapter(accountTypeAdapter);
 
@@ -122,7 +122,7 @@ public class FragmentCurrencySelect extends Fragment {
         }
 
         public CurrencyAdapter(Context context, List<Currency.CurrencyList> items) {
-            super(context, R.layout.listview_item_currency, items);
+            super(context, R.layout.listview_item_title_select, items);
         }
 
         @Override
@@ -132,7 +132,7 @@ public class FragmentCurrencySelect extends Fragment {
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(R.layout.listview_item_currency, parent, false);
+                convertView = inflater.inflate(R.layout.listview_item_title_select, parent, false);
                 viewHolder.tvType = (TextView) convertView.findViewById(R.id.tvType);
                 viewHolder.ivUsing = (ImageView) convertView.findViewById(R.id.ivUsing);
                 convertView.setTag(viewHolder);

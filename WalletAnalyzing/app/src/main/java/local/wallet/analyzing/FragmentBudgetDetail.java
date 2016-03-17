@@ -176,12 +176,12 @@ public class FragmentBudgetDetail extends Fragment {
         String[] repeatTypes = getResources().getStringArray(R.array.budget_repeat_type);
         if(mBudget.getCategories().length == 1) {
             tvDescription.setText(String.format(getResources().getString(R.string.budget_detail_description),
-                                                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), mBudget.getAmount()),
-                                                repeatTypes[mBudget.getRepeatType()],
-                                                mDbHelper.getCategory(mBudget.getCategories()[0]).getName()));
+                    Currency.formatCurrency(getContext(), mBudget.getCurrency(), mBudget.getAmount()),
+                    repeatTypes[mBudget.getRepeatType()],
+                    mDbHelper.getCategory(mBudget.getCategories()[0]).getName()));
         } else if(mBudget.getCategories().length == mDbHelper.getAllCategories(true, false).size()){
             tvDescription.setText(String.format(getResources().getString(R.string.budget_detail_description_all),
-                                                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), mBudget.getAmount()),
+                                                Currency.formatCurrency(getContext(), mBudget.getCurrency(), mBudget.getAmount()),
                                                 repeatTypes[mBudget.getRepeatType()]));
         } else {
             String categories = "";
@@ -197,7 +197,7 @@ public class FragmentBudgetDetail extends Fragment {
             }
 
             tvDescription.setText(String.format(getResources().getString(R.string.budget_detail_description_many),
-                                                Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), mBudget.getAmount()),
+                                                Currency.formatCurrency(getContext(), mBudget.getCurrency(), mBudget.getAmount()),
                                                 repeatTypes[mBudget.getRepeatType()],
                                                 categories));
 
@@ -205,7 +205,7 @@ public class FragmentBudgetDetail extends Fragment {
 
         tvName.setText(mBudget.getName());
         tvAmount.setText(String.format(getResources().getString(R.string.budget_item_total),
-                                        Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), mBudget.getAmount())));
+                                        Currency.formatCurrency(getContext(), mBudget.getCurrency(), mBudget.getAmount())));
 
         double incremental = 0.0;
 
@@ -231,7 +231,7 @@ public class FragmentBudgetDetail extends Fragment {
 
                     if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
                         if(mBudget.isIncremental()) {
-                            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
+                            List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
                             Double expensed = 0.0;
                             for(Transaction tran : arTransactions) {
@@ -244,7 +244,6 @@ public class FragmentBudgetDetail extends Fragment {
                     }
                 }
 
-                endDate.add(Calendar.DAY_OF_YEAR, -1);
                 break;
             } // End Daily
             case 2: { // weekly
@@ -254,7 +253,7 @@ public class FragmentBudgetDetail extends Fragment {
 
                     if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
                         if(mBudget.isIncremental()) {
-                            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
+                            List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
                             Double expensed = 0.0;
                             for(Transaction tran : arTransactions) {
@@ -263,7 +262,6 @@ public class FragmentBudgetDetail extends Fragment {
 
                             incremental += (mBudget.getAmount() - expensed);
                         }
-                        startDate.add(Calendar.WEEK_OF_MONTH, 1);
                     }
                 }
 
@@ -276,7 +274,7 @@ public class FragmentBudgetDetail extends Fragment {
 
                     if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
                         if(mBudget.isIncremental()) {
-                            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
+                            List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
                             Double expensed = 0.0;
                             for(Transaction tran : arTransactions) {
@@ -289,7 +287,6 @@ public class FragmentBudgetDetail extends Fragment {
                     }
                 }
 
-                endDate.add(Calendar.DAY_OF_YEAR, -1);
                 break;
             } // End Monthly
             case 4: { // quarterly
@@ -298,7 +295,7 @@ public class FragmentBudgetDetail extends Fragment {
 
                     if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
                         if(mBudget.isIncremental()) {
-                            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
+                            List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
                             Double expensed = 0.0;
                             for(Transaction tran : arTransactions) {
@@ -311,7 +308,6 @@ public class FragmentBudgetDetail extends Fragment {
                     }
                 }
 
-                endDate.add(Calendar.DAY_OF_YEAR, -1);
                 break;
             } // End Quarterly
             case 5: { // yearly
@@ -320,7 +316,7 @@ public class FragmentBudgetDetail extends Fragment {
 
                     if (endDate.getTimeInMillis() <= today.getTimeInMillis()) {
                         if(mBudget.isIncremental()) {
-                            List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 0);
+                            List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
                             Double expensed = 0.0;
                             for(Transaction tran : arTransactions) {
@@ -333,24 +329,26 @@ public class FragmentBudgetDetail extends Fragment {
                     }
                 }
 
-                endDate.add(Calendar.DAY_OF_YEAR, -1);
                 break;
             } // End Yearly
             default:
                 break;
         } // end switch
 
+        Calendar textEndDate = Calendar.getInstance();
+        textEndDate.setTimeInMillis(endDate.getTimeInMillis());
+        textEndDate.add(Calendar.DATE, -1);
         if(startDate.getTimeInMillis() == endDate.getTimeInMillis()) {
             tvDate.setText(String.format(getResources().getString(R.string.format_budget_day_month_year),
                                         startDate.get(Calendar.DAY_OF_MONTH),
                                         startDate.get(Calendar.MONTH) + 1,
-                                        endDate.get(Calendar.YEAR)));
+                                        textEndDate.get(Calendar.YEAR)));
         } else {
             tvDate.setText(String.format(getResources().getString(R.string.format_budget_date),
                                         startDate.get(Calendar.DAY_OF_MONTH),
                                         startDate.get(Calendar.MONTH) + 1,
-                                        endDate.get(Calendar.DAY_OF_MONTH),
-                                        endDate.get(Calendar.MONTH) + 1));
+                                        textEndDate.get(Calendar.DAY_OF_MONTH),
+                                        textEndDate.get(Calendar.MONTH) + 1));
         }
 
         if(incremental == 0) {
@@ -358,7 +356,7 @@ public class FragmentBudgetDetail extends Fragment {
         } else {
             tvIncremental.setVisibility(View.VISIBLE);
             tvIncremental.setText(String.format(getResources().getString(R.string.budget_item_incremental),
-                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), incremental)));
+                    Currency.formatCurrency(getContext(), mBudget.getCurrency(), incremental)));
 
             if(incremental > 0) {
                 tvIncremental.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -369,7 +367,7 @@ public class FragmentBudgetDetail extends Fragment {
 
         Double amount = mBudget.getAmount() + incremental;
 
-        List<Transaction> arTransactions = mDbHelper.getBudgetTransactions(mBudget.getCategories(), startDate, endDate, 1);
+        List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(mBudget.getCategories(), startDate, endDate);
 
         Double expensed = 0.0;
         for(Transaction tran : arTransactions) {
@@ -377,7 +375,7 @@ public class FragmentBudgetDetail extends Fragment {
         }
 
         tvExpensed.setText(String.format(getResources().getString(R.string.budget_item_expensed),
-                                        Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), expensed)));
+                                        Currency.formatCurrency(getContext(), mBudget.getCurrency(), expensed)));
 
         // Hide/Show layout Transactions
         if(expensed == 0) {
@@ -402,7 +400,7 @@ public class FragmentBudgetDetail extends Fragment {
         Double balance = amount - expensed;
         if(balance > 0) {
             tvBalance.setText(String.format(getResources().getString(R.string.budget_item_balance),
-                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), balance)));
+                    Currency.formatCurrency(getContext(), mBudget.getCurrency(), balance)));
             if(expensed <= progress) {
                 tvBalance.setTextColor(getResources().getColor(R.color.colorPrimary));
                 sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_ok));
@@ -412,12 +410,12 @@ public class FragmentBudgetDetail extends Fragment {
             }
         } else if(balance == 0) {
             tvBalance.setText(String.format(getResources().getString(R.string.budget_item_balance),
-                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), balance)));
+                    Currency.formatCurrency(getContext(), mBudget.getCurrency(), balance)));
             tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
             sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_over));
         } else {
             tvBalance.setText(String.format(getResources().getString(R.string.budget_item_over),
-                    Currency.formatCurrency(getContext(), Currency.getCurrencyById(mBudget.getCurrency()), Math.abs(balance))));
+                    Currency.formatCurrency(getContext(), mBudget.getCurrency(), Math.abs(balance))));
             tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
             sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_over));
         }
