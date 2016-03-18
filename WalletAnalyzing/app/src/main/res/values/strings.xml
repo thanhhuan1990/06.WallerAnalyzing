@@ -156,6 +156,16 @@
     <string name="report_evi_all">All</string>
     <string name="report_evi_net_income">Net income</string>
 
+    <!-- 5_REPORT_2_Expense_Vs_Income -->
+    <string name="report_evi_year">Year %s</string>
+    <string name="report_evi_monthly_balance">Balance: %s</string>
+    <string name="report_evi_quarterly">Quarter \%%s - Balance: \%%s</string>
+    <string name="report_evi_yearly">Year \%%02d - Balance: \%%s</string>
+    <string name="report_evi_period_expense">Expense</string>
+    <string name="report_evi_period_income">Income</string>
+    <string name="report_evi_period_legend_expense">\%%s \%%s</string>
+    <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
+
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
     <string name="report_event_completed">Completed</string>

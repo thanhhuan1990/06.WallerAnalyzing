@@ -24,6 +24,10 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.1.0'
@@ -31,4 +35,5 @@ dependencies {
     compile files('libs/jxl-2.6.9.jar')
     compile files('libs/ormlite-android-4.48.jar')
     compile files('droidparts-2.9.1.jar')
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.2'
 }

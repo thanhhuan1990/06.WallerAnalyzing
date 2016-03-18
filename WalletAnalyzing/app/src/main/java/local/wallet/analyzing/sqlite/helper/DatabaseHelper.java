@@ -521,7 +521,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categories;
     }
 
-    /*
+    /**
      * Getting CATEGORY count
      */
     public int getCategoryCount() {
@@ -540,7 +540,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    /*
+    /**
      * Updating a CATEGORY
      */
     public int updateCategory(Category category) {
@@ -562,7 +562,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(category.getId()) });
     }
 
-    /*
+    /**
      * Deleting a CATEGORY
      */
     public void deleteCategory(long category_id) {

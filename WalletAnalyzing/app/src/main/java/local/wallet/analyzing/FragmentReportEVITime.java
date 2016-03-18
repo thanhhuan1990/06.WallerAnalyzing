@@ -203,7 +203,7 @@ public class FragmentReportEVITime extends Fragment implements View.OnClickListe
 
                         tvFromDate.setText(String.format(getResources().getString(R.string.format_budget_day_month_year_2),
                                                         dayOfMonth,
-                                                        monthOfYear,
+                                                        monthOfYear + 1,
                                                         year));
 
                     }
@@ -237,7 +237,7 @@ public class FragmentReportEVITime extends Fragment implements View.OnClickListe
 
                         tvToDate.setText(String.format(getResources().getString(R.string.format_budget_day_month_year_2),
                                                         dayOfMonth,
-                                                        monthOfYear,
+                                                        monthOfYear + 1,
                                                         year));
 
                     }
