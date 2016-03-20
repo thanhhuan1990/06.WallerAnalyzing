@@ -2,6 +2,19 @@
     <string name="app_name">Wallet Analyzing</string>
     <string name="click_back_to_exist">Please click BACK again to exit!</string>
 
+    <string name="Input_Error_Account_Name_Empty">Name can\'t be empty!</string>
+    <string name="Input_Error_Amount_Empty">Amount can\'t be empty!</string>
+    <string name="Input_Error_Account_Empty">Account can\'t be empty!</string>
+    <string name="Input_Error_ToAccount_Empty">To Account can\'t be empty!</string>
+    <string name="Input_Error_Transfer_Same_Account">Cannot transfer in same Account!</string>
+    <string name="Input_Error_Adjustment_Same_Amount">Amount is 0!</string>
+    <string name="Input_Error_budget_category_none">Please select expense category!</string>
+    <string name="Input_Error_account_none">Please select account!</string>
+    <string name="Input_Error_todate_invalid">To Date Invalid!</string>
+    <string name="Error_Startup_No_Data">You have not save any transaction!</string>
+
+    <string name="icon_sum">Σ</string>
+
     <string name="button_delete">Delete</string>
 
     <string name="format_month_year">\%%02d/\%%02d</string>
@@ -156,7 +169,7 @@
     <string name="report_evi_all">All</string>
     <string name="report_evi_net_income">Net income</string>
 
-    <!-- 5_REPORT_2_Expense_Vs_Income -->
+    <!-- 5_REPORT_2_Expense_Vs_Income Data -->
     <string name="report_evi_year">Year %s</string>
     <string name="report_evi_monthly_balance">Balance: %s</string>
     <string name="report_evi_quarterly">Quarter \%%s - Balance: \%%s</string>
@@ -165,6 +178,12 @@
     <string name="report_evi_period_income">Income</string>
     <string name="report_evi_period_legend_expense">\%%s \%%s</string>
     <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
+
+    <!-- 5_REPORT_3_Expense_Analysis -->
+    <string name="report_expense_analysis_categories">Categories</string>
+    <string name="report_expense_analysis_categories_all_categories">All Categories</string>
+    <string name="report_expense_analysis_accounts">Accounts</string>
+    <string name="report_expense_analysis_accounts_all_accounts">All Accounts</string>
 
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
@@ -202,16 +221,6 @@
 
     <string name="Save">Save</string>
     <string name="Delete">Delete</string>
-
-    <string name="Input_Error_Account_Name_Empty">Name can\'t be empty!</string>
-    <string name="Input_Error_Amount_Empty">Amount can\'t be empty!</string>
-    <string name="Input_Error_Account_Empty">Account can\'t be empty!</string>
-    <string name="Input_Error_ToAccount_Empty">To Account can\'t be empty!</string>
-    <string name="Input_Error_Transfer_Same_Account">Cannot transfer in same Account!</string>
-    <string name="Input_Error_Adjustment_Same_Amount">Amount is 0!</string>
-    <string name="Input_Error_budget_category_none">Please select expense category!</string>
-    <string name="Input_Error_account_none">Please select account!</string>
-    <string name="Input_Error_todate_invalid">To Date Invalid!</string>
 
     <string name="message_transaction_create_successful">Saved</string>
     <string name="message_transaction_update_successful">Saved</string>

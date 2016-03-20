@@ -39,6 +39,7 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
 
     // List of selected Account from ReportEVI
     private int[]                   currentAccounts;
+    private String                  tagOfSource = "";
 
     private ToggleButton            tbAllAccount;
     private ListView                lvAccount;
@@ -53,8 +54,9 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        Bundle bundle = this.getArguments();
+        Bundle bundle   = this.getArguments();
         currentAccounts = bundle.getIntArray("Accounts");
+        tagOfSource     = bundle.getString("Fragment");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -189,9 +191,13 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
 
                     LogUtils.trace(Tag, "Accounts: " + Arrays.toString(accounts));
 
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentReportEVI();
-                    FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updateAccount(accounts);
+                    if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportEVI())) {
+                        FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
+                        fragment.updateAccount(accounts);
+                    } else if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportEVI())) {
+                        FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
+                        fragment.updateAccount(accounts);
+                    }
 
                     getFragmentManager().popBackStackImmediate();
                 } else {

@@ -14,6 +14,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -39,6 +42,7 @@ import java.util.Map;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
+import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
@@ -86,35 +90,30 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         // Update DateTime
         List<Transaction> arTransactions = mDbHelper.getAllTransactions();
-        mFromDate   = arTransactions.get(arTransactions.size() - 1).getTime();
-        mToDate     = arTransactions.get(0).getTime();
-        String strFromDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
-                mFromDate.get(Calendar.DATE),
-                mFromDate.get(Calendar.MONTH) + 1,
-                mFromDate.get(Calendar.YEAR));
-        String strToDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
-                mToDate.get(Calendar.DATE),
-                mToDate.get(Calendar.MONTH) + 1,
-                mToDate.get(Calendar.YEAR));
+        if(arTransactions.size() > 0) {
+            mFromDate   = arTransactions.get(arTransactions.size() - 1).getTime();
+            mToDate     = arTransactions.get(0).getTime();
 
-        LogUtils.trace(Tag, "From: " + strFromDate + " - To: " + strToDate);
+            // Update list of selected Account at first time
+            List<Account> arAccounts = mDbHelper.getAllAccounts();
+            mAccountId  = new int[arAccounts.size()];
+            for(int i = 0 ; i < arAccounts.size(); i++) {
+                mAccountId[i] = arAccounts.get(i).getId();
+            }
 
-        // Update list of selected Account at first time
-        List<Account> arAccounts = mDbHelper.getAllAccounts();
-        mAccountId  = new int[arAccounts.size()];
-        for(int i = 0 ; i < arAccounts.size(); i++) {
-            mAccountId[i] = arAccounts.get(i).getId();
+            llAccount       = (LinearLayout) getView().findViewById(R.id.llAccount);
+            llAccount.setOnClickListener(this);
+            tvAccount       = (TextView) getView().findViewById(R.id.tvAccount);
+            llViewedBy      = (LinearLayout) getView().findViewById(R.id.llViewedBy);
+            llViewedBy.setOnClickListener(this);
+            tvViewedBy      = (TextView) getView().findViewById(R.id.tvViewedBy);
+            llEVI           = (LinearLayout) getView().findViewById(R.id.llEVI);
+
+            updateListEviCurrent();
+        } else {
+            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Error_Startup_No_Data));
+            ((ActivityMain) getActivity()).setCurrentVisibleItem(ActivityMain.TAB_POSITION_TRANSACTIONS);
         }
-
-        llAccount       = (LinearLayout) getView().findViewById(R.id.llAccount);
-        llAccount.setOnClickListener(this);
-        tvAccount       = (TextView) getView().findViewById(R.id.tvAccount);
-        llViewedBy      = (LinearLayout) getView().findViewById(R.id.llViewedBy);
-        llViewedBy.setOnClickListener(this);
-        tvViewedBy      = (TextView) getView().findViewById(R.id.tvViewedBy);
-        llEVI           = (LinearLayout) getView().findViewById(R.id.llEVI);
-
-        updateListEviCurrent();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onActivityCreated
@@ -167,18 +166,19 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         TextView        tvThisWeekIncome    = (TextView)        view.findViewById(R.id.tvThisWeekIncome);
         TextView        tvThisWeekExpense   = (TextView)        view.findViewById(R.id.tvThisWeekExpense);
         LinearLayout    llThisMonth         = (LinearLayout)    view.findViewById(R.id.llThisMonth);
+        TextView        tvNoOfMonthDay      = (TextView)        view.findViewById(R.id.tvNoOfMonthDay);
         TextView        tvThisMonth         = (TextView)        view.findViewById(R.id.tvThisMonth);
         SeekBar         sbThisMonthIncome   = (SeekBar)         view.findViewById(R.id.sbThisMonthIncome);
         SeekBar         sbThisMonthExpense  = (SeekBar)         view.findViewById(R.id.sbThisMonthExpense);
         TextView        tvThisMonthIncome   = (TextView)        view.findViewById(R.id.tvThisMonthIncome);
         TextView        tvThisMonthExpense  = (TextView)        view.findViewById(R.id.tvThisMonthExpense);
         LinearLayout    llThisYear          = (LinearLayout)    view.findViewById(R.id.llThisYear);
+        TextView        tvNoOfYearDay       = (TextView)        view.findViewById(R.id.tvNoOfYearDay);
         TextView        tvThisYear          = (TextView)        view.findViewById(R.id.tvThisYear);
         SeekBar         sbThisYearIncome    = (SeekBar)         view.findViewById(R.id.sbThisYearIncome);
         SeekBar         sbThisYearExpense   = (SeekBar)         view.findViewById(R.id.sbThisYearExpense);
         TextView        tvThisYearIncome    = (TextView)        view.findViewById(R.id.tvThisYearIncome);
         TextView        tvThisYearExpense   = (TextView)        view.findViewById(R.id.tvThisYearExpense);
-        LinearLayout    llAll               = (LinearLayout)    view.findViewById(R.id.llAll);
         SeekBar         sbIncome            = (SeekBar)         view.findViewById(R.id.sbIncome);
         SeekBar         sbExpense           = (SeekBar)         view.findViewById(R.id.sbExpense);
         TextView        tvIncome            = (TextView)        view.findViewById(R.id.tvIncome);
@@ -198,13 +198,13 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         List<Account> arAccounts = mDbHelper.getAllAccounts();
         // region Todo: Update View Today
-        Calendar today = Calendar.getInstance();
+        final Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
         today.clear(Calendar.MINUTE);
         today.clear(Calendar.SECOND);
         today.clear(Calendar.MILLISECOND);
 
-        Calendar tomorrow = Calendar.getInstance();
+        final Calendar tomorrow = Calendar.getInstance();
         tomorrow.setTimeInMillis(today.getTimeInMillis());
         tomorrow.add(Calendar.DATE, 1);
 
@@ -237,10 +237,27 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         sbTodayIncome.setMax(todayIncome > todayExpense ? (int) todayIncome : (int) todayExpense);
         sbTodayIncome.setProgress((int) todayIncome);
         tvTodayExpense.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), todayExpense));
+
+        llToday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                Bundle bundle = new Bundle();
+                bundle.putIntArray("Accounts", mAccountId);
+                bundle.putLong("FromDate", today.getTimeInMillis());
+                bundle.putLong("ToDate", tomorrow.getTimeInMillis());
+                nextFrag.setArguments(bundle);
+                FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
         // endregion
 
         //region Todo: Update View This Week
-        Calendar calStartOfWeek = Calendar.getInstance();
+        final Calendar calStartOfWeek = Calendar.getInstance();
         calStartOfWeek.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
         calStartOfWeek.clear(Calendar.MINUTE);
         calStartOfWeek.clear(Calendar.SECOND);
@@ -249,7 +266,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         // get start of this week in milliseconds
         calStartOfWeek.set(Calendar.DAY_OF_WEEK, calStartOfWeek.getFirstDayOfWeek());
 
-        Calendar calStartOfNextWeek = Calendar.getInstance();
+        final Calendar calStartOfNextWeek = Calendar.getInstance();
         calStartOfNextWeek.setTimeInMillis(calStartOfWeek.getTimeInMillis());
         calStartOfNextWeek.add(Calendar.WEEK_OF_YEAR, 1);
 
@@ -283,10 +300,26 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         sbThisWeekIncome.setMax(thisWeekIncome > thisWeekExpense ? (int) thisWeekIncome : (int) thisWeekExpense);
         sbThisWeekIncome.setProgress((int) thisWeekIncome);
         tvThisWeekIncome.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), thisWeekIncome));
+
+        llThisWeek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                Bundle bundle = new Bundle();
+                bundle.putIntArray("Accounts", mAccountId);
+                bundle.putLong("FromDate", calStartOfWeek.getTimeInMillis());
+                bundle.putLong("ToDate", calStartOfNextWeek.getTimeInMillis());
+                nextFrag.setArguments(bundle);
+                FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         //endregion
 
         //region Todo: Update View This Month
-        Calendar calStartOfMonth = Calendar.getInstance();
+        final Calendar calStartOfMonth = Calendar.getInstance();
         calStartOfMonth.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
         calStartOfMonth.clear(Calendar.MINUTE);
         calStartOfMonth.clear(Calendar.SECOND);
@@ -295,7 +328,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         // get start of this week in milliseconds
         calStartOfMonth.set(Calendar.DAY_OF_MONTH, 1);
 
-        Calendar calStartOfNextMonth = Calendar.getInstance();
+        final Calendar calStartOfNextMonth = Calendar.getInstance();
         calStartOfNextMonth.setTimeInMillis(calStartOfMonth.getTimeInMillis());
         calStartOfNextMonth.add(Calendar.MONTH, 1);
 
@@ -317,6 +350,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             }
         }
 
+        tvNoOfMonthDay.setText(Integer.toString(calStartOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH)));
         tvThisMonth.setText(String.format(getResources().getString(R.string.report_evi_this_month),
                                             calStartOfMonth.get(Calendar.MONTH) + 1,
                                             calStartOfMonth.get(Calendar.YEAR)));
@@ -327,10 +361,26 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         sbThisMonthIncome.setMax(thisMonthIncome > thisMonthExpense ? (int) thisMonthIncome : (int) thisMonthExpense);
         sbThisMonthIncome.setProgress((int) thisMonthIncome);
         tvThisMonthIncome.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), thisMonthIncome));
+
+        llThisMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                Bundle bundle = new Bundle();
+                bundle.putIntArray("Accounts", mAccountId);
+                bundle.putLong("FromDate", calStartOfMonth.getTimeInMillis());
+                bundle.putLong("ToDate", calStartOfNextMonth.getTimeInMillis());
+                nextFrag.setArguments(bundle);
+                FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         //endregion
 
         //region Todo: Update View This Year
-        Calendar calStartOfYear = Calendar.getInstance();
+        final Calendar calStartOfYear = Calendar.getInstance();
         calStartOfYear.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
         calStartOfYear.clear(Calendar.MINUTE);
         calStartOfYear.clear(Calendar.SECOND);
@@ -340,7 +390,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         calStartOfYear.set(Calendar.MONTH, 0);
         calStartOfYear.set(Calendar.DAY_OF_MONTH, 1);
 
-        Calendar calStartOfNextYear = Calendar.getInstance();
+        final Calendar calStartOfNextYear = Calendar.getInstance();
         calStartOfNextYear.setTimeInMillis(calStartOfYear.getTimeInMillis());
         calStartOfNextYear.add(Calendar.YEAR, 1);
 
@@ -362,6 +412,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             }
         }
 
+        tvNoOfYearDay.setText(Integer.toString(calStartOfMonth.getActualMaximum(Calendar.DAY_OF_YEAR)));
         tvThisYear.setText(String.format(getResources().getString(R.string.report_evi_this_year), calStartOfMonth.get(Calendar.YEAR)));
 
         sbThisYearExpense.setMax(thisYearIncome > thisYearExpense ? (int) thisYearIncome : (int) thisYearExpense);
@@ -370,6 +421,22 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         sbThisYearIncome.setMax(thisYearIncome > thisYearExpense ? (int) thisYearIncome : (int) thisYearExpense);
         sbThisYearIncome.setProgress((int) thisYearIncome);
         tvThisYearIncome.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), thisYearIncome));
+
+        llThisYear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                Bundle bundle = new Bundle();
+                bundle.putIntArray("Accounts", mAccountId);
+                bundle.putLong("FromDate", calStartOfYear.getTimeInMillis());
+                bundle.putLong("ToDate", calStartOfNextYear.getTimeInMillis());
+                nextFrag.setArguments(bundle);
+                FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         //endregion
 
         //region Todo: Update View All
@@ -442,13 +509,13 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             tvYear.setText(String.format(getResources().getString(R.string.report_evi_year), firstDayOfYear.get(Calendar.YEAR)));
             LinearLayout    ll_year_data    = (LinearLayout) monthlyYear.findViewById(R.id.ll_year_data);
 
-            Calendar startDate  = Calendar.getInstance();
+            final Calendar startDate  = Calendar.getInstance();
             // StartDate == 01/12 of current year
             startDate.setTimeInMillis(firstDayOfYear.getTimeInMillis());
             startDate.set(Calendar.MONTH, 11);
             startDate.set(Calendar.DAY_OF_MONTH, 1);
             // EndDate == 01/01 of next year
-            Calendar endDate   = Calendar.getInstance();
+            final Calendar endDate   = Calendar.getInstance();
             endDate.setTimeInMillis(firstDayOfYear.getTimeInMillis());
             endDate.add(Calendar.YEAR, 1);
 
@@ -480,7 +547,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                     SeekBar     sbIncome    = (SeekBar) month.findViewById(R.id.sbIncome);
                     sbIncome.setEnabled(false);
                     sbIncome.setMax((int) max);
-                    sbIncome.setProgress((int)income);
+                    sbIncome.setProgress((int) income);
                     TextView    tvIncome    = (TextView) month.findViewById(R.id.tvIncome);
                     tvIncome.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), income));
                     SeekBar     sbExpense   = (SeekBar) month.findViewById(R.id.sbExpense);
@@ -489,6 +556,24 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                     sbExpense.setProgress((int) expense);
                     TextView    tvExpense   = (TextView) month.findViewById(R.id.tvExpense);
                     tvExpense.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), expense));
+
+                    final long fStartDate = startDate.getTimeInMillis();
+                    final long fEndDate = endDate.getTimeInMillis();
+                    month.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                            Bundle bundle = new Bundle();
+                            bundle.putIntArray("Accounts", mAccountId);
+                            bundle.putLong("FromDate", fStartDate);
+                            bundle.putLong("ToDate", fEndDate);
+                            nextFrag.setArguments(bundle);
+                            FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                                    .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
 
                     ll_year_data.addView(month);
                 }
@@ -541,13 +626,13 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             tvYear.setText(String.format(getResources().getString(R.string.report_evi_year), firstDayOfYear.get(Calendar.YEAR)));
             LinearLayout    ll_year_data    = (LinearLayout) monthlyYear.findViewById(R.id.ll_year_data);
 
-            Calendar startDate  = Calendar.getInstance();
+            final Calendar startDate  = Calendar.getInstance();
             // StartDate == 01/10 of year of last transaction
             startDate.setTimeInMillis(firstDayOfYear.getTimeInMillis());
             startDate.set(Calendar.MONTH, 9);
             startDate.set(Calendar.DAY_OF_MONTH, 1);
             // EndDate == 01/01 of next year of last transaction
-            Calendar endDate   = Calendar.getInstance();
+            final Calendar endDate   = Calendar.getInstance();
             endDate.setTimeInMillis(firstDayOfYear.getTimeInMillis());
             endDate.add(Calendar.YEAR, 1);
 
@@ -587,6 +672,24 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                     sbExpense.setProgress((int) expense);
                     TextView    tvExpense       = (TextView) quarter.findViewById(R.id.tvExpense);
                     tvExpense.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), expense));
+
+                    final long fStartDate = startDate.getTimeInMillis();
+                    final long fEndDate = endDate.getTimeInMillis();
+                    quarter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                            Bundle bundle = new Bundle();
+                            bundle.putIntArray("Accounts", mAccountId);
+                            bundle.putLong("FromDate", fStartDate);
+                            bundle.putLong("ToDate", fEndDate);
+                            nextFrag.setArguments(bundle);
+                            FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                                    .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    });
 
                     ll_year_data.addView(quarter);
                 }
@@ -630,11 +733,11 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         //region Check MAX
         double max = getMax(12);
-        Calendar startDate  = Calendar.getInstance();
+        final Calendar startDate  = Calendar.getInstance();
         // StartDate == 01/01 of year of last transaction
         startDate.setTimeInMillis(firstDayOfYear.getTimeInMillis());
         // EndDate == 01/01 of next year of last transaction
-        Calendar endDate   = Calendar.getInstance();
+        final Calendar endDate   = Calendar.getInstance();
         endDate.setTimeInMillis(firstDayOfYear.getTimeInMillis());
         endDate.add(Calendar.YEAR, 1);
 
@@ -675,6 +778,24 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 TextView    tvExpense   = (TextView) year.findViewById(R.id.tvExpense);
                 tvExpense.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), expense));
 
+                final long fStartDate = startDate.getTimeInMillis();
+                final long fEndDate = endDate.getTimeInMillis();
+                year.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
+                        Bundle bundle = new Bundle();
+                        bundle.putIntArray("Accounts", mAccountId);
+                        bundle.putLong("FromDate", fStartDate);
+                        bundle.putLong("ToDate", fEndDate);
+                        nextFrag.setArguments(bundle);
+                        FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                                .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+
                 llMain.addView(year);
             }
 
@@ -692,15 +813,30 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
      * Show Expense vs Income as PieChart of Period
      */
     private class CategoryEVI {
-        String      title;
+        Category    category;
         double      amount;
 
-        public CategoryEVI(String title, double amount) {
-            this.title = title;
+        public CategoryEVI(Category category, double amount) {
+            this.category = category;
             this.amount = amount;
         }
     }
 
+    private class CategoryTransaction {
+        Category category;
+        List<Transaction> arTransactions;
+        boolean isShow;
+
+        public CategoryTransaction(Category category, List<Transaction> arTransactions, boolean isShow) {
+            this.category = category;
+            this.arTransactions = arTransactions;
+            this.isShow = isShow;
+        }
+    }
+
+    /**
+     * Update view to show data of Period
+     */
     private void updateEviPeriod() {
         LogUtils.logEnterFunction(Tag, null);
         llEVI.removeAllViews();
@@ -710,32 +846,41 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         //region CHART EXPENSE
         //region get expense data from Database
-        ArrayList<CategoryEVI> arData = new ArrayList<CategoryEVI>();
+        final ArrayList<CategoryEVI> arData = new ArrayList<CategoryEVI>();
 
-        List<Category> arExpenseCategory = mDbHelper.getAllCategories(true, false);
-
-        for(Category cate : arExpenseCategory) {
-            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeAndCategory(new int[]{cate.getId()}, mFromDate, mToDate);
+        List<Category> arParentExpenseCategory = mDbHelper.getAllParentCategories(true, false);
+        for(Category parentCate : arParentExpenseCategory) {
+            List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
             double amount = 0.0;
-            for(Transaction tran : arTransaction) {
-                amount += tran.getAmount();
+            for(Category cate : arExpenseCategory) {
+                List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
+
+                for(Transaction tran : arTransaction) {
+                    amount += tran.getAmount();
+                }
+
             }
 
             if(amount != 0) {
-                arData.add(new CategoryEVI(cate.getName(), amount));
+                arData.add(new CategoryEVI(parentCate, amount));
             }
         }
 
-        List<Category> arExpenseCategoryLoan = mDbHelper.getAllCategories(true, true);
-        for(Category cate : arExpenseCategoryLoan) {
-            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeAndCategory(new int[]{cate.getId()}, mFromDate, mToDate);
+        List<Category> arParentExpenseCategoryLoan = mDbHelper.getAllParentCategories(true, true);
+        for(Category parentCate : arParentExpenseCategoryLoan) {
+            List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
             double amount = 0.0;
-            for(Transaction tran : arTransaction) {
-                amount += tran.getAmount();
+            for(Category cate : arExpenseCategory) {
+                List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
+
+                for(Transaction tran : arTransaction) {
+                    amount += tran.getAmount();
+                }
+
             }
 
             if(amount != 0) {
-                arData.add(new CategoryEVI(cate.getName(), amount));
+                arData.add(new CategoryEVI(parentCate, amount));
             }
         }
 
@@ -748,26 +893,27 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         ArrayList<String> xVals = new ArrayList<String>();
         for(CategoryEVI cate : arData) {
-            xVals.add(cate.title);
+            xVals.add(cate.category.getName());
         }
 
         double expenseAmount = 0.0;
-        ArrayList<Entry> yVals = new ArrayList<Entry>();
+        final ArrayList<Entry> yVals = new ArrayList<Entry>();
         for(int i = 0 ; i < arData.size(); i++) {
             yVals.add(new Entry((float) arData.get(i).amount, i));
             expenseAmount += arData.get(i).amount;
         }
         //endregion
 
-        //region region Setup Chart Expense
-        LinearLayout llExpense      = (LinearLayout) view.findViewById(R.id.llExpense);
-
+        //region Setup Chart Expense
+        final LinearLayout llExpense                = (LinearLayout) view.findViewById(R.id.llExpense);
+        final LinearLayout  llExpenseTransactions   = (LinearLayout) view.findViewById(R.id.llExpenseTransactions);
         if(expenseAmount == 0) {
             llExpense.setVisibility(View.GONE);
         } else {
             llExpense.setVisibility(View.VISIBLE);
             final PieChart mChart = (PieChart) view.findViewById(R.id.chartExpense);
             mChart.setUsePercentValues(true);
+            mChart.setDrawSliceText(false);
             mChart.setDescription("");
             mChart.setExtraOffsets(5, 10, 5, 5);
 
@@ -798,16 +944,35 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
                     mChart.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(Float.toString(e.getVal())))));
                     mChart.invalidate();
+
+                    List<CategoryTransaction> arCategoryTransaction = new ArrayList<CategoryTransaction>();
+                    List<Transaction> arParentTransactions = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{arData.get(e.getXIndex()).category.getId()}, mAccountId, mFromDate, mToDate);
+                    if(arParentTransactions.size() > 0) {
+                        arCategoryTransaction.add(new CategoryTransaction(arData.get(e.getXIndex()).category, arParentTransactions, true));
+                    }
+
+                    List<Category> arChildCategory = mDbHelper.getCategoriesByParent(arData.get(e.getXIndex()).category.getId());
+                    for(Category cate : arChildCategory) {
+
+                        List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
+
+                        if(arTransactions.size() > 0) {
+                            arCategoryTransaction.add(new CategoryTransaction(cate, arTransactions, true));
+                        }
+
+                    }
+
+                    updateListTransactions(llExpenseTransactions, arCategoryTransaction);
                 }
 
                 @Override
                 public void onNothingSelected() {
                     mChart.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), fExpenseAmount)));
                     mChart.invalidate();
+                    llExpenseTransactions.removeAllViews();
                 }
             });
 
-            //region Set Data
             PieDataSet dataSet = new PieDataSet(yVals, "");
             dataSet.setSliceSpace(3f);
             dataSet.setSelectionShift(5f);
@@ -850,49 +1015,47 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             mChart.highlightValues(null);
 
             mChart.invalidate();
-            //endregion
 
             mChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
             // mChart.spin(2000, 0, 360);
 
             Legend l = mChart.getLegend();
-            l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
+            l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);
             l.setXEntrySpace(17f);
             l.setYEntrySpace(0f);
             l.setYOffset(0f);
             //endregion region Setup Chart Expense
         }
-
-        //endregion CHART EXPENSE
+        //endregion Setup Chart Expense
         //endregion CHART EXPENSE
 
         //region CHART INCOME
         //region get income data from Database
-        ArrayList<CategoryEVI> arDataIncome = new ArrayList<CategoryEVI>();
+        final ArrayList<CategoryEVI> arDataIncome = new ArrayList<CategoryEVI>();
 
         List<Category> arIncomeCategory = mDbHelper.getAllCategories(false, false);
         for(Category cate : arIncomeCategory) {
-            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeAndCategory(new int[]{cate.getId()}, mFromDate, mToDate);
+            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
             double cateAmount = 0.0;
             for(Transaction tran : arTransaction) {
                 cateAmount += tran.getAmount();
             }
 
             if(cateAmount != 0) {
-                arDataIncome.add(new CategoryEVI(cate.getName(), cateAmount));
+                arDataIncome.add(new CategoryEVI(cate, cateAmount));
             }
         }
 
         List<Category> arIncomeCategoryLoan = mDbHelper.getAllCategories(false, true);
         for(Category cate : arIncomeCategoryLoan) {
-            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeAndCategory(new int[]{cate.getId()}, mFromDate, mToDate);
+            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
             double cateAmount = 0.0;
             for(Transaction tran : arTransaction) {
                 cateAmount += tran.getAmount();
             }
 
             if(cateAmount != 0) {
-                arDataIncome.add(new CategoryEVI(cate.getName(), cateAmount));
+                arDataIncome.add(new CategoryEVI(cate, cateAmount));
             }
         }
 
@@ -905,7 +1068,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         ArrayList<String> xValsIncome = new ArrayList<String>();
         for(CategoryEVI cate : arDataIncome) {
-            xValsIncome.add(cate.title);
+            xValsIncome.add(cate.category.getName());
         }
 
         double incomeAmount = 0.0;
@@ -917,13 +1080,16 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         //endregion
 
         //region Setup View Chart Income
-        LinearLayout    llIncome   = (LinearLayout) view.findViewById(R.id.llIncome);
+        LinearLayout            llIncome            = (LinearLayout) view.findViewById(R.id.llIncome);
+        final LinearLayout      llIncomeTransaction = (LinearLayout) view.findViewById(R.id.llIncomeTransactions);
+
         if(incomeAmount == 0) {
             llIncome.setVisibility(View.GONE);
         } else {
             llIncome.setVisibility(View.VISIBLE);
             final PieChart mChartIncome = (PieChart) view.findViewById(R.id.chartIncome);
             mChartIncome.setUsePercentValues(true);
+            mChartIncome.setDrawSliceText(false);
             mChartIncome.setDescription("");
             mChartIncome.setExtraOffsets(5, 10, 5, 5);
 
@@ -954,26 +1120,41 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
                     mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(Float.toString(e.getVal())))));
                     mChartIncome.invalidate();
+
+                    List<CategoryTransaction> arCategoryTransaction = new ArrayList<CategoryTransaction>();
+                    List<Transaction> arParentTransactions = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{arDataIncome.get(e.getXIndex()).category.getId()}, mAccountId, mFromDate, mToDate);
+                    if(arParentTransactions.size() > 0) {
+                        arCategoryTransaction.add(new CategoryTransaction(arDataIncome.get(e.getXIndex()).category, arParentTransactions, true));
+                    }
+
+                    List<Category> arChildCategory = mDbHelper.getCategoriesByParent(arDataIncome.get(e.getXIndex()).category.getId());
+                    for(Category cate : arChildCategory) {
+
+                        List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
+
+                        if(arTransactions.size() > 0) {
+                            arCategoryTransaction.add(new CategoryTransaction(cate, arTransactions, true));
+                        }
+
+                    }
+
+                    updateListTransactions(llIncomeTransaction, arCategoryTransaction);
                 }
 
                 @Override
                 public void onNothingSelected() {
                     mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), fIncomeAmount)));
                     mChartIncome.invalidate();
+                    llIncomeTransaction.removeAllViews();
                 }
             });
 
-            //region Set Data
             PieDataSet dataSetIncome = new PieDataSet(yValsIncome, "");
             dataSetIncome.setSliceSpace(3f);
             dataSetIncome.setSelectionShift(5f);
 
             // add a lot of colors
             ArrayList<Integer> colorsIncome = new ArrayList<Integer>();
-
-            for (int c : ColorTemplate.VORDIPLOM_COLORS) {
-                colorsIncome.add(c);
-            }
 
             for (int c : ColorTemplate.JOYFUL_COLORS) {
                 colorsIncome.add(c);
@@ -988,6 +1169,10 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             }
 
             for (int c : ColorTemplate.PASTEL_COLORS) {
+                colorsIncome.add(c);
+            }
+
+            for (int c : ColorTemplate.VORDIPLOM_COLORS) {
                 colorsIncome.add(c);
             }
 
@@ -1006,12 +1191,11 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             mChartIncome.highlightValues(null);
 
             mChartIncome.invalidate();
-            //endregion
 
             mChartIncome.animateY(1400, Easing.EasingOption.EaseInOutQuad);
 
             Legend legendIncome = mChartIncome.getLegend();
-            legendIncome.setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
+            legendIncome.setPosition(Legend.LegendPosition.LEFT_OF_CHART_CENTER);
             legendIncome.setXEntrySpace(17f);
             legendIncome.setYEntrySpace(0f);
             legendIncome.setYOffset(0f);
@@ -1024,6 +1208,128 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
+
+    /**
+     * Update list Transactions
+     */
+    private void updateListTransactions(LinearLayout layout, List<CategoryTransaction> arTransactions) {
+        LogUtils.logEnterFunction(Tag, null);
+        layout.removeAllViews();
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        for(CategoryTransaction category : arTransactions) {
+
+            View                    categoryView    = mInflater.inflate(R.layout.listview_item_transaction_follow_category, null);
+            LinearLayout            llCategory      = (LinearLayout) categoryView.findViewById(R.id.llCategory);
+            final ImageView ivExpand                = (ImageView) categoryView.findViewById(R.id.ivExpand);
+            TextView                tvCategory      = (TextView) categoryView.findViewById(R.id.tvCategory);
+            TextView                tvAmount        = (TextView) categoryView.findViewById(R.id.tvAmount);
+            final LinearLayout      llTransactions  = (LinearLayout) categoryView.findViewById(R.id.llTransactions);
+
+            final Animation expand = AnimationUtils.loadAnimation(getActivity(), R.anim.expand_no_refresh);
+            expand.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    LogUtils.trace(Tag, "expand Animation");
+                    llTransactions.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+
+            final Animation shrink = AnimationUtils.loadAnimation(getActivity(), R.anim.shrink_no_refresh);
+            shrink.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    LogUtils.trace(Tag, "shrink Animation");
+                    llTransactions.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {}
+            });
+
+            llCategory.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (llTransactions.getVisibility() == View.GONE) {
+                        ivExpand.startAnimation(expand);
+                    } else {
+                        ivExpand.startAnimation(shrink);
+                    }
+                }
+            });
+
+            tvCategory.setText(String.format(getResources().getString(R.string.budget_detail_transaction_category_sum),
+                    category.category.getName()));
+            Double expensed = 0.0;
+            for(Transaction tran : category.arTransactions) {
+                expensed += tran.getAmount();
+            }
+
+            tvAmount.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), expensed));
+
+            /* Todo: Add list of transaction for category */
+            for(final Transaction transaction : category.arTransactions) {
+                View        transactionView     = mInflater.inflate(R.layout.listview_item_budget_transaction_detail, null);
+                TextView    tvTranCategory      = (TextView) transactionView.findViewById(R.id.tvCategory);
+                TextView    tvTranAmount        = (TextView) transactionView.findViewById(R.id.tvAmount);
+                TextView    tvDescription       = (TextView) transactionView.findViewById(R.id.tvDescription);
+                TextView    tvDate              = (TextView) transactionView.findViewById(R.id.tvDate);
+                TextView    tvAccount           = (TextView) transactionView.findViewById(R.id.tvAccount);
+                ImageView   ivAccountIcon       = (ImageView) transactionView.findViewById(R.id.ivAccountIcon);
+
+                tvTranCategory.setText(String.format(getResources().getString(R.string.content_expense),
+                        mDbHelper.getCategory(transaction.getCategoryId()).getName()));
+                tvTranAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), transaction.getAmount()));
+                if(!transaction.getDescription().equals("")) {
+                    tvDescription.setText(transaction.getDescription());
+                } else {
+                    tvDescription.setVisibility(View.GONE);
+                }
+
+                tvDate.setText(String.format(getResources().getString(R.string.format_day_month_year),
+                        transaction.getTime().get(Calendar.DAY_OF_MONTH),
+                        transaction.getTime().get(Calendar.MONTH) + 1,
+                        transaction.getTime().get(Calendar.YEAR)));
+                if(transaction.getFromAccountId() != 0) {
+                    tvAccount.setText(mDbHelper.getAccount(transaction.getFromAccountId()).getName());
+                    ivAccountIcon.setImageResource(AccountType.getAccountTypeById(mDbHelper.getAccount(transaction.getFromAccountId()).getTypeId()).getIcon());
+                } else if(transaction.getToAccountId() != 0) {
+                    tvAccount.setText(mDbHelper.getAccount(transaction.getToAccountId()).getName());
+                    ivAccountIcon.setImageResource(AccountType.getAccountTypeById(mDbHelper.getAccount(transaction.getToAccountId()).getTypeId()).getIcon());
+                }
+
+                transactionView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Transaction", transaction);
+                        bundle.putInt("ContainerViewId", R.id.layout_account);
+                        nextFrag.setArguments(bundle);
+                        FragmentReportEVI.this.getFragmentManager().beginTransaction()
+                                .add(R.id.ll_report, nextFrag, "FragmentTransactionUpdate")
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+
+                llTransactions.addView(transactionView);
+            }
+
+            layout.addView(categoryView);
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End updateListTransactions
 
     private SpannableString generateCenterSpannableText(String amount) {
 
@@ -1042,6 +1348,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportEVIAccount nextFrag = new FragmentReportEVIAccount();
         Bundle bundle = new Bundle();
+        bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportEVI());
         bundle.putIntArray("Accounts", mAccountId);
         nextFrag.setArguments(bundle);
         FragmentReportEVI.this.getFragmentManager().beginTransaction()
@@ -1074,7 +1381,25 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             tvAccount.setText(account);
         }
 
-        updateListEviCurrent();
+        switch (mTime) {
+            case 0:
+                updateListEviCurrent();
+                break;
+            case 1:
+                updateListEviMonthly();
+                break;
+            case 2:
+                updateListEviQuarterly();
+                break;
+            case 3:
+                updateListEviYearly();
+                break;
+            case 4:
+                updateEviPeriod();
+                break;
+            default:
+                break;
+        }
 
         LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
     } // End updateAccount
@@ -1147,6 +1472,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
 
         LogUtils.logEnterFunction(Tag, "(" + strFromDate + " - " + strToDate + ")");
 
+        mTime       = 4; // Period
         mFromDate   = fromDate;
         mToDate     = toDate;
         mTime       = getResources().getStringArray(R.array.report_evi_ar_viewedby).length - 1;

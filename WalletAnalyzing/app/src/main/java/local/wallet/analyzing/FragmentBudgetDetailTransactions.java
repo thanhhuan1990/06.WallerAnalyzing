@@ -176,7 +176,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         for(BudgetTransaction category : arBudgetTransaction) {
 
-            View                    categoryView    = mInflater.inflate(R.layout.listview_item_budget_transaction_category, null);
+            View                    categoryView    = mInflater.inflate(R.layout.listview_item_transaction_follow_category, null);
             LinearLayout            llCategory      = (LinearLayout) categoryView.findViewById(R.id.llCategory);
             final ImageView         ivExpand        = (ImageView) categoryView.findViewById(R.id.ivExpand);
             TextView                tvCategory      = (TextView) categoryView.findViewById(R.id.tvCategory);

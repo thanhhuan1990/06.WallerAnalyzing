@@ -3,11 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_main_frame">
+    android:background="@color/background_main_frame"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:clickable="true"
         android:orientation="vertical">
 
@@ -31,7 +32,13 @@
                 android:id="@+id/chartExpense"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:layout_above="@+id/seekBar1"
+                android:background="@android:color/white"/>
+
+            <LinearLayout
+                android:id="@+id/llExpenseTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:background="@android:color/white"/>
         </LinearLayout>
 
@@ -55,7 +62,13 @@
                 android:id="@+id/chartIncome"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:layout_above="@+id/seekBar1"
+                android:background="@android:color/white"/>
+
+            <LinearLayout
+                android:id="@+id/llIncomeTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:background="@android:color/white"/>
         </LinearLayout>
 

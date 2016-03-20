@@ -141,7 +141,7 @@ public class FragmentCategoryParentSelect extends Fragment {
         }
 
         public ParentCategoryAdapter(Context context, List<Category> items) {
-            super(context, R.layout.listview_item_account_type, items);
+            super(context, R.layout.listview_item_category_parent, items);
         }
 
         @Override

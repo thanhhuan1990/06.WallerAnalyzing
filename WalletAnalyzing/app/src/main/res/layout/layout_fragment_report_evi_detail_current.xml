@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,13 +21,28 @@
             android:padding="5dp"
             android:weightSum="20">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/icon_date"/>
+                android:layout_weight="3">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_date" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/textcolor_title_attribute"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -42,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:text="Today (DD/MM/YYYY)"
                     android:textColor="@android:color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -57,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_income"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
 
                     <SeekBar
                         android:id="@+id/sbTodayIncome"
@@ -69,7 +83,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_today_income"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvTodayIncome"
@@ -78,7 +92,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -94,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_expense"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <SeekBar
                         android:id="@+id/sbTodayExpense"
@@ -106,7 +120,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_today_expense"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvTodayExpense"
@@ -115,7 +129,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -125,13 +139,13 @@
                 android:layout_height="20dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_next"/>
+                android:src="@drawable/icon_next" />
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
         <!-- This Week -->
         <LinearLayout
@@ -143,13 +157,28 @@
             android:padding="5dp"
             android:weightSum="20">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/icon_date"/>
+                android:layout_weight="3">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_date" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="7"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/textcolor_title_attribute"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -163,7 +192,7 @@
                     android:layout_height="wrap_content"
                     android:text="This Week (DD/MM - DD/MM)"
                     android:textColor="@android:color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -178,7 +207,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_income"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
 
                     <SeekBar
                         android:id="@+id/sbThisWeekIncome"
@@ -190,7 +219,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_thisweek_income"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvThisWeekIncome"
@@ -199,7 +228,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -215,7 +244,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_expense"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <SeekBar
                         android:id="@+id/sbThisWeekExpense"
@@ -227,7 +256,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_thisweek_expense"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvThisWeekExpense"
@@ -236,7 +265,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -246,13 +275,13 @@
                 android:layout_height="20dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_next"/>
+                android:src="@drawable/icon_next" />
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
         <!-- This Month -->
         <LinearLayout
@@ -264,13 +293,29 @@
             android:padding="5dp"
             android:weightSum="20">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/icon_date"/>
+                android:layout_weight="3">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_date" />
+
+                <TextView
+                    android:id="@+id/tvNoOfMonthDay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="31"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/textcolor_title_attribute"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -284,7 +329,7 @@
                     android:layout_height="wrap_content"
                     android:text="This Month (MM/YYYY)"
                     android:textColor="@android:color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -299,7 +344,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_income"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
 
                     <SeekBar
                         android:id="@+id/sbThisMonthIncome"
@@ -311,7 +356,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_thismonth_income"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvThisMonthIncome"
@@ -320,7 +365,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -336,7 +381,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_expense"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <SeekBar
                         android:id="@+id/sbThisMonthExpense"
@@ -348,7 +393,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_thismonth_expense"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvThisMonthExpense"
@@ -357,7 +402,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -367,13 +412,13 @@
                 android:layout_height="20dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_next"/>
+                android:src="@drawable/icon_next" />
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
         <!-- This Year-->
         <LinearLayout
@@ -385,13 +430,29 @@
             android:padding="5dp"
             android:weightSum="20">
 
-            <ImageView
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/icon_date"/>
+                android:layout_weight="3">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon_date" />
+
+                <TextView
+                    android:id="@+id/tvNoOfYearDay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="365"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/textcolor_title_attribute"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -405,7 +466,7 @@
                     android:layout_height="wrap_content"
                     android:text="This Year (YYYY)"
                     android:textColor="@android:color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -420,7 +481,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_income"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
 
                     <SeekBar
                         android:id="@+id/sbThisYearIncome"
@@ -432,7 +493,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_thisyear_income"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvThisYearIncome"
@@ -441,7 +502,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -457,7 +518,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:text="@string/report_evi_expense"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <SeekBar
                         android:id="@+id/sbThisYearExpense"
@@ -469,7 +530,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_thisyear_expense"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvThisYearExpense"
@@ -478,7 +539,7 @@
                         android:layout_weight="3"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -488,13 +549,13 @@
                 android:layout_height="20dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
-                android:src="@drawable/icon_next"/>
+                android:src="@drawable/icon_next" />
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
         <!-- All -->
         <LinearLayout
@@ -513,18 +574,33 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <ImageView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/icon_date"/>
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icon_date" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:text="@string/icon_sum"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/textcolor_title_attribute"
+                        android:textStyle="bold" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/report_evi_all"
-                    android:textColor="@color/textcolor_hint"/>
+                    android:textColor="@color/textcolor_hint" />
             </LinearLayout>
 
             <LinearLayout
@@ -546,7 +622,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:text="@string/report_evi_income"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
 
                     <SeekBar
                         android:id="@+id/sbIncome"
@@ -558,7 +634,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_all_income"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvIncome"
@@ -567,7 +643,7 @@
                         android:layout_weight="7"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@color/textcolor_income"/>
+                        android:textColor="@color/textcolor_income" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -583,7 +659,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:text="@string/report_evi_expense"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <SeekBar
                         android:id="@+id/sbExpense"
@@ -595,7 +671,7 @@
                         android:progress="10"
                         android:progressDrawable="@drawable/progress_evi_all_expense"
                         android:secondaryProgress="90"
-                        android:thumb="@android:color/transparent"/>
+                        android:thumb="@android:color/transparent" />
 
                     <TextView
                         android:id="@+id/tvExpense"
@@ -604,7 +680,7 @@
                         android:layout_weight="7"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -620,7 +696,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/report_evi_net_income"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
 
                     <TextView
                         android:id="@+id/tvNetIncome"
@@ -629,7 +705,7 @@
                         android:layout_weight="1"
                         android:gravity="right|center_vertical"
                         android:text="0 đ"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -639,7 +715,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.2dip"
-            android:background="#504f4f"/>
+            android:background="#504f4f" />
 
     </LinearLayout>
 </ScrollView>

@@ -978,23 +978,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
 
-                if (startDate.getTimeInMillis() <= calendar.getTimeInMillis() && calendar.getTimeInMillis() < endDate.getTimeInMillis()) {
-
-                    Transaction transaction = new Transaction();
-                    transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                    transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
-                    transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
-                    transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
-                    transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
-                    transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
-                    transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
-                    transaction.setTime(calendar);
-                    transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
-                    transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
-                    transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
-
-                    transactions.add(transaction);
+                if(startDate != null && endDate != null) {
+                    if (calendar.getTimeInMillis() < startDate.getTimeInMillis() || endDate.getTimeInMillis() < calendar.getTimeInMillis()  ) {
+                        continue;
+                    }
                 }
+
+                Transaction transaction = new Transaction();
+                transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
+                transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
+                transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
+                transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
+                transaction.setTime(calendar);
+                transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
+                transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
+
+                transactions.add(transaction);
             } while (c.moveToNext()) ;
         }
 
@@ -1005,7 +1008,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Get All transaction from startDate to endDate
+     * Get All transaction from startDate to endDate by Accounts
      * @param accounts
      * @param startDate
      * @param endDate
@@ -1040,7 +1043,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
 
                 if(startDate != null && endDate != null) {
-                    if (calendar.getTimeInMillis() < startDate.getTimeInMillis() || endDate.getTimeInMillis() <= calendar.getTimeInMillis()  ) {
+                    if (calendar.getTimeInMillis() < startDate.getTimeInMillis() || endDate.getTimeInMillis() < calendar.getTimeInMillis()  ) {
                         continue;
                     }
                 }
@@ -1065,6 +1068,80 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         leave(TAG, "accounts = " + (accounts != null ? accounts.toString() : "")
                 + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "0")
                 + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "0"), transactions.toString());
+
+        return transactions;
+
+    }
+
+    public List<Transaction> getTransactionsByTimeCategoryAccount(int[] categories, int[] accounts, Calendar startDate, Calendar endDate) {
+        enter(TAG, "categories = " + (categories != null ? categories.toString() : "")
+                + "accounts = " + (accounts != null ? accounts.toString() : "")
+                + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String condition = "";
+        if(categories != null) {
+            condition = " WHERE (" + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[0];
+
+            for(int i = 1 ; i < categories.length; i++) {
+                condition += " OR " + KEY_TRANSACTION_CATEGORY_ID + " = " + categories[i];
+            }
+
+            condition += ")";
+        }
+
+        if(accounts != null) {
+            if(condition.equals("")) {
+                condition += " WHERE (";
+            } else {
+                condition += " And (";
+            }
+            condition += KEY_TRANSACTION_FROM_ACCOUNT_ID + " = " + accounts[0] + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accounts[0];
+
+            for(int i = 1 ; i < accounts.length; i++) {
+                condition += " OR " + KEY_TRANSACTION_CATEGORY_ID + " = " + accounts[i] + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accounts[i];
+            }
+
+            condition += ")";
+        }
+
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
+
+        trace(TAG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getDateTime(c.getString(c.getColumnIndex(KEY_TRANSACTION_TIME))));
+
+                if(startDate != null && endDate != null) {
+                    if (calendar.getTimeInMillis() < startDate.getTimeInMillis() || endDate.getTimeInMillis() < calendar.getTimeInMillis()  ) {
+                        continue;
+                    }
+                }
+
+                Transaction transaction = new Transaction();
+                transaction.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                transaction.setTransactionType(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TYPE)));
+                transaction.setAmount(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_AMOUNT)));
+                transaction.setDescription(c.getString(c.getColumnIndex(KEY_TRANSACTION_DESCRIPTION)));
+                transaction.setCategoryId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_CATEGORY_ID)));
+                transaction.setFromAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_FROM_ACCOUNT_ID)));
+                transaction.setToAccountId(c.getInt(c.getColumnIndex(KEY_TRANSACTION_TO_ACCOUNT_ID)));
+                transaction.setTime(calendar);
+                transaction.setFee(c.getDouble(c.getColumnIndex(KEY_TRANSACTION_FEE)));
+                transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
+                transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
+
+                transactions.add(transaction);
+            } while (c.moveToNext()) ;
+        }
+
+        leave(TAG, "categories = " + (categories != null ? categories.toString() : "") + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
 
         return transactions;
 

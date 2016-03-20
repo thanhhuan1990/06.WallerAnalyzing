@@ -77,6 +77,9 @@ public class FragmentReport extends Fragment {
                     case 0:
                         showExpenseVsIncome();
                         break;
+                    case 1:
+                        showExpenseAnalysis();
+                        break;
                     case 4:
                         showListEvents();
                         break;
@@ -94,7 +97,7 @@ public class FragmentReport extends Fragment {
     }
 
     /**
-     * Start Fragment ReportEvent
+     * Start Fragment ExpenseVsIncome (EVI)
      */
     private void showExpenseVsIncome() {
         FragmentReportEVI myFragment = (FragmentReportEVI)getFragmentManager().findFragmentByTag("FragmentReportEVI");
@@ -104,6 +107,20 @@ public class FragmentReport extends Fragment {
         FragmentReportEVI nextFrag = new FragmentReportEVI();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, "FragmentReportEVI")
+                .commit();
+    }
+
+    /**
+     * Start Fragment ExpenseAnalysis
+     */
+    private void showExpenseAnalysis() {
+        FragmentReportExpenseAnalysis myFragment = (FragmentReportExpenseAnalysis)getFragmentManager().findFragmentByTag("FragmentReportExpenseAnalysis");
+        if (myFragment != null && myFragment.isVisible()) {
+            return;
+        }
+        FragmentReportExpenseAnalysis nextFrag = new FragmentReportExpenseAnalysis();
+        FragmentReport.this.getFragmentManager().beginTransaction()
+                .replace(R.id.ll_report, nextFrag, "FragmentReportExpenseAnalysis")
                 .commit();
     }
 

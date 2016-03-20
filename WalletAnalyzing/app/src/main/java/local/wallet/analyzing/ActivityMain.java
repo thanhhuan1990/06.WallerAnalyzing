@@ -51,6 +51,7 @@ public class ActivityMain extends AppCompatActivity {
     private String fragmentAccountTransactions;
     private String fragmentBudgetCreate;
     private String fragmentReportEvI;
+    private String fragmentReportExpenseAnalysis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -392,6 +393,18 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentReportEvI);
         return fragmentReportEvI;
+    }
+
+    public void setFragmentReportExpenseAnalysis(String tag) {
+        LogUtils.logEnterFunction(TAG, "tag = " + tag);
+        fragmentReportExpenseAnalysis = tag;
+        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
+    }
+
+    public String getFragmentReportExpenseAnalysis() {
+        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logLeaveFunction(TAG, null, fragmentReportExpenseAnalysis);
+        return fragmentReportExpenseAnalysis;
     }
 
     //endregion

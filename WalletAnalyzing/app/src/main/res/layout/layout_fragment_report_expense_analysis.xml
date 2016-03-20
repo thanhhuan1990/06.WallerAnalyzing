@@ -8,7 +8,7 @@
               android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/llAccount"
+        android:id="@+id/llCategories"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@android:color/white"
@@ -23,7 +23,51 @@
             android:layout_height="wrap_content"
             android:layout_weight="6"
             android:background="@android:color/transparent"
-            android:text="@string/report_evi_accounts"
+            android:text="@string/report_expense_analysis_categories"
+            android:textColor="@color/textcolor_title_attribute"
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="13"
+            android:background="@android:color/transparent"
+            android:gravity="right|center_vertical"
+            android:text="@string/report_expense_analysis_categories_all_categories"
+            android:textColor="@android:color/black"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon_next"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0.2dip"
+        android:background="#504f4f"/>
+
+    <LinearLayout
+        android:id="@+id/llAccounts"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:weightSum="20">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:background="@android:color/transparent"
+            android:text="@string/report_expense_analysis_accounts"
             android:textColor="@color/textcolor_title_attribute"
             android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
@@ -92,13 +136,12 @@
             android:src="@drawable/icon_next"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/llEVI"
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        android:background="@android:color/white"/>
+        android:layout_marginBottom="8dp"/>
 
 </LinearLayout>
