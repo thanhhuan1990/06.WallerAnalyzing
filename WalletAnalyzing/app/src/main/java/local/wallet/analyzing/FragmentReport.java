@@ -83,6 +83,9 @@ public class FragmentReport extends Fragment {
                     case 1:
                         showExpenseAnalysis();
                         break;
+                    case 2:
+                        showFinancialStatement();
+                        break;
                     case 4:
                         showListEvents();
                         break;
@@ -124,6 +127,20 @@ public class FragmentReport extends Fragment {
         FragmentReportExpenseAnalysis nextFrag = new FragmentReportExpenseAnalysis();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, "FragmentReportExpenseAnalysis")
+                .commit();
+    }
+
+    /**
+     * Start Fragment FinancialStatement
+     */
+    private void showFinancialStatement() {
+        FragmentReportFinancialStatement myFragment = (FragmentReportFinancialStatement)getFragmentManager().findFragmentByTag("FragmentReportFinancialStatement");
+        if (myFragment != null && myFragment.isVisible()) {
+            return;
+        }
+        FragmentReportFinancialStatement nextFrag = new FragmentReportFinancialStatement();
+        FragmentReport.this.getFragmentManager().beginTransaction()
+                .replace(R.id.ll_report, nextFrag, "FragmentReportFinancialStatement")
                 .commit();
     }
 

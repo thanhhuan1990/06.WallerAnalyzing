@@ -197,6 +197,19 @@
         <item>Yearly</item>
     </string-array>
 
+    <!-- 5_REPORT_4_Financial_Statement -->
+    <string name="report_financial_statement_asset">Asset (1)</string>
+    <string name="report_financial_statement_liabilities">Liabilities (2)</string>
+    <string name="report_financial_statement_net_worth">Net worth: (1) - (2)</string>
+    <string name="report_financial_statement_cash">Cash</string>
+    <string name="report_financial_statement_bank_account">Bank Account</string>
+    <string name="report_financial_statement_credit_card">Credit Card</string>
+    <string name="report_financial_statement_investment">Investment</string>
+    <string name="report_financial_statement_saving_deposit">Saving Deposit</string>
+    <string name="report_financial_statement_other">Other</string>
+    <string name="report_financial_statement_money_lent">Money Lent</string>
+    <string name="report_financial_statement_money_borrowed">Money Borrowed</string>
+
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
     <string name="report_event_completed">Completed</string>
