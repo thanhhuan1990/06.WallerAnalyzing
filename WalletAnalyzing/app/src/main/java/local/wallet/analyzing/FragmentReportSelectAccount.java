@@ -31,7 +31,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentReportEVIAccount extends Fragment implements View.OnClickListener {
+public class FragmentReportSelectAccount extends Fragment implements View.OnClickListener {
     private static final String Tag = "ReportEVIAccount";
 
     private DatabaseHelper          mDbHelper;
@@ -58,6 +58,9 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
         currentAccounts = bundle.getIntArray("Accounts");
         tagOfSource     = bundle.getString("Fragment");
 
+        LogUtils.trace(Tag, "currentAccounts = " + Arrays.toString(currentAccounts));
+        LogUtils.trace(Tag, "tagOfSource = " + tagOfSource);
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -66,7 +69,7 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_report_evi_accounts, container, false);
+        return inflater.inflate(R.layout.layout_fragment_report_select_accounts, container, false);
     }
 
     @Override
@@ -190,11 +193,12 @@ public class FragmentReportEVIAccount extends Fragment implements View.OnClickLi
                     }
 
                     LogUtils.trace(Tag, "Accounts: " + Arrays.toString(accounts));
-
                     if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportEVI())) {
+                        LogUtils.trace(Tag, "Setup Account for FragmentReportEVI");
                         FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
                         fragment.updateAccount(accounts);
-                    } else if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportEVI())) {
+                    } else if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis())) {
+                        LogUtils.trace(Tag, "Setup Account for FragmentReportExpenseAnalysis");
                         FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
                         fragment.updateAccount(accounts);
                     }

@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -954,14 +953,14 @@ public class FragmentTransactionCreate extends Fragment implements  View.OnClick
      * @param oldCategoryId
      */
     private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
-        FragmentCategorySelect nextFrag = new FragmentCategorySelect();
+        FragmentTransactionSelectCategory nextFrag = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
         bundle.putString("Tag", Tag);
         bundle.putInt("CategoryID", oldCategoryId);
         bundle.putSerializable("TransactionType", transactionType);
         nextFrag.setArguments(bundle);
         FragmentTransactionCreate.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_transaction_create, nextFrag, "FragmentCategorySelect")
+                .add(R.id.layout_transaction_create, nextFrag, "FragmentTransactionSelectCategory")
                 .addToBackStack(Tag)
                 .commit();
     }

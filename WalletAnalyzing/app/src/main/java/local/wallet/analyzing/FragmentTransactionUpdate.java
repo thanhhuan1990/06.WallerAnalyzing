@@ -1034,14 +1034,14 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     }
 
     private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
-        FragmentCategorySelect nextFragment = new FragmentCategorySelect();
+        FragmentTransactionSelectCategory nextFragment = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
         bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
         bundle.putInt("CategoryID", oldCategoryId);
         bundle.putSerializable("TransactionType", transactionType);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(mContainerViewId, nextFragment, "FragmentCategorySelect")
+                .add(mContainerViewId, nextFragment, "FragmentTransactionSelectCategory")
                 .addToBackStack(null)
                 .commit();
     }
@@ -1281,8 +1281,9 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     }
 
     /**
-     * Get Date's String
-     * @return
+     * Get formatted Date's String
+     * @param cal
+     * @return String
      */
     private String getDateString(Calendar cal) {
         Calendar current = Calendar.getInstance();

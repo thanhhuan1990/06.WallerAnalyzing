@@ -26,9 +26,9 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentCategorySelect extends Fragment {
+public class FragmentTransactionSelectCategory extends Fragment {
 
-    private static final String Tag = "FragmentCategorySelect";
+    private static final String Tag = "TransactionCategorySelect";
 
     private String              mTagOfSource = "";
     private TransactionEnum     mCurrentTransactionType     = TransactionEnum.Expense;
@@ -173,7 +173,7 @@ public class FragmentCategorySelect extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mCurrentTransactionType);
                 nextFrag.setArguments(bundle);
-                FragmentCategorySelect.this.getFragmentManager().beginTransaction()
+                FragmentTransactionSelectCategory.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_transaction_create, nextFrag, "FragmentCategoryCreate")
                         .addToBackStack(null)
                         .commit();

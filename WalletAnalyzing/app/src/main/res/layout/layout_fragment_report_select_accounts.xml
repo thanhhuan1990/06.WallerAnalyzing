@@ -23,7 +23,7 @@
             android:text="@string/report_evi_accounts_select_all_accounts"
             android:textColor="@color/textcolor_title_attribute"
             android:textStyle="bold"
-            android:textSize="16sp"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <ToggleButton
             android:id="@+id/tbAllAccount"

@@ -1,6 +1,5 @@
 package local.wallet.analyzing;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,23 +8,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
-import local.wallet.analyzing.model.Currency;
-import local.wallet.analyzing.model.Event;
+import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
@@ -38,12 +41,9 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
 
-    private Calendar        mFromDate   = Calendar.getInstance();
-    private Calendar        mToDate     = Calendar.getInstance();
-
-    private int[]           mCategoryId = new int[0]; // 0 is All Categories
-    private int[]           mAccountId  = new int[0]; // 0 is All Accounts
-    private int             mTime       = 0; // 0 is Current
+    private int[]           mCategoryId = new int[0];   // All Categories
+    private int[]           mAccountId  = new int[0];   // All Accounts
+    private int             mViewedBy   = 0;            // 1 is Monthly
 
     private LinearLayout    llCategories;
     private TextView        tvCategory;
@@ -77,14 +77,18 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         // Update DateTime
         List<Transaction> arTransactions = mDbHelper.getAllTransactions();
         if(arTransactions.size() > 0) {
-            mFromDate   = arTransactions.get(arTransactions.size() - 1).getTime();
-            mToDate     = arTransactions.get(0).getTime();
-
             // Update list of selected Account at first time
             List<Account> arAccounts = mDbHelper.getAllAccounts();
             mAccountId  = new int[arAccounts.size()];
             for(int i = 0 ; i < arAccounts.size(); i++) {
                 mAccountId[i] = arAccounts.get(i).getId();
+            }
+
+            // Update list Category
+            List<Category> arCategories = mDbHelper.getAllCategories();
+            mCategoryId = new int[arCategories.size()];
+            for(int i = 0; i< arCategories.size(); i++) {
+                mCategoryId[i] = arCategories.get(i).getId();
             }
 
             llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
@@ -96,7 +100,10 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
             llViewedBy      = (LinearLayout) getView().findViewById(R.id.llViewedBy);
             llViewedBy.setOnClickListener(this);
             tvViewedBy      = (TextView) getView().findViewById(R.id.tvViewedBy);
+            tvViewedBy.setText(getResources().getStringArray(R.array.report_expense_analysis_ar_viewedby)[mViewedBy]);
             mLineChart      = (LineChart) getView().findViewById(R.id.lineChart);
+
+            updateMultiLineChart();
 
         } else {
             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Error_Startup_No_Data));
@@ -121,7 +128,7 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.llCategories: {
-                showListAccounts();
+                showListCategories();
                 break;
             }
             case R.id.llAccounts: {
@@ -137,18 +144,258 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         }
     }
 
+    private void updateMultiLineChart() {
+        mLineChart = (LineChart) getView().findViewById(R.id.lineChart);
+        mLineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+
+            }
+
+            @Override
+            public void onNothingSelected() {}
+        });
+
+        mLineChart.setDrawGridBackground(false);
+        mLineChart.setDescription("");
+        mLineChart.setDrawBorders(false);
+
+        mLineChart.getAxisLeft().setDrawAxisLine(false);
+        mLineChart.getAxisLeft().setDrawGridLines(false);
+        mLineChart.getAxisRight().setDrawAxisLine(false);
+        mLineChart.getAxisRight().setDrawGridLines(false);
+        mLineChart.getXAxis().setDrawAxisLine(false);
+        mLineChart.getXAxis().setDrawGridLines(false);
+
+        // enable touch gestures
+        mLineChart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        mLineChart.setDragEnabled(true);
+        mLineChart.setScaleEnabled(true);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        mLineChart.setPinchZoom(false);
+
+        Legend l = mLineChart.getLegend();
+        l.setPosition(Legend.LegendPosition.ABOVE_CHART_CENTER);
+
+        // add a lot of colors
+        ArrayList<Integer> colorsIncome = new ArrayList<Integer>();
+
+        for (int c : ColorTemplate.JOYFUL_COLORS) {
+            colorsIncome.add(c);
+        }
+
+        for (int c : ColorTemplate.COLORFUL_COLORS) {
+            colorsIncome.add(c);
+        }
+
+        for (int c : ColorTemplate.LIBERTY_COLORS) {
+            colorsIncome.add(c);
+        }
+
+        for (int c : ColorTemplate.PASTEL_COLORS) {
+            colorsIncome.add(c);
+        }
+
+        for (int c : ColorTemplate.VORDIPLOM_COLORS) {
+            colorsIncome.add(c);
+        }
+
+        boolean isAddIndex = false;
+        ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+        ArrayList<String> xVals = new ArrayList<String>();
+        List<Transaction> arAllTransactions = mDbHelper.getAllTransactions();
+
+        for(int i = 0 ; i < mCategoryId.length; i++) {
+
+            if(mDbHelper.getTransactionsByTimeAndCategory(new int[]{mCategoryId[i]}, null, null).size() == 0) {
+                continue;
+            }
+
+            Calendar startDate  = Calendar.getInstance();
+            startDate.setTimeInMillis(arAllTransactions.get(arAllTransactions.size() - 1).getTime().getTimeInMillis());
+            switch (mViewedBy) {
+                case 0: // Weekly
+                    startDate.set(Calendar.DAY_OF_WEEK, startDate.getFirstDayOfWeek());
+                    break;
+                case 1: // Monthly
+                    startDate.set(Calendar.DAY_OF_MONTH, 1);
+                    break;
+                case 2: // Quarterly
+                case 3: // Yearly
+                    startDate.set(Calendar.MONTH, 0);
+                    startDate.set(Calendar.DATE, 1);
+                    startDate.set(Calendar.HOUR_OF_DAY, 0);
+                    startDate.clear(Calendar.MINUTE);
+                    startDate.clear(Calendar.SECOND);
+                    startDate.clear(Calendar.MILLISECOND);
+                    break;
+                default:
+                    break;
+            }
+
+            Calendar endDate    = Calendar.getInstance();
+            endDate.setTimeInMillis(startDate.getTimeInMillis());
+
+            ArrayList<Entry> values = new ArrayList<Entry>();
+
+            int index = 0;
+            do {
+                if(!isAddIndex) {
+                    switch (mViewedBy) {
+                        case 0: // Weekly
+                            xVals.add(startDate.get(Calendar.DAY_OF_MONTH) + "/" + (startDate.get(Calendar.MONTH) + 1));
+                            break;
+                        case 1: // Monthly
+                            xVals.add((startDate.get(Calendar.MONTH) + 1) + "/" + startDate.get(Calendar.YEAR));
+                            break;
+                        case 2: // Quarterly
+                            xVals.add((startDate.get(Calendar.MONTH) + 1) + "/" + startDate.get(Calendar.YEAR));
+                            break;
+                        case 3: // Yearly
+                            xVals.add(startDate.get(Calendar.YEAR) + "");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // Update End Date
+                switch (mViewedBy) {
+                    case 0: // Weekly
+                        endDate.add(Calendar.WEEK_OF_YEAR, 1);
+                        break;
+                    case 1: // Monthly
+                        endDate.add(Calendar.MONTH, 1);
+                        break;
+                    case 2: // Quarterly
+                        endDate.add(Calendar.MONTH, 3);
+                        break;
+                    case 3: // Yearly
+                        endDate.add(Calendar.YEAR, 1);
+                        break;
+                    default:
+                        break;
+                }
+
+
+                List<Transaction> arTransactions = mDbHelper.getTransactionsByTimeAndCategory(new int[]{mCategoryId[i]}, startDate, endDate);
+                double value = 0.0;
+                for(Transaction tran : arTransactions) {
+                    value += tran.getAmount();
+                }
+                values.add(new Entry((float) value, index));
+
+                LogUtils.trace(Tag, mDbHelper.getCategory(mCategoryId[i]).getName() + " : " + String.format(getResources().getString(R.string.format_budget_date_2),
+                        startDate.get(Calendar.DAY_OF_MONTH),
+                        startDate.get(Calendar.MONTH) + 1,
+                        endDate.get(Calendar.DAY_OF_MONTH),
+                        endDate.get(Calendar.MONTH) + 1) + " : " + value);
+
+                // Update Start Date
+                switch (mViewedBy) {
+                    case 0: // Weekly
+                        startDate.add(Calendar.WEEK_OF_YEAR, 1);
+                        break;
+                    case 1: // Monthly
+                        startDate.add(Calendar.MONTH, 1);
+                        break;
+                    case 2: // Quarterly
+                        startDate.add(Calendar.MONTH, 3);
+                        break;
+                    case 3: // Yearly
+                        startDate.add(Calendar.YEAR, 1);
+                        break;
+                    default:
+                        break;
+                }
+
+                index++;
+            } while(endDate.getTimeInMillis() <= arAllTransactions.get(0).getTime().getTimeInMillis());
+
+            isAddIndex = true;
+
+            LineDataSet d = new LineDataSet(values, mDbHelper.getCategory(mCategoryId[i]).getName());
+            d.setLineWidth(2.5f);
+            d.setCircleRadius(4f);
+
+            int color = colorsIncome.get(i % colorsIncome.size());
+            d.setColor(color);
+            d.setCircleColor(color);
+            dataSets.add(d);
+
+        }
+
+        LineData data = new LineData(xVals, dataSets);
+        mLineChart.setData(data);
+
+        mLineChart.invalidate();
+
+    }
+
+    /**
+     * Start Fragment ReportExpenseAnalysisCategory
+     */
+    private void showListCategories() {
+        LogUtils.logEnterFunction(Tag, null);
+        FragmentReportExpenseAnalysisCategory nextFrag = new FragmentReportExpenseAnalysisCategory();
+        Bundle bundle = new Bundle();
+        bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis());
+        bundle.putIntArray("Categories", mCategoryId);
+        nextFrag.setArguments(bundle);
+        FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
+                .add(R.id.ll_report, nextFrag, "ReportExpenseAnalysisCategory")
+                .addToBackStack(null)
+                .commit();
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    /**
+     * Update TextView Category
+     * @param categoryId
+     */
+    public void updateCategories(int[] categoryId) {
+        LogUtils.logEnterFunction(Tag, "categoryId = " + Arrays.toString(categoryId));
+
+        mCategoryId = categoryId;
+
+        if(categoryId.length == mDbHelper.getAllCategories().size()) {
+            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_categories));
+        } else if(categoryId.length == (mDbHelper.getAllCategories(true, false).size() + mDbHelper.getAllCategories(true, true).size())) {
+            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_expense_categories));
+        } else if(categoryId.length == (mDbHelper.getAllCategories(false, false).size() + mDbHelper.getAllCategories(false, true).size())) {
+            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_income_categories));
+        } else {
+            String category = "";
+            for(int i = 0 ; i < mCategoryId.length; i++) {
+                if(!category.equals("")) {
+                    category += ", ";
+                }
+                category += mDbHelper.getCategory(mCategoryId[i]).getName();
+            }
+
+            tvCategory.setText(category);
+        }
+
+        updateMultiLineChart();
+
+        LogUtils.logLeaveFunction(Tag, "categoryId = " + Arrays.toString(categoryId), null);
+    } // End updateAccount
+
     /**
      * Start Fragment ReportEvent
      */
     private void showListAccounts() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportEVIAccount nextFrag = new FragmentReportEVIAccount();
+        FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
         bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis());
         bundle.putIntArray("Accounts", mAccountId);
         nextFrag.setArguments(bundle);
         FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEVIAccount")
+                .add(R.id.ll_report, nextFrag, "FragmentReportSelectAccount")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -159,7 +406,7 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
      * @param accountId
      */
     public void updateAccount(int[] accountId) {
-        LogUtils.logEnterFunction(Tag, "accountId = " + accountId);
+        LogUtils.logEnterFunction(Tag, "accountId = " + Arrays.toString(accountId));
 
         mAccountId = accountId;
 
@@ -177,6 +424,8 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
             tvAccount.setText(account);
         }
 
+        updateMultiLineChart();
+
         LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
     } // End updateAccount
 
@@ -185,14 +434,12 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
      */
     private void showListTime() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportEVITime nextFrag = new FragmentReportEVITime();
+        FragmentReportExpenseAnalysisTime nextFrag = new FragmentReportExpenseAnalysisTime();
         Bundle bundle = new Bundle();
-        bundle.putInt("Time", mTime);
-        bundle.putLong("FromDate", mFromDate.getTimeInMillis());
-        bundle.putLong("ToDate", mToDate.getTimeInMillis());
+        bundle.putInt("Time", mViewedBy);
         nextFrag.setArguments(bundle);
        FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEVITime")
+                .add(R.id.ll_report, nextFrag, "FragmentReportExpenseAnalysisTime")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -205,54 +452,15 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     public void updateTime(int time) {
         LogUtils.logEnterFunction(Tag, "time = " + time);
 
-        mTime = time;
+        mViewedBy = time;
 
-        String[] arTimes = getResources().getStringArray(R.array.report_evi_ar_viewedby);
+        String[] arTimes = getResources().getStringArray(R.array.report_expense_analysis_ar_viewedby);
 
-        tvViewedBy.setText(arTimes[mTime]);
+        tvViewedBy.setText(arTimes[mViewedBy]);
 
-        switch (time) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            default:
-                break;
-        }
+        updateMultiLineChart();
 
         LogUtils.logLeaveFunction(Tag, "time = " + time, null);
     } // End updateTime
-
-    /**
-     * Update TextView ViewedBy
-     * @param fromDate
-     * @param toDate
-     */
-    public void updateTime(Calendar fromDate, Calendar toDate) {
-        String strFromDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
-                fromDate.get(Calendar.DATE),
-                fromDate.get(Calendar.MONTH) + 1,
-                fromDate.get(Calendar.YEAR));
-        String strToDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
-                toDate.get(Calendar.DATE),
-                toDate.get(Calendar.MONTH) + 1,
-                toDate.get(Calendar.YEAR));
-
-        LogUtils.logEnterFunction(Tag, "(" + strFromDate + " - " + strToDate + ")");
-
-        mTime       = 4; // Period
-        mFromDate   = fromDate;
-        mToDate     = toDate;
-        mTime       = getResources().getStringArray(R.array.report_evi_ar_viewedby).length - 1;
-
-        tvViewedBy.setText(strFromDate + " - " + strToDate);
-
-        LogUtils.logLeaveFunction(Tag, "(" + strFromDate + " - " +  strToDate + ")", null);
-    } // End updateTime
-
 
 }

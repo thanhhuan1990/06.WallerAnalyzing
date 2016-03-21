@@ -162,7 +162,7 @@ public class FragmentCategoryCreate extends Fragment {
                     ((ActivityMain) getActivity()).showError("Create Category Failed.");
                 } else {
                     ((ActivityMain) getActivity()).showToastSuccessful("Category created successful.");
-                    // Todo: Update list Category in FragmentCategorySelect
+                    // Todo: Update list Category in TransactionSelectCategory
 
                     // Return to CategorySelect
                     getFragmentManager().popBackStackImmediate();

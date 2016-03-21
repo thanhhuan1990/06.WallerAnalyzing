@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/ll_report_evi"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/background_main_frame"
-              android:clickable="true"
-              android:orientation="vertical">
+<LinearLayout
+    android:id="@+id/ll_report_evi"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main_frame"
+    android:clickable="true"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/llCategories"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
         android:padding="5dp"
         android:weightSum="20">
 
@@ -24,9 +25,9 @@
             android:layout_weight="6"
             android:background="@android:color/transparent"
             android:text="@string/report_expense_analysis_categories"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/textcolor_title_attribute"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvCategory"
@@ -35,9 +36,10 @@
             android:layout_weight="13"
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
+            android:singleLine="true"
             android:text="@string/report_expense_analysis_categories_all_categories"
-            android:textColor="@android:color/black"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/black"/>
 
         <ImageView
             android:layout_width="0dp"
@@ -68,9 +70,9 @@
             android:layout_weight="6"
             android:background="@android:color/transparent"
             android:text="@string/report_expense_analysis_accounts"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/textcolor_title_attribute"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvAccount"
@@ -79,9 +81,10 @@
             android:layout_weight="13"
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
+            android:singleLine="true"
             android:text="@string/report_evi_accounts_all_accounts"
-            android:textColor="@android:color/black"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/black"/>
 
         <ImageView
             android:layout_width="0dp"
@@ -111,10 +114,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="6"
             android:background="@android:color/transparent"
-            android:text="@string/report_evi_viewedby"
+            android:text="@string/report_expense_analysis_viewedby"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/textcolor_title_attribute"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvViewedBy"
@@ -125,8 +128,8 @@
             android:gravity="right|center_vertical"
             android:singleLine="true"
             android:text="Current"
-            android:textColor="@android:color/black"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/black"/>
 
         <ImageView
             android:layout_width="0dp"
@@ -140,8 +143,8 @@
         android:id="@+id/lineChart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
+        android:background="@android:color/white"/>
 
 </LinearLayout>

@@ -27,6 +27,8 @@ public class FragmentReport extends Fragment {
     private static final String Tag = "Report";
 
     private Spinner             spReportType;
+    private int                 mCurrentReportType = 0;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +49,6 @@ public class FragmentReport extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -68,11 +69,13 @@ public class FragmentReport extends Fragment {
 
         spReportType                = (Spinner) mCustomView.findViewById(R.id.spinner);
         spReportType.setAdapter(new ReportTypeAdapter(getActivity().getApplicationContext(), Arrays.asList(arReportType)));
+        spReportType.setSelection(mCurrentReportType);
 
         spReportType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 LogUtils.trace(Tag, "onItemSelected: " + position);
+                mCurrentReportType = position;
                 switch (position) {
                     case 0:
                         showExpenseVsIncome();

@@ -1,7 +1,6 @@
 package local.wallet.analyzing;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,20 +17,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.Currency;
-import local.wallet.analyzing.model.Transaction;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentReportEVITime extends Fragment implements View.OnClickListener {
+public class FragmentReportEVISelectTime extends Fragment implements View.OnClickListener {
 
     private static final String Tag = "ReportEVITimeSelect";
 
@@ -71,7 +67,7 @@ public class FragmentReportEVITime extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_report_evi_time, container, false);
+        return inflater.inflate(R.layout.layout_fragment_report_evi_select_time, container, false);
     }
 
     @Override

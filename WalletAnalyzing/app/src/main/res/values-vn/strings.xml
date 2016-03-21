@@ -141,6 +141,7 @@
     <string name="title_event">Chuyến đi/Sự kiện</string>
     <string name="title_report_evi_account">Tài Khoản</string>
     <string name="title_report_evi_time">Thời Gian</string>
+    <string name="title_report_expense_analysis_category">Hạn Mục Thu Chi</string>
 
     <string name="Save">Ghi</string>
     <string name="Delete">Xóa</string>

@@ -33,6 +33,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1346,13 +1347,13 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
      */
     private void showListAccounts() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportEVIAccount nextFrag = new FragmentReportEVIAccount();
+        FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
         bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportEVI());
         bundle.putIntArray("Accounts", mAccountId);
         nextFrag.setArguments(bundle);
         FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEVIAccount")
+                .add(R.id.ll_report, nextFrag, "FragmentReportSelectAccount")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -1363,7 +1364,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
      * @param accountId
      */
     public void updateAccount(int[] accountId) {
-        LogUtils.logEnterFunction(Tag, "accountId = " + accountId);
+        LogUtils.logEnterFunction(Tag, "accountId = " + Arrays.toString(accountId));
 
         mAccountId = accountId;
 
@@ -1409,14 +1410,14 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
      */
     private void showListTime() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportEVITime nextFrag = new FragmentReportEVITime();
+        FragmentReportEVISelectTime nextFrag = new FragmentReportEVISelectTime();
         Bundle bundle = new Bundle();
         bundle.putInt("Time", mTime);
         bundle.putLong("FromDate", mFromDate.getTimeInMillis());
         bundle.putLong("ToDate", mToDate.getTimeInMillis());
         nextFrag.setArguments(bundle);
         FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEVITime")
+                .add(R.id.ll_report, nextFrag, "FragmentReportEVISelectTime")
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);

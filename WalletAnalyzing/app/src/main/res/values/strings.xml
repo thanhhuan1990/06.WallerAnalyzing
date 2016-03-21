@@ -181,9 +181,21 @@
 
     <!-- 5_REPORT_3_Expense_Analysis -->
     <string name="report_expense_analysis_categories">Categories</string>
+    <string name="report_expense_analysis_categories_select_all_categories">Select All Categories</string>
     <string name="report_expense_analysis_categories_all_categories">All Categories</string>
+    <string name="report_expense_analysis_categories_all_income_categories">All Income Categories</string>
+    <string name="report_expense_analysis_categories_all_expense_categories">All Expense Categories</string>
+    <string name="report_expense_analysis_viewedby">Viewed by</string>
+    <string name="report_expense_analysis_categories_income">Income</string>
+    <string name="report_expense_analysis_categories_expense">Expense</string>
     <string name="report_expense_analysis_accounts">Accounts</string>
     <string name="report_expense_analysis_accounts_all_accounts">All Accounts</string>
+    <string-array name="report_expense_analysis_ar_viewedby">
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Quarterly</item>
+        <item>Yearly</item>
+    </string-array>
 
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
@@ -218,6 +230,7 @@
     <string name="title_event">Event</string>
     <string name="title_report_evi_account">Account</string>
     <string name="title_report_evi_time">Time</string>
+    <string name="title_report_expense_analysis_category">Categories</string>
 
     <string name="Save">Save</string>
     <string name="Delete">Delete</string>

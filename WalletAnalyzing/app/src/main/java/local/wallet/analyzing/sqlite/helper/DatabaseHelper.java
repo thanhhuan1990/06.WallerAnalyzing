@@ -361,8 +361,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return category_id;
     }
 
-    /*
-     * get single CATEGORY
+    /**
+     * Get Category by ID
+     * @param category_id
+     * @return Category
      */
     public Category getCategory(long category_id) {
         enter(TAG, "Id " + category_id);
@@ -392,6 +394,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Get Category LIKE name
+     * @param category_name
+     * @return Category
+     */
     public Category getCategory(String category_name) {
         enter(TAG, "Name " + category_name);
 
@@ -420,13 +427,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Getting all CATEGORIES
-     * */
-    public List<Category> getAllCategories(boolean expense, boolean borrow) {
+     * Get All Categories without condition
+     * @return List<Category>
+     */
+    public List<Category> getAllCategories() {
         enter(TAG, null);
 
         List<Category> categorys = new ArrayList<Category>();
-        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_BORROW + " = " + (borrow ? 1 : 0);
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY;
 
         trace(TAG, selectQuery);
 
@@ -454,8 +462,83 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Getting all PARENT_CATEGORIES
-     * */
+     * Get All Categories with condition
+     * @param expense
+     * @param borrow
+     * @return
+     */
+    public List<Category> getAllCategories(boolean expense, boolean borrow) {
+        enter(TAG, null);
+
+        List<Category> categories = new ArrayList<Category>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_BORROW + " = " + (borrow ? 1 : 0);
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
+                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
+                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+
+                // adding to kinds list
+                categories.add(category);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, null);
+
+        return categories;
+    }
+
+    /**
+     * Get all parent category without condition
+     * @return
+     */
+    public List<Category> getAllParentCategories() {
+        enter(TAG, null);
+
+        List<Category> categories = new ArrayList<Category>();
+        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_PARENT_ID + " = 0";
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
+                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
+                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+
+                // adding to kinds list
+                categories.add(category);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "categories size = " + categories.size());
+
+        return categories;
+    }
+
+    /**
+     * Get all parent category with condition
+     * @param expense
+     * @param borrow
+     * @return
+     */
     public List<Category> getAllParentCategories(boolean expense, boolean borrow) {
         enter(TAG, null);
 
@@ -953,7 +1036,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Transaction> getTransactionsByTimeAndCategory(int[] categories, Calendar startDate, Calendar endDate) {
-        enter(TAG, "categories = " + (categories != null ? categories.toString() : "") + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate);
+        enter(TAG, "categories = " + (categories != null ? categories.toString() : "")
+                + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "null")
+                + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "null"));
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -1001,7 +1086,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext()) ;
         }
 
-        leave(TAG, "categories = " + (categories != null ? categories.toString() : "") + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
+        leave(TAG, "categories = " + (categories != null ? categories.toString() : "") + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "null")
+                + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "null"), transactions.toString());
 
         return transactions;
 
@@ -1073,6 +1159,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Get Transaction by Category, Account, Time
+     * @param categories
+     * @param accounts
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     public List<Transaction> getTransactionsByTimeCategoryAccount(int[] categories, int[] accounts, Calendar startDate, Calendar endDate) {
         enter(TAG, "categories = " + (categories != null ? categories.toString() : "")
                 + "accounts = " + (accounts != null ? accounts.toString() : "")
