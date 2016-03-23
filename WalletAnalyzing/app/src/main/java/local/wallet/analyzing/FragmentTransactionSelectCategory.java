@@ -20,6 +20,7 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
@@ -28,7 +29,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentTransactionSelectCategory extends Fragment {
 
-    private static final String Tag = "TransactionCategorySelect";
+    public static final String Tag = "TransactionCategorySelect";
 
     private String              mTagOfSource = "";
     private TransactionEnum     mCurrentTransactionType     = TransactionEnum.Expense;
@@ -41,6 +42,8 @@ public class FragmentTransactionSelectCategory extends Fragment {
 
     private Button              btnExpense;
     private Button              btnBorrow;
+
+    private FragmentTransactionCreateHost.OnSetupData       mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class FragmentTransactionSelectCategory extends Fragment {
         mTagOfSource                    = bundle.getString("Tag");
         mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mUsingCategoryId                = bundle.getInt("CategoryID", 0);
+        mCallback                       = (FragmentTransactionCreateHost.OnSetupData) bundle.getSerializable("Callback");
 
         LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
@@ -67,11 +71,6 @@ public class FragmentTransactionSelectCategory extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        // Set this fragment tag to ActivityMain
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentNewTransactionSelectCategory(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_category_select, container, false);
     }
@@ -99,7 +98,9 @@ public class FragmentTransactionSelectCategory extends Fragment {
 
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
-                List<Category> arParentCategories = mDbHelper.getAllParentCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
+                List<Category> arParentCategories = mDbHelper.getAllParentCategories(
+                        ((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false)
+                        , EnumDebt.NONE);
                 for (Category category : arParentCategories) {
                     arCategoriesView.add(new CategoryView(category, true));
                     List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
@@ -125,8 +126,21 @@ public class FragmentTransactionSelectCategory extends Fragment {
 
                 /* Change datasource and update listview */
                 arCategoriesView.clear();
-                List<Category> arParentCategories = mDbHelper.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), true);
-                for(Category category : arParentCategories) {
+                List<Category> arParentLendCategories = mDbHelper.getAllCategories(
+                        ((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false)
+                        , EnumDebt.MORE);
+                for(Category category : arParentLendCategories) {
+                    arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
+                    List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
+                    for(Category cate : arCategories) {
+                        arCategoriesView.add(new CategoryView(cate, true));
+                    }
+                }
+
+                List<Category> arParentRepaymentCategories = mDbHelper.getAllCategories(
+                        ((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false)
+                        , EnumDebt.LESS);
+                for(Category category : arParentRepaymentCategories) {
                     arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
                     List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
                     for(Category cate : arCategories) {
@@ -174,7 +188,7 @@ public class FragmentTransactionSelectCategory extends Fragment {
                 bundle.putSerializable("TransactionType", mCurrentTransactionType);
                 nextFrag.setArguments(bundle);
                 FragmentTransactionSelectCategory.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_transaction_create, nextFrag, "FragmentCategoryCreate")
+                        .add(R.id.ll_transaction_create, nextFrag, FragmentCategoryCreate.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -183,7 +197,9 @@ public class FragmentTransactionSelectCategory extends Fragment {
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
         arCategoriesView.clear();
-        List<Category> arParentCategories = mDbHelper.getAllCategories(((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false), false);
+        List<Category> arParentCategories = mDbHelper.getAllCategories(
+                ((mCurrentTransactionType == TransactionEnum.Expense || mCurrentTransactionType == TransactionEnum.Transfer) ? true : false)
+                , EnumDebt.NONE);
         for(Category category : arParentCategories) {
             arCategoriesView.add(new CategoryView(category, category.getParentId() == 0 ? true : false));
             List<Category> arCategories = mDbHelper.getCategoriesByParent(category.getId());
@@ -245,22 +261,31 @@ public class FragmentTransactionSelectCategory extends Fragment {
             llCategory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+                    mCallback.updateCategory(mCurrentTransactionType, category.category.getId());
+//                    Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
+//
+//                    if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
+//
+//                        ((FragmentTransactionCreateExpense) fragment).updateCategory(mCurrentTransactionType, category.category.getId());
+//
+//                    } else if(mTagOfSource.equals(FragmentTransactionCreateExpenseLend.Tag)) {
+//
+//                        ((FragmentTransactionCreateExpenseLend) fragment).updateCategory(mCurrentTransactionType, category.category.getId());
+//
+//                    } else if(mTagOfSource.equals(FragmentTransactionCreateExpenseRepayment.Tag)) {
+//
+//                        ((FragmentTransactionCreateExpenseRepayment) fragment).updateCategory(mCurrentTransactionType, category.category.getId());
+//
+//                    } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
+//
+//                        LogUtils.trace(Tag, "Setup for TransactionUpdate");
+//                        String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+//                        FragmentTransactionUpdate fragmentTransactionUpdate = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+//                        fragmentTransactionUpdate.updateCategory(mCurrentTransactionType, category.category.getId());
+//
+//                    }
 
-                        LogUtils.trace(Tag, "Setup for TransactionCreate");
-                        FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
-                        fragment.updateCategory(mCurrentTransactionType, category.category.getId());
-
-                    } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
-
-                        LogUtils.trace(Tag, "Setup for TransactionUpdate");
-                        String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-                        FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                        fragment.updateCategory(mCurrentTransactionType, category.category.getId());
-
-                    }
-
-                    // Back to FragmentTransactionNew
+                    // Back
                     getFragmentManager().popBackStackImmediate();
                 }
             });

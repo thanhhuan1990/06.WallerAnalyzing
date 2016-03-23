@@ -28,7 +28,7 @@ import local.wallet.analyzing.model.Account;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentListAccount extends Fragment {
-    private static final String Tag         = "ListAccount";
+    public static final String Tag         = "ListAccount";
 
     private static FragmentListAccount instance;
 
@@ -94,7 +94,7 @@ public class FragmentListAccount extends Fragment {
                 bundle.putInt("AccountID", accAdapter.getItem(position).getId());
                 nextFrag.setArguments(bundle);
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, "FragmentAccountTransactions")
+                        .add(R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag)
                         .addToBackStack(null)
                         .commit();
 
@@ -142,7 +142,7 @@ public class FragmentListAccount extends Fragment {
                 LogUtils.trace(Tag, "Click Menu Action Add Account.");
                 FragmentAccountCreate nextFrag = new FragmentAccountCreate();
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, "FragmentAccountCreate")
+                        .add(R.id.layout_account, nextFrag, FragmentAccountCreate.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -299,7 +299,7 @@ public class FragmentListAccount extends Fragment {
                         bundle.putInt("AccountID", listAccount.get(position).getId());
                         nextFrag.setArguments(bundle);
                         FragmentListAccount.this.getFragmentManager().beginTransaction()
-                                .add(R.id.layout_account, nextFrag, "FragmentAccountUpdate")
+                                .add(R.id.layout_account, nextFrag, FragmentAccountUpdate.Tag)
                                 .addToBackStack(null)
                                 .commit();
                     }

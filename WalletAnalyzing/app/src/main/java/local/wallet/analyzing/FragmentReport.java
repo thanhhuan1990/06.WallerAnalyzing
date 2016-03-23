@@ -24,7 +24,7 @@ import local.wallet.analyzing.Utils.LogUtils;
  */
 public class FragmentReport extends Fragment {
 
-    private static final String Tag = "Report";
+    public static final String Tag = "Report";
 
     private Spinner             spReportType;
     private int                 mCurrentReportType = 0;
@@ -106,13 +106,13 @@ public class FragmentReport extends Fragment {
      * Start Fragment ExpenseVsIncome (EVI)
      */
     private void showExpenseVsIncome() {
-        FragmentReportEVI myFragment = (FragmentReportEVI)getFragmentManager().findFragmentByTag("FragmentReportEVI");
+        FragmentReportEVI myFragment = (FragmentReportEVI)getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag);
         if (myFragment != null && myFragment.isVisible()) {
             return;
         }
         FragmentReportEVI nextFrag = new FragmentReportEVI();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, "FragmentReportEVI")
+                .replace(R.id.ll_report, nextFrag, FragmentReportEVI.Tag)
                 .commit();
     }
 
@@ -126,7 +126,7 @@ public class FragmentReport extends Fragment {
         }
         FragmentReportExpenseAnalysis nextFrag = new FragmentReportExpenseAnalysis();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, "FragmentReportExpenseAnalysis")
+                .replace(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysis.Tag)
                 .commit();
     }
 
@@ -134,13 +134,13 @@ public class FragmentReport extends Fragment {
      * Start Fragment FinancialStatement
      */
     private void showFinancialStatement() {
-        FragmentReportFinancialStatement myFragment = (FragmentReportFinancialStatement)getFragmentManager().findFragmentByTag("FragmentReportFinancialStatement");
+        FragmentReportFinancialStatement myFragment = (FragmentReportFinancialStatement)getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag);
         if (myFragment != null && myFragment.isVisible()) {
             return;
         }
         FragmentReportFinancialStatement nextFrag = new FragmentReportFinancialStatement();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, "FragmentReportFinancialStatement")
+                .replace(R.id.ll_report, nextFrag, FragmentReportFinancialStatement.Tag)
                 .commit();
     }
 
@@ -148,13 +148,13 @@ public class FragmentReport extends Fragment {
      * Start Fragment ReportEvent
      */
     private void showListEvents() {
-        FragmentReportEvent myFragment = (FragmentReportEvent)getFragmentManager().findFragmentByTag("FragmentReportEvent");
+        FragmentReportEvent myFragment = (FragmentReportEvent)getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag);
         if (myFragment != null && myFragment.isVisible()) {
             return;
         }
         FragmentReportEvent nextFrag = new FragmentReportEvent();
         FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, "FragmentReportEvent")
+                .replace(R.id.ll_report, nextFrag, FragmentReportEvent.Tag)
                 .commit();
     }
 

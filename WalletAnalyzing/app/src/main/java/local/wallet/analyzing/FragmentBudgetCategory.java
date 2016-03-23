@@ -23,6 +23,7 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
@@ -30,7 +31,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentBudgetCategory extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
-    private static final String Tag = "BudgetCategory";
+    public static final String Tag = "BudgetCategory";
 
     private DatabaseHelper      mDbHelper;
 
@@ -93,8 +94,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
                     LogUtils.trace(Tag, "Categories: " + Arrays.toString(categories));
 
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentBudgetCreate();
-                    FragmentBudgetCreateUpdateDelete fragment = (FragmentBudgetCreateUpdateDelete) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    FragmentBudgetCUD fragment = (FragmentBudgetCUD) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentBudgetCUD.Tag);
                     fragment.updateCategory(categories);
 
                     getFragmentManager().popBackStackImmediate();
@@ -123,7 +123,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
         arCategoriesView.clear();
-        List<Category> arParentCategories = mDbHelper.getAllParentCategories(true, false);
+        List<Category> arParentCategories = mDbHelper.getAllParentCategories(true, EnumDebt.NONE);
         for(Category category : arParentCategories) {
 
             arCategoriesView.add(new CategoryView(category, true, checkContain(category.getId())));
@@ -141,7 +141,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
         tbAllCategory.setOnCheckedChangeListener(this);
-        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories(true, false).size()) {
+        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories(true, EnumDebt.NONE).size()) {
             tbAllCategory.setChecked(true);
         } else {
             tbAllCategory.setChecked(false);

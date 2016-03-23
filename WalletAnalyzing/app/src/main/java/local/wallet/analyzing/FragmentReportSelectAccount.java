@@ -32,7 +32,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentReportSelectAccount extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportEVIAccount";
+    public static final String Tag = "ReportEVIAccount";
 
     private DatabaseHelper          mDbHelper;
     private Configurations          mConfigs;
@@ -193,14 +193,17 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
                     }
 
                     LogUtils.trace(Tag, "Accounts: " + Arrays.toString(accounts));
-                    if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportEVI())) {
-                        LogUtils.trace(Tag, "Setup Account for FragmentReportEVI");
-                        FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
-                        fragment.updateAccount(accounts);
-                    } else if(tagOfSource.equals(((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis())) {
-                        LogUtils.trace(Tag, "Setup Account for FragmentReportExpenseAnalysis");
-                        FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
-                        fragment.updateAccount(accounts);
+
+                    Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
+
+                    if(tagOfSource.equals(FragmentReportEVI.Tag)) {
+
+                        ((FragmentReportEVI) fragment).updateAccount(accounts);
+
+                    } else if(tagOfSource.equals(FragmentReportExpenseAnalysis.Tag)) {
+
+                        ((FragmentReportExpenseAnalysis) fragment).updateAccount(accounts);
+
                     }
 
                     getFragmentManager().popBackStackImmediate();

@@ -53,7 +53,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEVI extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportEVI";
+    public static final String Tag = "ReportEVI";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -73,10 +73,6 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentReportEVI(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_report_evi, container, false);
     }
@@ -249,7 +245,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 bundle.putLong("ToDate", tomorrow.getTimeInMillis());
                 nextFrag.setArguments(bundle);
                 FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -312,7 +308,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 bundle.putLong("ToDate", calStartOfNextWeek.getTimeInMillis());
                 nextFrag.setArguments(bundle);
                 FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -373,7 +369,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 bundle.putLong("ToDate", calStartOfNextMonth.getTimeInMillis());
                 nextFrag.setArguments(bundle);
                 FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -433,7 +429,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 bundle.putLong("ToDate", calStartOfNextYear.getTimeInMillis());
                 nextFrag.setArguments(bundle);
                 FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -570,7 +566,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                             bundle.putLong("ToDate", fEndDate);
                             nextFrag.setArguments(bundle);
                             FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                                    .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                                     .addToBackStack(null)
                                     .commit();
                         }
@@ -686,7 +682,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                             bundle.putLong("ToDate", fEndDate);
                             nextFrag.setArguments(bundle);
                             FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                                    .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                                     .addToBackStack(null)
                                     .commit();
                         }
@@ -791,7 +787,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                         bundle.putLong("ToDate", fEndDate);
                         nextFrag.setArguments(bundle);
                         FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, "FragmentReportEVITransactions")
+                                .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
                                 .addToBackStack(null)
                                 .commit();
                     }
@@ -849,7 +845,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         //region get expense data from Database
         final ArrayList<CategoryEVI> arData = new ArrayList<CategoryEVI>();
 
-        List<Category> arParentExpenseCategory = mDbHelper.getAllParentCategories(true, false);
+        List<Category> arParentExpenseCategory = mDbHelper.getAllParentCategories(true);
         for(Category parentCate : arParentExpenseCategory) {
             List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
             double amount = 0.0;
@@ -867,23 +863,23 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             }
         }
 
-        List<Category> arParentExpenseCategoryLoan = mDbHelper.getAllParentCategories(true, true);
-        for(Category parentCate : arParentExpenseCategoryLoan) {
-            List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
-            double amount = 0.0;
-            for(Category cate : arExpenseCategory) {
-                List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
-
-                for(Transaction tran : arTransaction) {
-                    amount += tran.getAmount();
-                }
-
-            }
-
-            if(amount != 0) {
-                arData.add(new CategoryEVI(parentCate, amount));
-            }
-        }
+//        List<Category> arParentExpenseCategoryLoan = mDbHelper.getAllParentCategories(true, true);
+//        for(Category parentCate : arParentExpenseCategoryLoan) {
+//            List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
+//            double amount = 0.0;
+//            for(Category cate : arExpenseCategory) {
+//                List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
+//
+//                for(Transaction tran : arTransaction) {
+//                    amount += tran.getAmount();
+//                }
+//
+//            }
+//
+//            if(amount != 0) {
+//                arData.add(new CategoryEVI(parentCate, amount));
+//            }
+//        }
 
         Collections.sort(arData, new Comparator<CategoryEVI>() {
             @Override
@@ -1034,7 +1030,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         //region get income data from Database
         final ArrayList<CategoryEVI> arDataIncome = new ArrayList<CategoryEVI>();
 
-        List<Category> arIncomeCategory = mDbHelper.getAllCategories(false, false);
+        List<Category> arIncomeCategory = mDbHelper.getAllCategories(false);
         for(Category cate : arIncomeCategory) {
             List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
             double cateAmount = 0.0;
@@ -1047,18 +1043,18 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             }
         }
 
-        List<Category> arIncomeCategoryLoan = mDbHelper.getAllCategories(false, true);
-        for(Category cate : arIncomeCategoryLoan) {
-            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
-            double cateAmount = 0.0;
-            for(Transaction tran : arTransaction) {
-                cateAmount += tran.getAmount();
-            }
-
-            if(cateAmount != 0) {
-                arDataIncome.add(new CategoryEVI(cate, cateAmount));
-            }
-        }
+//        List<Category> arIncomeCategoryLoan = mDbHelper.getAllCategories(false, true);
+//        for(Category cate : arIncomeCategoryLoan) {
+//            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId, mFromDate, mToDate);
+//            double cateAmount = 0.0;
+//            for(Transaction tran : arTransaction) {
+//                cateAmount += tran.getAmount();
+//            }
+//
+//            if(cateAmount != 0) {
+//                arDataIncome.add(new CategoryEVI(cate, cateAmount));
+//            }
+//        }
 
         Collections.sort(arDataIncome, new Comparator<CategoryEVI>() {
             @Override
@@ -1349,11 +1345,11 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
-        bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportEVI());
+        bundle.putString("Fragment", Tag);
         bundle.putIntArray("Accounts", mAccountId);
         nextFrag.setArguments(bundle);
         FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportSelectAccount")
+                .add(R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag)
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -1417,7 +1413,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         bundle.putLong("ToDate", mToDate.getTimeInMillis());
         nextFrag.setArguments(bundle);
         FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportEVISelectTime")
+                .add(R.id.ll_report, nextFrag, FragmentReportEVISelectTime.Tag)
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);

@@ -30,7 +30,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentPayee extends Fragment {
 
-    private static final String     Tag                     = "FragmentPayee";
+    public static final String     Tag                     = "FragmentPayee";
 
     private DatabaseHelper          mDbHelper;
 
@@ -67,12 +67,7 @@ public class FragmentPayee extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
-
         return inflater.inflate(R.layout.layout_fragment_payee, container, false);
     }
 
@@ -119,12 +114,21 @@ public class FragmentPayee extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(Tag, "Click Menu Action Done.");
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
 
-                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
 
-                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
+                if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
+
+                    ((FragmentTransactionCreateExpense) fragment).updatePayee(mCurrentTransactionType, etPayee.getText().toString());
+
+                }
+
+                /*if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionCreateExpense())) {
+
+                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreateExpense");
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionCreateExpense();
+                    FragmentTransactionCreateExpense fragment = (FragmentTransactionCreateExpense) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
@@ -135,7 +139,7 @@ public class FragmentPayee extends Fragment {
                     fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
 
                 }
-
+*/
                 // Back
                 getFragmentManager().popBackStackImmediate();
             }

@@ -36,7 +36,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportExpenseAnalysis extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportExpenseAnalysis";
+    public static final String Tag = "ReportExpenseAnalysis";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -58,10 +58,6 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentReportExpenseAnalysis(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_report_expense_analysis, container, false);
     }
@@ -342,11 +338,11 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportExpenseAnalysisCategory nextFrag = new FragmentReportExpenseAnalysisCategory();
         Bundle bundle = new Bundle();
-        bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis());
+        bundle.putString("Fragment", Tag);
         bundle.putIntArray("Categories", mCategoryId);
         nextFrag.setArguments(bundle);
         FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "ReportExpenseAnalysisCategory")
+                .add(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisCategory.Tag)
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -363,9 +359,9 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
 
         if(categoryId.length == mDbHelper.getAllCategories().size()) {
             tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_categories));
-        } else if(categoryId.length == (mDbHelper.getAllCategories(true, false).size() + mDbHelper.getAllCategories(true, true).size())) {
+        } else if(categoryId.length == (mDbHelper.getAllCategories(true).size())) {
             tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_expense_categories));
-        } else if(categoryId.length == (mDbHelper.getAllCategories(false, false).size() + mDbHelper.getAllCategories(false, true).size())) {
+        } else if(categoryId.length == (mDbHelper.getAllCategories(false).size())) {
             tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_income_categories));
         } else {
             String category = "";
@@ -391,11 +387,11 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
-        bundle.putString("Fragment", ((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis());
+        bundle.putString("Fragment", Tag);
         bundle.putIntArray("Accounts", mAccountId);
         nextFrag.setArguments(bundle);
         FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportSelectAccount")
+                .add(R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag)
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -439,7 +435,7 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         bundle.putInt("Time", mViewedBy);
         nextFrag.setArguments(bundle);
        FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, "FragmentReportExpenseAnalysisTime")
+                .add(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisTime.Tag)
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);

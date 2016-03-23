@@ -19,6 +19,7 @@ import java.util.Locale;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Kind;
 import local.wallet.analyzing.model.Transaction;
@@ -58,7 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // CATEGORY Table - column names
     private static final String KEY_CATEGORY_PARENT_ID          = "parent_id";
     private static final String KEY_CATEGORY_EXPENSE            = "expense";
-    private static final String KEY_CATEGORY_BORROW             = "borrow";
+    private static final String KEY_CATEGORY_DEBT               = "debt";
 
     // Table ACCOUNT - column names
     private static final String KEY_ACCOUNT_TYPE_ID             = "type_id";
@@ -118,57 +119,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // CATEGORY table create statement
     private static final String CREATE_TABLE_CATEGORY = "CREATE TABLE "
             + TABLE_CATEGORY+ "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_CATEGORY_PARENT_ID + " INTEGER DEFAULT 0, "
-            + KEY_NAME + " TEXT, "
-            + KEY_CATEGORY_EXPENSE + " INTEGER, "
-            + KEY_CATEGORY_BORROW + " INTEGER" + ")";
+            + KEY_ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_CATEGORY_PARENT_ID    + " INTEGER DEFAULT 0, "
+            + KEY_NAME                  + " TEXT, "
+            + KEY_CATEGORY_EXPENSE      + " INTEGER, "
+            + KEY_CATEGORY_DEBT         + " INTEGER" + ")";
 
     // ACCOUNT table create statement
     private static final String CREATE_TABLE_ACCOUNT = "CREATE TABLE "
             + TABLE_ACCOUNT + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_NAME + " TEXT,"
-            + KEY_ACCOUNT_TYPE_ID + " INTEGER,"
-            + KEY_ACCOUNT_CURRENCY + " INTEGER, "
-            + KEY_ACCOUNT_INITIAL_BALANCE + " DOUBLE,"
-            + KEY_ACCOUNT_DESCRIPTION + " TEXT" + ")";
+            + KEY_ID                        + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_NAME                      + " TEXT,"
+            + KEY_ACCOUNT_TYPE_ID           + " INTEGER,"
+            + KEY_ACCOUNT_CURRENCY          + " INTEGER, "
+            + KEY_ACCOUNT_INITIAL_BALANCE   + " DOUBLE,"
+            + KEY_ACCOUNT_DESCRIPTION       + " TEXT" + ")";
 
     // TRANSACTION table create statement
     private static final String CREATE_TABLE_TRANSACTION = "CREATE TABLE "
             + TABLE_TRANSACTION + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_TRANSACTION_TYPE + " INTEGER,"
-            + KEY_TRANSACTION_AMOUNT + " DOUBLE,"
-            + KEY_TRANSACTION_DESCRIPTION + " TEXT,"
-            + KEY_TRANSACTION_CATEGORY_ID + " INTEGER,"
-            + KEY_TRANSACTION_FROM_ACCOUNT_ID + " INTEGER,"
-            + KEY_TRANSACTION_TO_ACCOUNT_ID + " INTEGER,"
-            + KEY_TRANSACTION_TIME + " DATETIME,"
-            + KEY_TRANSACTION_FEE + " DOUBLE,"
-            + KEY_TRANSACTION_PAYEE + " TEXT,"
-            + KEY_TRANSACTION_EVENT + " INTEGER" + ")";
+            + KEY_ID                            + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_TRANSACTION_TYPE              + " INTEGER,"
+            + KEY_TRANSACTION_AMOUNT            + " DOUBLE,"
+            + KEY_TRANSACTION_DESCRIPTION       + " TEXT,"
+            + KEY_TRANSACTION_CATEGORY_ID       + " INTEGER,"
+            + KEY_TRANSACTION_FROM_ACCOUNT_ID   + " INTEGER,"
+            + KEY_TRANSACTION_TO_ACCOUNT_ID     + " INTEGER,"
+            + KEY_TRANSACTION_TIME              + " DATETIME,"
+            + KEY_TRANSACTION_FEE               + " DOUBLE,"
+            + KEY_TRANSACTION_PAYEE             + " TEXT,"
+            + KEY_TRANSACTION_EVENT             + " INTEGER" + ")";
 
     // BUDGET table create statement
     private static final String CREATE_TABLE_BUDGET = "CREATE TABLE "
             + TABLE_BUDGET + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_NAME + " TEXT,"
-            + KEY_BUDGET_AMOUNT + " DOUBLE,"
-            + KEY_BUDGET_CATEGORY + " TEXT,"
-            + KEY_BUDGET_CURRENCY + " INTEGER, "
-            + KEY_BUDGET_REPEAT_TYPE + " INTEGER,"
-            + KEY_START_DATE + " DATETIME,"
-            + KEY_END_DATE + " DATETIME,"
-            + KEY_BUDGET_INCREMENTAL + " INTEGER)";
+            + KEY_ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_NAME                  + " TEXT,"
+            + KEY_BUDGET_AMOUNT         + " DOUBLE,"
+            + KEY_BUDGET_CATEGORY       + " TEXT,"
+            + KEY_BUDGET_CURRENCY       + " INTEGER, "
+            + KEY_BUDGET_REPEAT_TYPE    + " INTEGER,"
+            + KEY_START_DATE            + " DATETIME,"
+            + KEY_END_DATE              + " DATETIME,"
+            + KEY_BUDGET_INCREMENTAL    + " INTEGER)";
 
     // EVENT table create statement
     private static final String CREATE_TABLE_EVENT = "CREATE TABLE "
             + TABLE_EVENT + "("
-            + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + KEY_NAME + " TEXT,"
-            + KEY_START_DATE + " DATETIME,"
-            + KEY_END_DATE + " DATETIME)";
+            + KEY_ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_NAME                  + " TEXT,"
+            + KEY_START_DATE            + " DATETIME,"
+            + KEY_END_DATE              + " DATETIME)";
 
 
     public DatabaseHelper(Context context) {
@@ -334,16 +335,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /*
      * Creating a CATEGORY
      */
-    public long createCategory(int parentId, String name, boolean expense, boolean borrow) {
-        enter(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", borrow = " + borrow );
+    public long createCategory(int parentId, String name, boolean expense, EnumDebt debt) {
+        enter(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt );
         SQLiteDatabase db = this.getWritableDatabase();
 
-        List<Category> categories = getAllCategories(expense, borrow);
+        List<Category> categories = getAllCategories(expense, debt);
 
         for(Category category : categories) {
             if(name.equals(category.getName())) {
                 trace(TAG, "Category " + name + " is existed!");
-                leave(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", borrow = " + borrow, ERROR_DB_EXISTED + "");
+                leave(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt, ERROR_DB_EXISTED + "");
                 return ERROR_DB_EXISTED;
             }
         }
@@ -352,12 +353,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_CATEGORY_PARENT_ID, parentId);
         values.put(KEY_NAME, name);
         values.put(KEY_CATEGORY_EXPENSE, expense ? 1 : 0);
-        values.put(KEY_CATEGORY_BORROW, borrow ? 1 : 0);
+        values.put(KEY_CATEGORY_DEBT, debt.getValue());
 
         // insert row
         long category_id = db.insert(TABLE_CATEGORY, null, values);
 
-        leave(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", borrow = " + borrow, "New Category's id: " + category_id);
+        leave(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt, "New Category's id: " + category_id);
         return category_id;
     }
 
@@ -384,7 +385,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             category.setParentId(c.getInt(c.getColumnIndex(KEY_CATEGORY_PARENT_ID)));
             category.setName(c.getString(c.getColumnIndex(KEY_NAME)));
             category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-            category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+            category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
             leave(TAG, "Id " + category_id, category.toString());
 
@@ -419,83 +420,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         category.setParentId(c.getInt(c.getColumnIndex(KEY_CATEGORY_PARENT_ID)));
         category.setName(c.getString(c.getColumnIndex(KEY_NAME)));
         category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-        category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+        category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
         leave(TAG, "Name " + category_name, category.toString());
 
         return category;
-    }
-
-    /**
-     * Get All Categories without condition
-     * @return List<Category>
-     */
-    public List<Category> getAllCategories() {
-        enter(TAG, null);
-
-        List<Category> categorys = new ArrayList<Category>();
-        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY;
-
-        trace(TAG, selectQuery);
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Category category = new Category();
-                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
-                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
-                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
-                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
-
-                // adding to kinds list
-                categorys.add(category);
-            } while (c.moveToNext());
-        }
-
-        leave(TAG, null, null);
-
-        return categorys;
-    }
-
-    /**
-     * Get All Categories with condition
-     * @param expense
-     * @param borrow
-     * @return
-     */
-    public List<Category> getAllCategories(boolean expense, boolean borrow) {
-        enter(TAG, null);
-
-        List<Category> categories = new ArrayList<Category>();
-        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_BORROW + " = " + (borrow ? 1 : 0);
-
-        trace(TAG, selectQuery);
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (c.moveToFirst()) {
-            do {
-                Category category = new Category();
-                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
-                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
-                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
-                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
-
-                // adding to kinds list
-                categories.add(category);
-            } while (c.moveToNext());
-        }
-
-        leave(TAG, null, null);
-
-        return categories;
     }
 
     /**
@@ -521,7 +450,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
                 category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+                category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
                 // adding to kinds list
                 categories.add(category);
@@ -534,16 +463,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Get all parent category with condition
+     * Get all parent category with condition is true = Expense or false = Income
      * @param expense
-     * @param borrow
      * @return
      */
-    public List<Category> getAllParentCategories(boolean expense, boolean borrow) {
+    public List<Category> getAllParentCategories(boolean expense) {
         enter(TAG, null);
 
         List<Category> categories = new ArrayList<Category>();
-        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_BORROW + " = " + (borrow ? 1 : 0) + " AND " + KEY_CATEGORY_PARENT_ID + " = 0";
+        String selectQuery = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_PARENT_ID + " = 0 AND " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0);
 
         trace(TAG, selectQuery);
 
@@ -558,7 +486,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
                 category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+                category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
                 // adding to kinds list
                 categories.add(category);
@@ -569,6 +497,153 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return categories;
     }
+
+    /**
+     * Get all parent category with condition
+     * @param expense
+     * @param debt
+     * @return
+     */
+    public List<Category> getAllParentCategories(boolean expense, EnumDebt debt) {
+        enter(TAG, null);
+
+        List<Category> categories = new ArrayList<Category>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_DEBT+ " = " + debt.getValue() + " AND " + KEY_CATEGORY_PARENT_ID + " = 0";
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
+                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
+                category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
+
+                // adding to kinds list
+                categories.add(category);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "categories size = " + categories.size());
+
+        return categories;
+    }
+
+    /**
+     * Get All Categories without condition
+     * @return List<Category>
+     */
+    public List<Category> getAllCategories() {
+        enter(TAG, null);
+
+        List<Category> categorys = new ArrayList<Category>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
+                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
+                category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
+
+                // adding to kinds list
+                categorys.add(category);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, null);
+
+        return categorys;
+    }
+
+    /**
+     * Get All Categories with condition
+     * @param expense
+     * @param debt
+     * @return
+     */
+    public List<Category> getAllCategories(boolean expense) {
+        enter(TAG, null);
+
+        List<Category> categories = new ArrayList<Category>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0);
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
+                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
+                category.setDebtType(EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
+
+                // adding to kinds list
+                categories.add(category);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, null);
+
+        return categories;
+    }
+
+    /**
+     * Get All Categories with condition
+     * @param expense
+     * @param debt
+     * @return
+     */
+    public List<Category> getAllCategories(boolean expense, EnumDebt debt) {
+        enter(TAG, null);
+
+        List<Category> categories = new ArrayList<Category>();
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_DEBT + " = " + debt.getValue();
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
+                category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
+                category.setDebtType(EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
+
+                // adding to kinds list
+                categories.add(category);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, null);
+
+        return categories;
+    }
+
 
     /**
      * Getting all CATEGORIES follow ParentID
@@ -592,7 +667,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 category.setParentId(c.getInt((c.getColumnIndex(KEY_CATEGORY_PARENT_ID))));
                 category.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
-                category.setBorrow(c.getInt(c.getColumnIndex(KEY_CATEGORY_BORROW)) == 1 ? true : false);
+                category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
                 // adding to kinds list
                 categories.add(category);
@@ -636,7 +711,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_CATEGORY_PARENT_ID, category.getParentId());
         values.put(KEY_NAME, category.getName());
         values.put(KEY_CATEGORY_EXPENSE, category.isExpense() ? 1 : 0);
-        values.put(KEY_CATEGORY_BORROW, category.isBorrow() ? 1 : 0);
+        values.put(KEY_CATEGORY_DEBT, category.getDebtType().getValue());
 
         leave(TAG, null, null);
 
@@ -1946,29 +2021,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void insertDefaultCategories() {
         /* ParentID, Name, Expense, Borrow */
-        createCategory(0, "Lương",                  false, false);
-        createCategory(0, "Thưởng",                 false, false);
-        createCategory(0, "Được cho/tặng",          false, false);
-        createCategory(0, "Tiền lãi",               false, false);
-        createCategory(0, "Khác",                   false, false);
-        createCategory(0, "Lãi tiết kiệm",          false, false);
-        createCategory(0, "Đi vay",                 false, true);
-        createCategory(0, "Thu nợ",                 false, true);
-        createCategory(0, "Dịch vụ sinh hoạt",      true, false);
-        createCategory(0, "Hưởng thụ",              true, false);
-        createCategory(0, "Đi lại",                 true, false);
-        createCategory(0, "Phí phát sinh",          true, false);
-        createCategory(0, "Ăn uống",                true, false);
-        createCategory(0, "Hiếu hỉ",                true, false);
-        createCategory(0, "Tình cảm",               true, false);
-        createCategory(0, "Sức khỏe",               true, false);
-        createCategory(0, "Nhà cửa",                true, false);
-        createCategory(0, "Trang phục",             true, false);
-        createCategory(0, "Phát triển bản thân",    true, false);
-        createCategory(0, "Chưa nhớ",               true, false);
-        createCategory(0, "Khác",                   true, false);
-        createCategory(0, "Cho vay",                true, true);
-        createCategory(0, "Trả nợ",                 true, true);
+        createCategory(0, "Lương",                  false,  EnumDebt.NONE);
+        createCategory(0, "Thưởng",                 false,  EnumDebt.NONE);
+        createCategory(0, "Được cho/tặng",          false,  EnumDebt.NONE);
+        createCategory(0, "Tiền lãi",               false,  EnumDebt.NONE);
+        createCategory(0, "Khác",                   false,  EnumDebt.NONE);
+        createCategory(0, "Lãi tiết kiệm",          false,  EnumDebt.NONE);
+        createCategory(0, "Đi vay",                 false,  EnumDebt.MORE);
+        createCategory(0, "Thu nợ",                 false,  EnumDebt.LESS);
+        createCategory(0, "Dịch vụ sinh hoạt",      true,   EnumDebt.NONE);
+        createCategory(0, "Hưởng thụ",              true,   EnumDebt.NONE);
+        createCategory(0, "Đi lại",                 true,   EnumDebt.NONE);
+        createCategory(0, "Phí phát sinh",          true,   EnumDebt.NONE);
+        createCategory(0, "Ăn uống",                true,   EnumDebt.NONE);
+        createCategory(0, "Hiếu hỉ",                true,   EnumDebt.NONE);
+        createCategory(0, "Tình cảm",               true,   EnumDebt.NONE);
+        createCategory(0, "Sức khỏe",               true,   EnumDebt.NONE);
+        createCategory(0, "Nhà cửa",                true,   EnumDebt.NONE);
+        createCategory(0, "Trang phục",             true,   EnumDebt.NONE);
+        createCategory(0, "Phát triển bản thân",    true,   EnumDebt.NONE);
+        createCategory(0, "Chưa nhớ",               true,   EnumDebt.NONE);
+        createCategory(0, "Khác",                   true,   EnumDebt.NONE);
+        createCategory(0, "Cho vay",                true,   EnumDebt.MORE);
+        createCategory(0, "Trả nợ",                 true,   EnumDebt.LESS);
     }
     //endregion
 

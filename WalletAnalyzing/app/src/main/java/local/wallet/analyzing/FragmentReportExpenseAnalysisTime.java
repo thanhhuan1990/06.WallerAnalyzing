@@ -29,7 +29,7 @@ import local.wallet.analyzing.Utils.LogUtils;
  */
 public class FragmentReportExpenseAnalysisTime extends Fragment {
 
-    private static final String Tag = "ReportExpenseAnalysisTime";
+    public static final String Tag = "ReportExpenseAnalysisTime";
 
     private int             mCurrentTime;
     private String[]        mTimes;
@@ -75,8 +75,7 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String tagOfFragment = ((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis();
-                FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag);
                 fragment.updateTime(position);
 
                 getFragmentManager().popBackStackImmediate();

@@ -49,9 +49,10 @@ public class Currency {
         return currency;
     }
 
-    public static int getCurrencyIcon(CurrencyList currency) {
+    public static int getCurrencyIcon(int currencyId) {
         int strResource = -1;
 
+        CurrencyList currency = getCurrencyById(currencyId);
         switch (currency) {
             case VND:
                 strResource = R.string.currency_icon_vietnam;
@@ -91,7 +92,7 @@ public class Currency {
         return strResource;
     }
 
-    public static String formatCurrencyDouble(CurrencyList currency, Double amount) {
+    public static String formatCurrencyDouble(int currencyId, Double amount) {
         String strResource = "";
 
         DecimalFormat df = new DecimalFormat();
@@ -101,7 +102,7 @@ public class Currency {
         } else {
             df = new DecimalFormat("##,##0.00");
         }
-        switch (currency) {
+        switch (getCurrencyById(currencyId)) {
             case VND:
                 strResource = df.format(amount);
                 break;

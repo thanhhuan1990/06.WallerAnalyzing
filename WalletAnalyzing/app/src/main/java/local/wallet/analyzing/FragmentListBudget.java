@@ -31,7 +31,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentListBudget extends Fragment {
 
-    private static final String Tag = "ListBudget";
+    public static final String Tag = "ListBudget";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -75,7 +75,7 @@ public class FragmentListBudget extends Fragment {
                 bundle.putSerializable("Budget", arBudgets.get(position));
                 nextFrag.setArguments(bundle);
                 FragmentListBudget.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, "FragmentBudgetDetail")
+                        .add(R.id.layout_budget, nextFrag, FragmentBudgetDetail.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -102,9 +102,9 @@ public class FragmentListBudget extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click Menu Action Add Budget.");
-                FragmentBudgetCreateUpdateDelete nextFrag = new FragmentBudgetCreateUpdateDelete();
+                FragmentBudgetCUD nextFrag = new FragmentBudgetCUD();
                 FragmentListBudget.this.getFragmentManager().beginTransaction()
-                                                            .add(R.id.layout_budget, nextFrag, "FragmentBudgetCreateUpdateDelete")
+                                                            .add(R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag)
                                                             .addToBackStack(null)
                                                             .commit();
             }

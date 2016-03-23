@@ -30,7 +30,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportFinancialStatement extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportFinancialStatement";
+    public static final String Tag = "ReportFinancialStatement";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;

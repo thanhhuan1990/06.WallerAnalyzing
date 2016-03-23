@@ -20,6 +20,7 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
@@ -28,7 +29,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentCategoryParentSelect extends Fragment {
 
-    private static final String Tag = "FragmentCategoryParentSelect";
+    public static final String Tag = "FragmentCategoryParentSelect";
 
     private TransactionEnum mTransactionType     = TransactionEnum.Expense;
 
@@ -74,12 +75,10 @@ public class FragmentCategoryParentSelect extends Fragment {
 
         mDbHelper = new DatabaseHelper(getActivity());
 
-        arParentCategories.add(new Category(0, 0, getResources().getString(R.string.new_category_select_as_parent), true, false, null));
-        arParentCategories.addAll(mDbHelper.getAllParentCategories((mTransactionType == TransactionEnum.Expense
-                || mTransactionType == TransactionEnum.Transfer
-                || mTransactionType == TransactionEnum.Adjustment)
-                ? true : false
-                , false));
+        arParentCategories.add(new Category(0, 0, getResources().getString(R.string.new_category_select_as_parent), true, EnumDebt.NONE));
+        arParentCategories.addAll(mDbHelper.getAllParentCategories(
+                (mTransactionType == TransactionEnum.Expense || mTransactionType == TransactionEnum.Transfer || mTransactionType == TransactionEnum.Adjustment) ? true : false
+                , EnumDebt.NONE));
 
         ListView lvParentCategory   = (ListView) getView().findViewById(R.id.lvParentCategory);
         ParentCategoryAdapter accountTypeAdapter = new ParentCategoryAdapter(getActivity(), arParentCategories);
@@ -89,15 +88,10 @@ public class FragmentCategoryParentSelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentCategoryCreate())) {
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
+                if(mTagOfSource.equals(FragmentCategoryCreate.Tag)) {
 
-                    LogUtils.trace(Tag, "Setup for FragmentCategoryCreate");
-                    // Return ParentCategory's Id to FragmentCategoryCreate
-                    String tagOfFragment = ((ActivityMain)getActivity()).getFragmentCategoryCreate();
-                    FragmentCategoryCreate fragment = (FragmentCategoryCreate)getActivity()
-                                                        .getSupportFragmentManager()
-                                                            .findFragmentByTag(tagOfFragment);
-                    fragment.updateParentCategory(arParentCategories.get(position).getId(), false);
+                    ((FragmentCategoryCreate) fragment).updateParentCategory(arParentCategories.get(position).getId(), (arParentCategories.get(position).getDebtType()));
 
                 }
 

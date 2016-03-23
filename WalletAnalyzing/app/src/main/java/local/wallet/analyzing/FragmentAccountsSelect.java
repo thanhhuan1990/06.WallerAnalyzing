@@ -31,7 +31,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentAccountsSelect extends Fragment {
 
-    private static final String TAG = "FragmentAccountsSelect";
+    public static final String Tag = "FragmentAccountsSelect";
 
     private String          mTagOfSource = "";
     private int             mUsingAccountId;
@@ -48,7 +48,7 @@ public class FragmentAccountsSelect extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -60,29 +60,24 @@ public class FragmentAccountsSelect extends Fragment {
         mUsingAccountId                 = bundle.getInt("AccountID", 0);
         mTransactionType               = (TransactionEnum) bundle.get("TransactionType");
 
-        LogUtils.trace(TAG, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(TAG, "mUsingAccountId = " + mUsingAccountId);
-        LogUtils.trace(TAG, "mTransactionType = " + mTransactionType.name());
+        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
+        LogUtils.trace(Tag, "mUsingAccountId = " + mUsingAccountId);
+        LogUtils.trace(Tag, "mTransactionType = " + mTransactionType.name());
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        // Set this fragment tag to ActivityMain
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentNewTransactionSelectAccount(myTag);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_account_select, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -102,18 +97,26 @@ public class FragmentAccountsSelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
 
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate) ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
-                    fragment.updateAccount(mTransactionType, arAccounts.get(position).getId());
+                if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
+
+                    ((FragmentTransactionCreateExpense) fragment).updateAccount(mTransactionType, arAccounts.get(position).getId());
+
+                } else if(mTagOfSource.equals(FragmentTransactionCreateExpenseLend.Tag)) {
+
+                    ((FragmentTransactionCreateExpenseLend) fragment).updateAccount(mTransactionType, arAccounts.get(position).getId());
+
+                } else if(mTagOfSource.equals(FragmentTransactionCreateExpenseRepayment.Tag)) {
+
+                    ((FragmentTransactionCreateExpenseRepayment) fragment).updateAccount(mTransactionType, arAccounts.get(position).getId());
 
                 } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
 
-                    LogUtils.trace(TAG, "Setup for FragmentTransactionUpdate");
+                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
                     String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updateAccount(mTransactionType, arAccounts.get(position).getId());
+                    FragmentTransactionUpdate fragment1 = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    fragment1.updateAccount(mTransactionType, arAccounts.get(position).getId());
 
                 }
 
@@ -128,7 +131,7 @@ public class FragmentAccountsSelect extends Fragment {
         } else {
             tvEmpty.setVisibility(View.VISIBLE);
         }
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -136,7 +139,7 @@ public class FragmentAccountsSelect extends Fragment {
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
             return;
         }
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
         /* Init ActionBar */
@@ -146,7 +149,7 @@ public class FragmentAccountsSelect extends Fragment {
         tvTitle.setText(getResources().getString(R.string.title_account));
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**

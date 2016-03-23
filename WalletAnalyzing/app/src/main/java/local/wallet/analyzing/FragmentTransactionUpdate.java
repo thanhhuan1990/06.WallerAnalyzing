@@ -42,7 +42,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentTransactionUpdate extends Fragment implements  View.OnClickListener {
-    private static final String Tag = "TransactionUpdate";
+    public static final String Tag = "TransactionUpdate";
 
     private Configurations      mConfigs;
     private DatabaseHelper      mDbHelper;
@@ -428,11 +428,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
 
         etExpenseAmount         = (ClearableEditText) getView().findViewById(R.id.etExpenseAmount);
-        etExpenseAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                mTransaction.getAmount()));
+//        etExpenseAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()), mTransaction.getAmount()));
         etExpenseAmount.addTextChangedListener(new CurrencyTextWatcher(etExpenseAmount));
         tvExpenseCurrencyIcon   = (TextView) getView().findViewById(R.id.tvExpenseCurrencyIcon);
-        tvExpenseCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
+//        tvExpenseCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
 
         llExpenseDescription    = (LinearLayout) getView().findViewById(R.id.llExpenseDescription);
         llExpenseDescription.setOnClickListener(this);
@@ -473,11 +472,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
 
         etIncomeAmount          = (ClearableEditText) getView().findViewById(R.id.etIncomeAmount);
-        etIncomeAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mToAccount.getCurrencyId())
-                                                              , mTransaction.getAmount()));
+//        etIncomeAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mToAccount.getCurrencyId()) , mTransaction.getAmount()));
         etIncomeAmount.addTextChangedListener(new CurrencyTextWatcher(etIncomeAmount));
         tvIncomeCurrencyIcon    = (TextView) getView().findViewById(R.id.tvIncomeCurrencyIcon);
-        tvIncomeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId())));
+//        tvIncomeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId())));
 
         llIncomeCategory        = (LinearLayout) getView().findViewById(R.id.llIncomeCategory);
         llIncomeCategory.setOnClickListener(this);
@@ -512,11 +510,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
 
         llTransfer                  = (LinearLayout) getView().findViewById(R.id.llTransfer);
         etTransferAmount            = (ClearableEditText) getView().findViewById(R.id.etTransferAmount);
-        etTransferAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                mTransaction.getAmount()));
+//        etTransferAmount.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()), mTransaction.getAmount()));
         etTransferAmount.addTextChangedListener(new CurrencyTextWatcher(etTransferAmount));
         tvTransferCurrencyIcon      = (TextView) getView().findViewById(R.id.tvTransferCurrencyIcon);
-        tvTransferCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
+//        tvTransferCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
 
         llTransferFromAccount       = (LinearLayout) getView().findViewById(R.id.llTransferFromAccount);
         llTransferFromAccount.setOnClickListener(this);
@@ -539,11 +536,10 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         tvTransferDate.setText(getDateString(mCal));
 
         etTransferFee               = (ClearableEditText) getView().findViewById(R.id.etTransferFee);
-        etTransferFee.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()),
-                                                                                     mTransaction.getFee()));
+//        etTransferFee.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()), mTransaction.getFee()));
         etTransferFee.addTextChangedListener(new CurrencyTextWatcher(etTransferFee));
         tvTransferFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvTransferFeeCurrencyIcon);
-        tvTransferFeeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
+//        tvTransferFeeCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId())));
 
         llTransferCategory          = (LinearLayout) getView().findViewById(R.id.llTransferCategory);
         llTransferCategory.setOnClickListener(this);
@@ -566,7 +562,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
         etAdjustmentBalance         = (ClearableEditText) getView().findViewById(R.id.etAdjustmentBalance);
         etAdjustmentBalance.addTextChangedListener(new CurrencyTextWatcher(etAdjustmentBalance));
         Double remain               = mDbHelper.getAccountRemainAfter(mFromAccount.getId(), mCal);
-        etAdjustmentBalance.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()), remain));
+//        etAdjustmentBalance.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mFromAccount.getCurrencyId()), remain));
 
         tvAdjustmentCurrencyIcon    = (TextView) getView().findViewById(R.id.tvAdjustmentCurrencyIcon);
         tvAdjustmentSpent           = (TextView) getView().findViewById(R.id.tvAdjustmentSpent);
@@ -734,8 +730,8 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
                 if(!inputted.equals("")) {
                     String formatted = Currency.formatCurrencyDouble(mFromAccount != null ?
-                                    Currency.getCurrencyById(mFromAccount.getCurrencyId())
-                                    : Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)),
+                                    mFromAccount.getCurrencyId()
+                                    : mConfigs.getInt(Configurations.Key.Currency),
                             Double.parseDouble(inputted));
 
                     current = formatted;
@@ -1087,12 +1083,12 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
     private void startFragmentDescription(TransactionEnum transactionType, String oldDescription) {
         FragmentDescription nextFragment = new FragmentDescription();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentTransactionUpdate());
+        bundle.putString("Tag", Tag);
         bundle.putSerializable("TransactionType", transactionType);
         bundle.putString("Description", oldDescription);
         nextFragment.setArguments(bundle);
         FragmentTransactionUpdate.this.getFragmentManager().beginTransaction()
-                .add(mContainerViewId, nextFragment, "FragmentDescription")
+                .add(mContainerViewId, nextFragment, FragmentDescription.Tag)
                 .addToBackStack(null)
                 .commit();
     }
@@ -1150,18 +1146,18 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
             case Expense:
                 mFromAccount = mDbHelper.getAccount(accountId);
                 tvExpenseAccount.setText(mFromAccount.getName());
-                tvExpenseCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+//                tvExpenseCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
                 break;
             case Income:
                 mToAccount = mDbHelper.getAccount(accountId);
                 tvIncomeToAccount.setText(mToAccount.getName());
-                tvIncomeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId()))));
+//                tvIncomeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mToAccount.getCurrencyId()))));
                 break;
             case TransferFrom:
                 mFromAccount = mDbHelper.getAccount(accountId);
                 tvTransferFromAccount.setText(mFromAccount.getName());
-                tvTransferCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
-                tvTransferFeeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+//                tvTransferCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+//                tvTransferFeeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
                 break;
             case TransferTo:
                 mToAccount = mDbHelper.getAccount(accountId);
@@ -1193,7 +1189,7 @@ public class FragmentTransactionUpdate extends Fragment implements  View.OnClick
                     }
                 }
 
-                tvAdjustmentCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
+//                tvAdjustmentCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(Currency.getCurrencyById(mFromAccount.getCurrencyId()))));
 
                 break;
             default:

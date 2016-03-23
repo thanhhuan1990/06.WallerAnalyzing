@@ -34,7 +34,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentListTransaction extends Fragment {
 
-    private static final String     Tag = "ListTransaction";
+    public static final String     Tag = "ListTransaction";
 
     private DatabaseHelper          mDbHelper;
     private Configurations          mConfigs;
@@ -42,6 +42,8 @@ public class FragmentListTransaction extends Fragment {
     private List<TransactionGroup>  arGroupTrans;
     private ListView                lvTransaction;
     private TransactionAdapter      mAdapter;
+
+    private boolean                 isSetupped = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,7 +88,7 @@ public class FragmentListTransaction extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTIONS) {
+        if(lvTransaction != null && !lvTransaction.isShown()) {
             return;
         }
         LogUtils.logEnterFunction(Tag, null);
@@ -97,8 +99,20 @@ public class FragmentListTransaction extends Fragment {
         View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
-        updateListTransaction();
+        if(lvTransaction != null) {
+            updateListTransaction();
+        }
+
         LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        LogUtils.logEnterFunction(Tag, "isVisibleToUser = " + isVisibleToUser);
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+        }
+        LogUtils.logLeaveFunction(Tag, "isVisibleToUser = " + isVisibleToUser, null);
     }
 
     private class TransactionAdapter extends ArrayAdapter<TransactionGroup> {
@@ -277,13 +291,22 @@ public class FragmentListTransaction extends Fragment {
                     transactionDetailView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+//                            FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+//                            Bundle bundle = new Bundle();
+//                            bundle.putSerializable("Transaction", tran);
+//                            bundle.putInt("ContainerViewId", R.id.ll_transactions);
+//                            nextFrag.setArguments(bundle);
+//                            FragmentListTransaction.this.getFragmentManager().beginTransaction()
+//                                    .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")
+//                                    .addToBackStack(null)
+//                                    .commit();
+                            FragmentTransactionCreateHost nextFrag = new FragmentTransactionCreateHost();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("Transaction", tran);
                             bundle.putInt("ContainerViewId", R.id.ll_transactions);
                             nextFrag.setArguments(bundle);
                             FragmentListTransaction.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")
+                                    .add(R.id.ll_transactions, nextFrag, FragmentTransactionCreateHost.Tag)
                                     .addToBackStack(null)
                                     .commit();
                         }

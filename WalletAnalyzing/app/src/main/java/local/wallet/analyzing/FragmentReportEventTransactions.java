@@ -29,7 +29,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEventTransactions extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportEventTransactions";
+    public static final String Tag = "ReportEventTransactions";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -125,7 +125,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
                 bundle.putSerializable("EventID", mEventId);
                 nextFrag.setArguments(bundle);
                 FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
-                        .replace(R.id.ll_report, nextFrag, "FragmentReportEventUpdate")
+                        .replace(R.id.ll_report, nextFrag, FragmentReportEventUpdate.Tag)
                         .addToBackStack(null)
                         .commit();
             break;

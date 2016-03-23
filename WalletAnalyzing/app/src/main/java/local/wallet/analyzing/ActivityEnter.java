@@ -23,9 +23,7 @@ public class ActivityEnter extends Activity implements IPasscodeEnter {
         String passCode = config.getString(Configurations.Key.Passcode);
 
         mPasscode   = new PasscodeText(this, this, passCode);
-        // Temporary pass passcoed when developing
-        Intent intent = new Intent(ActivityEnter.this, ActivityMain.class);
-        startActivity(intent);
+
     }
 
     @Override

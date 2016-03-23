@@ -30,7 +30,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEvent extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportEvent";
+    public static final String Tag = "ReportEvent";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -75,7 +75,7 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
                 bundle.putInt("EventID", arEvents.get(position).getId());
                 nextFrag.setArguments(bundle);
                 FragmentReportEvent.this.getFragmentManager().beginTransaction()
-                        .replace(R.id.ll_report, nextFrag, "FragmentReportEventTransactions")
+                        .replace(R.id.ll_report, nextFrag, FragmentReportEventTransactions.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -86,6 +86,7 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
             return;
         }
@@ -100,6 +101,8 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
 
         LogUtils.logLeaveFunction(Tag, null, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override

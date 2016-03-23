@@ -38,7 +38,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEventUpdate extends Fragment implements View.OnClickListener {
-    private static final String Tag = "ReportEventUpdate";
+    public static final String Tag = "ReportEventUpdate";
 
     private DatabaseHelper      mDbHelper;
     private Configurations      mConfigs;

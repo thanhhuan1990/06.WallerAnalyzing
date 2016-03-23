@@ -20,7 +20,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentDescription extends Fragment {
 
-    private static final String Tag = "FragmentDescription";
+    public static final String Tag = "FragmentDescription";
 
     private String              mTagOfSource = "";
     private TransactionEnum     mTransactionType;
@@ -82,11 +82,42 @@ public class FragmentDescription extends Fragment {
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click Menu Action Done.");
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
+
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
+
+                if (mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
+                    ((FragmentTransactionCreateExpense) fragment).updateDescription(mTransactionType, etDescription.getText().toString());
+                } else if (mTagOfSource.equals(FragmentTransactionCreateExpenseLend.Tag)) {
+                    ((FragmentTransactionCreateExpenseLend) fragment).updateDescription(mTransactionType, etDescription.getText().toString());
+                } else if (mTagOfSource.equals(FragmentTransactionCreateExpenseRepayment.Tag)) {
+                    ((FragmentTransactionCreateExpenseRepayment) fragment).updateDescription(mTransactionType, etDescription.getText().toString());
+                } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentTransactionUpdate())) {
+
+                    // Set input string for Account's description in TransactionUpdate, and then return.
+//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+//                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+//                    fragment.updateDescription(mTransactionType, etDescription.getText().toString());
+
+                } else if(mTagOfSource.equals(FragmentAccountCreate.Tag)) {
+
+                    ((FragmentAccountCreate) fragment).updateDescription(etDescription.getText().toString());
+
+                } else if(mTagOfSource.equals(FragmentAccountUpdate.Tag)) {
+
+                    ((FragmentAccountUpdate) fragment).updateDescription(etDescription.getText().toString());
+
+                } else if(mTagOfSource.equals(FragmentCategoryCreate.Tag)) {
+
+                    ((FragmentCategoryCreate) fragment).updateDescription(etDescription.getText().toString());
+
+                }
+
+                /*if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentTransactionCreateExpense())) {
 
                     LogUtils.trace(Tag, "Setup for TransactionCreate");
                     // Set input string for Account's description in TransactionCreate, and then return.
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
+                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionCreateExpense();
+                    FragmentTransactionCreateExpense fragment = (FragmentTransactionCreateExpense) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateDescription(mTransactionType, etDescription.getText().toString());
 
                 } else if(mTagOfSource.equals(((ActivityMain)getActivity()).getFragmentTransactionUpdate())) {
@@ -121,15 +152,24 @@ public class FragmentDescription extends Fragment {
                     FragmentCategoryCreate fragment = (FragmentCategoryCreate)getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
                     fragment.updateDescription(etDescription.getText().toString());
 
+                }*/
+
+                    // Back
+                    getFragmentManager().popBackStackImmediate();
                 }
-
-                // Back
-                getFragmentManager().popBackStackImmediate();
             }
-        });
 
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-        LogUtils.logLeaveFunction(Tag, null, null);
+            );
+
+            ((ActivityMain)
+
+            getActivity()
+
+            ).
+
+            updateActionBar(mCustomView);
+
+            LogUtils.logLeaveFunction(Tag, null, null);
+        }
+
     }
-
-}

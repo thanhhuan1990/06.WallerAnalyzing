@@ -48,6 +48,17 @@ public class Transaction implements Comparable<Transaction>, Serializable {
     private Event event;
 
     public Transaction() {
+        this.id = 0;
+        this.transactionType = TransactionEnum.Expense.getValue();
+        this.amount = 0.0;
+        this.categoryId = 0;
+        this.description = "";
+        this.fromAccountId = 0;
+        this.toAccountId = 0;
+        this.time = Calendar.getInstance();
+        this.fee = 0.0;
+        this.payee = "";
+        this.event = new Event();
     }
 
     public Transaction(int id, int transactionType, Double amount, int categoryId, String description, int fromAccountId, int toAccountId, Calendar time, Double fee, String payee, Event event) {

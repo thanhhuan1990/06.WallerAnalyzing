@@ -25,7 +25,7 @@ import local.wallet.analyzing.model.AccountType;
  */
 public class FragmentAccountTypeSelect extends Fragment {
 
-    private static final String Tag = "FragmentAccountTypeSelect";
+    public static final String Tag = "FragmentAccountTypeSelect";
 
     private String  mTagOfSource = "";
     private int     mUsingAccountTypeId;
@@ -80,22 +80,16 @@ public class FragmentAccountTypeSelect extends Fragment {
         lvAccountType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
 
-                    LogUtils.trace(Tag, "Setup for FragmentAccountCreate");
-                    // Return Type's Id to FragmentAccountCreate
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
-                    FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updateAccountType(AccountType.Accounts.get(position).getId());
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
 
-                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
+                if(mTagOfSource.equals(FragmentAccountCreate.Tag)) {
 
-                    LogUtils.trace(Tag, "Setup for FragmentAccountUpdate");
-                    // Return Type's Id to FragmentAccountUpdate
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
-                    FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updateAccountType(AccountType.Accounts.get(position).getId());
+                    ((FragmentAccountCreate) fragment).updateAccountType(AccountType.Accounts.get(position).getId());
 
+                } else if(mTagOfSource.equals(FragmentAccountUpdate.Tag)) {
+
+                    ((FragmentAccountUpdate) fragment).updateAccountType(AccountType.Accounts.get(position).getId());
                 }
 
                 getFragmentManager().popBackStackImmediate();

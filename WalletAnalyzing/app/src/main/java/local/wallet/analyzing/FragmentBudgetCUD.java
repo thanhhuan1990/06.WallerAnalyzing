@@ -32,15 +32,16 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Budget;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 2/19/2016.
  */
-public class FragmentBudgetCreateUpdateDelete extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
-    private static final String Tag = "BudgetCreateUpdateDelete";
+    public static final String Tag = "BudgetCUD";
 
     private Calendar            mStartCal;
     private Calendar            mEndCal;
@@ -90,10 +91,6 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentBudgetCreate(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_budget_create, container, false);
     }
@@ -125,7 +122,7 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         etAmount        = (EditText) getView().findViewById(R.id.etAmount);
         etAmount.addTextChangedListener(new CurrencyTextWatcher());
         tvCurrencyIcon  = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency))));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mConfigs.getInt(Configurations.Key.Currency)));
         llCategory      = (LinearLayout) getView().findViewById(R.id.llCategory);
         llCategory.setOnClickListener(this);
         tvCategory      = (TextView) getView().findViewById(R.id.tvCategory);
@@ -243,10 +240,10 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
 
         etName.setText(mBudget.getName());
 
-        String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), mBudget.getAmount());
+        String formatted = Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mBudget.getAmount());
         etAmount.setText(formatted);
 
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mBudget.getCurrency())));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mBudget.getCurrency()));
         updateCategory(mBudget.getCategories());
 
         repeatType  = mBudget.getRepeatType();
@@ -448,8 +445,8 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         Bundle bundle = new Bundle();
         bundle.putIntArray("Categories", arCategories);
         nextFrag.setArguments(bundle);
-        FragmentBudgetCreateUpdateDelete.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_budget, nextFrag, "FragmentBudgetCategory")
+        FragmentBudgetCUD.this.getFragmentManager().beginTransaction()
+                .add(R.id.layout_budget, nextFrag, FragmentBudgetCategory.Tag)
                 .addToBackStack(null)
                 .commit();
     }
@@ -462,7 +459,7 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
         LogUtils.logEnterFunction(Tag, Arrays.toString(categories));
         arCategories = categories;
 
-        if(arCategories.length == mDbHelper.getAllCategories(true, false).size()) {
+        if(arCategories.length == mDbHelper.getAllCategories(true, EnumDebt.NONE).size()) {
             tvCategory.setText("All");
         } else {
             String category = "";
@@ -518,7 +515,7 @@ public class FragmentBudgetCreateUpdateDelete extends Fragment implements Compou
                 if(inputted.equals("")) {
                     return;
                 }
-                String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency)), Double.parseDouble(inputted));
+                String formatted = Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(inputted));
 
                 current = formatted;
                 etAmount.setText(formatted);

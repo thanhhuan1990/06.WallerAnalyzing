@@ -30,7 +30,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentEvent extends Fragment {
 
-    private static final String     Tag                     = "FragmentEvent";
+    public static final String     Tag                     = "FragmentEvent";
 
     private DatabaseHelper          mDbHelper;
 
@@ -75,22 +75,30 @@ public class FragmentEvent extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(Tag, "Click Menu Action Done.");
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                if(mTagOfSource.equals(FragmentTransactionCreate.Tag)) {
 
-                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreate");
-                    FragmentTransactionCreate fragment = (FragmentTransactionCreate)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
-                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
 
-                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
+                if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
 
-                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+                    ((FragmentTransactionCreateExpense) fragment).updateEvent(mCurrentTransactionType, etEvent.getText().toString());
 
                 }
+//                if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionCreateExpense())) {
+//
+//                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreate");
+//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+//                    FragmentTransactionCreateExpense fragment = (FragmentTransactionCreateExpense) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+//                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+//
+//                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
+//
+//                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
+//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
+//                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+//                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
+//
+//                }
 
                 // Back
                 getFragmentManager().popBackStackImmediate();
@@ -107,10 +115,6 @@ public class FragmentEvent extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountCreate(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_event, container, false);

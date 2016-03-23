@@ -31,7 +31,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentBudgetDetailTransactions extends Fragment {
 
-    private static final String Tag = "BudgetDetailTransactions";
+    public static final String Tag = "BudgetDetailTransactions";
 
     private DatabaseHelper          mDbHelper;
     private Configurations          mConfigs;

@@ -30,7 +30,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentReportExpenseAnalysisCategory extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
-    private static final String Tag = "ReportExpenseAnalysisCategory";
+    public static final String Tag = "ReportExpenseAnalysisCategory";
 
     private DatabaseHelper      mDbHelper;
 
@@ -106,8 +106,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
                     LogUtils.trace(Tag, "Categories: " + Arrays.toString(categories));
 
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentReportExpenseAnalysis();
-                    FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag);
                     fragment.updateCategories(categories);
 
                     getFragmentManager().popBackStackImmediate();
@@ -228,7 +227,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
         llIncomeCategories    = (LinearLayout) getView().findViewById(R.id.llIncomeCategories);
         arCategoriesIncomeView.clear();
-        List<Category> arParentCategoriesIncome = mDbHelper.getAllParentCategories(false, false);
+        List<Category> arParentCategoriesIncome = mDbHelper.getAllParentCategories(false);
         for(Category category : arParentCategoriesIncome) {
 
             arCategoriesIncomeView.add(new CategoryView(category, true, checkContain(category.getId())));
@@ -241,19 +240,19 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
             }
         }
-        List<Category> arParentCategoriesIncomeLoan = mDbHelper.getAllParentCategories(false, true);
-        for(Category category : arParentCategoriesIncomeLoan) {
-
-            arCategoriesIncomeView.add(new CategoryView(category, true, checkContain(category.getId())));
-
-            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
-
-            for(Category cate : arChildCategories) {
-
-                arCategoriesIncomeView.add(new CategoryView(cate, true, checkContain(cate.getId())));
-
-            }
-        }
+//        List<Category> arParentCategoriesIncomeLoan = mDbHelper.getAllParentCategories(false, true);
+//        for(Category category : arParentCategoriesIncomeLoan) {
+//
+//            arCategoriesIncomeView.add(new CategoryView(category, true, checkContain(category.getId())));
+//
+//            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
+//
+//            for(Category cate : arChildCategories) {
+//
+//                arCategoriesIncomeView.add(new CategoryView(cate, true, checkContain(cate.getId())));
+//
+//            }
+//        }
 
         for(CategoryView cateView : arCategoriesIncomeView) {
             if(!checkContain(cateView.category.getId())) {
@@ -321,7 +320,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
         llExpenseCategories     = (LinearLayout) getView().findViewById(R.id.llExpenseCategories);
         arCategoriesExpenseView.clear();
-        List<Category> arParentCategoriesExpense = mDbHelper.getAllParentCategories(true, false);
+        List<Category> arParentCategoriesExpense = mDbHelper.getAllParentCategories(true);
         for(Category category : arParentCategoriesExpense) {
 
             arCategoriesExpenseView.add(new CategoryView(category, true, checkContain(category.getId())));
@@ -334,19 +333,19 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
             }
         }
-        List<Category> arParentCategoriesExpenseLoan = mDbHelper.getAllParentCategories(true, true);
-        for(Category category : arParentCategoriesExpenseLoan) {
-
-            arCategoriesExpenseView.add(new CategoryView(category, true, checkContain(category.getId())));
-
-            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
-
-            for(Category cate : arChildCategories) {
-
-                arCategoriesExpenseView.add(new CategoryView(cate, true, checkContain(cate.getId())));
-
-            }
-        }
+//        List<Category> arParentCategoriesExpenseLoan = mDbHelper.getAllParentCategories(true, true);
+//        for(Category category : arParentCategoriesExpenseLoan) {
+//
+//            arCategoriesExpenseView.add(new CategoryView(category, true, checkContain(category.getId())));
+//
+//            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
+//
+//            for(Category cate : arChildCategories) {
+//
+//                arCategoriesExpenseView.add(new CategoryView(cate, true, checkContain(cate.getId())));
+//
+//            }
+//        }
 
         for(CategoryView cateView : arCategoriesExpenseView) {
             if(!checkContain(cateView.category.getId())) {

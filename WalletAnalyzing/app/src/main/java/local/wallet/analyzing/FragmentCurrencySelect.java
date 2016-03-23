@@ -26,7 +26,7 @@ import local.wallet.analyzing.model.Currency;
  */
 public class FragmentCurrencySelect extends Fragment {
 
-    private static final String Tag = "FragmentCurrencySelect";
+    public static final String Tag = "FragmentCurrencySelect";
 
     private String  mTagOfSource = "";
     private int     mUsingCurrencyId;
@@ -82,29 +82,38 @@ public class FragmentCurrencySelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
+                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
 
-                    LogUtils.trace(Tag, "Setup for FragmentAccountCreate");
-                    // Return Type's Id to FragmentAccountCreate
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
-                    FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity()
-                                                                                .getSupportFragmentManager()
-                                                                                .findFragmentByTag(tagOfFragment);
-                    fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-
+                if (mTagOfSource.equals(FragmentAccountCreate.Tag)) {
+                    ((FragmentAccountCreate) fragment).updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
                     getFragmentManager().popBackStackImmediate();
-
-                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
-
-                    LogUtils.trace(Tag, "Setup for FragmentAccountUpdate");
-                    // Return Type's Id to FragmentAccountUpdate
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
-                    FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity()
-                                                                                .getSupportFragmentManager()
-                                                                                .findFragmentByTag(tagOfFragment);
-                    fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-
+                } else if (mTagOfSource.equals(FragmentAccountUpdate.Tag)) {
+                    ((FragmentAccountUpdate) fragment).updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
                 }
+
+//                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
+//
+//                    LogUtils.trace(Tag, "Setup for FragmentAccountCreate");
+//                    // Return Type's Id to FragmentAccountCreate
+//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
+//                    FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity()
+//                                                                                .getSupportFragmentManager()
+//                                                                                .findFragmentByTag(tagOfFragment);
+//                    fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
+//
+//                    getFragmentManager().popBackStackImmediate();
+//
+//                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
+//
+//                    LogUtils.trace(Tag, "Setup for FragmentAccountUpdate");
+//                    // Return Type's Id to FragmentAccountUpdate
+//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
+//                    FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity()
+//                                                                                .getSupportFragmentManager()
+//                                                                                .findFragmentByTag(tagOfFragment);
+//                    fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
+//
+//                }
             }
         });
 

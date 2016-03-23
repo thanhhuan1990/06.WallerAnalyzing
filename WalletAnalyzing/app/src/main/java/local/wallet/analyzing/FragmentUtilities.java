@@ -32,7 +32,7 @@ import local.wallet.analyzing.model.Category;
  */
 public class FragmentUtilities extends Fragment {
 
-    private static final String Tag = "FragmentUtilities";
+    public static final String Tag = "FragmentUtilities";
 
     private ImageButton         btnFileBrowser;
 
@@ -137,13 +137,13 @@ public class FragmentUtilities extends Fragment {
     public void onResume() {
         super.onResume();
 
-        txtCheckDB.setText("Account: " + db.getAllAccounts().size() + "\n" + "Category: " + db.getAllCategories(true, false).size());
+        txtCheckDB.setText("Account: " + db.getAllAccounts().size() + "\n" + "Category: " + db.getAllCategories().size());
 
         ArrayAdapter accAdapter = new AccountAdapter(getActivity(), R.layout.listview_item_account, db.getAllAccounts());
         lvAccount.setAdapter(accAdapter);
 
         listAccount = db.getAllAccounts();
-        listCategory = db.getAllCategories(true, false);
+        listCategory = db.getAllCategories(true);
 
         accAdapter.notifyDataSetChanged();
     }

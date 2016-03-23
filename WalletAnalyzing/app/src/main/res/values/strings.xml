@@ -35,18 +35,6 @@
     <string name="tab_report">Report</string>
     <string name="tab_utilities">Utility</string>
 
-    <string-array name="transaction_type">
-        <item>Expense</item>
-        <item>Income</item>
-        <item>Transfer</item>
-        <item>Adjustment</item>
-    </string-array>
-    <string-array name="transaction_type_description">
-        <item>When expending, lending, paying debts.</item>
-        <item>When having incomes, borrowing, collecting debts.</item>
-        <item>When transferring money between 2 of your accounts.</item>
-        <item>Calculate and record a transaction according to balance.</item>
-    </string-array>
 
     <string-array name="data_file_extension">
         <item>xls</item>
@@ -74,6 +62,24 @@
     <string name="currency_vnd">₫ - Việt Nam Đồng(VND)</string>
     <string name="currency_usd">$ - United States Dollar(USD)</string>
     <string name="currency_jpy">¥ - Japanese Yen(JPY)</string>
+
+    <!-- 2_TRANSACTION_CREATE -->
+    <string-array name="transaction_type">
+        <item>Expense</item>
+        <item>Income</item>
+        <item>Transfer</item>
+        <item>Adjustment</item>
+    </string-array>
+    <string-array name="transaction_type_description">
+        <item>When expending, lending, paying debts.</item>
+        <item>When having incomes, borrowing, collecting debts.</item>
+        <item>When transferring money between 2 of your accounts.</item>
+        <item>Calculate and record a transaction according to balance.</item>
+    </string-array>
+
+
+    <string name="new_transaction_expense_borrower">Borrower</string>
+    <string name="new_transaction_expense_lender">Lender</string>
 
     <string name="new_transaction_amount">Amount</string>
     <string name="transaction_category_expense">Category</string>

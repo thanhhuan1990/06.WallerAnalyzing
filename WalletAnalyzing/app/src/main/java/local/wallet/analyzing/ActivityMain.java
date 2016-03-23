@@ -19,7 +19,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.View.CustomViewPager;
@@ -42,16 +47,7 @@ public class ActivityMain extends AppCompatActivity {
     private TabPagerAdapter adapter;
     private int lastTabPosition = 0;
 
-    private String fragmentAccountCreate;
-    private String fragmentAccountUpdate;
-    private String fragmentNewTransactionSelectCategory;
-    private String fragmentCategoryCreate;
-    private String fragmentNewTransactionSelectAccount;
     private String fragmentTransactionUpdate;
-    private String fragmentAccountTransactions;
-    private String fragmentBudgetCreate;
-    private String fragmentReportEvI;
-    private String fragmentReportExpenseAnalysis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +89,7 @@ public class ActivityMain extends AppCompatActivity {
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                LogUtils.trace(TAG, "onTabSelected: " + tab.getPosition());
+                LogUtils.trace(TAG, "Selected Tab: " + tab.getPosition());
 
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(tabLayout.getApplicationWindowToken(), 0);
@@ -126,7 +122,6 @@ public class ActivityMain extends AppCompatActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                LogUtils.trace(TAG, "onTabUnselected: " + tab.getPosition());
                 lastTabPosition = tab.getPosition();
             }
 
@@ -287,66 +282,6 @@ public class ActivityMain extends AppCompatActivity {
         return fragment;
     }
 
-    public void setFragmentAccountCreate(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentAccountCreate = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentAccountCreate() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentAccountCreate);
-        return fragmentAccountCreate;
-    }
-
-    public void setFragmentAccountUpdate(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentAccountUpdate = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentAccountUpdate() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentAccountUpdate);
-        return fragmentAccountUpdate;
-    }
-
-    public void setFragmentCategoryCreate(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentCategoryCreate = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentCategoryCreate() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentCategoryCreate);
-        return fragmentCategoryCreate;
-    }
-
-    public void setFragmentNewTransactionSelectCategory(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentNewTransactionSelectCategory = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentNewTransactionSelectCategory() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentNewTransactionSelectCategory);
-        return fragmentNewTransactionSelectCategory;
-    }
-
-    public void setFragmentNewTransactionSelectAccount(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentNewTransactionSelectAccount = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentNewTransactionSelectAccount() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentNewTransactionSelectAccount);
-        return fragmentNewTransactionSelectAccount;
-    }
-
     public void setFragmentTransactionUpdate(String tag) {
         LogUtils.logEnterFunction(TAG, "tag = " + tag);
         fragmentTransactionUpdate = tag;
@@ -357,54 +292,6 @@ public class ActivityMain extends AppCompatActivity {
         LogUtils.logEnterFunction(TAG, null);
         LogUtils.logLeaveFunction(TAG, null, fragmentTransactionUpdate);
         return fragmentTransactionUpdate;
-    }
-
-    public void setFragmentAccountTransactions(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentAccountTransactions = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentAccountTransactions() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentAccountTransactions);
-        return fragmentAccountTransactions;
-    }
-
-    public void setFragmentBudgetCreate(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentBudgetCreate = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentBudgetCreate() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentBudgetCreate);
-        return fragmentBudgetCreate;
-    }
-
-    public void setFragmentReportEVI(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentReportEvI = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentReportEVI() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentReportEvI);
-        return fragmentReportEvI;
-    }
-
-    public void setFragmentReportExpenseAnalysis(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentReportExpenseAnalysis = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentReportExpenseAnalysis() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentReportExpenseAnalysis);
-        return fragmentReportExpenseAnalysis;
     }
 
     //endregion

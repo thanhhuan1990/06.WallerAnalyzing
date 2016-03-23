@@ -29,7 +29,7 @@ import local.wallet.analyzing.Utils.LogUtils;
  */
 public class FragmentReportEVISelectTime extends Fragment implements View.OnClickListener {
 
-    private static final String Tag = "ReportEVITimeSelect";
+    public static final String Tag = "ReportEVITimeSelect";
 
     private int             mCurrentTime;
     private String[]        mTimes;
@@ -87,8 +87,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position != (mTimes.length - 1)) {
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentReportEVI();
-                    FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                    FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportEVI.Tag);
                     fragment.updateTime(position);
 
                     getFragmentManager().popBackStackImmediate();
@@ -171,8 +170,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String tagOfFragment = ((ActivityMain) getActivity()).getFragmentReportEVI();
-                FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
+                FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportEVI.Tag);
                 fragment.updateTime(mFromDate, mToDate);
 
                 getFragmentManager().popBackStackImmediate();

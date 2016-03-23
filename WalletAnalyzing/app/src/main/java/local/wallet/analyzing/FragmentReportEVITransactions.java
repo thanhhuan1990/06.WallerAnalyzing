@@ -51,7 +51,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentReportEVITransactions extends Fragment {
 
-    private static final String Tag = "ReportEVITransactions";
+    public static final String Tag = "ReportEVITransactions";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -139,7 +139,7 @@ public class FragmentReportEVITransactions extends Fragment {
         //region get expense data from Database
         final ArrayList<CategoryEVI> arData = new ArrayList<CategoryEVI>();
 
-        List<Category> arParentExpenseCategory = mDbHelper.getAllParentCategories(true, false);
+        List<Category> arParentExpenseCategory = mDbHelper.getAllParentCategories(true);
         for(Category parentCate : arParentExpenseCategory) {
             List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
             double amount = 0.0;
@@ -157,23 +157,23 @@ public class FragmentReportEVITransactions extends Fragment {
             }
         }
 
-        List<Category> arParentExpenseCategoryLoan = mDbHelper.getAllParentCategories(true, true);
-        for(Category parentCate : arParentExpenseCategoryLoan) {
-            List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
-            double amount = 0.0;
-            for(Category cate : arExpenseCategory) {
-                List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId.length != mDbHelper.getAccountCount() ? mAccountId : null, mFromDate, mToDate);
-
-                for(Transaction tran : arTransaction) {
-                    amount += tran.getAmount();
-                }
-
-            }
-
-            if(amount != 0) {
-                arData.add(new CategoryEVI(parentCate, amount));
-            }
-        }
+//        List<Category> arParentExpenseCategoryLoan = mDbHelper.getAllParentCategories(true, true);
+//        for(Category parentCate : arParentExpenseCategoryLoan) {
+//            List<Category> arExpenseCategory = mDbHelper.getCategoriesByParent(parentCate.getId());
+//            double amount = 0.0;
+//            for(Category cate : arExpenseCategory) {
+//                List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId.length != mDbHelper.getAccountCount() ? mAccountId : null, mFromDate, mToDate);
+//
+//                for(Transaction tran : arTransaction) {
+//                    amount += tran.getAmount();
+//                }
+//
+//            }
+//
+//            if(amount != 0) {
+//                arData.add(new CategoryEVI(parentCate, amount));
+//            }
+//        }
 
         Collections.sort(arData, new Comparator<CategoryEVI>() {
             @Override
@@ -327,7 +327,7 @@ public class FragmentReportEVITransactions extends Fragment {
         //region get income data from Database
         final ArrayList<CategoryEVI> arDataIncome = new ArrayList<CategoryEVI>();
 
-        List<Category> arIncomeCategory = mDbHelper.getAllCategories(false, false);
+        List<Category> arIncomeCategory = mDbHelper.getAllCategories(false);
         for(Category cate : arIncomeCategory) {
             List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId.length != mDbHelper.getAccountCount() ? mAccountId : null, mFromDate, mToDate);
             double cateAmount = 0.0;
@@ -340,18 +340,18 @@ public class FragmentReportEVITransactions extends Fragment {
             }
         }
 
-        List<Category> arIncomeCategoryLoan = mDbHelper.getAllCategories(false, true);
-        for(Category cate : arIncomeCategoryLoan) {
-            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId.length != mDbHelper.getAccountCount() ? mAccountId : null, mFromDate, mToDate);
-            double cateAmount = 0.0;
-            for(Transaction tran : arTransaction) {
-                cateAmount += tran.getAmount();
-            }
-
-            if(cateAmount != 0) {
-                arDataIncome.add(new CategoryEVI(cate, cateAmount));
-            }
-        }
+//        List<Category> arIncomeCategoryLoan = mDbHelper.getAllCategories(false, true);
+//        for(Category cate : arIncomeCategoryLoan) {
+//            List<Transaction> arTransaction = mDbHelper.getTransactionsByTimeCategoryAccount(new int[]{cate.getId()}, mAccountId.length != mDbHelper.getAccountCount() ? mAccountId : null, mFromDate, mToDate);
+//            double cateAmount = 0.0;
+//            for(Transaction tran : arTransaction) {
+//                cateAmount += tran.getAmount();
+//            }
+//
+//            if(cateAmount != 0) {
+//                arDataIncome.add(new CategoryEVI(cate, cateAmount));
+//            }
+//        }
 
         Collections.sort(arDataIncome, new Comparator<CategoryEVI>() {
             @Override

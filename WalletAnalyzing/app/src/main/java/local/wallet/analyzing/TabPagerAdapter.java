@@ -1,11 +1,14 @@
 package local.wallet.analyzing;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
+
+import local.wallet.analyzing.model.Transaction;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
@@ -28,8 +31,14 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
                 FragmentListTransaction tabTransaction = new FragmentListTransaction();
                 return tabTransaction;
             case 1:
-                FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
-                return tabNewTransaction;
+//                FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
+//                return tabNewTransaction;
+                FragmentTransactionCreateHost tabTransactionCreate = new FragmentTransactionCreateHost();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Transaction", new Transaction());
+                bundle.putInt("ContainerViewId", R.id.ll_transaction_create);
+                tabTransactionCreate.setArguments(bundle);
+                return tabTransactionCreate;
             case 2:
 //                return FragmentListAccount.newInstance();
 //                FragmentListAccount fragmentListAccount = new FragmentListAccount();

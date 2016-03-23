@@ -18,6 +18,7 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Budget;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -27,7 +28,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentBudgetDetail extends Fragment {
 
-    private static final String Tag = "BudgetDetail";
+    public static final String Tag = "BudgetDetail";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
@@ -98,7 +99,7 @@ public class FragmentBudgetDetail extends Fragment {
                 bundle.putSerializable("Budget", mBudget);
                 nextFrag.setArguments(bundle);
                 FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, "FragmentBudgetDetailTransactions")
+                        .add(R.id.layout_budget, nextFrag, FragmentBudgetDetailTransactions.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -112,7 +113,7 @@ public class FragmentBudgetDetail extends Fragment {
                     bundle.putSerializable("Budget", mBudget);
                     nextFrag.setArguments(bundle);
                     FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                            .add(R.id.layout_budget, nextFrag, "FragmentBudgetHistory")
+                            .add(R.id.layout_budget, nextFrag, FragmentBudgetHistory.Tag)
                             .addToBackStack(null)
                             .commit();
                 }
@@ -140,12 +141,12 @@ public class FragmentBudgetDetail extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click Menu Action Update Budget.");
-                FragmentBudgetCreateUpdateDelete nextFrag = new FragmentBudgetCreateUpdateDelete();
+                FragmentBudgetCUD nextFrag = new FragmentBudgetCUD();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("Budget", mBudget);
                 nextFrag.setArguments(bundle);
                 FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, "FragmentBudgetCreateUpdateDelete")
+                        .add(R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -171,7 +172,7 @@ public class FragmentBudgetDetail extends Fragment {
         }
 
         mBudget = mDbHelper.getBudget(mBudget.getId());
-        LogUtils.trace(Tag, "mBudget.getCategories().length = " + mBudget.getCategories().length + ", mDbHelper.getAllCategories(true, false).size() = " + mDbHelper.getAllCategories(true, false).size());
+        LogUtils.trace(Tag, "mBudget.getCategories().length = " + mBudget.getCategories().length + ", mDbHelper.getAllCategories(true, EnumDebt.NONE).size() = " + mDbHelper.getAllCategories(true, EnumDebt.NONE).size());
         /* Show budget's description */
         String[] repeatTypes = getResources().getStringArray(R.array.budget_repeat_type);
         if(mBudget.getCategories().length == 1) {
@@ -179,7 +180,7 @@ public class FragmentBudgetDetail extends Fragment {
                     Currency.formatCurrency(getContext(), mBudget.getCurrency(), mBudget.getAmount()),
                     repeatTypes[mBudget.getRepeatType()],
                     mDbHelper.getCategory(mBudget.getCategories()[0]).getName()));
-        } else if(mBudget.getCategories().length == mDbHelper.getAllCategories(true, false).size()){
+        } else if(mBudget.getCategories().length == mDbHelper.getAllCategories(true, EnumDebt.NONE).size()){
             tvDescription.setText(String.format(getResources().getString(R.string.budget_detail_description_all),
                                                 Currency.formatCurrency(getContext(), mBudget.getCurrency(), mBudget.getAmount()),
                                                 repeatTypes[mBudget.getRepeatType()]));

@@ -10,8 +10,10 @@ public class ActivitySplash extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent i = new Intent(ActivitySplash.this, ActivityEnter.class);
-        startActivity(i);
+//        Intent i = new Intent(ActivitySplash.this, ActivityEnter.class);
+//        startActivity(i);
+        Intent intent = new Intent(ActivitySplash.this, ActivityMain.class);
+        startActivity(intent);
 
         finish();
     }

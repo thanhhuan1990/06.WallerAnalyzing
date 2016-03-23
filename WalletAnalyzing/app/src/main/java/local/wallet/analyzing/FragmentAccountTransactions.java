@@ -30,7 +30,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentAccountTransactions extends Fragment {
 
-    private static final String TAG = "AccountTransactions";
+    public static final String Tag = "AccountTransactions";
 
     private String              mTagOfSource = "";
     private int                 mAccountId;
@@ -43,7 +43,7 @@ public class FragmentAccountTransactions extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onCreate(savedInstanceState);
 
@@ -55,28 +55,23 @@ public class FragmentAccountTransactions extends Fragment {
         mTagOfSource                    = bundle.getString("Tag");
         mAccountId                      = bundle.getInt("AccountID", 0);
 
-        LogUtils.trace(TAG, "mTagOfSource   = " + mTagOfSource);
-        LogUtils.trace(TAG, "mAccountId     = " + mAccountId);
+        LogUtils.trace(Tag, "mTagOfSource   = " + mTagOfSource);
+        LogUtils.trace(Tag, "mAccountId     = " + mAccountId);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-
-        // Set this fragment tag to ActivityMain
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountTransactions(myTag);
-
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
         return inflater.inflate(R.layout.layout_fragment_account_transactions, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -89,7 +84,7 @@ public class FragmentAccountTransactions extends Fragment {
 
         tvBalance           = (TextView) getView().findViewById(R.id.tvAccountRemain);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -98,7 +93,7 @@ public class FragmentAccountTransactions extends Fragment {
             return;
         }
 
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
         /* Init ActionBar */
@@ -112,7 +107,7 @@ public class FragmentAccountTransactions extends Fragment {
         ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogUtils.trace(TAG, "Click Menu Action Add Transaction.");
+                LogUtils.trace(Tag, "Click Menu Action Add Transaction.");
                 ((ActivityMain) getActivity()).setCurrentVisibleItem(ActivityMain.TAB_POSITION_TRANSACTION_CREATE);
             }
         });
@@ -122,11 +117,11 @@ public class FragmentAccountTransactions extends Fragment {
         // Update list Transactions
         updateListTransactions();
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     private void updateListTransactions() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag, null);
 
         Account account = mDbHelper.getAccount(mAccountId);
         tvBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccountRemain(mAccountId)));

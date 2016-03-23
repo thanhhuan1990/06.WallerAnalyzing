@@ -27,7 +27,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentAccountUpdate extends Fragment {
 
-    private static final String Tag = "AccountUpdate";
+    public static final String Tag = "AccountUpdate";
 
     private DatabaseHelper      mDbHelper;
 
@@ -78,10 +78,6 @@ public class FragmentAccountUpdate extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentAccountUpdate(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_account_update, container, false);
@@ -112,8 +108,8 @@ public class FragmentAccountUpdate extends Fragment {
         etName.setText(mAccount.getName());
         tvType.setText(AccountType.getAccountTypeById(mAccount.getTypeId()).getName());
         tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
-        etInitialBalance.setText(Currency.formatCurrencyDouble(Currency.getCurrencyById(mAccount.getCurrencyId()), mAccount.getInitBalance()));
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mAccount.getCurrencyId())));
+        etInitialBalance.setText(Currency.formatCurrencyDouble(mAccount.getCurrencyId(), mAccount.getInitBalance()));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mAccount.getCurrencyId()));
         tvDescription.setText(mAccount.getDescription());
 
         llType.setOnClickListener(new View.OnClickListener() {
@@ -121,11 +117,11 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountUpdate());
+                bundle.putString("Tag", Tag);
                 bundle.putInt("AccountType", mAccount.getTypeId());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, "FragmentAccountTypeSelect")
+                        .add(R.id.layout_account, nextFrag, FragmentAccountTypeSelect.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -136,11 +132,11 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountUpdate());
+                bundle.putString("Tag", Tag);
                 bundle.putInt("Currency", mAccount.getCurrencyId());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, "FragmentCurrencySelect")
+                        .add(R.id.layout_account, nextFrag, FragmentCurrencySelect.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -153,11 +149,11 @@ public class FragmentAccountUpdate extends Fragment {
             public void onClick(View v) {
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain)getActivity()).getFragmentAccountUpdate());
+                bundle.putString("Tag", Tag);
                 bundle.putString("Description", tvDescription.getText().toString());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, "FragmentDescription")
+                        .add(R.id.layout_account, nextFrag, FragmentDescription.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -231,7 +227,7 @@ public class FragmentAccountUpdate extends Fragment {
 
         mAccount.setCurrencyId(currency.getValue());
         tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(Currency.getCurrencyById(mAccount.getCurrencyId())));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mAccount.getCurrencyId()));
 
         LogUtils.logLeaveFunction(Tag, "currency = " + currency, null);
     }
@@ -271,7 +267,7 @@ public class FragmentAccountUpdate extends Fragment {
                 if(inputted.equals("")) {
                     return;
                 }
-                String formatted = Currency.formatCurrencyDouble(Currency.getCurrencyById(mAccount.getCurrencyId()), Double.parseDouble(inputted));
+                String formatted = Currency.formatCurrencyDouble(mAccount.getCurrencyId(), Double.parseDouble(inputted));
 
                 current = formatted;
                 etInitialBalance.setText(formatted);

@@ -16,6 +16,7 @@ import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
+import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
@@ -24,7 +25,7 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  */
 public class FragmentCategoryCreate extends Fragment {
 
-    private static final String Tag = "CategoryCreate";
+    public static final String Tag = "CategoryCreate";
 
     private DatabaseHelper      mDbHelper;
 
@@ -32,7 +33,7 @@ public class FragmentCategoryCreate extends Fragment {
 
     // Keep return value from FragmentCategoryParentSelect
     private Category            mParentCategory;
-    private boolean             mBorrow = false;
+    private EnumDebt            mDebt = EnumDebt.NONE;
 
     private ClearableEditText   etName;
     private LinearLayout        llParentCategory;
@@ -80,10 +81,6 @@ public class FragmentCategoryCreate extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        String myTag = getTag();
-        ((ActivityMain)getActivity()).setFragmentCategoryCreate(myTag);
-
         LogUtils.logLeaveFunction(Tag, null, null);
 
         return inflater.inflate(R.layout.layout_fragment_category_create, container, false);
@@ -111,11 +108,11 @@ public class FragmentCategoryCreate extends Fragment {
                 FragmentCategoryParentSelect nextFrag = new FragmentCategoryParentSelect();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TransactionType", mTransactionType);
-                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryCreate());
+                bundle.putString("Tag", Tag);
                 bundle.putInt("ParentCategoryId", mParentCategory != null ? mParentCategory.getId() : 0);
                 nextFrag.setArguments(bundle);
                 FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_transaction_create, nextFrag, "FragmentCategoryParentSelect")
+                        .add(R.id.ll_transaction_create, nextFrag, FragmentCategoryParentSelect.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -126,11 +123,11 @@ public class FragmentCategoryCreate extends Fragment {
             public void onClick(View v) {
                 FragmentDescription fragmentDescription = new FragmentDescription();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragmentCategoryCreate());
+                bundle.putString("Tag", Tag);
                 bundle.putString("Description", etDescription.getText().toString());
                 fragmentDescription.setArguments(bundle);
                 FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_transaction_create, fragmentDescription, "FragmentDescription")
+                        .add(R.id.ll_transaction_create, fragmentDescription, FragmentDescription.Tag)
                         .addToBackStack(Tag)
                         .commit();
             }
@@ -155,7 +152,7 @@ public class FragmentCategoryCreate extends Fragment {
                                 || mTransactionType == TransactionEnum.Transfer
                                 || mTransactionType == TransactionEnum.Adjustment)
                                 ? true : false,                   // Expense
-                        mBorrow);                                                 // Borrow
+                        mDebt);                                                 // Borrow
 
                 if (categoryId <= 0) {
                     LogUtils.error(Tag, "Create Category Failed.");
@@ -176,10 +173,10 @@ public class FragmentCategoryCreate extends Fragment {
      * Update ParentCategory, call from ActivityMain
      * @param parentCategoryId
      */
-    public void updateParentCategory(int parentCategoryId, boolean borrow) {
-        LogUtils.logEnterFunction(Tag, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow);
+    public void updateParentCategory(int parentCategoryId, EnumDebt debt) {
+        LogUtils.logEnterFunction(Tag, "parentCategoryId = " + parentCategoryId + ", debt = " + debt);
 
-        mBorrow = borrow;
+        mDebt = debt;
         mParentCategory = mDbHelper.getCategory(parentCategoryId);
         if(mParentCategory != null) {
             tvParentCategory.setText(mParentCategory.getName());
@@ -187,7 +184,7 @@ public class FragmentCategoryCreate extends Fragment {
             tvParentCategory.setText("");
         }
 
-        LogUtils.logLeaveFunction(Tag, "parentCategoryId = " + parentCategoryId + ", borrow = " + borrow, null);
+        LogUtils.logLeaveFunction(Tag, "parentCategoryId = " + parentCategoryId + ", debt = " + debt, null);
     }
 
     /**

@@ -29,7 +29,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentBudgetHistory extends Fragment {
 
-    private static final String Tag = "BudgetHistory";
+    public static final String Tag = "BudgetHistory";
 
     private DatabaseHelper          mDbHelper;
     private Configurations          mConfigs;
