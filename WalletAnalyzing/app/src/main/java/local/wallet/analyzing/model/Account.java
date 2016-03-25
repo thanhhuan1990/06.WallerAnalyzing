@@ -1,9 +1,15 @@
 package local.wallet.analyzing.model;
 
+import java.io.Serializable;
+
 /**
  * Created by huynh.thanh.huan on 11/24/2015.
  */
 public class Account {
+
+    public interface IAccountCallback extends Serializable {
+        void onListAccountUpdated();
+    }
 
     private int id;
 

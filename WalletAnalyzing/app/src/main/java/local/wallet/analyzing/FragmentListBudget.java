@@ -117,7 +117,7 @@ public class FragmentListBudget extends Fragment {
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
-    public void updateListBudget() {
+    private void updateListBudget() {
         LogUtils.logEnterFunction(Tag, null);
 
         arBudgets.clear();

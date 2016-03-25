@@ -256,6 +256,7 @@
 
     <string name="message_transaction_create_successful">Saved</string>
     <string name="message_transaction_update_successful">Saved</string>
+    <string name="message_account_create_successful">Saved</string>
 
     <string name="expense_category">Expense Category</string>
     <string name="income_category">Income Category</string>

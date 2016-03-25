@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +34,18 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
     public static final String Tag = "BudgetCategory";
 
+    public interface ISelectBudgetCategory extends Serializable {
+        void onBudgetCategorySelected(int[] categories);
+    }
+
     private DatabaseHelper      mDbHelper;
 
     private ToggleButton        tbAllCategory;
     private LinearLayout        llCategories;
     private List<CategoryView>  arCategoriesView = new ArrayList<CategoryView>();
     private int[]               arCategories;
+
+    private ISelectBudgetCategory   mCallback;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,8 +54,9 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         setHasOptionsMenu(true);
 
         /* Get data from Bundle */
-        Bundle bundle                   = this.getArguments();
-        arCategories                    = bundle.getIntArray("Categories");
+        Bundle bundle   = this.getArguments();
+        arCategories    = bundle.getIntArray("Categories");
+        mCallback       = (ISelectBudgetCategory) bundle.getSerializable("Callback");
 
         LogUtils.trace(Tag, "Categories = " + arCategories != null ? Arrays.toString(arCategories) : "''");
 
@@ -94,8 +102,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
                     LogUtils.trace(Tag, "Categories: " + Arrays.toString(categories));
 
-                    FragmentBudgetCUD fragment = (FragmentBudgetCUD) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentBudgetCUD.Tag);
-                    fragment.updateCategory(categories);
+                    mCallback.onBudgetCategorySelected(categories);
 
                     getFragmentManager().popBackStackImmediate();
                 } else {

@@ -35,11 +35,12 @@ import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentBudgetCategory.ISelectBudgetCategory;
 
 /**
  * Created by huynh.thanh.huan on 2/19/2016.
  */
-public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, ISelectBudgetCategory {
 
     public static final String Tag = "BudgetCUD";
 
@@ -244,7 +245,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
         etAmount.setText(formatted);
 
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(mBudget.getCurrency()));
-        updateCategory(mBudget.getCategories());
+        onBudgetCategorySelected(mBudget.getCategories());
 
         repeatType  = mBudget.getRepeatType();
         tvRepeat.setText(arRepeat.get(repeatType));
@@ -444,6 +445,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
         FragmentBudgetCategory nextFrag = new FragmentBudgetCategory();
         Bundle bundle = new Bundle();
         bundle.putIntArray("Categories", arCategories);
+        bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
         FragmentBudgetCUD.this.getFragmentManager().beginTransaction()
                 .add(R.id.layout_budget, nextFrag, FragmentBudgetCategory.Tag)
@@ -451,11 +453,8 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
                 .commit();
     }
 
-    /**
-     * Update category from return value from BudgetCategory
-     * @param categories
-     */
-    public void updateCategory(int[] categories) {
+    @Override
+    public void onBudgetCategorySelected(int[] categories) {
         LogUtils.logEnterFunction(Tag, Arrays.toString(categories));
         arCategories = categories;
 
@@ -475,7 +474,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
             tvCategory.setText(category);
         }
-
+        LogUtils.logLeaveFunction(Tag, Arrays.toString(categories), null);
     }
 
     /**

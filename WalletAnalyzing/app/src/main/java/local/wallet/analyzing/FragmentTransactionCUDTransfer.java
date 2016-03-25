@@ -141,7 +141,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
                 break;
             case R.id.llCategory:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                startFragmentSelectCategory(TransactionEnum.Transfer, mCategory != null ? mCategory.getId() : 0);
+                startFragmentSelectCategory(mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llSave:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
@@ -165,27 +165,69 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         }
     }
 
+    @Override
+    public void onCategorySelected(int categoryId) {
+        LogUtils.logEnterFunction(Tag, "categoryId = " + categoryId);
+
+        mCategory = mDbHelper.getCategory(categoryId);
+
+        if(mCategory != null) {
+            tvCategory.setText(mCategory.getName());
+        } else {
+            tvCategory.setText("");
+        }
+
+        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+    }
+
+    @Override
+    public void onDescriptionUpdated(String description) {
+        LogUtils.logEnterFunction(Tag, "description = " + description);
+
+        tvDescription.setText(description);
+
+        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+    }
+
+    @Override
+    public void onAccountSelected(TransactionEnum type, int accountId) {
+        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId);
+
+        if (type == TransactionEnum.TransferFrom) {
+            mFromAccount = mDbHelper.getAccount(accountId);
+            tvFromAccount.setText(mFromAccount.getName());
+            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
+        } else if(type == TransactionEnum.TransferTo) {
+            mToAccount = mDbHelper.getAccount(accountId);
+            tvToAccount.setText(mToAccount.getName());
+            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mToAccount.getCurrencyId())));
+            tvFeeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mToAccount.getCurrencyId())));
+        }
+
+        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
+    }
+
     /**
      * Todo: Init view
      */
     private void initView() {
         LogUtils.logEnterFunction(Tag, null);
 
-        etAmount = (ClearableEditText) getView().findViewById(R.id.etAmount);
+        etAmount            = (ClearableEditText) getView().findViewById(R.id.etAmount);
         etAmount.addTextChangedListener(new CurrencyTextWatcher(etAmount));
-        tvCurrencyIcon = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
+        tvCurrencyIcon      = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
 
-        llFromAccount = (LinearLayout) getView().findViewById(R.id.llFromAccount);
+        llFromAccount       = (LinearLayout) getView().findViewById(R.id.llFromAccount);
         llFromAccount.setOnClickListener(this);
-        tvFromAccount = (TextView) getView().findViewById(R.id.tvFromAccount);
+        tvFromAccount       = (TextView) getView().findViewById(R.id.tvFromAccount);
 
-        llToAccount = (LinearLayout) getView().findViewById(R.id.llToAccount);
+        llToAccount         = (LinearLayout) getView().findViewById(R.id.llToAccount);
         llToAccount.setOnClickListener(this);
-        tvToAccount = (TextView) getView().findViewById(R.id.tvToAccount);
+        tvToAccount         = (TextView) getView().findViewById(R.id.tvToAccount);
 
-        llDescription = (LinearLayout) getView().findViewById(R.id.llDescription);
+        llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
         llDescription.setOnClickListener(this);
-        tvDescription = (TextView) getView().findViewById(R.id.tvDescription);
+        tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
 
         llDate = (LinearLayout) getView().findViewById(R.id.llDate);
         llDate.setOnClickListener(this);
@@ -195,9 +237,9 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         etFee.addTextChangedListener(new CurrencyTextWatcher(etFee));
         tvFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvFeeCurrencyIcon);
 
-        llCategory = (LinearLayout) getView().findViewById(R.id.llCategory);
+        llCategory          = (LinearLayout) getView().findViewById(R.id.llCategory);
         llCategory.setOnClickListener(this);
-        tvCategory = (TextView) getView().findViewById(R.id.tvCategory);
+        tvCategory          = (TextView) getView().findViewById(R.id.tvCategory);
 
         etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(mConfigs.getInt(Configurations.Key.Currency)));
@@ -310,6 +352,9 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
 
     } // End createTransaction
 
+    /**
+     * Update Transaction
+     */
     private void updateTransaction() {
         LogUtils.logEnterFunction(Tag, null);
 
@@ -401,11 +446,10 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
 
     /**
      * Start fragment to select Category
-     *
-     * @param transactionType
      * @param oldCategoryId
      */
-    private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
+    private void startFragmentSelectCategory(int oldCategoryId) {
+        LogUtils.logEnterFunction(Tag, "OldCategoryId = " + oldCategoryId);
         FragmentTransactionSelectCategory nextFrag = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
         bundle.putBoolean("CategoryType", true);
@@ -416,21 +460,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
                 .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentTransactionSelectCategory.Tag)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    @Override
-    public void onCategorySelected(int categoryId) {
-        LogUtils.logEnterFunction(Tag, "categoryId = " + categoryId);
-
-        mCategory = mDbHelper.getCategory(categoryId);
-
-        if(mCategory != null) {
-            tvCategory.setText(mCategory.getName());
-        } else {
-            tvCategory.setText("");
-        }
-
-        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+        LogUtils.logLeaveFunction(Tag, "OldCategoryId = " + oldCategoryId, null);
     }
 
     /**
@@ -450,15 +480,6 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
                 .commit();
     }
 
-    @Override
-    public void onDescriptionUpdated(String description) {
-        LogUtils.logEnterFunction(Tag, "description = " + description);
-
-        tvDescription.setText(description);
-
-        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
-    }
-
     /**
      * Start fragment to Select Account
      *
@@ -469,7 +490,6 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         LogUtils.logEnterFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId);
         FragmentAccountsSelect fragment = new FragmentAccountsSelect();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
         bundle.putInt("AccountID", oldAccountId);
         bundle.putSerializable("TransactionType", transactionType);
         bundle.putSerializable("Callback", this);
@@ -480,23 +500,6 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
                 .commit();
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
-    }
-
-    @Override
-    public void onAccountSelected(TransactionEnum type, int accountId) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId);
-
-        if (type == TransactionEnum.TransferFrom) {
-            mFromAccount = mDbHelper.getAccount(accountId);
-            tvFromAccount.setText(mFromAccount.getName());
-            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
-        } else if(type == TransactionEnum.TransferTo) {
-            mToAccount = mDbHelper.getAccount(accountId);
-            tvToAccount.setText(mToAccount.getName());
-            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mToAccount.getCurrencyId())));
-        }
-
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
     }
 
     /**

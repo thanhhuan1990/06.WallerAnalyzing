@@ -17,19 +17,24 @@ import android.widget.TextView;
 import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.model.Account.IAccountCallback;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.AccountType;
+import local.wallet.analyzing.FragmentAccountTypeSelect.ISelectAccountType;
+import local.wallet.analyzing.FragmentDescription.IUpdateDescription;
+import local.wallet.analyzing.FragmentCurrencySelect.ISelectCurrency;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentAccountCreate extends Fragment {
+public class FragmentAccountCreate extends Fragment implements IUpdateDescription, ISelectAccountType, ISelectCurrency {
 
     public static final String Tag      = "AccountCreate";
 
     private Configurations              mConfigs;
     private DatabaseHelper              mDbHelper;
+    private IAccountCallback            mCallback;
 
     private AccountType                 mAccountType    = AccountType.Accounts.get(0);
     private Currency.CurrencyList       mCurrency;
@@ -50,6 +55,10 @@ public class FragmentAccountCreate extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        Bundle bundle       = this.getArguments();
+        mCallback           = (IAccountCallback) bundle.getSerializable("Callback");
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -111,8 +120,8 @@ public class FragmentAccountCreate extends Fragment {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", Tag);
                 bundle.putInt("AccountType", mAccountType.getId());
+                bundle.putSerializable("Callback", FragmentAccountCreate.this);
                 nextFrag.setArguments(bundle);
                 FragmentAccountCreate.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, FragmentAccountTypeSelect.Tag)
@@ -127,8 +136,8 @@ public class FragmentAccountCreate extends Fragment {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", Tag);
                 bundle.putInt("Currency", mCurrency.getValue());
+                bundle.putSerializable("Callback", FragmentAccountCreate.this);
                 nextFrag.setArguments(bundle);
                 FragmentAccountCreate.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, FragmentCurrencySelect.Tag)
@@ -145,8 +154,8 @@ public class FragmentAccountCreate extends Fragment {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", Tag);
                 bundle.putString("Description", tvDescription.getText().toString());
+                bundle.putSerializable("Callback", FragmentAccountCreate.this);
                 nextFrag.setArguments(bundle);
                 FragmentAccountCreate.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, FragmentDescription.Tag)
@@ -174,22 +183,23 @@ public class FragmentAccountCreate extends Fragment {
                 // Insert account to DB
                 long account_id = mDbHelper.createAccount(accountName, mAccountType.getId(), mCurrency.getValue(), initialBalance, description);
 
-                // Update list of Account in FragmentListAccount
-                FragmentListAccount fragmentListAccount = (FragmentListAccount)((ActivityMain)getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT);
-                fragmentListAccount.addToAccountList(mDbHelper.getAccount(account_id));
+                if(account_id != -1) {
 
-                // Return to FragmentListAccount
-                getFragmentManager().popBackStackImmediate();
+                    ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_account_create_successful));
+
+                    // Update list of Account in FragmentListAccount
+                    mCallback.onListAccountUpdated();
+
+                    // Return to FragmentListAccount
+                    getFragmentManager().popBackStackImmediate();
+                }
             }
         });
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
-    /**
-     * Update AccountType, call from ActivityMain
-     * @param accountTypeId
-     */
-    public void updateAccountType(int accountTypeId) {
+    @Override
+    public void onAccountTypeSelected(int accountTypeId) {
         LogUtils.logEnterFunction(Tag, "accountTypeId = " + accountTypeId);
 
         mAccountType = AccountType.getAccountTypeById(accountTypeId);
@@ -198,11 +208,8 @@ public class FragmentAccountCreate extends Fragment {
         LogUtils.logLeaveFunction(Tag, "accountTypeId = " + accountTypeId, null);
     }
 
-    /**
-     * Update Currency, call from ActivityMain
-     * @param currency
-     */
-    public void updateCurrency(Currency.CurrencyList currency) {
+    @Override
+    public void onCurrencySelected(Currency.CurrencyList currency) {
         LogUtils.logEnterFunction(Tag, "currencyId = " + currency.name());
 
         mCurrency = currency;
@@ -212,11 +219,8 @@ public class FragmentAccountCreate extends Fragment {
         LogUtils.logLeaveFunction(Tag, "currencyId = " + currency.name(), null);
     }
 
-    /**
-     * Update Description, call from ActivityMain
-     * @param description
-     */
-    public void updateDescription(String description) {
+    @Override
+    public void onDescriptionUpdated(String description) {
         LogUtils.logEnterFunction(Tag, "description = " + description);
 
         tvDescription.setText(description);

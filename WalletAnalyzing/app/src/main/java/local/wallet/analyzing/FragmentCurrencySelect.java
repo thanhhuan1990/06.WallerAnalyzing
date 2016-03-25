@@ -20,6 +20,7 @@ import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Currency;
+import local.wallet.analyzing.model.Currency.CurrencyList;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
@@ -28,8 +29,12 @@ public class FragmentCurrencySelect extends Fragment {
 
     public static final String Tag = "FragmentCurrencySelect";
 
-    private String  mTagOfSource = "";
-    private int     mUsingCurrencyId;
+    public interface ISelectCurrency {
+        void onCurrencySelected(CurrencyList currency);
+    }
+
+    private int             mUsingCurrencyId;
+    private ISelectCurrency mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,8 @@ public class FragmentCurrencySelect extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
-        mTagOfSource        = bundle.getString("Tag");
         mUsingCurrencyId    = bundle.getInt("Currency", 1);
+        mCallback           = (ISelectCurrency) bundle.getSerializable("Callback");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -82,38 +87,8 @@ public class FragmentCurrencySelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-
-                if (mTagOfSource.equals(FragmentAccountCreate.Tag)) {
-                    ((FragmentAccountCreate) fragment).updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-                    getFragmentManager().popBackStackImmediate();
-                } else if (mTagOfSource.equals(FragmentAccountUpdate.Tag)) {
-                    ((FragmentAccountUpdate) fragment).updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-                }
-
-//                if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountCreate())) {
-//
-//                    LogUtils.trace(Tag, "Setup for FragmentAccountCreate");
-//                    // Return Type's Id to FragmentAccountCreate
-//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountCreate();
-//                    FragmentAccountCreate fragment = (FragmentAccountCreate) getActivity()
-//                                                                                .getSupportFragmentManager()
-//                                                                                .findFragmentByTag(tagOfFragment);
-//                    fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-//
-//                    getFragmentManager().popBackStackImmediate();
-//
-//                } else if (mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentAccountUpdate())) {
-//
-//                    LogUtils.trace(Tag, "Setup for FragmentAccountUpdate");
-//                    // Return Type's Id to FragmentAccountUpdate
-//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentAccountUpdate();
-//                    FragmentAccountUpdate fragment = (FragmentAccountUpdate) getActivity()
-//                                                                                .getSupportFragmentManager()
-//                                                                                .findFragmentByTag(tagOfFragment);
-//                    fragment.updateCurrency(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
-//
-//                }
+                mCallback.onCurrencySelected(Currency.getCurrencyById(Arrays.asList(Currency.CurrencyList.values()).get(position).getValue()));
+                getFragmentManager().popBackStackImmediate();
             }
         });
 

@@ -34,13 +34,11 @@ public class FragmentEvent extends Fragment {
     public static final String     Tag                     = "FragmentEvent";
 
     public interface IUpdateEvent extends Serializable {
-        void onEventUpdated(TransactionEnum type, String event);
+        void onEventUpdated(String event);
     }
 
     private DatabaseHelper          mDbHelper;
 
-    private String                  mTagOfSource            = "";
-    private TransactionEnum         mCurrentTransactionType = TransactionEnum.Expense;
     private String                  mEvent;
 
     private ClearableEditText       etEvent;
@@ -59,13 +57,9 @@ public class FragmentEvent extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
-        mTagOfSource                    = bundle.getString("Tag");
-        mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mEvent                          = bundle.getString("Event", "");
         mCallback                       = (IUpdateEvent) bundle.get("Callback");
 
-        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
         LogUtils.trace(Tag, "mEvent = " + mEvent);
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -84,7 +78,7 @@ public class FragmentEvent extends Fragment {
             @Override
             public void onClick(View v) {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                mCallback.onEventUpdated(mCurrentTransactionType, etEvent.getText().toString());
+                mCallback.onEventUpdated(etEvent.getText().toString());
 
                 // Back
                 getFragmentManager().popBackStackImmediate();

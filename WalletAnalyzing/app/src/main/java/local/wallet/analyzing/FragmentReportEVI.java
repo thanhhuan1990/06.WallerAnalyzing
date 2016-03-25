@@ -48,11 +48,13 @@ import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentReportEVISelectTime.ISelectReportEVITime;
+import local.wallet.analyzing.FragmentReportSelectAccount.ISelectReportAccount;
 
 /**
  * Created by huynh.thanh.huan on 2/22/2016.
  */
-public class FragmentReportEVI extends Fragment implements View.OnClickListener {
+public class FragmentReportEVI extends Fragment implements View.OnClickListener, ISelectReportEVITime, ISelectReportAccount {
     public static final String Tag = "ReportEVI";
 
     private DatabaseHelper  mDbHelper;
@@ -139,6 +141,104 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onReportEVITimeSelected(int time) {
+        LogUtils.logEnterFunction(Tag, "time = " + time);
+
+        mTime = time;
+
+        String[] arTimes = getResources().getStringArray(R.array.report_evi_ar_viewedby);
+
+        tvViewedBy.setText(arTimes[mTime]);
+
+        switch (time) {
+            case 0:
+                updateListEviCurrent();
+                break;
+            case 1:
+                updateListEviMonthly();
+                break;
+            case 2:
+                updateListEviQuarterly();
+                break;
+            case 3:
+                updateListEviYearly();
+                break;
+            default:
+                break;
+        }
+
+        LogUtils.logLeaveFunction(Tag, "time = " + time, null);
+    }
+
+    @Override
+    public void onReportEVITimeSelected(Calendar fromDate, Calendar toDate) {
+        String strFromDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
+                fromDate.get(Calendar.DATE),
+                fromDate.get(Calendar.MONTH) + 1,
+                fromDate.get(Calendar.YEAR));
+        String strToDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
+                toDate.get(Calendar.DATE),
+                toDate.get(Calendar.MONTH) + 1,
+                toDate.get(Calendar.YEAR));
+
+        LogUtils.logEnterFunction(Tag, "(" + strFromDate + " - " + strToDate + ")");
+
+        mTime       = 4; // Period
+        mFromDate   = fromDate;
+        mToDate     = toDate;
+        mTime       = getResources().getStringArray(R.array.report_evi_ar_viewedby).length - 1;
+
+        tvViewedBy.setText(strFromDate + " - " + strToDate);
+
+        updateEviPeriod();
+
+        LogUtils.logLeaveFunction(Tag, "(" + strFromDate + " - " +  strToDate + ")", null);
+    }
+
+    @Override
+    public void onReportAccountSelected(int[] accountId) {
+        LogUtils.logEnterFunction(Tag, "accountId = " + Arrays.toString(accountId));
+
+        mAccountId = accountId;
+
+        if(mAccountId.length == mDbHelper.getAllAccounts().size()) {
+            tvAccount.setText(getResources().getString(R.string.report_evi_accounts_all_accounts));
+        } else {
+            String account = "";
+            for(int i = 0 ; i < mAccountId.length; i++) {
+                if(!account.equals("")) {
+                    account += ", ";
+                }
+                account += mDbHelper.getAccount(mAccountId[i]).getName();
+            }
+
+            tvAccount.setText(account);
+        }
+
+        switch (mTime) {
+            case 0:
+                updateListEviCurrent();
+                break;
+            case 1:
+                updateListEviMonthly();
+                break;
+            case 2:
+                updateListEviQuarterly();
+                break;
+            case 3:
+                updateListEviYearly();
+                break;
+            case 4:
+                updateEviPeriod();
+                break;
+            default:
+                break;
+        }
+
+        LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
     }
 
     /**
@@ -1365,52 +1465,6 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
     }
 
     /**
-     * Update TextView Account
-     * @param accountId
-     */
-    public void updateAccount(int[] accountId) {
-        LogUtils.logEnterFunction(Tag, "accountId = " + Arrays.toString(accountId));
-
-        mAccountId = accountId;
-
-        if(mAccountId.length == mDbHelper.getAllAccounts().size()) {
-            tvAccount.setText(getResources().getString(R.string.report_evi_accounts_all_accounts));
-        } else {
-            String account = "";
-            for(int i = 0 ; i < mAccountId.length; i++) {
-                if(!account.equals("")) {
-                    account += ", ";
-                }
-                account += mDbHelper.getAccount(mAccountId[i]).getName();
-            }
-
-            tvAccount.setText(account);
-        }
-
-        switch (mTime) {
-            case 0:
-                updateListEviCurrent();
-                break;
-            case 1:
-                updateListEviMonthly();
-                break;
-            case 2:
-                updateListEviQuarterly();
-                break;
-            case 3:
-                updateListEviYearly();
-                break;
-            case 4:
-                updateEviPeriod();
-                break;
-            default:
-                break;
-        }
-
-        LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
-    } // End updateAccount
-
-    /**
      * Start Fragment ReportEVITimeSelect
      */
     private void showListTime() {
@@ -1420,6 +1474,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         bundle.putInt("Time", mTime);
         bundle.putLong("FromDate", mFromDate.getTimeInMillis());
         bundle.putLong("ToDate", mToDate.getTimeInMillis());
+        bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
         FragmentReportEVI.this.getFragmentManager().beginTransaction()
                 .add(R.id.ll_report, nextFrag, FragmentReportEVISelectTime.Tag)
@@ -1427,68 +1482,6 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End showListTime
-
-    /**
-     * Update TextView ViewedBy
-     * @param time
-     */
-    public void updateTime(int time) {
-        LogUtils.logEnterFunction(Tag, "time = " + time);
-
-        mTime = time;
-
-        String[] arTimes = getResources().getStringArray(R.array.report_evi_ar_viewedby);
-
-        tvViewedBy.setText(arTimes[mTime]);
-
-        switch (time) {
-            case 0:
-                updateListEviCurrent();
-                break;
-            case 1:
-                updateListEviMonthly();
-                break;
-            case 2:
-                updateListEviQuarterly();
-                break;
-            case 3:
-                updateListEviYearly();
-                break;
-            default:
-                break;
-        }
-
-        LogUtils.logLeaveFunction(Tag, "time = " + time, null);
-    } // End updateTime
-
-    /**
-     * Update TextView ViewedBy
-     * @param fromDate
-     * @param toDate
-     */
-    public void updateTime(Calendar fromDate, Calendar toDate) {
-        String strFromDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
-                fromDate.get(Calendar.DATE),
-                fromDate.get(Calendar.MONTH) + 1,
-                fromDate.get(Calendar.YEAR));
-        String strToDate = String.format(getResources().getString(R.string.format_budget_day_month_year_2),
-                toDate.get(Calendar.DATE),
-                toDate.get(Calendar.MONTH) + 1,
-                toDate.get(Calendar.YEAR));
-
-        LogUtils.logEnterFunction(Tag, "(" + strFromDate + " - " + strToDate + ")");
-
-        mTime       = 4; // Period
-        mFromDate   = fromDate;
-        mToDate     = toDate;
-        mTime       = getResources().getStringArray(R.array.report_evi_ar_viewedby).length - 1;
-
-        tvViewedBy.setText(strFromDate + " - " + strToDate);
-
-        updateEviPeriod();
-
-        LogUtils.logLeaveFunction(Tag, "(" + strFromDate + " - " +  strToDate + ")", null);
-    } // End updateTime
 
     /**
      * get MAX of Amount in exactly Month
@@ -1559,7 +1552,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         return max;
     }
 
-    public static String RomanNumerals(int Int) {
+    private static String RomanNumerals(int Int) {
         LinkedHashMap<String, Integer> roman_numerals = new LinkedHashMap<String, Integer>();
         roman_numerals.put("M", 1000);
         roman_numerals.put("CM", 900);
@@ -1582,7 +1575,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener 
         }
         return res;
     }
-    public static String repeat(String s, int n) {
+    private static String repeat(String s, int n) {
         if(s == null) {
             return null;
         }

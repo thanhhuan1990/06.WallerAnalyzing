@@ -32,6 +32,10 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
     public static final String Tag = "ReportExpenseAnalysisCategory";
 
+    public interface ISelectReportExpenseAnalysisCategory {
+        void onReportExpenseAnalysisCategorySelected(int[] categories);
+    }
+
     private DatabaseHelper      mDbHelper;
 
     private ToggleButton        tbAllCategory;
@@ -47,6 +51,8 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
     private List<CategoryView>  arCategoriesExpenseView = new ArrayList<CategoryView>();
     private int[]               arCategories;
 
+    private ISelectReportExpenseAnalysisCategory    mCallback;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
@@ -54,8 +60,9 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
         setHasOptionsMenu(true);
 
         /* Get data from Bundle */
-        Bundle bundle                   = this.getArguments();
-        arCategories                    = bundle.getIntArray("Categories");
+        Bundle bundle       = this.getArguments();
+        arCategories        = bundle.getIntArray("Categories");
+        mCallback           = (ISelectReportExpenseAnalysisCategory) bundle.getSerializable("Callback");
 
         LogUtils.trace(Tag, "Categories = " + arCategories != null ? Arrays.toString(arCategories) : "''");
 
@@ -106,8 +113,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
                     LogUtils.trace(Tag, "Categories: " + Arrays.toString(categories));
 
-                    FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag);
-                    fragment.updateCategories(categories);
+                    mCallback.onReportExpenseAnalysisCategorySelected(categories);
 
                     getFragmentManager().popBackStackImmediate();
                 } else {

@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -31,11 +32,17 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
 
     public static final String Tag = "ReportExpenseAnalysisTime";
 
+    public interface ISelectReportExpenseAnalysisTime extends Serializable {
+        void onReportExpenseAnalysisTimeSelected(int time);
+    }
+
     private int             mCurrentTime;
     private String[]        mTimes;
 
     private ListView        lvTime;
     TimeAdapter             mListAdapter;
+
+    private ISelectReportExpenseAnalysisTime    mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +54,7 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
 
         Bundle bundle       = this.getArguments();
         mCurrentTime        = bundle.getInt("Time", 1);
+        mCallback           = (ISelectReportExpenseAnalysisTime) bundle.getSerializable("Callback");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -75,8 +83,7 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                FragmentReportExpenseAnalysis fragment = (FragmentReportExpenseAnalysis) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag);
-                fragment.updateTime(position);
+                mCallback.onReportExpenseAnalysisTimeSelected(position);
 
                 getFragmentManager().popBackStackImmediate();
             }

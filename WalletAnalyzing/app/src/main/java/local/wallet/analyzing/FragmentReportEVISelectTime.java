@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -31,8 +32,14 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
 
     public static final String Tag = "ReportEVITimeSelect";
 
+    public interface ISelectReportEVITime extends Serializable {
+        void onReportEVITimeSelected(int time);
+        void onReportEVITimeSelected(Calendar fromDate, Calendar toDate);
+    }
+
     private int             mCurrentTime;
     private String[]        mTimes;
+    private ISelectReportEVITime    mCallback;
 
     private ListView        lvTime;
     TimeAdapter             mListAdapter;
@@ -58,6 +65,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
         mCurrentTime        = bundle.getInt("Time", 1);
         mFromDate.setTimeInMillis(bundle.getLong("FromDate"));
         mToDate.setTimeInMillis(bundle.getLong("ToDate"));
+        mCallback           = (ISelectReportEVITime) bundle.getSerializable("Callback");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -87,8 +95,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position != (mTimes.length - 1)) {
-                    FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportEVI.Tag);
-                    fragment.updateTime(position);
+                    mCallback.onReportEVITimeSelected(position);
 
                     getFragmentManager().popBackStackImmediate();
                 } else {
@@ -170,8 +177,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentReportEVI fragment = (FragmentReportEVI) getActivity().getSupportFragmentManager().findFragmentByTag(FragmentReportEVI.Tag);
-                fragment.updateTime(mFromDate, mToDate);
+                mCallback.onReportEVITimeSelected(mFromDate, mToDate);
 
                 getFragmentManager().popBackStackImmediate();
             }

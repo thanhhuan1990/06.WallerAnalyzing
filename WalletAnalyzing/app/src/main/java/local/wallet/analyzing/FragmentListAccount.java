@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.model.Account.IAccountCallback;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -27,7 +28,8 @@ import local.wallet.analyzing.model.Account;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentListAccount extends Fragment {
+public class FragmentListAccount extends Fragment implements IAccountCallback {
+
     public static final String Tag         = "ListAccount";
 
     private static FragmentListAccount instance;
@@ -90,7 +92,6 @@ public class FragmentListAccount extends Fragment {
                 // Go to list of transaction related with this Account
                 FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
                 Bundle bundle = new Bundle();
-                bundle.putString("Tag", ((ActivityMain) getActivity()).getFragment(ActivityMain.TAB_POSITION_LIST_ACCOUNT).getTag());
                 bundle.putInt("AccountID", accAdapter.getItem(position).getId());
                 nextFrag.setArguments(bundle);
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
@@ -141,6 +142,9 @@ public class FragmentListAccount extends Fragment {
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click Menu Action Add Account.");
                 FragmentAccountCreate nextFrag = new FragmentAccountCreate();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Callback", FragmentListAccount.this);
+                nextFrag.setArguments(bundle);
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, FragmentAccountCreate.Tag)
                         .addToBackStack(null)
@@ -181,45 +185,16 @@ public class FragmentListAccount extends Fragment {
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
-    /**
-     * Update AccountType, call from ActivityMain
-     */
-    public void addToAccountList(Account account) {
+    @Override
+    public void onListAccountUpdated() {
         LogUtils.logEnterFunction(Tag, null);
+        List<Account> arTemp = mDbHelper.getAllAccounts();
+        listAccount.clear();
 
-        listAccount.add(account);
-        // Reload list Account
-        accAdapter.notifyDataSetChanged();
-
-        tvEmpty.setVisibility(View.GONE);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    public void updateToAccountList(Account account) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        for (int i = 0; i < listAccount.size(); i++) {
-            if (listAccount.get(i).getId() == account.getId()) {
-                listAccount.set(i, account);
-            }
+        for(Account acc : arTemp) {
+            listAccount.add(acc);
         }
-        // Reload list Account
-        accAdapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    public void removeToAccountList(int accountId) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        // Remove Account
-        for (Account account : listAccount) {
-            if (account.getId() == accountId) {
-                listAccount.remove(account);
-            }
-        }
-        // Reload list Account
         accAdapter.notifyDataSetChanged();
 
         if (listAccount.size() > 0) {
@@ -297,6 +272,7 @@ public class FragmentListAccount extends Fragment {
                         FragmentAccountUpdate nextFrag = new FragmentAccountUpdate();
                         Bundle bundle = new Bundle();
                         bundle.putInt("AccountID", listAccount.get(position).getId());
+                        bundle.putSerializable("Callback", FragmentListAccount.this);
                         nextFrag.setArguments(bundle);
                         FragmentListAccount.this.getFragmentManager().beginTransaction()
                                 .add(R.id.layout_account, nextFrag, FragmentAccountUpdate.Tag)

@@ -38,7 +38,6 @@ public class FragmentAccountsSelect extends Fragment {
         void onAccountSelected(TransactionEnum type, int accountId);
     }
 
-    private String          mTagOfSource = "";
     private int             mUsingAccountId;
     private TransactionEnum mTransactionType;
 
@@ -63,12 +62,10 @@ public class FragmentAccountsSelect extends Fragment {
 
         /* Get data from Bundle */
         Bundle bundle                   = this.getArguments();
-        mTagOfSource                    = bundle.getString("Tag");
         mUsingAccountId                 = bundle.getInt("AccountID", 0);
         mTransactionType                = (TransactionEnum) bundle.get("TransactionType");
         mCallback                       = (ISelectAccount) bundle.get("Callback");
 
-        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mUsingAccountId = " + mUsingAccountId);
         LogUtils.trace(Tag, "mTransactionType = " + mTransactionType.name());
 

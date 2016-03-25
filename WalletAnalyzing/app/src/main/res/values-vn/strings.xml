@@ -157,6 +157,7 @@
 
     <string name="message_transaction_create_successful">Đã tạo ghi chép thành công</string>
     <string name="message_transaction_update_successful">Đã sửa đổi ghi chép thành công</string>
+    <string name="message_account_create_successful">Đã tạo tài khoản thành công</string>
 
     <string name="expense_category">Chi Tiêu</string>
     <string name="income_category">Thu Vào</string>

@@ -34,13 +34,11 @@ public class FragmentPayee extends Fragment {
     public static final String     Tag                     = "FragmentPayee";
 
     public interface IUpdatePayee extends Serializable {
-        void onPayeeUpdated(TransactionEnum type, String payee);
+        void onPayeeUpdated(String payee);
     }
 
     private DatabaseHelper          mDbHelper;
 
-    private String                  mTagOfSource            = "";
-    private TransactionEnum         mCurrentTransactionType = TransactionEnum.Expense;
     private String                  mPayee;
 
     private ClearableEditText       etPayee;
@@ -59,13 +57,9 @@ public class FragmentPayee extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
-        mTagOfSource                    = bundle.getString("Tag");
-        mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mPayee                          = bundle.getString("Payee", "");
         mCallback                       = (IUpdatePayee) bundle.get("Callback");
 
-        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
-        LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
         LogUtils.trace(Tag, "mPayee = " + mPayee);
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -124,7 +118,7 @@ public class FragmentPayee extends Fragment {
             public void onClick(View v) {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
 
-                mCallback.onPayeeUpdated(mCurrentTransactionType, etPayee.getText().toString());
+                mCallback.onPayeeUpdated(etPayee.getText().toString());
                 // Back
                 getFragmentManager().popBackStackImmediate();
             }

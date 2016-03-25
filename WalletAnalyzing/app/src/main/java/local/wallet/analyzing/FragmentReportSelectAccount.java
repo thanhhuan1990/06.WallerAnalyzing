@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,12 +35,15 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 public class FragmentReportSelectAccount extends Fragment implements View.OnClickListener {
     public static final String Tag = "ReportEVIAccount";
 
+    public interface ISelectReportAccount extends Serializable {
+        void onReportAccountSelected(int[] accountId);
+    }
+
     private DatabaseHelper          mDbHelper;
     private Configurations          mConfigs;
 
     // List of selected Account from ReportEVI
     private int[]                   currentAccounts;
-    private String                  tagOfSource = "";
 
     private ToggleButton            tbAllAccount;
     private ListView                lvAccount;
@@ -47,6 +51,8 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
     private List<AccountItem>       arAccounts = new ArrayList<AccountItem>();
 
     private TextView                tvEmpty;
+
+    private ISelectReportAccount    mCallback;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,10 +62,9 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
 
         Bundle bundle   = this.getArguments();
         currentAccounts = bundle.getIntArray("Accounts");
-        tagOfSource     = bundle.getString("Fragment");
+        mCallback       = (ISelectReportAccount) bundle.getSerializable("Callback");
 
         LogUtils.trace(Tag, "currentAccounts = " + Arrays.toString(currentAccounts));
-        LogUtils.trace(Tag, "tagOfSource = " + tagOfSource);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -194,17 +199,7 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
 
                     LogUtils.trace(Tag, "Accounts: " + Arrays.toString(accounts));
 
-                    Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(tagOfSource);
-
-                    if(tagOfSource.equals(FragmentReportEVI.Tag)) {
-
-                        ((FragmentReportEVI) fragment).updateAccount(accounts);
-
-                    } else if(tagOfSource.equals(FragmentReportExpenseAnalysis.Tag)) {
-
-                        ((FragmentReportExpenseAnalysis) fragment).updateAccount(accounts);
-
-                    }
+                    mCallback.onReportAccountSelected(accounts);
 
                     getFragmentManager().popBackStackImmediate();
                 } else {

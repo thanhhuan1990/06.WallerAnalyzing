@@ -32,7 +32,6 @@ public class FragmentAccountTransactions extends Fragment {
 
     public static final String Tag = "AccountTransactions";
 
-    private String              mTagOfSource = "";
     private int                 mAccountId;
 
     private DatabaseHelper      mDbHelper;
@@ -52,10 +51,8 @@ public class FragmentAccountTransactions extends Fragment {
 
         /* Get data from Bundle */
         Bundle bundle                   = this.getArguments();
-        mTagOfSource                    = bundle.getString("Tag");
         mAccountId                      = bundle.getInt("AccountID", 0);
 
-        LogUtils.trace(Tag, "mTagOfSource   = " + mTagOfSource);
         LogUtils.trace(Tag, "mAccountId     = " + mAccountId);
 
         LogUtils.logLeaveFunction(Tag, null, null);

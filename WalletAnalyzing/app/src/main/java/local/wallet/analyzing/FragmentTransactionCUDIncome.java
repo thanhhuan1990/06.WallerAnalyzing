@@ -145,7 +145,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 break;
             case R.id.llEvent:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                startFragmentEvent(TransactionEnum.Income, tvEvent.getText().toString());
+                startFragmentEvent(tvEvent.getText().toString());
                 break;
             case R.id.llSave:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
@@ -225,12 +225,10 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
     } // End onAccountSelected
 
     @Override
-    public void onEventUpdated(TransactionEnum type, String event) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", event = " + event);
-        if (type == TransactionEnum.Income) {
-            tvEvent.setText(event);
-        }
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", event = " + event, null);
+    public void onEventUpdated(String event) {
+        LogUtils.logEnterFunction(Tag, "event = " + event);
+        tvEvent.setText(event);
+        LogUtils.logLeaveFunction(Tag, "event = " + event, null);
     } // End onEventUpdated
 
     /**
@@ -520,6 +518,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
      * @param oldCategoryId
      */
     private void startFragmentSelectCategory(int oldCategoryId) {
+        LogUtils.logEnterFunction(Tag, "OldCategoryId = " + oldCategoryId);
         FragmentTransactionSelectCategory nextFrag = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
         bundle.putBoolean("CategoryType", false);
@@ -559,7 +558,6 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
         LogUtils.logEnterFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId);
         FragmentAccountsSelect fragment = new FragmentAccountsSelect();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
         bundle.putInt("AccountID", oldAccountId);
         bundle.putSerializable("TransactionType", transactionType);
         bundle.putSerializable("Callback", this);
@@ -574,15 +572,11 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
 
     /**
      * Start fragment Event
-     *
-     * @param transactionType
      * @param oldEvent
      */
-    private void startFragmentEvent(TransactionEnum transactionType, String oldEvent) {
+    private void startFragmentEvent(String oldEvent) {
         FragmentEvent nextFrag = new FragmentEvent();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
-        bundle.putSerializable("TransactionType", transactionType);
         bundle.putString("Event", oldEvent);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);

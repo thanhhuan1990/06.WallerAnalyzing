@@ -31,11 +31,14 @@ import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentReportExpenseAnalysisCategory.ISelectReportExpenseAnalysisCategory;
+import local.wallet.analyzing.FragmentReportExpenseAnalysisTime.ISelectReportExpenseAnalysisTime;
+import local.wallet.analyzing.FragmentReportSelectAccount.ISelectReportAccount;
 
 /**
  * Created by huynh.thanh.huan on 2/22/2016.
  */
-public class FragmentReportExpenseAnalysis extends Fragment implements View.OnClickListener {
+public class FragmentReportExpenseAnalysis extends Fragment implements View.OnClickListener, ISelectReportExpenseAnalysisCategory, ISelectReportExpenseAnalysisTime, ISelectReportAccount {
     public static final String Tag = "ReportExpenseAnalysis";
 
     private DatabaseHelper  mDbHelper;
@@ -138,6 +141,75 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onReportExpenseAnalysisCategorySelected(int[] categories) {
+        LogUtils.logEnterFunction(Tag, "categoryId = " + Arrays.toString(categories));
+
+        mCategoryId = categories;
+
+        if(categories.length == mDbHelper.getAllCategories().size()) {
+            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_categories));
+        } else if(categories.length == (mDbHelper.getAllCategories(true).size())) {
+            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_expense_categories));
+        } else if(categories.length == (mDbHelper.getAllCategories(false).size())) {
+            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_income_categories));
+        } else {
+            String category = "";
+            for(int i = 0 ; i < mCategoryId.length; i++) {
+                if(!category.equals("")) {
+                    category += ", ";
+                }
+                category += mDbHelper.getCategory(mCategoryId[i]).getName();
+            }
+
+            tvCategory.setText(category);
+        }
+
+        updateMultiLineChart();
+
+        LogUtils.logLeaveFunction(Tag, "categoryId = " + Arrays.toString(categories), null);
+    }
+
+    @Override
+    public void onReportExpenseAnalysisTimeSelected(int time) {
+        LogUtils.logEnterFunction(Tag, "time = " + time);
+
+        mViewedBy = time;
+
+        String[] arTimes = getResources().getStringArray(R.array.report_expense_analysis_ar_viewedby);
+
+        tvViewedBy.setText(arTimes[mViewedBy]);
+
+        updateMultiLineChart();
+
+        LogUtils.logLeaveFunction(Tag, "time = " + time, null);
+    }
+
+    @Override
+    public void onReportAccountSelected(int[] accountId) {
+        LogUtils.logEnterFunction(Tag, "accountId = " + Arrays.toString(accountId));
+
+        mAccountId = accountId;
+
+        if(mAccountId.length == mDbHelper.getAllAccounts().size()) {
+            tvAccount.setText(getResources().getString(R.string.report_evi_accounts_all_accounts));
+        } else {
+            String account = "";
+            for(int i = 0 ; i < mAccountId.length; i++) {
+                if(!account.equals("")) {
+                    account += ", ";
+                }
+                account += mDbHelper.getAccount(mAccountId[i]).getName();
+            }
+
+            tvAccount.setText(account);
+        }
+
+        updateMultiLineChart();
+
+        LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
     }
 
     private void updateMultiLineChart() {
@@ -340,6 +412,7 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         Bundle bundle = new Bundle();
         bundle.putString("Fragment", Tag);
         bundle.putIntArray("Categories", mCategoryId);
+        bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
         FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
                 .add(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisCategory.Tag)
@@ -349,46 +422,14 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     }
 
     /**
-     * Update TextView Category
-     * @param categoryId
-     */
-    public void updateCategories(int[] categoryId) {
-        LogUtils.logEnterFunction(Tag, "categoryId = " + Arrays.toString(categoryId));
-
-        mCategoryId = categoryId;
-
-        if(categoryId.length == mDbHelper.getAllCategories().size()) {
-            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_categories));
-        } else if(categoryId.length == (mDbHelper.getAllCategories(true).size())) {
-            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_expense_categories));
-        } else if(categoryId.length == (mDbHelper.getAllCategories(false).size())) {
-            tvCategory.setText(getResources().getString(R.string.report_expense_analysis_categories_all_income_categories));
-        } else {
-            String category = "";
-            for(int i = 0 ; i < mCategoryId.length; i++) {
-                if(!category.equals("")) {
-                    category += ", ";
-                }
-                category += mDbHelper.getCategory(mCategoryId[i]).getName();
-            }
-
-            tvCategory.setText(category);
-        }
-
-        updateMultiLineChart();
-
-        LogUtils.logLeaveFunction(Tag, "categoryId = " + Arrays.toString(categoryId), null);
-    } // End updateAccount
-
-    /**
      * Start Fragment ReportEvent
      */
     private void showListAccounts() {
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
-        bundle.putString("Fragment", Tag);
         bundle.putIntArray("Accounts", mAccountId);
+        bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
         FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
                 .add(R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag)
@@ -398,34 +439,6 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     }
 
     /**
-     * Update TextView Account
-     * @param accountId
-     */
-    public void updateAccount(int[] accountId) {
-        LogUtils.logEnterFunction(Tag, "accountId = " + Arrays.toString(accountId));
-
-        mAccountId = accountId;
-
-        if(mAccountId.length == mDbHelper.getAllAccounts().size()) {
-            tvAccount.setText(getResources().getString(R.string.report_evi_accounts_all_accounts));
-        } else {
-            String account = "";
-            for(int i = 0 ; i < mAccountId.length; i++) {
-                if(!account.equals("")) {
-                    account += ", ";
-                }
-                account += mDbHelper.getAccount(mAccountId[i]).getName();
-            }
-
-            tvAccount.setText(account);
-        }
-
-        updateMultiLineChart();
-
-        LogUtils.logLeaveFunction(Tag, "accountId = " + accountId, null);
-    } // End updateAccount
-
-    /**
      * Start Fragment ReportEVITimeSelect
      */
     private void showListTime() {
@@ -433,6 +446,7 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         FragmentReportExpenseAnalysisTime nextFrag = new FragmentReportExpenseAnalysisTime();
         Bundle bundle = new Bundle();
         bundle.putInt("Time", mViewedBy);
+        bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
        FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
                 .add(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisTime.Tag)
@@ -440,23 +454,5 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
                 .commit();
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End showListTime
-
-    /**
-     * Update TextView ViewedBy
-     * @param time
-     */
-    public void updateTime(int time) {
-        LogUtils.logEnterFunction(Tag, "time = " + time);
-
-        mViewedBy = time;
-
-        String[] arTimes = getResources().getStringArray(R.array.report_expense_analysis_ar_viewedby);
-
-        tvViewedBy.setText(arTimes[mViewedBy]);
-
-        updateMultiLineChart();
-
-        LogUtils.logLeaveFunction(Tag, "time = " + time, null);
-    } // End updateTime
 
 }

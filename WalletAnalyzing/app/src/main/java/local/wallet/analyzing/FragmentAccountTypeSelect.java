@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
@@ -27,8 +28,13 @@ public class FragmentAccountTypeSelect extends Fragment {
 
     public static final String Tag = "FragmentAccountTypeSelect";
 
-    private String  mTagOfSource = "";
-    private int     mUsingAccountTypeId;
+    public interface ISelectAccountType extends Serializable {
+        void onAccountTypeSelected(int accountTypeId);
+    }
+
+    private int                 mUsingAccountTypeId;
+
+    private ISelectAccountType  mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,8 +45,8 @@ public class FragmentAccountTypeSelect extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle = this.getArguments();
-        mTagOfSource        = bundle.getString("Tag");
         mUsingAccountTypeId = bundle.getInt("AccountType", 1);
+        mCallback           = (ISelectAccountType) bundle.getSerializable("Callback");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -81,16 +87,7 @@ public class FragmentAccountTypeSelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-
-                if(mTagOfSource.equals(FragmentAccountCreate.Tag)) {
-
-                    ((FragmentAccountCreate) fragment).updateAccountType(AccountType.Accounts.get(position).getId());
-
-                } else if(mTagOfSource.equals(FragmentAccountUpdate.Tag)) {
-
-                    ((FragmentAccountUpdate) fragment).updateAccountType(AccountType.Accounts.get(position).getId());
-                }
+                mCallback.onAccountTypeSelected(AccountType.Accounts.get(position).getId());
 
                 getFragmentManager().popBackStackImmediate();
             }

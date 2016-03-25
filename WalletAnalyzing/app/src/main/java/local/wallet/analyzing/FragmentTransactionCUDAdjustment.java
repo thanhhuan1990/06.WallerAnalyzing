@@ -148,11 +148,11 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 break;
             case R.id.llPayee:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                startFragmentPayee(TransactionEnum.Adjustment, tvPayee.getText().toString());
+                startFragmentPayee(tvPayee.getText().toString());
                 break;
             case R.id.llEvent:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                startFragmentEvent(TransactionEnum.Adjustment, tvEvent.getText().toString());
+                startFragmentEvent(tvEvent.getText().toString());
                 break;
             case R.id.llSave:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
@@ -174,6 +174,100 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onCategorySelected(int categoryId) {
+        LogUtils.logEnterFunction(Tag, "categoryId = " + categoryId);
+
+        mCategory = mDbHelper.getCategory(categoryId);
+
+        if(mCategory != null) {
+
+            tvCategory.setText(mCategory.getName());
+
+            switch (mCategory.getDebtType()) {
+                case MORE:
+                    llPeople.setVisibility(View.VISIBLE);
+                    llPayee.setVisibility(View.GONE);
+                    if(mCategory.isExpense()) {
+                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
+                    } else {
+                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
+                    }
+                    break;
+                case NONE:
+                    llPeople.setVisibility(View.GONE);
+                    if(mCategory.isExpense()) {
+                        llPayee.setVisibility(View.VISIBLE);
+                    } else {
+                        llPayee.setVisibility(View.GONE);
+                    }
+                    break;
+                case LESS:
+                    llPeople.setVisibility(View.VISIBLE);
+                    llPayee.setVisibility(View.GONE);
+                    if(mCategory.isExpense()) {
+                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
+                    } else {
+                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            tvCategory.setText("");
+            llPeople.setVisibility(View.GONE);
+
+            if(isExpense) {
+                llPayee.setVisibility(View.VISIBLE);
+            } else {
+                llPayee.setVisibility(View.GONE);
+            }
+        }
+
+        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+    }
+
+    @Override
+    public void onDescriptionUpdated(String description) {
+        LogUtils.logEnterFunction(Tag, "description = " + description);
+
+        tvDescription.setText(description);
+
+        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+    }
+
+    @Override
+    public void onAccountSelected(TransactionEnum type, int accountId) {
+        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId);
+
+        if(type == TransactionEnum.Adjustment) {
+            mFromAccount = mDbHelper.getAccount(accountId);
+            tvAccount.setText(mFromAccount.getName());
+            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
+        }
+
+        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
+    }
+
+    @Override
+    public void onPayeeUpdated(String payee) {
+        LogUtils.logEnterFunction(Tag, "payee = " + payee);
+
+        tvPayee.setText(payee);
+
+        LogUtils.logLeaveFunction(Tag, "payee = " + payee, null);
+    }
+
+    @Override
+    public void onEventUpdated(String event) {
+        LogUtils.logEnterFunction(Tag, "event = " + event);
+
+        tvEvent.setText(event);
+
+        LogUtils.logLeaveFunction(Tag, "event = " + event, null);
     }
 
     /**
@@ -484,6 +578,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
      * @param oldCategoryId
      */
     private void startFragmentSelectCategory(int oldCategoryId) {
+        LogUtils.logEnterFunction(Tag, "OldCategoryId = " + oldCategoryId);
         FragmentTransactionSelectCategory nextFrag = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
         bundle.putBoolean("CategoryType", isExpense);
@@ -494,60 +589,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentTransactionSelectCategory.Tag)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    @Override
-    public void onCategorySelected(int categoryId) {
-        LogUtils.logEnterFunction(Tag, "categoryId = " + categoryId);
-
-        mCategory = mDbHelper.getCategory(categoryId);
-
-        if(mCategory != null) {
-
-            tvCategory.setText(mCategory.getName());
-
-            switch (mCategory.getDebtType()) {
-                case MORE:
-                    llPeople.setVisibility(View.VISIBLE);
-                    llPayee.setVisibility(View.GONE);
-                    if(mCategory.isExpense()) {
-                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
-                    } else {
-                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
-                    }
-                    break;
-                case NONE:
-                    llPeople.setVisibility(View.GONE);
-                    if(mCategory.isExpense()) {
-                        llPayee.setVisibility(View.VISIBLE);
-                    } else {
-                        llPayee.setVisibility(View.GONE);
-                    }
-                    break;
-                case LESS:
-                    llPeople.setVisibility(View.VISIBLE);
-                    llPayee.setVisibility(View.GONE);
-                    if(mCategory.isExpense()) {
-                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
-                    } else {
-                        tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            tvCategory.setText("");
-            llPeople.setVisibility(View.GONE);
-
-            if(isExpense) {
-                llPayee.setVisibility(View.VISIBLE);
-            } else {
-                llPayee.setVisibility(View.GONE);
-            }
-        }
-
-        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+        LogUtils.logLeaveFunction(Tag, "OldCategoryId = " + oldCategoryId, null);
     }
 
     /**
@@ -566,15 +608,6 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 .commit();
     }
 
-    @Override
-    public void onDescriptionUpdated(String description) {
-        LogUtils.logEnterFunction(Tag, "description = " + description);
-
-        tvDescription.setText(description);
-
-        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
-    }
-
     /**
      * Start fragment to Select Account
      * @param transactionType
@@ -584,7 +617,6 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         LogUtils.logEnterFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId);
         FragmentAccountsSelect fragment = new FragmentAccountsSelect();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
         bundle.putInt("AccountID", oldAccountId);
         bundle.putSerializable("TransactionType", transactionType);
         bundle.putSerializable("Callback", this);
@@ -597,29 +629,13 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
     }
 
-    @Override
-    public void onAccountSelected(TransactionEnum type, int accountId) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId);
-
-        if(type == TransactionEnum.Adjustment) {
-            mFromAccount = mDbHelper.getAccount(accountId);
-            tvAccount.setText(mFromAccount.getName());
-            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
-        }
-
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
-    }
-
     /**
      * Start fragment Payee
-     * @param transactionType
      * @param oldPayee
      */
-    private void startFragmentPayee(TransactionEnum transactionType, String oldPayee) {
+    private void startFragmentPayee(String oldPayee) {
         FragmentPayee nextFrag = new FragmentPayee();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
-        bundle.putSerializable("TransactionType", transactionType);
         bundle.putString("Payee", oldPayee);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
@@ -629,27 +645,13 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 .commit();
     }
 
-    @Override
-    public void onPayeeUpdated(TransactionEnum type, String payee) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", payee = " + payee);
-
-        if (type == TransactionEnum.Adjustment) {
-            tvPayee.setText(payee);
-        }
-
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", payee = " + payee, null);
-    }
-
     /**
      * Start fragment Event
-     * @param transactionType
      * @param oldEvent
      */
-    private void startFragmentEvent(TransactionEnum transactionType, String oldEvent) {
+    private void startFragmentEvent(String oldEvent) {
         FragmentEvent nextFrag = new FragmentEvent();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
-        bundle.putSerializable("TransactionType", transactionType);
         bundle.putString("Event", oldEvent);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
@@ -657,17 +659,6 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, "FragmentEvent")
                 .addToBackStack(Tag)
                 .commit();
-    }
-
-    @Override
-    public void onEventUpdated(TransactionEnum type, String event) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", event = " + event);
-
-        if (type == TransactionEnum.Adjustment) {
-            tvEvent.setText(event);
-        }
-
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", event = " + event, null);
     }
 
     /**

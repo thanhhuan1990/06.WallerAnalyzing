@@ -40,8 +40,6 @@ public class FragmentCategoryParentSelect extends Fragment {
     private DatabaseHelper  mDbHelper;
     private List<Category>  arParentCategories = new ArrayList<Category>();
 
-//    private String          mTagOfSource = "";
-//    private TransactionEnum mTransactionType     = TransactionEnum.Expense;
     private boolean                     mIsExpense = true;
     private ISelectParentCategory       mCallback;
     private int                         mCurrentParentCategoryId;
@@ -55,15 +53,11 @@ public class FragmentCategoryParentSelect extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle = this.getArguments();
-//        mTransactionType                = (TransactionEnum)bundle.get("TransactionType");
-//        mTagOfSource                    = bundle.getString("Tag");
 
         mIsExpense                      = bundle.getBoolean("CategoryType");
         mCallback                       = (ISelectParentCategory) bundle.getSerializable("Callback");
         mCurrentParentCategoryId        = bundle.getInt("ParentCategoryId", 0);
 
-//        LogUtils.trace(Tag, "mTransactionType = " + mTransactionType);
-//        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mCurrentParentCategoryId = " + mCurrentParentCategoryId);
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -95,13 +89,7 @@ public class FragmentCategoryParentSelect extends Fragment {
         lvParentCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    mCallback.onParentCategorySelected(arParentCategories.get(position).getId());
-//                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-//                if(mTagOfSource.equals(FragmentCategoryCreate.Tag)) {
-//
-//                    ((FragmentCategoryCreate) fragment).updateParentCategory(arParentCategories.get(position).getId(), (arParentCategories.get(position).getDebtType()));
-//
-//                }
+                mCallback.onParentCategorySelected(arParentCategories.get(position).getId());
 
                 // Back to last fragment
                 getFragmentManager().popBackStackImmediate();

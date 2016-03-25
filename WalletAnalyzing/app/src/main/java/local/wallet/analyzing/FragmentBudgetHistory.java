@@ -100,7 +100,7 @@ public class FragmentBudgetHistory extends Fragment {
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
-    public void updateListHistory() {
+    private void updateListHistory() {
         LogUtils.logEnterFunction(Tag, null);
 
         arHistories.clear();

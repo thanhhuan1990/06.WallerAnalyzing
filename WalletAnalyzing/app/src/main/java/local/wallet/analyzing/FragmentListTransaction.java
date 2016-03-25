@@ -301,7 +301,7 @@ public class FragmentListTransaction extends Fragment {
         }
     }
 
-    public void updateListTransaction() {
+    private void updateListTransaction() {
         // Get all transaction
         List<Transaction> arTrans = mDbHelper.getAllTransactions();
         // Sort transaction

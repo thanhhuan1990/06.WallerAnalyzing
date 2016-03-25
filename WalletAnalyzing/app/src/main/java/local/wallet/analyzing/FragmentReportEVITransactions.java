@@ -634,16 +634,6 @@ public class FragmentReportEVITransactions extends Fragment {
                 transactionView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        /*FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("Transaction", transaction);
-                        bundle.putInt("ContainerViewId", R.id.ll_report);
-                        nextFrag.setArguments(bundle);
-                        FragmentReportEVITransactions.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, "FragmentTransactionUpdate")
-                                .addToBackStack(null)
-                                .commit();*/
-
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("Transaction", transaction);

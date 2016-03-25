@@ -190,6 +190,9 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    /**
+     * Delete Event
+     */
     private void deleteEvent() {
         LogUtils.logEnterFunction(Tag, null);
 

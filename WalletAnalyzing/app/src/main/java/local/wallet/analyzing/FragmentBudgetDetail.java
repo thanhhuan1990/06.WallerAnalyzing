@@ -424,7 +424,7 @@ public class FragmentBudgetDetail extends Fragment {
 
     } // End setViewData
 
-    public int getDays(Calendar start, Calendar end) {
+    private int getDays(Calendar start, Calendar end) {
         // Get the represented date in milliseconds
         long milis1 = start.getTimeInMillis();
         long milis2 = end.getTimeInMillis();
