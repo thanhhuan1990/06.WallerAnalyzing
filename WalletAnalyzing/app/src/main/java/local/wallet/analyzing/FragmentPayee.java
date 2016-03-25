@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,10 @@ public class FragmentPayee extends Fragment {
 
     public static final String     Tag                     = "FragmentPayee";
 
+    public interface IUpdatePayee extends Serializable {
+        void onPayeeUpdated(TransactionEnum type, String payee);
+    }
+
     private DatabaseHelper          mDbHelper;
 
     private String                  mTagOfSource            = "";
@@ -42,6 +47,8 @@ public class FragmentPayee extends Fragment {
     private ListView                lvPayee;
     private List<String>            payees                  = new ArrayList<String>();
     private ArrayAdapter<String>    mAdapter;
+
+    private IUpdatePayee            mCallback;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +62,7 @@ public class FragmentPayee extends Fragment {
         mTagOfSource                    = bundle.getString("Tag");
         mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mPayee                          = bundle.getString("Payee", "");
+        mCallback                       = (IUpdatePayee) bundle.get("Callback");
 
         LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
@@ -116,30 +124,7 @@ public class FragmentPayee extends Fragment {
             public void onClick(View v) {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
 
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-
-                if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
-
-                    ((FragmentTransactionCreateExpense) fragment).updatePayee(mCurrentTransactionType, etPayee.getText().toString());
-
-                }
-
-                /*if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionCreateExpense())) {
-
-                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreateExpense");
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionCreateExpense();
-                    FragmentTransactionCreateExpense fragment = (FragmentTransactionCreateExpense) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
-
-                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
-
-                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment.updatePayee(mCurrentTransactionType, etPayee.getText().toString());
-
-                }
-*/
+                mCallback.onPayeeUpdated(mCurrentTransactionType, etPayee.getText().toString());
                 // Back
                 getFragmentManager().popBackStackImmediate();
             }

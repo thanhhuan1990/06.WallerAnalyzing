@@ -2,7 +2,6 @@ package local.wallet.analyzing;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,37 +11,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
-import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentTransactionCreateHost extends Fragment {
+public class FragmentTransactionCUD extends Fragment {
 
-    public static final String Tag = "TransactionCreateHost";
-    private String              mTag    = "";
+    public static final String Tag = "TransactionCUD";
 
-    private DatabaseHelper      mDbHelper;
-    private Configurations      mConfigs;
-
+    private View                mActionBar;
     private Spinner             spTransactionType;
 
     private Transaction         mTransaction;
-    private int                 mContainerViewId    = 0;
 
     private int                 mCurrentTransactionType    = -1;
 
@@ -55,9 +44,8 @@ public class FragmentTransactionCreateHost extends Fragment {
         Bundle bundle           = this.getArguments();
         if(bundle != null) {
             mTransaction            = (Transaction)bundle.get("Transaction");
-            mContainerViewId        = bundle.getInt("ContainerViewId");
 
-            LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString() + ", ContainerViewId = " + mContainerViewId);
+            LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -69,9 +57,9 @@ public class FragmentTransactionCreateHost extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
         if(mTransaction.getId() == 0) {
-            return inflater.inflate(R.layout.layout_fragment_transaction_create_host, container, false);
+            return inflater.inflate(R.layout.layout_fragment_transaction_create, container, false);
         } else {
-            return inflater.inflate(R.layout.layout_fragment_transaction_ud_host, container, false);
+            return inflater.inflate(R.layout.layout_fragment_transaction_update_delete, container, false);
         }
 
     }
@@ -80,9 +68,23 @@ public class FragmentTransactionCreateHost extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
-        mDbHelper       = new DatabaseHelper(getActivity());
-        mConfigs        = new Configurations(getActivity());
+    @Override
+    public void onResume() {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onResume();
+
+        if((((ActivityMain) getActivity()).getCurrentVisibleItem() == ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() == 0) || // Tab 1: Create
+                (((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() != 0)) { // Other Tab: Update
+
+            if(mActionBar == null) {
+                initActionBar();
+            }
+
+            ((ActivityMain)getActivity()).updateActionBar(mActionBar);
+        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -92,6 +94,92 @@ public class FragmentTransactionCreateHost extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
+        if((((ActivityMain) getActivity()).getCurrentVisibleItem() == ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() == 0) || // Tab 1: Create
+                (((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() != 0)) { // Other Tab: Update
+
+            if(mActionBar == null) {
+                initActionBar();
+            }
+
+            ((ActivityMain)getActivity()).updateActionBar(mActionBar);
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    /**
+     * Start Fragment Expense
+     */
+    private void showExpense() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Transaction", mTransaction);
+
+        FragmentTransactionCUDExpense nextFragExpense = new FragmentTransactionCUDExpense();
+        nextFragExpense.setArguments(bundle);
+        FragmentTransactionCUD.this.getFragmentManager().beginTransaction()
+                .replace(mTransaction.getId() != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create, nextFragExpense, FragmentTransactionCUDExpense.Tag)
+                .commit();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    /**
+     * Start Fragment Income
+     */
+    private void showIncome() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Transaction", mTransaction);
+        FragmentTransactionCUDIncome nextFrag = new FragmentTransactionCUDIncome();
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUD.this.getFragmentManager().beginTransaction()
+                .replace(mTransaction.getId() != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create, nextFrag, FragmentTransactionCUDIncome.Tag)
+                .commit();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    /**
+     * Start Fragment Transfer
+     */
+    private void showTransfer() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Transaction", mTransaction);
+        FragmentTransactionCUDTransfer nextFrag = new FragmentTransactionCUDTransfer();
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUD.this.getFragmentManager().beginTransaction()
+                .replace(mTransaction.getId() != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create, nextFrag, FragmentTransactionCUDIncome.Tag)
+                .commit();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    /**
+     * Start Fragment Adjustment
+     */
+    private void showAdjustment() {
+        LogUtils.logEnterFunction(Tag, null);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Transaction", mTransaction);
+        FragmentTransactionCUDAdjustment nextFrag = new FragmentTransactionCUDAdjustment();
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUD.this.getFragmentManager().beginTransaction()
+                .replace(mTransaction.getId() != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create, nextFrag, FragmentTransactionCUDIncome.Tag)
+                .commit();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    /**
+     * Init ActionBar
+     */
+    private void initActionBar() {
         /* Todo: Update ActionBar: Spinner ReportType */
         String[] arTransactionTypeName      = getResources().getStringArray(R.array.transaction_type);
         String[] arTransactionDescription   = getResources().getStringArray(R.array.transaction_type_description);
@@ -102,25 +190,28 @@ public class FragmentTransactionCreateHost extends Fragment {
         }
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mCustomView            = mInflater.inflate(R.layout.action_bar_with_spinner, null);
+        mActionBar                  = mInflater.inflate(R.layout.action_bar_with_spinner, null);
 
-        spTransactionType                = (Spinner) mCustomView.findViewById(R.id.spinner);
+        spTransactionType           = (Spinner) mActionBar.findViewById(R.id.spinner);
         spTransactionType.setAdapter(new TransactionTypeAdapter(getActivity().getApplicationContext(), arTransaction));
 
         spTransactionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                LogUtils.trace(Tag, "onItemSelected: " + position);
+                LogUtils.trace(Tag, "onItemSelected: " + position + ", current Item = " + mCurrentTransactionType);
                 if (position != mCurrentTransactionType) {
                     switch (position) {
                         case 0:
                             showExpense();
                             break;
                         case 1:
+                            showIncome();
                             break;
                         case 2:
+                            showTransfer();
                             break;
                         case 3:
+                            showAdjustment();
                             break;
                         default:
                             break;
@@ -150,61 +241,6 @@ public class FragmentTransactionCreateHost extends Fragment {
             default:
                 break;
         }
-
-        ((ActivityMain)getActivity()).updateActionBar(mCustomView);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    /**
-     * Start Fragment Expense
-     */
-    private void showExpense() {
-        LogUtils.logEnterFunction(Tag, null);
-
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("Transaction", mTransaction);
-        bundle.putInt("ContainerId", mContainerViewId);
-        if(mTransaction.getId() != 0) {
-            switch (mDbHelper.getCategory(mTransaction.getCategoryId()).getDebtType()) {
-                case MORE:
-                    // Replace Fragment
-                    FragmentTransactionCreateExpenseLend nextFragExpenseLend = new FragmentTransactionCreateExpenseLend();
-                    nextFragExpenseLend.setArguments(bundle);
-                    FragmentTransactionCreateHost.this.getFragmentManager().beginTransaction()
-                            .replace(R.id.ll_transaction_update, nextFragExpenseLend, FragmentTransactionCreateExpenseLend.Tag)
-                            .commit();
-                    break;
-                case NONE:
-                    // Replace Fragment
-                    FragmentTransactionCreateExpense nextFragExpense = new FragmentTransactionCreateExpense();
-                    nextFragExpense.setArguments(bundle);
-                    FragmentTransactionCreateHost.this.getFragmentManager().beginTransaction()
-                            .replace(R.id.ll_transaction_update, nextFragExpense, FragmentTransactionCreateExpense.Tag)
-                            .commit();
-                    break;
-                case LESS:
-                    // Replace Fragment
-                    FragmentTransactionCreateExpenseRepayment nextFragRepayment = new FragmentTransactionCreateExpenseRepayment();
-                    nextFragRepayment.setArguments(bundle);
-                    FragmentTransactionCreateHost.this.getFragmentManager().beginTransaction()
-                            .replace(R.id.ll_transaction_update, nextFragRepayment, FragmentTransactionCreateExpenseRepayment.Tag)
-                            .commit();
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            // Replace Fragment
-            FragmentTransactionCreateExpense nextFrag = new FragmentTransactionCreateExpense();
-            nextFrag.setArguments(bundle);
-            FragmentTransactionCreateHost.this.getFragmentManager().beginTransaction()
-                    .replace(R.id.ll_transaction_create, nextFrag, FragmentTransactionCreateExpense.Tag)
-                    .commit();
-        }
-
-
-        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -301,13 +337,5 @@ public class FragmentTransactionCreateHost extends Fragment {
 
             return convertView;
         }
-    }
-
-    public interface OnSetupData extends Serializable {
-        public void updateCategory(TransactionEnum type, int categoryId);
-        public void updateDescription(TransactionEnum type, String description);
-        public void updateAccount(TransactionEnum type, int accountId);
-        public void updatePayee(TransactionEnum type, String payee);
-        public void updateEvent(TransactionEnum type, String event);
     }
 }

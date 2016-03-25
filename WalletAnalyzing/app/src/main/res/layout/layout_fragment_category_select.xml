@@ -26,7 +26,7 @@
             android:textColor="@color/button_textcolor_2"/>
 
         <Button
-            android:id="@+id/btnBorrow"
+            android:id="@+id/btnDebt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

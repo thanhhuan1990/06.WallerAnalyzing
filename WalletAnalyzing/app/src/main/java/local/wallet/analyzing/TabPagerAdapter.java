@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
@@ -30,10 +29,11 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 FragmentListTransaction tabTransaction = new FragmentListTransaction();
                 return tabTransaction;
+//                return FragmentListTransaction.getInstance();
             case 1:
 //                FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
 //                return tabNewTransaction;
-                FragmentTransactionCreateHost tabTransactionCreate = new FragmentTransactionCreateHost();
+                FragmentTransactionCUD tabTransactionCreate = new FragmentTransactionCUD();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("Transaction", new Transaction());
                 bundle.putInt("ContainerViewId", R.id.ll_transaction_create);

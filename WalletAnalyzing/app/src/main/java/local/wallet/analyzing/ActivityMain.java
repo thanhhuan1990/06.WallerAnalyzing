@@ -19,12 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.View.CustomViewPager;
@@ -56,6 +51,8 @@ public class ActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.layout_activity_main);
+
+        getSupportFragmentManager().addOnBackStackChangedListener(getListener());
 
         /* Todo: Update Locale */
         Configurations config   = new Configurations(getApplicationContext());
@@ -96,7 +93,7 @@ public class ActivityMain extends AppCompatActivity {
 
                 viewPager.setCurrentItem(tab.getPosition());
 
-                /* Todo: Update TabLayout Follow Current Position */
+                // Todo: Update TabLayout Follow Current Position
                 if (tab.getPosition() == TAB_POSITION_TRANSACTIONS) {                       //  TRANSACTION is showing, hide TRANSACTION, show NEW_TRANSACTION
 
                     updateTabs(TAB_POSITION_TRANSACTIONS, TAB_POSITION_TRANSACTION_CREATE);
@@ -118,6 +115,44 @@ public class ActivityMain extends AppCompatActivity {
                     }
 
                 }
+
+                android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+                if (manager != null) {
+                    int backStackEntryCount = manager.getBackStackEntryCount();
+
+                    int index = getCurrentVisibleItem();
+                    switch (index) {
+                        case TAB_POSITION_TRANSACTIONS:
+                            if(backStackEntryCount == 0) {
+                                FragmentListTransaction listTransaction = (FragmentListTransaction)adapter.getRegisteredFragment(index);
+                                listTransaction.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
+                            }
+                            break;
+                        case TAB_POSITION_TRANSACTION_CREATE:
+                            if(backStackEntryCount == 0) {
+                                FragmentTransactionCUD transactionCreate = (FragmentTransactionCUD)adapter.getRegisteredFragment(index);
+                                transactionCreate.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
+                            }
+                            break;
+                        case TAB_POSITION_LIST_ACCOUNT:
+                            break;
+                        case TAB_POSITION_LIST_BUDGET:
+                            break;
+                        case TAB_POSITION_REPORTS:
+                            break;
+                        case TAB_POSITION_UTILITIES:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
             }
 
             @Override
@@ -164,6 +199,52 @@ public class ActivityMain extends AppCompatActivity {
             getSupportFragmentManager().popBackStack();
         }
 
+    }
+
+    private android.support.v4.app.FragmentManager.OnBackStackChangedListener getListener() {
+        android.support.v4.app.FragmentManager.OnBackStackChangedListener result = new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
+            public void onBackStackChanged() {
+                android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
+                if (manager != null)
+                {
+                    int backStackEntryCount = manager.getBackStackEntryCount();
+
+                    int index = getCurrentVisibleItem();
+                    switch (index) {
+                        case TAB_POSITION_TRANSACTIONS:
+                            if(backStackEntryCount == 0) {
+                                FragmentListTransaction listTransaction = (FragmentListTransaction)adapter.getRegisteredFragment(index);
+                                listTransaction.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
+                            }
+                            break;
+                        case TAB_POSITION_TRANSACTION_CREATE:
+                            if(backStackEntryCount == 0) {
+                                FragmentTransactionCUD transactionCreate = (FragmentTransactionCUD)adapter.getRegisteredFragment(index);
+                                transactionCreate.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
+                            }
+                            break;
+                        case TAB_POSITION_LIST_ACCOUNT:
+                            break;
+                        case TAB_POSITION_LIST_BUDGET:
+                            break;
+                        case TAB_POSITION_REPORTS:
+                            break;
+                        case TAB_POSITION_UTILITIES:
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+            }
+        };
+        return result;
     }
 
     /**

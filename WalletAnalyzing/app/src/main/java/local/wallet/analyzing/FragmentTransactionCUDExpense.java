@@ -3,7 +3,6 @@ package local.wallet.analyzing;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -20,23 +19,26 @@ import android.widget.TimePicker;
 import org.droidparts.widget.ClearableEditText;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
-import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
+import local.wallet.analyzing.FragmentTransactionSelectCategory.ISelectCategory;
+import local.wallet.analyzing.FragmentAccountsSelect.ISelectAccount;
+import local.wallet.analyzing.FragmentDescription.IUpdateDescription;
+import local.wallet.analyzing.FragmentPayee.IUpdatePayee;
+import local.wallet.analyzing.FragmentEvent.IUpdateEvent;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentTransactionCreateExpense extends Fragment implements  View.OnClickListener, FragmentTransactionCreateHost.OnSetupData {
+public class FragmentTransactionCUDExpense extends Fragment implements  View.OnClickListener, ISelectCategory, ISelectAccount, IUpdateDescription, IUpdatePayee, IUpdateEvent {
     public static final String Tag = "TransactionCreateExpense";
 
     private Configurations      mConfigs;
@@ -49,6 +51,9 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
     private TextView            tvCurrencyIcon;
     private LinearLayout        llCategory;
     private TextView            tvCategory;
+    private LinearLayout        llPeople;
+    private TextView            tvTitlePeople;
+    private TextView            tvPeople;
     private LinearLayout        llDescription;
     private TextView            tvDescription;
     private LinearLayout        llAccount;
@@ -72,7 +77,7 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_transaction_create_expense, container, false);
+        return inflater.inflate(R.layout.layout_fragment_transaction_cud_expense, container, false);
     }
 
     @Override
@@ -112,7 +117,7 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
         mFromAccount    = mTransaction.getFromAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getFromAccountId()) : mDbHelper.getAccount(mTransaction.getToAccountId());
         mCal            = mTransaction.getTime();
 
-        initViewExpense();
+        initView();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -126,7 +131,7 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
                 break;
             case R.id.llDescription:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                startFragmentDescription(TransactionEnum.Expense, tvDescription.getText().toString());
+                startFragmentDescription(tvDescription.getText().toString());
                 break;
             case R.id.llAccount:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
@@ -135,6 +140,7 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
             case R.id.llDate:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 showDialogTime();
+                break;
             case R.id.llPayee:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentPayee(TransactionEnum.Expense, tvPayee.getText().toString());
@@ -168,7 +174,7 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
     /**
      * Todo: Init view EXPENSE
      */
-    private void initViewExpense() {
+    private void initView() {
         LogUtils.logEnterFunction(Tag, null);
 
         etAmount         = (ClearableEditText) getView().findViewById(R.id.etAmount);
@@ -179,6 +185,11 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
         llCategory       = (LinearLayout) getView().findViewById(R.id.llCategory);
         llCategory.setOnClickListener(this);
         tvCategory       = (TextView) getView().findViewById(R.id.tvCategory);
+
+        llPeople = (LinearLayout) getView().findViewById(R.id.llPeople);
+        llPeople.setOnClickListener(this);
+        tvTitlePeople = (TextView) getView().findViewById(R.id.tvTitlePeople);
+        tvPeople = (TextView) getView().findViewById(R.id.tvPeople);
 
         llDescription    = (LinearLayout) getView().findViewById(R.id.llDescription);
         llDescription.setOnClickListener(this);
@@ -208,6 +219,34 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
         tvDescription.setText(mTransaction.getDescription());
         tvPayee.setText(mTransaction.getPayee());
         tvEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
+
+        if(mCategory == null) {
+            llPeople.setVisibility(View.GONE);
+            llEvent.setVisibility(View.VISIBLE);
+            llPayee.setVisibility(View.VISIBLE);
+        } else {
+            switch (mCategory.getDebtType()) {
+                case MORE:
+                    llPeople.setVisibility(View.VISIBLE);
+                    tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
+                    llEvent.setVisibility(View.GONE);
+                    llPayee.setVisibility(View.GONE);
+                    break;
+                case NONE:
+                    llPeople.setVisibility(View.GONE);
+                    llEvent.setVisibility(View.VISIBLE);
+                    llPayee.setVisibility(View.VISIBLE);
+                    break;
+                case LESS:
+                    llPeople.setVisibility(View.VISIBLE);
+                    tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
+                    llEvent.setVisibility(View.GONE);
+                    llPayee.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -353,7 +392,7 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
                                                         0,
                                                         mCal,
                                                         0.0,
-                                                        strEvent,
+                                                        payee,
                                                         event);
 
         int row = mDbHelper.updateTransaction(transaction);
@@ -409,98 +448,77 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
     private void startFragmentSelectCategory(TransactionEnum transactionType, int oldCategoryId) {
         FragmentTransactionSelectCategory nextFrag = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
-        bundle.putString("Tag", Tag);
+        bundle.putBoolean("CategoryType", true);
         bundle.putInt("CategoryID", oldCategoryId);
-        bundle.putSerializable("TransactionType", transactionType);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
+        FragmentTransactionCUDExpense.this.getFragmentManager().beginTransaction()
                 .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentTransactionSelectCategory.Tag)
                 .addToBackStack(null)
                 .commit();
     }
 
-    /**
-     * Update Category, call from ActivityMain
-     * @param categoryId
-     */
     @Override
-    public void updateCategory(TransactionEnum type, int categoryId) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ",  categoryId = " + categoryId);
+    public void onCategorySelected(int categoryId) {
+        LogUtils.logEnterFunction(Tag, "categoryId = " + categoryId);
 
         mCategory = mDbHelper.getCategory(categoryId);
 
-        switch (type) {
-            case Expense:
+        if(mCategory != null) {
+            tvCategory.setText(mCategory.getName());
 
-                String amount = etAmount.getText().toString().replaceAll(",", "");
-
-                mTransaction.setAmount(amount.equals("") ? 0 : Double.parseDouble(amount));
-                mTransaction.setCategoryId(categoryId);
-                mTransaction.setDescription(tvDescription.getText().toString());
-                mTransaction.setFromAccountId(mFromAccount != null ? mFromAccount.getId() : 0);
-
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Transaction", mTransaction);
-
-                if(mCategory.getDebtType() == EnumDebt.MORE) {
-                    FragmentTransactionCreateExpenseLend nextFrag = new FragmentTransactionCreateExpenseLend();
-                    nextFrag.setArguments(bundle);
-                    FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
-                            .replace(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentTransactionCreateExpenseLend.Tag)
-                            .commit();
-                } else if(mCategory.getDebtType() == EnumDebt.NONE) {
-                    tvCategory.setText(mCategory.getName());
-                } else if(mCategory.getDebtType() == EnumDebt.LESS) {
-                    FragmentTransactionCreateExpenseRepayment nextFrag = new FragmentTransactionCreateExpenseRepayment();
-                    nextFrag.setArguments(bundle);
-                    FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
-                            .replace(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentTransactionCreateExpenseRepayment.Tag)
-                            .commit();
-                }
-                break;
-            default:
-                break;
+            switch (mCategory.getDebtType()) {
+                case MORE:
+                    llPeople.setVisibility(View.VISIBLE);
+                    tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
+                    llEvent.setVisibility(View.GONE);
+                    llPayee.setVisibility(View.GONE);
+                    break;
+                case NONE:
+                    llPeople.setVisibility(View.GONE);
+                    llEvent.setVisibility(View.VISIBLE);
+                    llPayee.setVisibility(View.VISIBLE);
+                    break;
+                case LESS:
+                    llPeople.setVisibility(View.VISIBLE);
+                    tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
+                    llEvent.setVisibility(View.GONE);
+                    llPayee.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            tvCategory.setText("");
         }
 
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", categoryId = " + categoryId, null);
+
+        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
     }
 
     /**
      * Start fragment input description
-     * @param transactionType
      * @param oldDescription
      */
-    private void startFragmentDescription(TransactionEnum transactionType, String oldDescription) {
+    private void startFragmentDescription(String oldDescription) {
         FragmentDescription fragmentDescription = new FragmentDescription();
-        Bundle bundleExpenseDescription = new Bundle();
-        bundleExpenseDescription.putString("Tag", Tag);
-        bundleExpenseDescription.putSerializable("TransactionType", transactionType);
-        bundleExpenseDescription.putString("Description", oldDescription);
-        fragmentDescription.setArguments(bundleExpenseDescription);
-        FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
+        Bundle bundle = new Bundle();
+        bundle.putString("Description", oldDescription);
+        bundle.putSerializable("Callback", this);
+        fragmentDescription.setArguments(bundle);
+        FragmentTransactionCUDExpense.this.getFragmentManager().beginTransaction()
                 .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, fragmentDescription, FragmentDescription.Tag)
                 .addToBackStack(Tag)
                 .commit();
     }
 
-    /**
-     * Update description
-     * @param description
-     */
-    public void updateDescription(TransactionEnum type, String description) {
-        LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", description = " + description);
+    @Override
+    public void onDescriptionUpdated(String description) {
+        LogUtils.logEnterFunction(Tag, "description = " + description);
 
-        switch (type) {
-            case Expense:
-                tvDescription.setText(description);
-                break;
-            default:
-                break;
-        }
+        tvDescription.setText(description);
 
-
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", description = " + description, null);
+        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
     }
 
     /**
@@ -515,8 +533,9 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
         bundle.putString("Tag", Tag);
         bundle.putInt("AccountID", oldAccountId);
         bundle.putSerializable("TransactionType", transactionType);
+        bundle.putSerializable("Callback", this);
         fragment.setArguments(bundle);
-        FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
+        FragmentTransactionCUDExpense.this.getFragmentManager().beginTransaction()
                 .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, fragment, FragmentAccountsSelect.Tag)
                 .addToBackStack(null)
                 .commit();
@@ -524,22 +543,14 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
     }
 
-    /**
-     * Update Account, call from ActivityMain
-     * @param type
-     * @param accountId
-     */
-    public void updateAccount(TransactionEnum type, int accountId) {
+    @Override
+    public void onAccountSelected(TransactionEnum type, int accountId) {
         LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId);
 
-        switch (type) {
-            case Expense:
-                mFromAccount = mDbHelper.getAccount(accountId);
-                tvAccount.setText(mFromAccount.getName());
-                tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
-                break;
-            default:
-                break;
+        if(type == TransactionEnum.Expense) {
+            mFromAccount = mDbHelper.getAccount(accountId);
+            tvAccount.setText(mFromAccount.getName());
+            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
         }
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
@@ -551,33 +562,26 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
      * @param oldPayee
      */
     private void startFragmentPayee(TransactionEnum transactionType, String oldPayee) {
-        FragmentPayee fragmentExpensePayee = new FragmentPayee();
-        Bundle bundleExpensePayee = new Bundle();
-        bundleExpensePayee.putString("Tag", Tag);
-        bundleExpensePayee.putSerializable("TransactionType", transactionType);
-        bundleExpensePayee.putString("Payee", oldPayee);
-        fragmentExpensePayee.setArguments(bundleExpensePayee);
-        FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, fragmentExpensePayee, "FragmentPayee")
+        FragmentPayee nextFrag = new FragmentPayee();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", Tag);
+        bundle.putSerializable("TransactionType", transactionType);
+        bundle.putString("Payee", oldPayee);
+        bundle.putSerializable("Callback", this);
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUDExpense.this.getFragmentManager().beginTransaction()
+                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, "FragmentPayee")
                 .addToBackStack(Tag)
                 .commit();
     }
 
-    /**
-     * Update Payee
-     * @param payee
-     */
-    public void updatePayee(TransactionEnum type, String payee) {
+    @Override
+    public void onPayeeUpdated(TransactionEnum type, String payee) {
         LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", payee = " + payee);
 
-        switch (type) {
-            case Expense:
-                tvPayee.setText(payee);
-                break;
-            default:
-                break;
+        if (type == TransactionEnum.Expense) {
+            tvPayee.setText(payee);
         }
-
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", payee = " + payee, null);
     }
@@ -588,34 +592,25 @@ public class FragmentTransactionCreateExpense extends Fragment implements  View.
      * @param oldEvent
      */
     private void startFragmentEvent(TransactionEnum transactionType, String oldEvent) {
-        FragmentEvent fragmentExpenseEvent = new FragmentEvent();
-        Bundle bundleExpenseEvent = new Bundle();
-        bundleExpenseEvent.putString("Tag", Tag);
-        bundleExpenseEvent.putSerializable("TransactionType", transactionType);
-        bundleExpenseEvent.putString("Event", oldEvent);
-        fragmentExpenseEvent.setArguments(bundleExpenseEvent);
-        FragmentTransactionCreateExpense.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, fragmentExpenseEvent, "FragmentEvent")
+        FragmentEvent nextFrag = new FragmentEvent();
+        Bundle bundle = new Bundle();
+        bundle.putString("Tag", Tag);
+        bundle.putSerializable("TransactionType", transactionType);
+        bundle.putString("Event", oldEvent);
+        bundle.putSerializable("Callback", this);
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUDExpense.this.getFragmentManager().beginTransaction()
+                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, "FragmentEvent")
                 .addToBackStack(Tag)
                 .commit();
     }
 
-    /**
-     * Update Payee
-     * @param event
-     */
-    public void updateEvent(TransactionEnum type, String event) {
+    @Override
+    public void onEventUpdated(TransactionEnum type, String event) {
         LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", event = " + event);
 
-        switch (type) {
-            case Expense:
-                tvEvent.setText(event);
-                break;
-            case Transfer:
-            case TransferFrom:
-            case TransferTo:
-            default:
-                break;
+        if (type == TransactionEnum.Expense) {
+            tvEvent.setText(event);
         }
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", event = " + event, null);

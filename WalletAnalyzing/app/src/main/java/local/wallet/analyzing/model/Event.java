@@ -1,5 +1,6 @@
 package local.wallet.analyzing.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import local.wallet.analyzing.R;
@@ -7,7 +8,7 @@ import local.wallet.analyzing.R;
 /**
  * Created by huynh.thanh.huan on 2/22/2016.
  */
-public class Event {
+public class Event implements Serializable {
 
     private int         id;
     private String      name;
@@ -58,10 +59,10 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", startDate=" + (startDate.get(Calendar.DAY_OF_MONTH) + "/" + (startDate.get(Calendar.MONTH) + 1) + "/" + startDate.get(Calendar.YEAR)) +
-                ", endDate=" + (endDate != null ? (endDate.get(Calendar.DAY_OF_MONTH) + "/" + (endDate.get(Calendar.MONTH) + 1) + "/" + endDate.get(Calendar.YEAR)) : "") +
+                "id = " + id +
+                ", name = '" + name + '\'' +
+                ", startDate = " + (startDate != null ? (startDate.get(Calendar.DAY_OF_MONTH) + "/" + (startDate.get(Calendar.MONTH) + 1) + "/" + startDate.get(Calendar.YEAR)) : "null") +
+                ", endDate = "   + (endDate != null ? (endDate.get(Calendar.DAY_OF_MONTH) + "/" + (endDate.get(Calendar.MONTH) + 1) + "/" + endDate.get(Calendar.YEAR)) : "null") +
                 '}';
     }
 }

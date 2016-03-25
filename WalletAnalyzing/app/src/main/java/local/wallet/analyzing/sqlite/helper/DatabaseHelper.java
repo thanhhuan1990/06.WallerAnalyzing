@@ -508,7 +508,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         enter(TAG, null);
 
         List<Category> categories = new ArrayList<Category>();
-        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_DEBT+ " = " + debt.getValue() + " AND " + KEY_CATEGORY_PARENT_ID + " = 0";
+        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0)
+                                                                            + " AND " + KEY_CATEGORY_DEBT + " = " + debt.getValue()
+                                                                            + " AND " + KEY_CATEGORY_PARENT_ID + " = 0";
 
         trace(TAG, selectQuery);
 

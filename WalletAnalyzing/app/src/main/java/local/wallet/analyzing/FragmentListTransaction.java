@@ -5,8 +5,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -43,16 +41,6 @@ public class FragmentListTransaction extends Fragment {
     private ListView                lvTransaction;
     private TransactionAdapter      mAdapter;
 
-    private boolean                 isSetupped = false;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,26 +71,27 @@ public class FragmentListTransaction extends Fragment {
         mAdapter = new TransactionAdapter(getActivity(), arGroupTrans);
         lvTransaction.setAdapter(mAdapter);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(lvTransaction != null && !lvTransaction.isShown()) {
-            return;
-        }
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
-        if(lvTransaction != null) {
-            updateListTransaction();
-        }
+        updateListTransaction();
 
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onResume() {
+        if(getFragmentManager().getBackStackEntryCount() > 0) {
+            return;
+        }
+        LogUtils.logEnterFunction(Tag, null);
+        super.onResume();
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);
+        ((ActivityMain)getActivity()).updateActionBar(mCustomView);
+
+        updateListTransaction();
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -291,22 +280,13 @@ public class FragmentListTransaction extends Fragment {
                     transactionDetailView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
-//                            Bundle bundle = new Bundle();
-//                            bundle.putSerializable("Transaction", tran);
-//                            bundle.putInt("ContainerViewId", R.id.ll_transactions);
-//                            nextFrag.setArguments(bundle);
-//                            FragmentListTransaction.this.getFragmentManager().beginTransaction()
-//                                    .add(R.id.ll_transactions, nextFrag, "FragmentTransactionUpdate")
-//                                    .addToBackStack(null)
-//                                    .commit();
-                            FragmentTransactionCreateHost nextFrag = new FragmentTransactionCreateHost();
+                            FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("Transaction", tran);
                             bundle.putInt("ContainerViewId", R.id.ll_transactions);
                             nextFrag.setArguments(bundle);
                             FragmentListTransaction.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_transactions, nextFrag, FragmentTransactionCreateHost.Tag)
+                                    .add(R.id.ll_transactions, nextFrag, FragmentTransactionCUD.Tag)
                                     .addToBackStack(null)
                                     .commit();
                         }

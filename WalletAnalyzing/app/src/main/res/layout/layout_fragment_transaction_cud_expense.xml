@@ -103,6 +103,55 @@
                         android:src="@drawable/icon_next"/>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/llPeople"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.2dip"
+                        android:background="#504f4f"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:weightSum="20">
+
+                        <TextView
+                            android:id="@+id/tvTitlePeople"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="6"
+                            android:background="@android:color/transparent"
+                            android:text="@string/new_transaction_borrower"
+                            android:textColor="@color/textcolor_title_attribute"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvPeople"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="13"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:textColor="@android:color/black"/>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/icon_next"/>
+                    </LinearLayout>
+                </LinearLayout>
+
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="0.2dip"
@@ -233,90 +282,103 @@
                         android:src="@drawable/icon_next"/>
                 </LinearLayout>
 
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="0.2dip"
-                    android:background="#504f4f"/>
-
                 <LinearLayout
                     android:id="@+id/llPayee"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_margin="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
-                    android:weightSum="20">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="6"
-                        android:background="@android:color/transparent"
-                        android:text="@string/new_transaction_payee"
-                        android:textColor="@color/textcolor_title_attribute"
-                        android:textStyle="bold"/>
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.2dip"
+                        android:background="#504f4f"/>
 
-                    <TextView
-                        android:id="@+id/tvPayee"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="13"
-                        android:background="@android:color/transparent"
-                        android:gravity="right|center_vertical"
-                        android:text=""
-                        android:textColor="@android:color/black"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:weightSum="20">
 
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="20dp"
-                        android:layout_weight="1"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/icon_next"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="6"
+                            android:background="@android:color/transparent"
+                            android:text="@string/new_transaction_payee"
+                            android:textColor="@color/textcolor_title_attribute"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvPayee"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="13"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:text=""
+                            android:textColor="@android:color/black"/>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/icon_next"/>
+                    </LinearLayout>
+
                 </LinearLayout>
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="0.2dip"
-                    android:background="#504f4f"/>
 
                 <LinearLayout
                     android:id="@+id/llEvent"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_margin="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
-                    android:weightSum="20">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="8"
-                        android:background="@android:color/transparent"
-                        android:text="@string/new_transaction_event"
-                        android:textColor="@color/textcolor_title_attribute"
-                        android:textStyle="bold"/>
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.2dip"
+                        android:background="#504f4f"/>
 
-                    <TextView
-                        android:id="@+id/tvEvent"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="11"
-                        android:background="@android:color/transparent"
-                        android:gravity="right|center_vertical"
-                        android:text=""
-                        android:textColor="@android:color/black"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:weightSum="20">
 
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="20dp"
-                        android:layout_weight="1"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/icon_next"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="8"
+                            android:background="@android:color/transparent"
+                            android:text="@string/new_transaction_event"
+                            android:textColor="@color/textcolor_title_attribute"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvEvent"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="11"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:text=""
+                            android:textColor="@android:color/black"/>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/icon_next"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -328,8 +390,7 @@
             android:layout_marginTop="8dp"
             android:orientation="horizontal"
             android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:weightSum="2">
+            android:paddingRight="20dp">
 
             <LinearLayout
                 android:id="@+id/llSave"
@@ -348,7 +409,7 @@
                     android:layout_height="25dp"
                     android:layout_gravity="center_vertical"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/icon_save" />
+                    android:src="@drawable/icon_save"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -357,7 +418,7 @@
                     android:layout_marginLeft="5dp"
                     android:text="@string/Save"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"/>
             </LinearLayout>
 
 
@@ -371,14 +432,15 @@
                 android:clickable="true"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:visibility="visible">
 
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_gravity="center_vertical"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/icon_delete" />
+                    android:src="@drawable/icon_delete"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -387,7 +449,7 @@
                     android:layout_marginLeft="5dp"
                     android:text="@string/Delete"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

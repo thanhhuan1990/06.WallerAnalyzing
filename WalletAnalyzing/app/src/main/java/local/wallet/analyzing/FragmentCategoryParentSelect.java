@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +32,19 @@ public class FragmentCategoryParentSelect extends Fragment {
 
     public static final String Tag = "FragmentCategoryParentSelect";
 
-    private TransactionEnum mTransactionType     = TransactionEnum.Expense;
+    public interface ISelectParentCategory extends Serializable {
+        void onParentCategorySelected(int categoryId);
+    }
+
 
     private DatabaseHelper  mDbHelper;
     private List<Category>  arParentCategories = new ArrayList<Category>();
 
-    private String          mTagOfSource = "";
-    private int             mCurrentParentCategoryId;
+//    private String          mTagOfSource = "";
+//    private TransactionEnum mTransactionType     = TransactionEnum.Expense;
+    private boolean                     mIsExpense = true;
+    private ISelectParentCategory       mCallback;
+    private int                         mCurrentParentCategoryId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,12 +55,15 @@ public class FragmentCategoryParentSelect extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle = this.getArguments();
-        mTransactionType                = (TransactionEnum)bundle.get("TransactionType");
-        mTagOfSource                    = bundle.getString("Tag");
+//        mTransactionType                = (TransactionEnum)bundle.get("TransactionType");
+//        mTagOfSource                    = bundle.getString("Tag");
+
+        mIsExpense                      = bundle.getBoolean("CategoryType");
+        mCallback                       = (ISelectParentCategory) bundle.getSerializable("Callback");
         mCurrentParentCategoryId        = bundle.getInt("ParentCategoryId", 0);
 
-        LogUtils.trace(Tag, "mTransactionType = " + mTransactionType);
-        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
+//        LogUtils.trace(Tag, "mTransactionType = " + mTransactionType);
+//        LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mCurrentParentCategoryId = " + mCurrentParentCategoryId);
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -76,9 +86,7 @@ public class FragmentCategoryParentSelect extends Fragment {
         mDbHelper = new DatabaseHelper(getActivity());
 
         arParentCategories.add(new Category(0, 0, getResources().getString(R.string.new_category_select_as_parent), true, EnumDebt.NONE));
-        arParentCategories.addAll(mDbHelper.getAllParentCategories(
-                (mTransactionType == TransactionEnum.Expense || mTransactionType == TransactionEnum.Transfer || mTransactionType == TransactionEnum.Adjustment) ? true : false
-                , EnumDebt.NONE));
+        arParentCategories.addAll(mDbHelper.getAllParentCategories(mIsExpense, EnumDebt.NONE));
 
         ListView lvParentCategory   = (ListView) getView().findViewById(R.id.lvParentCategory);
         ParentCategoryAdapter accountTypeAdapter = new ParentCategoryAdapter(getActivity(), arParentCategories);
@@ -87,13 +95,13 @@ public class FragmentCategoryParentSelect extends Fragment {
         lvParentCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-                if(mTagOfSource.equals(FragmentCategoryCreate.Tag)) {
-
-                    ((FragmentCategoryCreate) fragment).updateParentCategory(arParentCategories.get(position).getId(), (arParentCategories.get(position).getDebtType()));
-
-                }
+                    mCallback.onParentCategorySelected(arParentCategories.get(position).getId());
+//                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
+//                if(mTagOfSource.equals(FragmentCategoryCreate.Tag)) {
+//
+//                    ((FragmentCategoryCreate) fragment).updateParentCategory(arParentCategories.get(position).getId(), (arParentCategories.get(position).getDebtType()));
+//
+//                }
 
                 // Back to last fragment
                 getFragmentManager().popBackStackImmediate();
@@ -112,9 +120,9 @@ public class FragmentCategoryParentSelect extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
         TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        if(mTransactionType == TransactionEnum.Expense) {
+        if(mIsExpense) {
             tvTitle.setText(getResources().getString(R.string.title_category_expense_select_parent));
-        } else if(mTransactionType == TransactionEnum.Income) {
+        } else {
             tvTitle.setText(getResources().getString(R.string.title_category_income));
         }
 

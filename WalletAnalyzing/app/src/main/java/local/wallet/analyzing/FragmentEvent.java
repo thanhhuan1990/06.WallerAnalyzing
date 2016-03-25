@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import org.droidparts.widget.ClearableEditText;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,10 @@ public class FragmentEvent extends Fragment {
 
     public static final String     Tag                     = "FragmentEvent";
 
+    public interface IUpdateEvent extends Serializable {
+        void onEventUpdated(TransactionEnum type, String event);
+    }
+
     private DatabaseHelper          mDbHelper;
 
     private String                  mTagOfSource            = "";
@@ -42,6 +47,8 @@ public class FragmentEvent extends Fragment {
     private ListView                lvEvent;
     private List<String>            events                  = new ArrayList<String>();
     private ArrayAdapter<String>    mAdapter;
+
+    private IUpdateEvent            mCallback;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +62,7 @@ public class FragmentEvent extends Fragment {
         mTagOfSource                    = bundle.getString("Tag");
         mCurrentTransactionType         = (TransactionEnum)bundle.get("TransactionType");
         mEvent                          = bundle.getString("Event", "");
+        mCallback                       = (IUpdateEvent) bundle.get("Callback");
 
         LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mCurrentTransactionType = " + mCurrentTransactionType);
@@ -76,29 +84,7 @@ public class FragmentEvent extends Fragment {
             @Override
             public void onClick(View v) {
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-
-                if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
-
-                    ((FragmentTransactionCreateExpense) fragment).updateEvent(mCurrentTransactionType, etEvent.getText().toString());
-
-                }
-//                if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionCreateExpense())) {
-//
-//                    LogUtils.trace(Tag, "Setup for FragmentTransactionCreate");
-//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-//                    FragmentTransactionCreateExpense fragment = (FragmentTransactionCreateExpense) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-//                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
-//
-//                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
-//
-//                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
-//                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-//                    FragmentTransactionUpdate fragment = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-//                    fragment.updateEvent(mCurrentTransactionType, etEvent.getText().toString());
-//
-//                }
+                mCallback.onEventUpdated(mCurrentTransactionType, etEvent.getText().toString());
 
                 // Back
                 getFragmentManager().popBackStackImmediate();

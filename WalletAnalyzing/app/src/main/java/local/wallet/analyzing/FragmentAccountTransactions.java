@@ -265,13 +265,21 @@ public class FragmentAccountTransactions extends Fragment {
             mTransactionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+                    /*FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("Transaction", tran);
                     bundle.putInt("ContainerViewId", R.id.layout_account);
                     nextFrag.setArguments(bundle);
                     FragmentAccountTransactions.this.getFragmentManager().beginTransaction()
                             .add(R.id.layout_account, nextFrag, "FragmentTransactionUpdate")
+                            .addToBackStack(null)
+                            .commit();*/
+                    FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("Transaction", tran);
+                    nextFrag.setArguments(bundle);
+                    FragmentAccountTransactions.this.getFragmentManager().beginTransaction()
+                            .add(R.id.layout_account, nextFrag, FragmentTransactionCUD.Tag)
                             .addToBackStack(null)
                             .commit();
                 }

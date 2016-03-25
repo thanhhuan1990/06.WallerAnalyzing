@@ -170,6 +170,14 @@ public class Transaction implements Comparable<Transaction>, Serializable {
 
     @Override
     public String toString() {
-        return "Id = " + id + ", TransactionType = " + transactionType + ", amount = " + amount + ", description = \'" + description + "\'";
+        return "Id = " + id + ", TransactionType = " + transactionType
+                + ", amount = " + amount
+                + ", description = \'" + description + "\'"
+                + ", fromAccountId = " + fromAccountId
+                + ", toAccountId = " + toAccountId
+                + ", time = " + (time != null ? (time.get(Calendar.DAY_OF_MONTH) + "/" + (time.get(Calendar.MONTH) + 1) + "/" + time.get(Calendar.YEAR)) : "null")
+                + ", fee = " + fee
+                + ", payee = \'" + payee + "\'"
+                + ", event = " + (event != null ? event.toString() : "'");
     }
 }

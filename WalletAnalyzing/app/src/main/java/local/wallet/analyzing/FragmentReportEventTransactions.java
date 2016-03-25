@@ -262,13 +262,22 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
             transactionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
+                    /*FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("Transaction", transaction);
                     bundle.putInt("ContainerViewId", R.id.layout_account);
                     nextFrag.setArguments(bundle);
                     FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
                             .replace(R.id.ll_report, nextFrag, "FragmentTransactionUpdate")
+                            .addToBackStack(null)
+                            .commit();*/
+
+                    FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("Transaction", transaction);
+                    nextFrag.setArguments(bundle);
+                    FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
+                            .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
                             .addToBackStack(null)
                             .commit();
                 }

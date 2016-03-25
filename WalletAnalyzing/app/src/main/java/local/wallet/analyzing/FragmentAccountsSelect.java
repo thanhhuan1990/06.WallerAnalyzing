@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,10 @@ public class FragmentAccountsSelect extends Fragment {
 
     public static final String Tag = "FragmentAccountsSelect";
 
+    public interface ISelectAccount extends Serializable {
+        void onAccountSelected(TransactionEnum type, int accountId);
+    }
+
     private String          mTagOfSource = "";
     private int             mUsingAccountId;
     private TransactionEnum mTransactionType;
@@ -46,6 +51,8 @@ public class FragmentAccountsSelect extends Fragment {
     private ListView        lvAccount;
     private TextView        tvEmpty;
 
+    private ISelectAccount  mCallback;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
@@ -58,7 +65,8 @@ public class FragmentAccountsSelect extends Fragment {
         Bundle bundle                   = this.getArguments();
         mTagOfSource                    = bundle.getString("Tag");
         mUsingAccountId                 = bundle.getInt("AccountID", 0);
-        mTransactionType               = (TransactionEnum) bundle.get("TransactionType");
+        mTransactionType                = (TransactionEnum) bundle.get("TransactionType");
+        mCallback                       = (ISelectAccount) bundle.get("Callback");
 
         LogUtils.trace(Tag, "mTagOfSource = " + mTagOfSource);
         LogUtils.trace(Tag, "mUsingAccountId = " + mUsingAccountId);
@@ -97,28 +105,7 @@ public class FragmentAccountsSelect extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(mTagOfSource);
-
-                if(mTagOfSource.equals(FragmentTransactionCreateExpense.Tag)) {
-
-                    ((FragmentTransactionCreateExpense) fragment).updateAccount(mTransactionType, arAccounts.get(position).getId());
-
-                } else if(mTagOfSource.equals(FragmentTransactionCreateExpenseLend.Tag)) {
-
-                    ((FragmentTransactionCreateExpenseLend) fragment).updateAccount(mTransactionType, arAccounts.get(position).getId());
-
-                } else if(mTagOfSource.equals(FragmentTransactionCreateExpenseRepayment.Tag)) {
-
-                    ((FragmentTransactionCreateExpenseRepayment) fragment).updateAccount(mTransactionType, arAccounts.get(position).getId());
-
-                } else if(mTagOfSource.equals(((ActivityMain) getActivity()).getFragmentTransactionUpdate())) {
-
-                    LogUtils.trace(Tag, "Setup for FragmentTransactionUpdate");
-                    String tagOfFragment = ((ActivityMain) getActivity()).getFragmentTransactionUpdate();
-                    FragmentTransactionUpdate fragment1 = (FragmentTransactionUpdate) getActivity().getSupportFragmentManager().findFragmentByTag(tagOfFragment);
-                    fragment1.updateAccount(mTransactionType, arAccounts.get(position).getId());
-
-                }
+                mCallback.onAccountSelected(mTransactionType, arAccounts.get(position).getId());
 
                 // Back to FragmentTransactionNew
                 getFragmentManager().popBackStackImmediate();
