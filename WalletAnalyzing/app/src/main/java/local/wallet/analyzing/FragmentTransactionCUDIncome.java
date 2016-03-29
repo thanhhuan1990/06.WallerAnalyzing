@@ -37,11 +37,12 @@ import local.wallet.analyzing.FragmentAccountsSelect.ISelectAccount;
 import local.wallet.analyzing.FragmentDescription.IUpdateDescription;
 import local.wallet.analyzing.FragmentPayee.IUpdatePayee;
 import local.wallet.analyzing.FragmentEvent.IUpdateEvent;
+import local.wallet.analyzing.FragmentLenderBorrower.IUpdateLenderBorrower;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentTransactionCUDIncome extends Fragment implements View.OnClickListener, ISelectCategory, ISelectAccount, IUpdateDescription, IUpdateEvent {
+public class FragmentTransactionCUDIncome extends Fragment implements View.OnClickListener, ISelectCategory, ISelectAccount, IUpdateDescription, IUpdateEvent, IUpdateLenderBorrower {
     public static final String Tag = "TransactionCUDIncome";
 
     private Configurations      mConfigs;
@@ -132,6 +133,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 break;
             case R.id.llPeople:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                startFragmentLenderBorrower(tvPeople.getText().toString());
                 break;
             case R.id.llDescription:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
@@ -159,12 +161,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 break;
             case R.id.llDelete:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                mDbHelper.deleteTransaction(mTransaction.getId());
-
-                cleanup();
-
-                // Return to FragmentListTransaction
-                getFragmentManager().popBackStackImmediate();
+                deleteTransaction();
                 break;
             default:
                 break;
@@ -203,6 +200,13 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
         }
         LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
     } // End onCategorySelected
+
+    @Override
+    public void onLenderBorrowerUpdated(String people) {
+        LogUtils.logEnterFunction(Tag, "people = '" + people + "\'");
+        tvPeople.setText(people);
+        LogUtils.logLeaveFunction(Tag, "people = '" + people + "\'", null);
+    }
 
     @Override
     public void onDescriptionUpdated(String description) {
@@ -271,7 +275,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
         tvEvent = (TextView) getView().findViewById(R.id.tvEvent);
 
         tvCategory.setText(mCategory != null ? mCategory.getName() : "");
-        tvPeople.setText("");
+        tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
         etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
         tvDescription.setText(mTransaction.getDescription());
         tvAccount.setText(mToAccount != null ? mToAccount.getName() : "");
@@ -430,7 +434,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                     }
                 }
 
-                if(repayment + lend < borrowed + debtCollect) {
+                if(repayment + lend < borrowed + debtCollect + amount) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_collect_invalid));
                 }
@@ -544,7 +548,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                     }
                 }
 
-                if(repayment + lend < borrowed + debtCollect) {
+                if(repayment + lend < borrowed + debtCollect + amount) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_collect_invalid));
                 } // End Check DEBT OK
@@ -576,6 +580,8 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                         if(debtRow == 1) {
                             ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_update_successful));
                             cleanup();
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
                         } else {
                             // Revert update
                             mDbHelper.updateTransaction(mTransaction);
@@ -592,6 +598,8 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                         if(debtId != -1) {
                             ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_create_successful));
                             cleanup();
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
                         } else {
                             // Revert update
                             mDbHelper.updateTransaction(mTransaction);
@@ -620,13 +628,30 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
                     mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
                 }
+                // Return to last fragment
+                getFragmentManager().popBackStackImmediate();
             }
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
-        // Return to last fragment
-        getFragmentManager().popBackStackImmediate();
     } // End Update Transaction
+
+    /**
+     * Delete current Transaction
+     */
+    private void deleteTransaction() {
+        LogUtils.logEnterFunction(Tag, null);
+        mDbHelper.deleteTransaction(mTransaction.getId());
+        if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
+            mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
+        }
+
+        cleanup();
+
+        // Return to FragmentListTransaction
+        getFragmentManager().popBackStackImmediate();
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     /**
      * Show Dialog to select Time
@@ -680,6 +705,23 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 .addToBackStack(null)
                 .commit();
     } // End startFragmentSelectCategory
+
+    /**
+     * Start fragment LenderBorrower
+     * @param oldPeople
+     */
+    private void startFragmentLenderBorrower(String oldPeople) {
+        FragmentLenderBorrower nextFrag = new FragmentLenderBorrower();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Category", mCategory);
+        bundle.putString("People", oldPeople);
+        bundle.putSerializable("Callback", this);
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUDIncome.this.getFragmentManager().beginTransaction()
+                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentLenderBorrower.Tag)
+                .addToBackStack(Tag)
+                .commit();
+    }
 
     /**
      * Start fragment input description

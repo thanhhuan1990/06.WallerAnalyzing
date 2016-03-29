@@ -28,6 +28,8 @@ import local.wallet.analyzing.FragmentDescription.IUpdateDescription;
 import local.wallet.analyzing.FragmentEvent.IUpdateEvent;
 import local.wallet.analyzing.FragmentPayee.IUpdatePayee;
 import local.wallet.analyzing.FragmentTransactionSelectCategory.ISelectCategory;
+
+import local.wallet.analyzing.FragmentLenderBorrower.IUpdateLenderBorrower;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
@@ -41,7 +43,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentTransactionCUDAdjustment extends Fragment implements  View.OnClickListener, ISelectCategory, ISelectAccount, IUpdateDescription, IUpdatePayee, IUpdateEvent {
+public class FragmentTransactionCUDAdjustment extends Fragment implements  View.OnClickListener, ISelectCategory, ISelectAccount, IUpdateDescription, IUpdatePayee, IUpdateEvent, IUpdateLenderBorrower {
     public static final String Tag = "TransactionCUDAdjustment";
 
     private Configurations      mConfigs;
@@ -139,6 +141,9 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentSelectCategory(mCategory != null ? mCategory.getId() : 0);
                 break;
+            case R.id.llPeople:
+                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                startFragmentLenderBorrower(tvPeople.getText().toString());
             case R.id.llDescription:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
                 startFragmentDescription(tvDescription.getText().toString());
@@ -165,12 +170,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 break;
             case R.id.llDelete:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                mDbHelper.deleteTransaction(mTransaction.getId());
-
-                cleanup();
-
-                // Return to FragmentListTransaction
-                getFragmentManager().popBackStackImmediate();
+                deleteTransaction();
                 break;
             default:
                 break;
@@ -229,6 +229,13 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         }
 
         LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+    }
+
+    @Override
+    public void onLenderBorrowerUpdated(String people) {
+        LogUtils.logEnterFunction(Tag, "people = '" + people + "\'");
+        tvPeople.setText(people);
+        LogUtils.logLeaveFunction(Tag, "people = '" + people + "\'", null);
     }
 
     @Override
@@ -315,6 +322,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
         tvAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
         tvCategory.setText(mCategory != null ? mCategory.getName() : "");
+        tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
         tvDescription.setText(mTransaction.getDescription());
         tvDate.setText(getDateString(mCal));
         tvPayee.setText(mTransaction.getPayee());
@@ -484,7 +492,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                     }
                 }
 
-                if(repayment + lend > borrowed + debtCollect) {
+                if(repayment + lend + Math.abs(remain - balance) > borrowed + debtCollect) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
                 }
@@ -512,7 +520,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                     }
                 }
 
-                if(repayment + lend < borrowed + debtCollect) {
+                if(repayment + lend < borrowed + debtCollect + Math.abs(remain - balance)) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_collect_invalid));
                 }
@@ -628,7 +636,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                     }
                 }
 
-                if(repayment + lend > borrowed + debtCollect) {
+                if(repayment + lend + Math.abs(remain - balance) > borrowed + debtCollect) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
                 }
@@ -656,7 +664,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                     }
                 }
 
-                if(repayment + lend < borrowed + debtCollect) {
+                if(repayment + lend < borrowed + debtCollect + Math.abs(remain - balance)) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_collect_invalid));
                 }
@@ -687,6 +695,8 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                         if(debtRow == 1) {
                             ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_update_successful));
                             cleanup();
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
                         } else {
                             // Revert update
                             mDbHelper.updateTransaction(mTransaction);
@@ -703,6 +713,8 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                         if(debtId != -1) {
                             ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_create_successful));
                             cleanup();
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
                         } else {
                             // Revert update
                             mDbHelper.updateTransaction(mTransaction);
@@ -732,12 +744,29 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                     mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
                 }
             }
+            // Return to last fragment
+            getFragmentManager().popBackStackImmediate();
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
-        // Return to last fragment
-        getFragmentManager().popBackStackImmediate();
     } // End Update Transaction
+
+    /**
+     * Delete current Transaction
+     */
+    private void deleteTransaction() {
+        LogUtils.logEnterFunction(Tag, null);
+        mDbHelper.deleteTransaction(mTransaction.getId());
+        if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
+            mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
+        }
+
+        cleanup();
+
+        // Return to FragmentListTransaction
+        getFragmentManager().popBackStackImmediate();
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     /**
      * Show Dialog to select Time
@@ -790,6 +819,23 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 .addToBackStack(null)
                 .commit();
         LogUtils.logLeaveFunction(Tag, "OldCategoryId = " + oldCategoryId, null);
+    }
+
+    /**
+     * Start fragment LenderBorrower
+     * @param oldPeople
+     */
+    private void startFragmentLenderBorrower(String oldPeople) {
+        FragmentLenderBorrower nextFrag = new FragmentLenderBorrower();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Category", mCategory);
+        bundle.putString("People", oldPeople);
+        bundle.putSerializable("Callback", this);
+        nextFrag.setArguments(bundle);
+        FragmentTransactionCUDAdjustment.this.getFragmentManager().beginTransaction()
+                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentLenderBorrower.Tag)
+                .addToBackStack(Tag)
+                .commit();
     }
 
     /**

@@ -29,7 +29,7 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/tvLend"
+            android:id="@+id/tvLending"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
@@ -82,7 +82,7 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/tvBorrow"
+            android:id="@+id/tvBorrowing"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"

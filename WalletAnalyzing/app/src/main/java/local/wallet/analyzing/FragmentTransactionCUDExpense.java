@@ -166,12 +166,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                 break;
             case R.id.llDelete:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                mDbHelper.deleteTransaction(mTransaction.getId());
-
-                cleanup();
-
-                // Return to FragmentListTransaction
-                getFragmentManager().popBackStackImmediate();
+                deleteTransaction();
                 break;
             default:
                 break;
@@ -308,6 +303,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
         tvEvent          = (TextView) getView().findViewById(R.id.tvEvent);
 
         tvCategory.setText(mCategory != null ? mCategory.getName() : "");
+        tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
         etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
         tvDescription.setText(mTransaction.getDescription());
         tvPayee.setText(mTransaction.getPayee());
@@ -451,7 +447,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                     }
                 }
 
-                if(repayment + lend > borrowed + debtCollect) {
+                if(repayment + lend + amount > borrowed + debtCollect) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
                 }
@@ -567,7 +563,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                     }
                 }
 
-                if(repayment + lend > borrowed + debtCollect) {
+                if(repayment + lend + amount > borrowed + debtCollect) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
                 } // End Check DEBT OK
@@ -599,6 +595,9 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                         if(debtRow == 1) {
                             ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_update_successful));
                             cleanup();
+
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
                         } else {
                             // Revert update
                             mDbHelper.updateTransaction(mTransaction);
@@ -615,6 +614,8 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                         if(debtId != -1) {
                             ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_create_successful));
                             cleanup();
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
                         } else {
                             // Revert update
                             mDbHelper.updateTransaction(mTransaction);
@@ -643,13 +644,31 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                 if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
                     mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
                 }
+
+                // Return to last fragment
+                getFragmentManager().popBackStackImmediate();
             }
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
-        // Return to last fragment
-        getFragmentManager().popBackStackImmediate();
     } // End Update Transaction
+
+    /**
+     * Delete current Transaction
+     */
+    private void deleteTransaction() {
+        LogUtils.logEnterFunction(Tag, null);
+        mDbHelper.deleteTransaction(mTransaction.getId());
+        if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
+            mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
+        }
+
+        cleanup();
+
+        // Return to FragmentListTransaction
+        getFragmentManager().popBackStackImmediate();
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     /**
      * Show Dialog to select Time
@@ -716,7 +735,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
         FragmentTransactionCUDExpense.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, "FragmentPayee")
+                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentLenderBorrower.Tag)
                 .addToBackStack(Tag)
                 .commit();
     }

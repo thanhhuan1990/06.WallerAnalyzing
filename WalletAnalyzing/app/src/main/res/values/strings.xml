@@ -221,6 +221,8 @@
     <string name="report_Lent_borrow_borrow">Money Borrowed</string>
     <string name="report_Lent_borrow_borrower">Borrower</string>
     <string name="report_Lent_borrow_lender">Lender</string>
+    <string name="report_Lent_borrow_repay">Repay</string>
+    <string name="report_Lent_borrow_collect">Collect</string>
 
 
     <!-- 5_REPORT_6_EVENT -->
