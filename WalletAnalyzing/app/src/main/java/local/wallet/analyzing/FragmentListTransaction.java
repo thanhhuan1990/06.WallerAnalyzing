@@ -82,11 +82,11 @@ public class FragmentListTransaction extends Fragment {
 
     @Override
     public void onResume() {
+        super.onResume();
         if(getFragmentManager().getBackStackEntryCount() > 0) {
             return;
         }
         LogUtils.logEnterFunction(Tag, null);
-        super.onResume();
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);

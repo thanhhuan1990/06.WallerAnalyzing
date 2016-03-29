@@ -322,7 +322,12 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
         tvAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
         tvCategory.setText(mCategory != null ? mCategory.getName() : "");
-        tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
+        if(mTransaction.getId() == 0 && !mTransaction.getPayee().equals("")) {
+            tvPeople.setText(mTransaction.getPayee());
+            mTransaction.setPayee("");
+        } else {
+            tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
+        }
         tvDescription.setText(mTransaction.getDescription());
         tvDate.setText(getDateString(mCal));
         tvPayee.setText(mTransaction.getPayee());

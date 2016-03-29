@@ -234,6 +234,8 @@ public class ActivityMain extends AppCompatActivity {
                         case TAB_POSITION_LIST_BUDGET:
                             break;
                         case TAB_POSITION_REPORTS:
+                            FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
+                            fragment.onResume();
                             break;
                         case TAB_POSITION_UTILITIES:
                             break;

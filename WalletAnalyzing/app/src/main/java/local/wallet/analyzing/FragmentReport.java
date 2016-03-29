@@ -26,6 +26,7 @@ public class FragmentReport extends Fragment {
 
     public static final String Tag = "Report";
 
+    private View                mActionBar;
     private Spinner             spReportType;
     private int                 mCurrentReportType = 0;
 
@@ -51,6 +52,9 @@ public class FragmentReport extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        if(mActionBar != null) {
+            spReportType.setSelection(0);
+        }
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -61,48 +65,50 @@ public class FragmentReport extends Fragment {
         }
         super.onCreateOptionsMenu(menu, inflater);
 
-        /* Todo: Update ActionBar: Spinner ReportType */
-        String[] arReportType       = getResources().getStringArray(R.array.report_type);
+        if(mActionBar == null) {
+            /* Todo: Update ActionBar: Spinner ReportType */
+            String[] arReportType       = getResources().getStringArray(R.array.report_type);
 
-        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mCustomView            = mInflater.inflate(R.layout.action_bar_with_spinner, null);
+            LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+            mActionBar                  = mInflater.inflate(R.layout.action_bar_with_spinner, null);
 
-        spReportType                = (Spinner) mCustomView.findViewById(R.id.spinner);
-        spReportType.setAdapter(new ReportTypeAdapter(getActivity().getApplicationContext(), Arrays.asList(arReportType)));
-        spReportType.setSelection(mCurrentReportType);
+            spReportType                = (Spinner) mActionBar.findViewById(R.id.spinner);
+            spReportType.setAdapter(new ReportTypeAdapter(getActivity().getApplicationContext(), Arrays.asList(arReportType)));
+            spReportType.setSelection(mCurrentReportType);
 
-        spReportType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                LogUtils.trace(Tag, "onItemSelected: " + position);
-                mCurrentReportType = position;
-                switch (position) {
-                    case 0:
-                        showExpenseVsIncome();
-                        break;
-                    case 1:
-                        showExpenseAnalysis();
-                        break;
-                    case 2:
-                        showFinancialStatement();
-                        break;
-                    case 3:
-                        showLentBorrowed();
-                        break;
-                    case 4:
-                        showListEvents();
-                        break;
-                    default:
-                        break;
+            spReportType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    LogUtils.trace(Tag, "onItemSelected: " + position);
+                    mCurrentReportType = position;
+                    switch (position) {
+                        case 0:
+                            showExpenseVsIncome();
+                            break;
+                        case 1:
+                            showExpenseAnalysis();
+                            break;
+                        case 2:
+                            showFinancialStatement();
+                            break;
+                        case 3:
+                            showLentBorrowed();
+                            break;
+                        case 4:
+                            showListEvents();
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        }
 
-        ((ActivityMain)getActivity()).updateActionBar(mCustomView);
+        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
     }
 
     /**

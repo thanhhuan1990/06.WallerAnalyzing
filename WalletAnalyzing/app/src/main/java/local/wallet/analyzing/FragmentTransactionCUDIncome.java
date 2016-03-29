@@ -274,8 +274,18 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
         llEvent.setOnClickListener(this);
         tvEvent = (TextView) getView().findViewById(R.id.tvEvent);
 
-        tvCategory.setText(mCategory != null ? mCategory.getName() : "");
-        tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
+        if(mCategory != null) {
+            tvCategory.setText(mCategory.getName());
+            onCategorySelected(mCategory.getId());
+        } else {
+            tvCategory.setText("");
+        }
+        if(mTransaction.getId() == 0 && !mTransaction.getPayee().equals("")) {
+            tvPeople.setText(mTransaction.getPayee());
+            mTransaction.setPayee("");
+        } else {
+            tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
+        }
         etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
         tvDescription.setText(mTransaction.getDescription());
         tvAccount.setText(mToAccount != null ? mToAccount.getName() : "");
@@ -470,6 +480,11 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                     if(debtId != -1) {
                         ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_create_successful));
                         cleanup();
+
+                        if(getFragmentManager().getBackStackEntryCount() > 0) {
+                            // Return to last fragment
+                            getFragmentManager().popBackStackImmediate();
+                        }
                     } else {
                         ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_transaction_create_fail));
                         mDbHelper.deleteTransaction(newTransactionId);
@@ -477,6 +492,11 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 } else {
                     ((ActivityMain) getActivity()).showToastSuccessful(getResources().getString(R.string.message_transaction_create_successful));
                     cleanup();
+
+                    if(getFragmentManager().getBackStackEntryCount() > 0) {
+                        // Return to last fragment
+                        getFragmentManager().popBackStackImmediate();
+                    }
                 }
 
             } else {

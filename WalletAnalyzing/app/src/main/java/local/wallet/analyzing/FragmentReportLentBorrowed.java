@@ -44,6 +44,7 @@ public class FragmentReportLentBorrowed extends Fragment {
     private LentBorrowedAdapter mLendingAdapter;
     private LentBorrowedAdapter mBorrowingAdapter;
 
+    Double lending = 0.0, borrowing = 0.0;
     private Map<String, Double> hmAllDebt   = new HashMap<String, Double>();
     private Map<String, Double> hmLent      = new HashMap<String, Double>();
     private Map<String, Double> hmBorrowed  = new HashMap<String, Double>();
@@ -64,6 +65,63 @@ public class FragmentReportLentBorrowed extends Fragment {
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
+        initDataSource();
+
+        tvLending           = (TextView) getView().findViewById(R.id.tvLending);
+        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+        lvLending           = (ListView) getView().findViewById(R.id.lvLending);
+        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), new ArrayList(hmLent.entrySet()));
+        lvLending.setAdapter(mLendingAdapter);
+
+        tvBorrowing          = (TextView) getView().findViewById(R.id.tvBorrowing);
+        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
+        lvBorrowing         = (ListView) getView().findViewById(R.id.lvBorrowing);
+        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), new ArrayList(hmBorrowed.entrySet()));
+        lvBorrowing.setAdapter(mBorrowingAdapter);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+
+    @Override
+    public void onResume() {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onResume();
+
+        initDataSource();
+
+        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
+        mLendingAdapter.notifyDataSetChanged();
+        mBorrowingAdapter.notifyDataSetChanged();
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            return;
+        }
+        LogUtils.logEnterFunction(Tag, null);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+        initDataSource();
+
+        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
+        mLendingAdapter.notifyDataSetChanged();
+        mBorrowingAdapter.notifyDataSetChanged();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void initDataSource() {
+        hmAllDebt.clear();
+        hmLent.clear();
+        hmBorrowed.clear();
+        lending = 0.0;
+        borrowing = 0.0;
         List<Debt>      arAllDebts   = mDbHelper.getAllDebts();
         for(Debt debt : arAllDebts) {
             if(hmAllDebt.get(debt.getPeople()) != null) {
@@ -91,7 +149,6 @@ public class FragmentReportLentBorrowed extends Fragment {
             }
         }
 
-        Double lending = 0.0, borrowing = 0.0;
         for(Map.Entry<String, Double> entry : hmAllDebt.entrySet()) {
             if(entry.getValue() > 0) {
                 hmLent.put(entry.getKey(), entry.getValue());
@@ -102,31 +159,6 @@ public class FragmentReportLentBorrowed extends Fragment {
             }
         }
 
-        tvLending           = (TextView) getView().findViewById(R.id.tvLending);
-        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        lvLending           = (ListView) getView().findViewById(R.id.lvLending);
-        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), new ArrayList(hmLent.entrySet()));
-        lvLending.setAdapter(mLendingAdapter);
-
-        tvBorrowing          = (TextView) getView().findViewById(R.id.tvBorrowing);
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
-        lvBorrowing         = (ListView) getView().findViewById(R.id.lvBorrowing);
-        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), new ArrayList(hmBorrowed.entrySet()));
-        lvBorrowing.setAdapter(mBorrowingAdapter);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            return;
-        }
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -175,12 +207,17 @@ public class FragmentReportLentBorrowed extends Fragment {
                         Transaction transaction = new Transaction();
                         transaction.setAmount(entry.getValue());
                         transaction.setCategoryId(mDbHelper.getAllCategories(true, Category.EnumDebt.LESS).get(0).getId());
+                        transaction.setPayee(entry.getKey());
+                        transaction.setTransactionType(Transaction.TransactionEnum.Expense.getValue());
 
-                        FragmentTransactionCUD tabTransactionCreate = new FragmentTransactionCUD();
+                        FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("Transaction", new Transaction());
-                        bundle.putInt("ContainerViewId", R.id.ll_transaction_create);
-                        tabTransactionCreate.setArguments(bundle);
+                        bundle.putSerializable("Transaction", transaction);
+                        nextFrag.setArguments(bundle);
+                        FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
+                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
+                                .addToBackStack(null)
+                                .commit();
                     }
                 });
             } else if(entry.getValue() > 0) {
@@ -190,6 +227,20 @@ public class FragmentReportLentBorrowed extends Fragment {
                     @Override
                     public void onClick(View v) {
 
+                        Transaction transaction = new Transaction();
+                        transaction.setAmount(entry.getValue());
+                        transaction.setCategoryId(mDbHelper.getAllCategories(false, Category.EnumDebt.LESS).get(0).getId());
+                        transaction.setPayee(entry.getKey());
+                        transaction.setTransactionType(Transaction.TransactionEnum.Income.getValue());
+
+                        FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Transaction", transaction);
+                        nextFrag.setArguments(bundle);
+                        FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
+                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
+                                .addToBackStack(null)
+                                .commit();
                     }
                 });
             }

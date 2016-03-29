@@ -76,8 +76,8 @@ public class FragmentTransactionCUD extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
 
-        if((((ActivityMain) getActivity()).getCurrentVisibleItem() == ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() == 0) || // Tab 1: Create
-                (((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() != 0)) { // Other Tab: Update
+//        if((((ActivityMain) getActivity()).getCurrentVisibleItem() == ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() == 0) || // Tab 1: Create
+//                (((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() != 0)) { // Other Tab: Update
 
             if(mActionBar == null) {
                 initActionBar();
@@ -116,7 +116,7 @@ public class FragmentTransactionCUD extends Fragment {
                 }
             }
 
-        }
+//        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
