@@ -86,6 +86,9 @@ public class FragmentReport extends Fragment {
                     case 2:
                         showFinancialStatement();
                         break;
+                    case 3:
+                        showLentBorrowed();
+                        break;
                     case 4:
                         showListEvents();
                         break;
@@ -141,6 +144,20 @@ public class FragmentReport extends Fragment {
         FragmentReportFinancialStatement nextFrag = new FragmentReportFinancialStatement();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, FragmentReportFinancialStatement.Tag)
+                .commit();
+    }
+
+    /**
+     * Start Fragment ReportLentBorrowed
+     */
+    private void showLentBorrowed() {
+        FragmentReportLentBorrowed myFragment = (FragmentReportLentBorrowed)getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag);
+        if (myFragment != null && myFragment.isVisible()) {
+            return;
+        }
+        FragmentReportLentBorrowed nextFrag = new FragmentReportLentBorrowed();
+        FragmentReport.this.getFragmentManager().beginTransaction()
+                .replace(R.id.ll_report, nextFrag, FragmentReportLentBorrowed.Tag)
                 .commit();
     }
 

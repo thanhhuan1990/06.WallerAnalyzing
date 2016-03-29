@@ -216,6 +216,13 @@
     <string name="report_financial_statement_money_lent">Money Lent</string>
     <string name="report_financial_statement_money_borrowed">Money Borrowed</string>
 
+    <!-- 5_REPORT_5_LENT_BORROW -->
+    <string name="report_Lent_borrow_lent">Money Lent</string>
+    <string name="report_Lent_borrow_borrow">Money Borrowed</string>
+    <string name="report_Lent_borrow_borrower">Borrower</string>
+    <string name="report_Lent_borrow_lender">Lender</string>
+
+
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
     <string name="report_event_completed">Completed</string>
@@ -255,7 +262,9 @@
     <string name="Delete">Delete</string>
 
     <string name="message_transaction_create_successful">Saved</string>
+    <string name="message_transaction_create_fail">Not Saved</string>
     <string name="message_transaction_update_successful">Saved</string>
+    <string name="message_transaction_update_fail">Error</string>
     <string name="message_account_create_successful">Saved</string>
 
     <string name="expense_category">Expense Category</string>

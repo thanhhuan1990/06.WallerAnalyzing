@@ -159,6 +159,9 @@
     <string name="message_transaction_update_successful">Đã sửa đổi ghi chép thành công</string>
     <string name="message_account_create_successful">Đã tạo tài khoản thành công</string>
 
+    <string name="message_debt_repayment_invalid">Bạn còn thiếu ít hơn số tiền muốn trả!</string>
+    <string name="message_debt_collect_invalid">Bạn thu nhiều hơn số tiền bạn đã cho vay!</string>
+
     <string name="expense_category">Chi Tiêu</string>
     <string name="income_category">Thu Vào</string>
     <string name="expense_category_lent">Vay nợ</string>

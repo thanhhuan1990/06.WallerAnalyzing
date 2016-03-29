@@ -1,13 +1,14 @@
 package local.wallet.analyzing.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by huynh.thanh.huan on 11/23/2015.
  */
-public class Category {
+public class Category implements Serializable {
 
-    public enum EnumDebt {
+    public enum EnumDebt implements Serializable {
         MORE(-1),
         NONE(0),
         LESS(1);

@@ -43,7 +43,7 @@ public class FragmentTransactionCUD extends Fragment {
 
         Bundle bundle           = this.getArguments();
         if(bundle != null) {
-            mTransaction            = (Transaction)bundle.get("Transaction");
+            mTransaction        = (Transaction)bundle.get("Transaction");
 
             LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
         }
@@ -84,6 +84,30 @@ public class FragmentTransactionCUD extends Fragment {
             }
 
             ((ActivityMain)getActivity()).updateActionBar(mActionBar);
+
+            if((getView().findViewById(R.id.ll_transaction_create) != null && getView().findViewById(R.id.ll_transaction_create).getVisibility() == View.VISIBLE) ||
+                    getView().findViewById(R.id.ll_transaction_update) != null && getView().findViewById(R.id.ll_transaction_update).getVisibility() == View.VISIBLE) {
+                switch (TransactionEnum.getTransactionEnum(mTransaction.getTransactionType())) {
+                    case Expense:
+                        spTransactionType.setSelection(0);
+                        showExpense();
+                        break;
+                    case Income:
+                        spTransactionType.setSelection(1);
+                        showIncome();
+                        break;
+                    case Transfer:
+                        spTransactionType.setSelection(2);
+                        showTransfer();
+                        break;
+                    case Adjustment:
+                        spTransactionType.setSelection(3);
+                        showAdjustment();
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -94,7 +118,7 @@ public class FragmentTransactionCUD extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
-        if((((ActivityMain) getActivity()).getCurrentVisibleItem() == ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() == 0) || // Tab 1: Create
+        /*if((((ActivityMain) getActivity()).getCurrentVisibleItem() == ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() == 0) || // Tab 1: Create
                 (((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE && mTransaction.getId() != 0)) { // Other Tab: Update
 
             if(mActionBar == null) {
@@ -102,7 +126,31 @@ public class FragmentTransactionCUD extends Fragment {
             }
 
             ((ActivityMain)getActivity()).updateActionBar(mActionBar);
-        }
+
+            if((getView().findViewById(R.id.ll_transaction_create) != null && getView().findViewById(R.id.ll_transaction_create).getVisibility() == View.VISIBLE) ||
+                    getView().findViewById(R.id.ll_transaction_update) != null && getView().findViewById(R.id.ll_transaction_update).getVisibility() == View.VISIBLE) {
+                switch (TransactionEnum.getTransactionEnum(mTransaction.getTransactionType())) {
+                    case Expense:
+                        spTransactionType.setSelection(0);
+                        showExpense();
+                        break;
+                    case Income:
+                        spTransactionType.setSelection(1);
+                        showIncome();
+                        break;
+                    case Transfer:
+                        spTransactionType.setSelection(2);
+                        showTransfer();
+                        break;
+                    case Adjustment:
+                        spTransactionType.setSelection(3);
+                        showAdjustment();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }*/
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

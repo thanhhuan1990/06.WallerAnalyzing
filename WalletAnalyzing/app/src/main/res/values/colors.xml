@@ -57,5 +57,7 @@
     <color name="progress_all_income">#41BC92</color>
     <color name="progress_all_expense">#DF3555</color>
 
+    <color name="background_button_collect_repay">#5FB5B3</color>
+    <color name="background_button_cllect_repay_border">#00A59F</color>
 
 </resources>

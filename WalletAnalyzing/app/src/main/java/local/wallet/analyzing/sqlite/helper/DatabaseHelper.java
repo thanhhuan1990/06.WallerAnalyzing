@@ -20,6 +20,7 @@ import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Category.EnumDebt;
+import local.wallet.analyzing.model.Debt;
 import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Kind;
 import local.wallet.analyzing.model.Transaction;
@@ -35,7 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final boolean trace = false;
 
     // Database Version
-    private static final int DATABASE_VERSION                   = 1;
+    private static final int DATABASE_VERSION                   = 2;
 
     public static final int ERROR_DB_EXISTED                    = -1;
 
@@ -49,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_TRANSACTION               = "transactions";
     private static final String TABLE_BUDGET                    = "budgets";
     private static final String TABLE_EVENT                     = "events";
+    private static final String TABLE_DEBTS                     = "debts";
 
     // Common column names
     private static final String KEY_ID                          = "id";
@@ -86,7 +88,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_BUDGET_REPEAT_TYPE          = "repeat";
     private static final String KEY_BUDGET_INCREMENTAL          = "incremental";
 
-    // EVENT table - column name
+    // DEBT table - column name
+    private static final String KEY_DEBT_CATEGORY               = "category_id";
+    private static final String KEY_DEBT_TRANSACTION            = "transaction_id";
+    private static final String KEY_DEBT_AMOUNT                 = "amount";
+    private static final String KEY_DEBT_PEOPLE                 = "people";
 
     //region LogUtils
     private void enter(String tag, String param) {
@@ -171,6 +177,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_START_DATE            + " DATETIME,"
             + KEY_END_DATE              + " DATETIME)";
 
+    // DEBT table create statement
+    private static final String CREATE_TABLE_DEBT = "CREATE TABLE "
+            + TABLE_DEBTS + "("
+            + KEY_ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_DEBT_CATEGORY         + " INTEGER,"
+            + KEY_DEBT_TRANSACTION      + " INTEGER,"
+            + KEY_DEBT_AMOUNT           + " DOUBLE,"
+            + KEY_DEBT_PEOPLE           + " TEXT)";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -203,6 +218,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         trace(TAG, CREATE_TABLE_EVENT);
         db.execSQL(CREATE_TABLE_EVENT);
 
+        trace(TAG, CREATE_TABLE_DEBT);
+        db.execSQL(CREATE_TABLE_DEBT);
+
         leave(TAG, "onCreate", null);
     }
 
@@ -210,11 +228,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         enter(TAG, "onUpgrade");
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_KIND);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_CATEGORY);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_ACCOUNT);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_TRANSACTION);
-        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_BUDGET);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_KIND);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRANSACTION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGET);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENT);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DEBTS);
 
         // create new tables
         onCreate(db);
@@ -575,7 +595,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Get All Categories with condition
      * @param expense
-     * @param debt
      * @return
      */
     public List<Category> getAllCategories(boolean expense) {
@@ -1443,8 +1462,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void deleteTransaction(long transaction_id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_TRANSACTION, KEY_ID + " = ?",
-                new String[] { String.valueOf(transaction_id) });
+        db.delete(TABLE_TRANSACTION, KEY_ID + " = ?", new String[] { String.valueOf(transaction_id) });
     }
 
     /**
@@ -1800,7 +1818,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (c.moveToFirst()) {
             do {
-                if(!c.getString(c.getColumnIndex(KEY_END_DATE)).equals("")) {
+                if (!c.getString(c.getColumnIndex(KEY_END_DATE)).equals("")) {
                     Event event = new Event();
                     event.setId(c.getInt((c.getColumnIndex(KEY_ID))));
                     event.setName((c.getString(c.getColumnIndex(KEY_NAME))));
@@ -1932,7 +1950,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_END_DATE, event.getEndDate() != null ? getStringDateTime(event.getEndDate().getTime()) : "");
 
         // updating row
-        int result = db.update(TABLE_EVENT, values, KEY_ID + " = ?", new String[] { String.valueOf(event.getId()) });
+        int result = db.update(TABLE_EVENT, values, KEY_ID + " = ?", new String[]{String.valueOf(event.getId())});
 
         leave(TAG, "event = " + event.toString(), "Result = " + result);
         return result;
@@ -1995,6 +2013,180 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return null;
 
+    }
+    //endregion
+
+    // ------------------------ DEBT table methods ----------------//
+    //region Table DEBT
+    public long createDebt(Debt debt) {
+        enter(TAG, "debt = " + debt.toString());
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_DEBT_CATEGORY, debt.getCategoryId());
+        values.put(KEY_DEBT_TRANSACTION, debt.getTransactionId());
+        values.put(KEY_DEBT_AMOUNT, debt.getAmount());
+        values.put(KEY_DEBT_PEOPLE, debt.getPeople());
+
+        try {
+            // insert row
+            long debt_id = db.insert(TABLE_DEBTS, null, values);
+
+            leave(TAG, "debt = " + debt.toString(), "debt_id = " + debt_id);
+            return debt_id;
+
+        } catch (android.database.SQLException e) {
+            e.printStackTrace();
+            leave(TAG, "debt = " + debt.toString(), "debt_id = -1");
+            return -1;
+        }
+    }
+
+    public List<Debt> getAllDebts() {
+        enter(TAG, null);
+
+        List<Debt> debts = new ArrayList<Debt>();
+        String selectQuery = "SELECT  * FROM " + TABLE_DEBTS;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Debt debt = new Debt();
+                debt.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                debt.setCategoryId(c.getInt(c.getColumnIndex(KEY_DEBT_CATEGORY)));
+                debt.setTransactionId(c.getInt(c.getColumnIndex(KEY_DEBT_TRANSACTION)));
+                debt.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
+                debt.setPeople(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
+
+                debts.add(debt);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "debts = " + debts.toString());
+
+        return debts;
+    }
+
+    public List<Debt> getAllLent() {
+        enter(TAG, null);
+
+        List<Debt> debts = new ArrayList<Debt>();
+        String selectQuery = "SELECT  * FROM " + TABLE_DEBTS;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+
+                Category category = getCategory(c.getInt(c.getColumnIndex(KEY_DEBT_CATEGORY)));
+
+
+                Debt debt = new Debt();
+                debt.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                debt.setCategoryId(c.getInt(c.getColumnIndex(KEY_DEBT_CATEGORY)));
+                debt.setTransactionId(c.getInt(c.getColumnIndex(KEY_DEBT_TRANSACTION)));
+                debt.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
+                debt.setPeople(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
+
+                debts.add(debt);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "debts = " + debts.toString());
+
+        return debts;
+    }
+
+    public Debt getDebtByTransactionId(int transactionId) {
+        enter(TAG, "transactionId = " + transactionId);
+
+        String selectQuery = "SELECT  * FROM " + TABLE_DEBTS + " WHERE " + KEY_DEBT_TRANSACTION + " = " + transactionId;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c != null && c.moveToFirst()) {
+            Debt debt = new Debt();
+            debt.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+            debt.setCategoryId(c.getInt(c.getColumnIndex(KEY_DEBT_CATEGORY)));
+            debt.setTransactionId(c.getInt(c.getColumnIndex(KEY_DEBT_TRANSACTION)));
+            debt.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
+            debt.setPeople(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
+
+            leave(TAG, null, debt.toString());
+            return debt;
+
+        }
+
+        leave(TAG, "transactionId = " + transactionId, null);
+
+        return null;
+    }
+
+    /**
+     * Updating a Debt
+     */
+    public int updateDebt(Debt debt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_DEBT_CATEGORY, debt.getCategoryId());
+        values.put(KEY_DEBT_TRANSACTION, debt.getTransactionId());
+        values.put(KEY_DEBT_AMOUNT, debt.getAmount());
+        values.put(KEY_DEBT_PEOPLE, debt.getPeople());
+
+        // updating row
+        return db.update(TABLE_DEBTS, values, KEY_ID + " = ?", new String[] { String.valueOf(debt.getId()) });
+    }
+
+    /**
+     * Delete a Debt
+     */
+    public void deleteDebt(int debtId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_DEBTS, KEY_ID + " = ?", new String[]{String.valueOf(debtId)});
+    }
+
+
+
+    /**
+     * Get list of Lender & Borrower from list Debt
+     */
+    public List<String> getPeoples(String contain) {
+        List<String> peoples = new ArrayList<String>();
+        String selectQuery = "SELECT DISTINCT(" + KEY_DEBT_PEOPLE + ") FROM " + TABLE_DEBTS;
+        if(!contain.equals("")) {
+            selectQuery += " WHERE " + KEY_DEBT_PEOPLE + " LIKE '%" + contain + "%'";
+        }
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                String people = c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)).trim();
+                if(!people.equals("")) {
+                    peoples.add(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
+                }
+            } while (c.moveToNext());
+        }
+
+        return peoples;
     }
     //endregion
 
