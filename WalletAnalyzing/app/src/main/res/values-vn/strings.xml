@@ -115,13 +115,6 @@
         <item>Hàng năm</item>
     </string-array>
 
-    <string name="report_event_in_progress">Đang diễn ra</string>
-    <string name="report_event_completed">Đã kết thúc</string>
-    <string name="event_item_date">Từ %s</string>
-    <string name="event_total_expense">Σ Tổng chi</string>
-    <string name="event_total_income">Σ Tổng thu</string>
-    <string name="event_detail_complete">Kết thúc</string>
-
     <string name="title_category_expense">Hạng mục chi</string>
     <string name="title_category_expense_add">Thêm hạng mục chi</string>
     <string name="title_category_expense_select_parent">Hạng mục cha</string>
@@ -145,6 +138,67 @@
 
     <string name="Save">Ghi</string>
     <string name="Delete">Xóa</string>
+
+    <!-- 5_REPORT_2_Expense_Vs_Income Data -->
+    <string name="report_evi_year">Năm %s</string>
+    <string name="report_evi_monthly_balance">Balance: %s</string>
+    <string name="report_evi_quarterly">Quý \%%s - Balance: \%%s</string>
+    <string name="report_evi_yearly">Năm \%%02d - Balance: \%%s</string>
+    <string name="report_evi_period_expense">Chi</string>
+    <string name="report_evi_period_income">Thu</string>
+    <string name="report_evi_period_legend_expense">\%%s \%%s</string>
+    <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
+
+    <!-- 5_REPORT_3_Expense_Analysis -->
+    <string name="report_expense_analysis_categories">Hạng mục</string>
+    <string name="report_expense_analysis_categories_select_all_categories">Chọn tất cả các hạng mục</string>
+    <string name="report_expense_analysis_categories_all_categories">Tất cả các hạng mục</string>
+    <string name="report_expense_analysis_categories_all_income_categories">Tất cả các hạng mục thu</string>
+    <string name="report_expense_analysis_categories_all_expense_categories">Tất cả các hạng mục chi</string>
+    <string name="report_expense_analysis_viewedby">Xem Theo</string>
+    <string name="report_expense_analysis_categories_income">Mục thu</string>
+    <string name="report_expense_analysis_categories_expense">Mục Chi</string>
+    <string name="report_expense_analysis_accounts">Tài khoản</string>
+    <string name="report_expense_analysis_accounts_all_accounts">Tất cả tài khoản</string>
+    <string-array name="report_expense_analysis_ar_viewedby">
+        <item>Hàng tuần</item>
+        <item>Hàng tháng</item>
+        <item>Hàng quý</item>
+        <item>Hàng năm</item>
+    </string-array>
+
+    <!-- 5_REPORT_4_Financial_Statement -->
+    <string name="report_financial_statement_asset">Có (1)</string>
+    <string name="report_financial_statement_liabilities">Còn nợ (2)</string>
+    <string name="report_financial_statement_net_worth">Thực có: (1) - (2)</string>
+    <string name="report_financial_statement_cash">Tiền mặt</string>
+    <string name="report_financial_statement_bank_account">Tài khoản ngân hàng</string>
+    <string name="report_financial_statement_credit_card">Thẻ tìn dụng</string>
+    <string name="report_financial_statement_investment">Tài khoản đầu tư</string>
+    <string name="report_financial_statement_saving_deposit">Tài khoản tiết kiệm</string>
+    <string name="report_financial_statement_other">Khác</string>
+    <string name="report_financial_statement_money_lent">Cho vay</string>
+    <string name="report_financial_statement_money_borrowed">Nợ phải trả</string>
+
+    <!-- 5_REPORT_5_LENT_BORROW -->
+    <string name="report_Lent_borrow_lent">Money Lent</string>
+    <string name="report_Lent_borrow_borrow">Money Borrowed</string>
+    <string name="report_Lent_borrow_borrower">Borrower</string>
+    <string name="report_Lent_borrow_lender">Lender</string>
+    <string name="report_Lent_borrow_repay">Repay</string>
+    <string name="report_Lent_borrow_collect">Collect</string>
+
+    <!-- 5_REPORT_6_EVENT -->
+    <string name="report_event_in_progress">Đang diễn ra</string>
+    <string name="report_event_completed">Đã kết thúc</string>
+    <string name="event_item_date">Từ %s</string>
+    <string name="event_total_expense">Σ Tổng chi</string>
+    <string name="event_total_income">Σ Tổng thu</string>
+    <string name="event_detail_complete">Kết thúc</string>
+
+    <string name="event_update_name">Tên</string>
+    <string name="event_update_finished">Đã kết thúc</string>
+    <string name="event_update_end_date">Ngày kết thúc</string>
 
     <string name="Input_Error_Account_Name_Empty">Tên tài khoản không được để trống!</string>
     <string name="Input_Error_Amount_Empty">Số tiền không được để trống!</string>

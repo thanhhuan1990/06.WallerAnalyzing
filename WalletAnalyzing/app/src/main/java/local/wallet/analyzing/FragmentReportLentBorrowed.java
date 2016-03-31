@@ -218,7 +218,7 @@ public class FragmentReportLentBorrowed extends Fragment {
                     public void onClick(View v) {
 
                         Transaction transaction = new Transaction();
-                        transaction.setAmount(entry.getValue());
+                        transaction.setAmount(entry.getValue() * -1);
                         transaction.setCategoryId(mDbHelper.getAllCategories(true, Category.EnumDebt.LESS).get(0).getId());
                         transaction.setPayee(entry.getKey());
                         transaction.setTransactionType(Transaction.TransactionEnum.Expense.getValue());

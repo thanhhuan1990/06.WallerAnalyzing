@@ -111,7 +111,7 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
             updateListEviCurrent();
         } else {
             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Error_Startup_No_Data));
-            ((ActivityMain) getActivity()).setCurrentVisibleItem(ActivityMain.TAB_POSITION_TRANSACTIONS);
+//            ((ActivityMain) getActivity()).setCurrentVisibleItem(ActivityMain.TAB_POSITION_TRANSACTIONS);
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);

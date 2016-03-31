@@ -850,6 +850,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * getting all ACCOUNTs
+     * */
+    public List<Account> getAllAccountsByTypeId(int typeId) {
+        enter(TAG, null);
+
+        List<Account> accounts = new ArrayList<Account>();
+        String selectQuery = "SELECT  * FROM " + TABLE_ACCOUNT + " WHERE " + KEY_ACCOUNT_TYPE_ID + " = " + typeId;
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Account account = new Account();
+                account.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                account.setName((c.getString(c.getColumnIndex(KEY_NAME))));
+                account.setTypeId(c.getInt(c.getColumnIndex(KEY_ACCOUNT_TYPE_ID)));
+                account.setCurrencyId(c.getInt(c.getColumnIndex(KEY_ACCOUNT_CURRENCY)));
+                account.setInitBalance(c.getDouble(c.getColumnIndex(KEY_ACCOUNT_INITIAL_BALANCE)));
+                account.setDescription(c.getString(c.getColumnIndex(KEY_ACCOUNT_DESCRIPTION)));
+
+                // adding to kinds list
+                accounts.add(account);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, null);
+        return accounts;
+    }
+
+    /**
      * Get account remain
      * @return
      */

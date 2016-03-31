@@ -35,9 +35,10 @@
             android:layout_weight="3"
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
-            android:text="1.000.000.000 đ"
+            android:text="X.000 đ"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"/>
+            android:textColor="@color/textcolor_title_attribute"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 
@@ -60,7 +61,7 @@
         android:layout_height="0.2dip"
         android:background="#504f4f"/>
 
-    <LinearLayout
+    <!--<LinearLayout
         android:id="@+id/llLent"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -102,7 +103,7 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="0.2dip"
-        android:background="#504f4f"/>
+        android:background="#504f4f"/>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -131,9 +132,10 @@
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
             android:singleLine="true"
-            android:text="500.000.000 đ"
+            android:text="X.000 đ"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"/>
+            android:textColor="@color/textcolor_title_attribute"
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <View
@@ -158,8 +160,7 @@
             android:background="@android:color/transparent"
             android:text="@string/report_financial_statement_money_borrowed"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/textcolor_title_attribute"
-            android:textStyle="bold"/>
+            android:textColor="@android:color/black"/>
 
         <TextView
             android:id="@+id/tvBorrowed"
@@ -212,9 +213,10 @@
             android:background="@android:color/transparent"
             android:gravity="right|center_vertical"
             android:singleLine="true"
-            android:text="500.000.000 đ"
+            android:text="X.000 đ"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"/>
+            android:textColor="@color/textcolor_title_attribute"
+            android:textStyle="bold"/>
     </LinearLayout>
 
 </LinearLayout>

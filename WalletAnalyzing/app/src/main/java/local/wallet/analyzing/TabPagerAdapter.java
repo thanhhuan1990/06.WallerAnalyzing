@@ -18,6 +18,13 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
     private int mNumOfTabs;
 
+    /*public TabPagerAdapter(android.support.v4.app.Fragment fragment, int mNumOfTabs)
+    {
+        super(fragment.getChildFragmentManager());
+
+        this.mNumOfTabs = mNumOfTabs;
+    }*/
+
     public TabPagerAdapter(FragmentManager fm, int mNumOfTabs) {
         super(fm);
         this.mNumOfTabs = mNumOfTabs;
@@ -29,10 +36,7 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 FragmentListTransaction tabTransaction = new FragmentListTransaction();
                 return tabTransaction;
-//                return FragmentListTransaction.getInstance();
             case 1:
-//                FragmentTransactionCreate tabNewTransaction = new FragmentTransactionCreate();
-//                return tabNewTransaction;
                 FragmentTransactionCUD tabTransactionCreate = new FragmentTransactionCUD();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("Transaction", new Transaction());
@@ -40,9 +44,6 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
                 tabTransactionCreate.setArguments(bundle);
                 return tabTransactionCreate;
             case 2:
-//                return FragmentListAccount.newInstance();
-//                FragmentListAccount fragmentListAccount = new FragmentListAccount();
-//                return fragmentListAccount;
                 return FragmentListAccount.getInstance();
             case 3:
                 FragmentListBudget tabBudget = new FragmentListBudget();
