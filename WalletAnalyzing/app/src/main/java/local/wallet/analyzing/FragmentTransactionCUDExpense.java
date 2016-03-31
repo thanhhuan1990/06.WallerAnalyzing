@@ -507,7 +507,6 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                     cleanup();
 
                     if(getFragmentManager().getBackStackEntryCount() > 0) {
-                        // Return to last fragment
                         getFragmentManager().popBackStackImmediate();
                     }
                 }

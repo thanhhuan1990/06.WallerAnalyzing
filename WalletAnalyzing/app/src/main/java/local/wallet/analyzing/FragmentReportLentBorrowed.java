@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,8 +18,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
@@ -44,10 +47,9 @@ public class FragmentReportLentBorrowed extends Fragment {
     private LentBorrowedAdapter mLendingAdapter;
     private LentBorrowedAdapter mBorrowingAdapter;
 
-    Double lending = 0.0, borrowing = 0.0;
-    private Map<String, Double> hmAllDebt   = new HashMap<String, Double>();
-    private Map<String, Double> hmLent      = new HashMap<String, Double>();
-    private Map<String, Double> hmBorrowed  = new HashMap<String, Double>();
+    private Double lending = 0.0, borrowing = 0.0;
+    private List<Map.Entry<String, Double>> arLent = new ArrayList<Map.Entry<String, Double>>();
+    private List<Map.Entry<String, Double>> arBorrowed = new ArrayList<Map.Entry<String, Double>>();
 
     @Nullable
     @Override
@@ -70,18 +72,17 @@ public class FragmentReportLentBorrowed extends Fragment {
         tvLending           = (TextView) getView().findViewById(R.id.tvLending);
         tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
         lvLending           = (ListView) getView().findViewById(R.id.lvLending);
-        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), new ArrayList(hmLent.entrySet()));
+        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), arLent);
         lvLending.setAdapter(mLendingAdapter);
 
         tvBorrowing          = (TextView) getView().findViewById(R.id.tvBorrowing);
         tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
         lvBorrowing         = (ListView) getView().findViewById(R.id.lvBorrowing);
-        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), new ArrayList(hmBorrowed.entrySet()));
+        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), arBorrowed);
         lvBorrowing.setAdapter(mBorrowingAdapter);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
-
 
     @Override
     public void onResume() {
@@ -99,12 +100,14 @@ public class FragmentReportLentBorrowed extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            LogUtils.trace(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         initDataSource();
 
@@ -116,10 +119,14 @@ public class FragmentReportLentBorrowed extends Fragment {
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    /**
+     * Update data source from Database
+     */
     private void initDataSource() {
-        hmAllDebt.clear();
-        hmLent.clear();
-        hmBorrowed.clear();
+        LogUtils.logEnterFunction(Tag, null);
+        Map<String, Double> hmAllDebt       = new HashMap<String, Double>();
+        Map<String, Double> hmLent          = new HashMap<String, Double>();
+        Map<String, Double> hmBorrowed      = new HashMap<String, Double>();
         lending = 0.0;
         borrowing = 0.0;
         List<Debt>      arAllDebts   = mDbHelper.getAllDebts();
@@ -158,6 +165,12 @@ public class FragmentReportLentBorrowed extends Fragment {
                 borrowing += entry.getValue();
             }
         }
+
+        arLent.clear();
+        arLent.addAll(hmLent.entrySet());
+        arBorrowed.clear();
+        arBorrowed.addAll(hmBorrowed.entrySet());
+        LogUtils.logLeaveFunction(Tag, null, null);
 
     }
 
