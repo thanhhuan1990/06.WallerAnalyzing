@@ -216,14 +216,6 @@
     <string name="report_financial_statement_money_lent">Money Lent</string>
     <string name="report_financial_statement_money_borrowed">Money Borrowed</string>
 
-    <!-- 5_REPORT_4_Financial_Statement_Lent_Borrowed_Detail -->
-    <string name="report_lent_borrowed_detail_lent_starting_balance">Starting Balance</string>
-    <string name="report_lent_borrowed_detail_lent_collected">Collected (%d%%)</string>
-    <string name="report_lent_borrowed_detail_lent_remaining">Remaining (%d%%)</string>
-    <string name="report_lent_borrowed_detail_borrowed_starting_balance">Starting Balance</string>
-    <string name="report_lent_borrowed_detail_borrowed_repaid">Repaid (%d%%)</string>
-    <string name="report_lent_borrowed_detail_borrowed_remaining">Remaining (%d%%)</string>
-
     <!-- 5_REPORT_5_LENT_BORROW -->
     <string name="report_Lent_borrow_lent">Money Lent</string>
     <string name="report_Lent_borrow_borrow">Money Borrowed</string>
@@ -231,6 +223,7 @@
     <string name="report_Lent_borrow_lender">Lender</string>
     <string name="report_Lent_borrow_repay">Repay</string>
     <string name="report_Lent_borrow_collect">Collect</string>
+
 
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">In progress</string>
@@ -256,7 +249,6 @@
     <string name="title_account_add">Add account</string>
     <string name="title_account_select_type">Add account</string>
     <string name="title_account_select_currency">Select currency</string>
-    <string name="title_account_update">Update account</string>
     <string name="title_budget">Budget</string>
     <string name="title_budget_history">Budget history</string>
     <string name="title_budget_create">Add budget</string>
@@ -264,12 +256,8 @@
     <string name="title_description">Description</string>
     <string name="title_payee">Payee</string>
     <string name="title_event">Event</string>
-    <string name="title_borrower">Borrower</string>
-    <string name="title_lender">Lender</string>
     <string name="title_report_evi_account">Account</string>
     <string name="title_report_evi_time">Time</string>
-    <string name="title_report_financial_statement_lent">Lent</string>
-    <string name="title_report_financial_statement_Borrow">Borrow</string>
     <string name="title_report_expense_analysis_category">Categories</string>
 
     <string name="Save">Save</string>

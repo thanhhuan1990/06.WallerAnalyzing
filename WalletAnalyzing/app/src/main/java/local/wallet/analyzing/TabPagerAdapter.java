@@ -18,6 +18,13 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
     private int mNumOfTabs;
 
+    /*public TabPagerAdapter(android.support.v4.app.Fragment fragment, int mNumOfTabs)
+    {
+        super(fragment.getChildFragmentManager());
+
+        this.mNumOfTabs = mNumOfTabs;
+    }*/
+
     public TabPagerAdapter(FragmentManager fm, int mNumOfTabs) {
         super(fm);
         this.mNumOfTabs = mNumOfTabs;

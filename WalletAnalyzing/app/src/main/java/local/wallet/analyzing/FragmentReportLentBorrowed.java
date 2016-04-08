@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,9 +18,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Category;
@@ -53,20 +55,8 @@ public class FragmentReportLentBorrowed extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        View view           = inflater.inflate(R.layout.layout_fragment_report_lent_borrow, container, false);
-        tvLending           = (TextView) view.findViewById(R.id.tvLending);
-        lvLending           = (ListView) view.findViewById(R.id.lvLending);
-        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), arLent, true);
-        lvLending.setAdapter(mLendingAdapter);
-
-        tvBorrowing          = (TextView) view.findViewById(R.id.tvBorrowing);
-        lvBorrowing         = (ListView) view.findViewById(R.id.lvBorrowing);
-        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), arBorrowed, false);
-        lvBorrowing.setAdapter(mBorrowingAdapter);
-
         LogUtils.logLeaveFunction(Tag, null, null);
-        return view;
+        return inflater.inflate(R.layout.layout_fragment_report_lent_borrow, container, false);
     }
 
     @Override
@@ -79,10 +69,17 @@ public class FragmentReportLentBorrowed extends Fragment {
 
         initDataSource();
 
+        tvLending           = (TextView) getView().findViewById(R.id.tvLending);
         tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Math.abs(borrowing)));
-        mLendingAdapter.notifyDataSetChanged();
-        mBorrowingAdapter.notifyDataSetChanged();
+        lvLending           = (ListView) getView().findViewById(R.id.lvLending);
+        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), arLent);
+        lvLending.setAdapter(mLendingAdapter);
+
+        tvBorrowing          = (TextView) getView().findViewById(R.id.tvBorrowing);
+        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
+        lvBorrowing         = (ListView) getView().findViewById(R.id.lvBorrowing);
+        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), arBorrowed);
+        lvBorrowing.setAdapter(mBorrowingAdapter);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -95,7 +92,7 @@ public class FragmentReportLentBorrowed extends Fragment {
         initDataSource();
 
         tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Math.abs(borrowing)));
+        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
         mLendingAdapter.notifyDataSetChanged();
         mBorrowingAdapter.notifyDataSetChanged();
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -115,7 +112,7 @@ public class FragmentReportLentBorrowed extends Fragment {
         initDataSource();
 
         tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Math.abs(borrowing)));
+        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing < 0 ? borrowing * -1 : 0));
         mLendingAdapter.notifyDataSetChanged();
         mBorrowingAdapter.notifyDataSetChanged();
 
@@ -127,64 +124,46 @@ public class FragmentReportLentBorrowed extends Fragment {
      */
     private void initDataSource() {
         LogUtils.logEnterFunction(Tag, null);
-
-        // Reset data
-        Map<String, Double> hmLent          = new HashMap<>();
-        Map<String, Double> hmBorrowed      = new HashMap<>();
+        Map<String, Double> hmAllDebt       = new HashMap<String, Double>();
+        Map<String, Double> hmLent          = new HashMap<String, Double>();
+        Map<String, Double> hmBorrowed      = new HashMap<String, Double>();
         lending = 0.0;
         borrowing = 0.0;
-
         List<Debt>      arAllDebts   = mDbHelper.getAllDebts();
         for(Debt debt : arAllDebts) {
-            Category category = mDbHelper.getCategory(debt.getCategoryId());
-            if(category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Lend
-                if(hmLent.get(debt.getPeople()) != null) {
-                    hmLent.put(debt.getPeople(), hmLent.get(debt.getPeople()) + debt.getAmount());
-                } else {
-                    hmLent.put(debt.getPeople(), debt.getAmount());
+            if(hmAllDebt.get(debt.getPeople()) != null) {
+                Category category = mDbHelper.getCategory(debt.getCategoryId());
+                if(category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Repayment
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) + debt.getAmount());
+                } else if(category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Lend
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) + debt.getAmount());
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Debt Collecting
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) - debt.getAmount());
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Borrow
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) - debt.getAmount());
                 }
-            } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Debt Collecting
-                if(hmLent.get(debt.getPeople()) != null) {
-                    hmLent.put(debt.getPeople(), hmLent.get(debt.getPeople()) - debt.getAmount());
-                } else {
-                    hmLent.put(debt.getPeople(), debt.getAmount());
-                }
-            } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Borrow
-                if(hmBorrowed.get(debt.getPeople()) != null) {
-                    hmBorrowed.put(debt.getPeople(), hmBorrowed.get(debt.getPeople()) + debt.getAmount());
-                } else {
-                    hmBorrowed.put(debt.getPeople(), debt.getAmount());
-                }
-            } else if(category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Repayment
-                if(hmBorrowed.get(debt.getPeople()) != null) {
-                    hmBorrowed.put(debt.getPeople(), hmBorrowed.get(debt.getPeople()) - debt.getAmount());
-                } else {
-                    hmBorrowed.put(debt.getPeople(), debt.getAmount());
+            } else {
+                Category category = mDbHelper.getCategory(debt.getCategoryId());
+                if(category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Repayment
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount());
+                } else if(category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Lend
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount());
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Debt Collecting
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount() * -1);
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Borrow
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount() * -1);
                 }
             }
         }
 
-        Iterator<Map.Entry<String,Double>> iter = hmLent.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<String,Double> entry = iter.next();
-            if(entry.getValue() == 0) {
-                iter.remove();
+        for(Map.Entry<String, Double> entry : hmAllDebt.entrySet()) {
+            if(entry.getValue() > 0) {
+                hmLent.put(entry.getKey(), entry.getValue());
+                lending += entry.getValue();
+            } else if(entry.getValue() < 0) {
+                hmBorrowed.put(entry.getKey(), entry.getValue());
+                borrowing += entry.getValue();
             }
-        }
-
-        iter = hmBorrowed.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<String,Double> entry = iter.next();
-            if(entry.getValue() == 0) {
-                iter.remove();
-            }
-        }
-
-        for(Map.Entry<String, Double> entry : hmLent.entrySet()) {
-            lending += entry.getValue();
-        }
-        for(Map.Entry<String, Double> entry : hmBorrowed.entrySet()) {
-            borrowing += entry.getValue();
         }
 
         arLent.clear();
@@ -192,6 +171,7 @@ public class FragmentReportLentBorrowed extends Fragment {
         arBorrowed.clear();
         arBorrowed.addAll(hmBorrowed.entrySet());
         LogUtils.logLeaveFunction(Tag, null, null);
+
     }
 
     /**
@@ -205,10 +185,8 @@ public class FragmentReportLentBorrowed extends Fragment {
             Button          btnRepay;
         }
 
-        private boolean isLent = false;
-        public LentBorrowedAdapter(Context context, List<Map.Entry<String, Double>> objects, boolean isLent) {
+        public LentBorrowedAdapter(Context context, List<Map.Entry<String, Double>> objects) {
             super(context, R.layout.listview_item_lent_borrowed, objects);
-            this.isLent = isLent;
         }
 
         @Override
@@ -230,35 +208,20 @@ public class FragmentReportLentBorrowed extends Fragment {
 
             final Map.Entry<String, Double> entry = (Map.Entry<String, Double>) this.getItem(position);
 
-            viewHolder.llMain.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    LogUtils.info(Tag, Tag + " ---> ReportLentBorrowedDetail" );
-                    FragmentReportLentBorrowedDetail nextFrag = new FragmentReportLentBorrowedDetail();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("People", entry.getKey());
-                    bundle.putBoolean("Lent", isLent);
-                    nextFrag.setArguments(bundle);
-                    FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
-                            .add(R.id.ll_report, nextFrag, FragmentReportLentBorrowedDetail.Tag)
-                            .addToBackStack(null)
-                            .commit();
-                }
-            });
             viewHolder.tvPeople.setText(entry.getKey());
 
-            if (isLent) {
-                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
-                viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_collect));
+            if (entry.getValue() < 0) {
+                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue() * -1));
+                viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_repay));
                 viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
                         Transaction transaction = new Transaction();
-                        transaction.setAmount(entry.getValue());
-                        transaction.setCategoryId(mDbHelper.getAllCategories(false, Category.EnumDebt.LESS).get(0).getId());
+                        transaction.setAmount(entry.getValue() * -1);
+                        transaction.setCategoryId(mDbHelper.getAllCategories(true, Category.EnumDebt.LESS).get(0).getId());
                         transaction.setPayee(entry.getKey());
-                        transaction.setTransactionType(Transaction.TransactionEnum.Income.getValue());
+                        transaction.setTransactionType(Transaction.TransactionEnum.Expense.getValue());
 
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
@@ -270,18 +233,18 @@ public class FragmentReportLentBorrowed extends Fragment {
                                 .commit();
                     }
                 });
-            } else {
+            } else if(entry.getValue() > 0) {
                 viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
-                viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_repay));
+                viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_collect));
                 viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
                         Transaction transaction = new Transaction();
                         transaction.setAmount(entry.getValue());
-                        transaction.setCategoryId(mDbHelper.getAllCategories(true, Category.EnumDebt.LESS).get(0).getId());
+                        transaction.setCategoryId(mDbHelper.getAllCategories(false, Category.EnumDebt.LESS).get(0).getId());
                         transaction.setPayee(entry.getKey());
-                        transaction.setTransactionType(Transaction.TransactionEnum.Expense.getValue());
+                        transaction.setTransactionType(Transaction.TransactionEnum.Income.getValue());
 
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();

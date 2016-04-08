@@ -145,13 +145,6 @@ public class ActivityMain extends AppCompatActivity {
                         case TAB_POSITION_LIST_BUDGET:
                             break;
                         case TAB_POSITION_REPORTS:
-                            if(backStackEntryCount == 0) {
-                                FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
-                                fragment.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
                             break;
                         case TAB_POSITION_UTILITIES:
                             break;
@@ -222,12 +215,18 @@ public class ActivityMain extends AppCompatActivity {
                             if(backStackEntryCount == 0) {
                                 FragmentListTransaction listTransaction = (FragmentListTransaction)adapter.getRegisteredFragment(index);
                                 listTransaction.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
                             }
                             break;
                         case TAB_POSITION_TRANSACTION_CREATE:
                             if(backStackEntryCount == 0) {
                                 FragmentTransactionCUD transactionCreate = (FragmentTransactionCUD)adapter.getRegisteredFragment(index);
                                 transactionCreate.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
                             }
                             break;
                         case TAB_POSITION_LIST_ACCOUNT:
@@ -237,6 +236,9 @@ public class ActivityMain extends AppCompatActivity {
                         case TAB_POSITION_REPORTS:
                             if(backStackEntryCount == 0) {
                                 FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
+                                fragment.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
                                 fragment.onResume();
                             }
                             break;

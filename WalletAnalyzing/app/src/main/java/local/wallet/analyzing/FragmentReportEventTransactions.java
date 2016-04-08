@@ -34,6 +34,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
 
+    private int             mEventId;
     private Event           mEvent;
 
     private ImageView       ivExpandExpense;
@@ -49,20 +50,9 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mConfigs        = new Configurations(getContext());
-        mDbHelper       = new DatabaseHelper(getActivity());
-
         Bundle bundle = this.getArguments();
-        mEvent = mDbHelper.getEvent(bundle.getInt("EventID", 0));
+        mEventId      = bundle.getInt("EventID", 0);
 
-        if(mEvent == null) {
-            LogUtils.warn(Tag, "Event is null, RETURN");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            getFragmentManager().popBackStackImmediate();
-            return;
-        }
-
-        LogUtils.trace(Tag, "Event: " + mEvent.toString());
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onCreate
 
@@ -79,6 +69,9 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mConfigs        = new Configurations(getContext());
+        mDbHelper       = new DatabaseHelper(getActivity());
+
         ivExpandExpense = (ImageView) getView().findViewById(R.id.ivExpandExpense);
         ivExpandExpense.setOnClickListener(this);
         tvTotalExpense  = (TextView) getView().findViewById(R.id.tvTotalExpense);
@@ -93,14 +86,18 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.warn(Tag, "Wrong Tab, RETURN");
-            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
+
+        mEvent = mDbHelper.getEvent(mEventId);
+        if(mEvent == null) {
+            getFragmentManager().popBackStackImmediate();
+            return;
+        }
+
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_update_export, null);
@@ -125,7 +122,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
             case R.id.ivUpdate:
                 FragmentReportEventUpdate nextFrag = new FragmentReportEventUpdate();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("EventID", mEvent.getId());
+                bundle.putSerializable("EventID", mEventId);
                 nextFrag.setArguments(bundle);
                 FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
                         .replace(R.id.ll_report, nextFrag, FragmentReportEventUpdate.Tag)
@@ -225,7 +222,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
         Double expense = 0.0, income = 0.0;
 
-        List<Transaction> arTransactions = mDbHelper.getTransactionsByEvent(mEvent.getId());
+        List<Transaction> arTransactions = mDbHelper.getTransactionsByEvent(mEventId);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         for(final Transaction transaction : arTransactions) {

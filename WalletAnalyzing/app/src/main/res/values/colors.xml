@@ -13,8 +13,6 @@
     <color name="transaction_type_description">#ABABAB</color>
     <color name="background_slash">#45b39c</color>
 
-    <color name="background_divider">#504f4f</color>
-
     <color name="textcolor_none">#cdcdcd</color>
     <color name="textcolor_income">#2d8986</color>
     <color name="textcolor_listview_account">#555555</color>

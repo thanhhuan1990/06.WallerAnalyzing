@@ -89,12 +89,10 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
-                LogUtils.warn(Tag, "ListAccount ----------> AccountTransactions");
                 // Go to list of transaction related with this Account
                 FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
                 Bundle bundle = new Bundle();
                 bundle.putInt("AccountID", accAdapter.getItem(position).getId());
-                bundle.putInt("ContainerViewId", R.id.layout_account);
                 nextFrag.setArguments(bundle);
                 FragmentListAccount.this.getFragmentManager().beginTransaction()
                         .add(R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag)
@@ -275,7 +273,6 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
                         Bundle bundle = new Bundle();
                         bundle.putInt("AccountID", listAccount.get(position).getId());
                         bundle.putSerializable("Callback", FragmentListAccount.this);
-                        bundle.putInt("ContainerViewId", R.id.layout_account);
                         nextFrag.setArguments(bundle);
                         FragmentListAccount.this.getFragmentManager().beginTransaction()
                                 .add(R.id.layout_account, nextFrag, FragmentAccountUpdate.Tag)

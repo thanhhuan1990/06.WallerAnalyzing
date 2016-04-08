@@ -41,31 +41,6 @@ public class LogUtils {
 		}
 	}
 
-    /**
-     * Print message in INFO mode
-     *
-     * @param tag
-     * @param message
-     */
-    public static void info(String tag, String message) {
-        if (BuildConfig.DEBUG) {
-            String strTid = String.valueOf(Thread.currentThread().getId());
-            Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
-        }
-    }
-
-    /**
-     * Print message in WARNING mode
-     *
-     * @param tag
-     * @param message
-     */
-    public static void warn(String tag, String message) {
-        if (BuildConfig.DEBUG) {
-            String strTid = String.valueOf(Thread.currentThread().getId());
-            Log.w(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
-        }
-    }
 	// ------------------------------------------------------------------------------------------------
 	/**
 	 * Print error message in DEBUG mode
@@ -101,7 +76,7 @@ public class LogUtils {
 	public static void logEnterFunction(String tag, String param) {
 		if (BuildConfig.DEBUG) {
 			String strTid = String.valueOf(Thread.currentThread().getId());
-			Log.d(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "(" + (param != null ? param : "") + ") ──────────┐");
+			Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "(" + (param != null ? param : "") + ") ──────────┐");
 		}
 	}
 
@@ -121,7 +96,7 @@ public class LogUtils {
 				}
 			}
 
-			Log.d(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[LEAVE]───── " + getMethodName() + "() " + temp + "──────────┘" + (result != null ? "→ return " + result : ""));
+			Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[LEAVE]───── " + getMethodName() + "() " + temp + "──────────┘" + (result != null ? "→ return " + result : ""));
 		}
 	}
 

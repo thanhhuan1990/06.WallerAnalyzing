@@ -26,8 +26,7 @@
                 android:layout_weight="4"
                 android:text="@string/account_list_remain"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvAccountRemain"
@@ -36,8 +35,7 @@
                 android:layout_weight="6"
                 android:gravity="right"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <View
@@ -70,8 +68,7 @@
                 android:layout_weight="4"
                 android:text="@string/account_list_init_balance"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvAccountInitBalance"
@@ -80,8 +77,7 @@
                 android:layout_weight="6"
                 android:gravity="right"
                 android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

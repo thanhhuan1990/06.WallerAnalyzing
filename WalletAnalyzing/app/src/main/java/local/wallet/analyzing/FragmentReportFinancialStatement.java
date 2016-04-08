@@ -36,14 +36,12 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
 
     private TextView        tvAsset;
     private ListView        lvAssets;
-    private LinearLayout    llLent;
-    private TextView        tvLent;
     private TextView        tvLiabilities;
     private LinearLayout    llBorrowed;
     private TextView        tvBorrowed;
     private TextView        tvNetWorth;
 
-    private Double          assets = 0.0, lent = 0.0, borrowed = 0.0;
+    private Double          assets = 0.0, borrowed = 0.0;
     private AssetAdapter    mAdapter;
     private List<Map.Entry<String, Double>> arAssets = new ArrayList<Map.Entry<String, Double>>();
 
@@ -51,108 +49,51 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
-        View view = inflater.inflate(R.layout.layout_fragment_report_financial_statement, container, false);
-
-        mConfigs        = new Configurations(getContext());
-        mDbHelper       = new DatabaseHelper(getActivity());
-
-        initDataSource();
-
-        tvAsset         = (TextView) view.findViewById(R.id.tvAsset);
-        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), assets));
-
-        lvAssets        = (ListView) view.findViewById(R.id.lvAssets);
-        mAdapter        = new AssetAdapter(getActivity(), arAssets);
-        lvAssets.setAdapter(mAdapter);
-
-        llLent          = (LinearLayout) view.findViewById(R.id.llLent);
-        llLent.setOnClickListener(this);
-        tvLent          = (TextView) view.findViewById(R.id.tvLent);
-        tvLent.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lent));
-
-        tvLiabilities   = (TextView) view.findViewById(R.id.tvLiabilities);
-        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
-
-        llBorrowed      = (LinearLayout) view.findViewById(R.id.llBorrowed);
-        llBorrowed.setOnClickListener(this);
-        tvBorrowed      = (TextView) view.findViewById(R.id.tvBorrowed);
-        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
-
-        tvNetWorth      = (TextView) view.findViewById(R.id.tvNetWorth);
-        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), (assets - borrowed)));
-
         LogUtils.logLeaveFunction(Tag, null, null);
-        return view;
+        return inflater.inflate(R.layout.layout_fragment_report_financial_statement, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mConfigs        = new Configurations(getContext());
+        mDbHelper       = new DatabaseHelper(getActivity());
+
+        initDataSource();
+
+        tvAsset         = (TextView) getView().findViewById(R.id.tvAsset);
+        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), assets));
+
+        lvAssets        = (ListView) getView().findViewById(R.id.lvAssets);
+        mAdapter        = new AssetAdapter(getActivity(), arAssets);
+        lvAssets.setAdapter(mAdapter);
+
+        tvLiabilities   = (TextView) getView().findViewById(R.id.tvLiabilities);
+        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed < 0 ? borrowed * -1 : borrowed));
+        tvBorrowed      = (TextView) getView().findViewById(R.id.tvBorrowed);
+        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed < 0 ? borrowed * -1 : borrowed));
+
+        tvNetWorth      = (TextView) getView().findViewById(R.id.tvNetWorth);
+        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), (assets + borrowed))); // Borrowed < 0 => - Borrowed
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.llLent: {
-                FragmentReportFinancialStatementLentBorrowed nextFrag = new FragmentReportFinancialStatementLentBorrowed();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("Lent", true);
-                nextFrag.setArguments(bundle);
-                FragmentReportFinancialStatement.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportFinancialStatementLentBorrowed.Tag)
-                        .addToBackStack(null)
-                        .commit();
-                break;
-            }
-            case R.id.llBorrowed: {
-                FragmentReportFinancialStatementLentBorrowed nextFrag = new FragmentReportFinancialStatementLentBorrowed();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean("Lent", false);
-                nextFrag.setArguments(bundle);
-                FragmentReportFinancialStatement.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportFinancialStatementLentBorrowed.Tag)
-                        .addToBackStack(null)
-                        .commit();
-                break;
-            }
             default:
                 break;
         }
     }
 
-    @Override
-    public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onResume();
-
-        initDataSource();
-
-        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), assets));
-        tvLent.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lent));
-        mAdapter.notifyDataSetChanged();
-        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
-        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
-        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), (assets - borrowed))); // Borrowed < 0 => - Borrowed
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    /**
-     * Update Data From Database
-     */
     private void initDataSource() {
         LogUtils.logEnterFunction(Tag, null);
 
-        // Re-initialize old data
-        arAssets.clear();
-        assets      = 0.0;
-        lent        = 0.0;
-        borrowed    = 0.0;
+        assets = 0.0;
 
-        // Update Data
         Map<String, Double> hmAsset = new HashMap<>();
         for(AccountType accType : AccountType.Accounts) {
             List<Account> arAccount = mDbHelper.getAllAccountsByTypeId(accType.getId());
@@ -167,53 +108,53 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
 
                 hmAsset.put(getResources().getString(accType.getName()), remain);
             }
+
         }
 
-        arAssets.addAll(new ArrayList(hmAsset.entrySet()));
-
-        Map<String, Double> hmLent          = new HashMap<>();
-        Map<String, Double> hmBorrowed      = new HashMap<>();
-        lent = 0.0;
-        borrowed = 0.0;
-
+        Map<String, Double> hmAllDebt       = new HashMap<String, Double>();
+        Double lending = 0.0;
         List<Debt>      arAllDebts   = mDbHelper.getAllDebts();
         for(Debt debt : arAllDebts) {
-            Category category = mDbHelper.getCategory(debt.getCategoryId());
-            if(category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Lend
-                if(hmLent.get(debt.getPeople()) != null) {
-                    hmLent.put(debt.getPeople(), hmLent.get(debt.getPeople()) + debt.getAmount());
-                } else {
-                    hmLent.put(debt.getPeople(), debt.getAmount());
+            if(hmAllDebt.get(debt.getPeople()) != null) {
+                Category category = mDbHelper.getCategory(debt.getCategoryId());
+                if(category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Repayment
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) + debt.getAmount());
+                } else if(category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Lend
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) + debt.getAmount());
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Debt Collecting
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) - debt.getAmount());
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Borrow
+                    hmAllDebt.put(debt.getPeople(), hmAllDebt.get(debt.getPeople()) - debt.getAmount());
                 }
-            } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Debt Collecting
-                if(hmLent.get(debt.getPeople()) != null) {
-                    hmLent.put(debt.getPeople(), hmLent.get(debt.getPeople()) - debt.getAmount());
-                } else {
-                    hmLent.put(debt.getPeople(), debt.getAmount());
-                }
-            } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Borrow
-                if(hmBorrowed.get(debt.getPeople()) != null) {
-                    hmBorrowed.put(debt.getPeople(), hmBorrowed.get(debt.getPeople()) + debt.getAmount());
-                } else {
-                    hmBorrowed.put(debt.getPeople(), debt.getAmount());
-                }
-            } else if(category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Repayment
-                if(hmBorrowed.get(debt.getPeople()) != null) {
-                    hmBorrowed.put(debt.getPeople(), hmBorrowed.get(debt.getPeople()) - debt.getAmount());
-                } else {
-                    hmBorrowed.put(debt.getPeople(), debt.getAmount());
+            } else {
+                Category category = mDbHelper.getCategory(debt.getCategoryId());
+                if(category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Repayment
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount());
+                } else if(category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Lend
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount());
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.LESS) { // Debt Collecting
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount() * -1);
+                } else if(!category.isExpense() && category.getDebtType() == Category.EnumDebt.MORE) { // Borrow
+                    hmAllDebt.put(debt.getPeople(), debt.getAmount() * -1);
                 }
             }
         }
 
-        for(Map.Entry<String, Double> entry : hmLent.entrySet()) {
-            lent += entry.getValue();
-        }
-        for(Map.Entry<String, Double> entry : hmBorrowed.entrySet()) {
-            borrowed += entry.getValue();
+        for(Map.Entry<String, Double> entry : hmAllDebt.entrySet()) {
+            if(entry.getValue() > 0) {
+                lending += entry.getValue();
+            } else if(entry.getValue() < 0) {
+                borrowed += entry.getValue();
+            }
         }
 
-        assets += lent;
+        if(lending > 0) {
+            hmAsset.put(getResources().getString(R.string.report_financial_statement_money_lent), lending);
+        }
+
+        arAssets.clear();
+        arAssets.addAll(new ArrayList(hmAsset.entrySet()));
+
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -250,23 +191,6 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
 
             viewHolder.tvName.setText(entry.getKey());
             viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
-            viewHolder.llMain.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for (AccountType accType : AccountType.Accounts) {
-                        if (entry.getKey().equals(getResources().getString(accType.getName()))) {
-                            FragmentReportFinancialStatementAccounts nextFrag = new FragmentReportFinancialStatementAccounts();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("AccountType", accType.getId());
-                            nextFrag.setArguments(bundle);
-                            FragmentReportFinancialStatement.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_report, nextFrag, FragmentReportFinancialStatementAccounts.Tag)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-                    }
-                }
-            });
 
             return convertView;
         }
