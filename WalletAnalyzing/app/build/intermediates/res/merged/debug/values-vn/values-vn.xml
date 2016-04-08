@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="budget_repeat_type">
+        <item>Không lặp lại</item>
+        <item>Hàng ngày</item>
+        <item>Hàng tuần</item>
+        <item>Hàng tháng</item>
+        <item>Hàng quý</item>
+        <item>Hàng năm</item>
+    </string-array>
+    <string-array name="data_file_extension">
+        <item>xls</item>
+        <item>xlsx</item>
+    </string-array>
+    <string-array name="report_expense_analysis_ar_viewedby">
+        <item>Hàng tuần</item>
+        <item>Hàng tháng</item>
+        <item>Hàng quý</item>
+        <item>Hàng năm</item>
+    </string-array>
+    <string-array name="report_type">
+        <item>Tình hình thu chi</item>
+        <item>Phân tích chi tiêu</item>
+        <item>Tài chính hiện tại</item>
+        <item>Theo dõi vay nợ</item>
+        <item>Chuyến đi, sự kiện</item>
+        <item>Chi cho ai</item>
+    </string-array>
+    <string-array name="transaction_type">
+        <item>Chi tiền</item>
+        <item>Thu tiền</item>
+        <item>Chuyển khoản</item>
+        <item>Ghi theo tiền còn</item>
+    </string-array>
+    <string-array name="transaction_type_description">
+        <item>Khi chi tiêu, cho vay, trả nợ.</item>
+        <item>Khi có khoản thu nhập, thu nợ, đi vay.</item>
+        <item>Chuyển tiền giữa các tài khoản trong sổ của bạn.</item>
+        <item>Tính và ghi số tiền đã chi/thu theo số tiền bạn còn.</item>
+    </string-array>
+    <dimen name="actionbar_size">54dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="passcode_text_size">25sp</dimen>
+    <string name="Delete">Xóa</string>
+    <string name="Input_Error_Account_Empty">Tài khoản không được để trống!</string>
+    <string name="Input_Error_Account_Name_Empty">Tên tài khoản không được để trống!</string>
+    <string name="Input_Error_Adjustment_Same_Amount">Số tiền bằng 0!</string>
+    <string name="Input_Error_Amount_Empty">Số tiền không được để trống!</string>
+    <string name="Input_Error_ToAccount_Empty">Tài khoản chuyển tới không được để trống!</string>
+    <string name="Input_Error_Transfer_Same_Account">Không thể chuyển khoản trong cùng tài khoản!</string>
+    <string name="Input_Error_account_none">Xin mời chọn tài khoản!</string>
+    <string name="Input_Error_budget_category_none">Xin mời chọn hạng mục chi tiêu!</string>
+    <string name="Save">Ghi</string>
+    <string name="account_add_currency">Loại tiền tệ</string>
+    <string name="account_add_initial_balance">Số tiền ban đầu</string>
+    <string name="account_add_name">Tên</string>
+    <string name="account_add_name_hint">Tên tài khoản</string>
+    <string name="account_add_note">Ghi chú</string>
+    <string name="account_add_type">Loai tài khoản</string>
+    <string name="account_list_balance">Còn: %s</string>
+    <string name="account_list_init_balance">Số tiền ban đầu</string>
+    <string name="account_list_remain">Số tiền còn lại</string>
+    <string name="account_type_bank_account">Tài khoản ngân hàng</string>
+    <string name="account_type_cash">Tiền mặt</string>
+    <string name="account_type_credit_card">Thẻ tín dụng</string>
+    <string name="account_type_investment">Tài khoản đầu tư</string>
+    <string name="account_type_other">Khác</string>
+    <string name="account_type_saving_deposit">Tài khoản tiết kiệm</string>
+    <string name="action_settings">Settings</string>
+    <string name="app_name">Wallet Analyzing</string>
+    <string name="budget_detail_description">Hạn mức chi: \%%s \%%s cho hạng mục: \%%s</string>
+    <string name="budget_detail_description_all">Hạn mức chi: \%%s \%%s cho tất cả các hạng mục</string>
+    <string name="budget_detail_description_many">Hạn mức chi: \%%s \%%s cho các hạng mục: \%%s</string>
+    <string name="budget_detail_detail">Chi tiết khoản chi</string>
+    <string name="budget_detail_history">Hạn mức chi các kỳ trước</string>
+    <string name="budget_detail_transaction_description">Kỳ hạn mức \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
+    <string name="budget_detail_transaction_total">Tổng cộng: %s</string>
+    <string name="budget_history_description">Hạn mức chi kỳ trước của %s</string>
+    <string name="budget_item_balance">Còn: %s</string>
+    <string name="budget_item_balance_no_format">Còn:</string>
+    <string name="budget_item_expensed">Đã chi: %s</string>
+    <string name="budget_item_expensed_no_format">Đã chi:</string>
+    <string name="budget_item_incremental">Số dư kỳ trước: %s</string>
+    <string name="budget_item_over">Bội chi: %s</string>
+    <string name="budget_item_over_no_format">Bội chi:</string>
+    <string name="budget_item_total">Hạn mức: %s</string>
+    <string name="click_back_to_exist">Ấn thoát thêm lần nữa để thoát ứng dụng!</string>
+    <string name="content_adjustment_income">Đã thu: %s</string>
+    <string name="content_before_yesterday">Hôm kia</string>
+    <string name="content_expense">Chi: %s</string>
+    <string name="content_expensed">Đã chi: %s</string>
+    <string name="content_income">Thu: %s</string>
+    <string name="content_today">Hôm nay</string>
+    <string name="content_transfer_fee">Phí chuyển khoản: %s</string>
+    <string name="content_transfer_from">Chuyển từ %s</string>
+    <string name="content_transfer_to">Chuyển tới %s</string>
+    <string name="content_yesterday">Hôm qua</string>
+    <string name="event_detail_complete">Kết thúc</string>
+    <string name="event_item_date">Từ %s</string>
+    <string name="event_total_expense">Σ Tổng chi</string>
+    <string name="event_total_income">Σ Tổng thu</string>
+    <string name="event_update_end_date">Ngày kết thúc</string>
+    <string name="event_update_finished">Đã kết thúc</string>
+    <string name="event_update_name">Tên</string>
+    <string name="expense_category">Chi Tiêu</string>
+    <string name="expense_category_lent">Vay nợ</string>
+    <string name="income_category">Thu Vào</string>
+    <string name="message_account_create_successful">Đã tạo tài khoản thành công</string>
+    <string name="message_debt_collect_invalid">Bạn thu nhiều hơn số tiền bạn đã cho vay!</string>
+    <string name="message_debt_repayment_invalid">Bạn còn thiếu ít hơn số tiền muốn trả!</string>
+    <string name="message_transaction_create_successful">Đã tạo ghi chép thành công</string>
+    <string name="message_transaction_update_successful">Đã sửa đổi ghi chép thành công</string>
+    <string name="new_budget_amount">Số tiền</string>
+    <string name="new_budget_from_date">Ngày bắt đầu</string>
+    <string name="new_budget_move_to_next">Dồn sang kỳ sau</string>
+    <string name="new_budget_move_to_next_description">(Số tiền dư hoặc bội chi sẽ được chuyển sang kỳ sau)</string>
+    <string name="new_budget_move_to_next_description_not">(Số tiền dư hoặc bội chi sẽ KHÔNG được chuyển sang kỳ sau)</string>
+    <string name="new_budget_name">Tên</string>
+    <string name="new_budget_name_hit">Tên hạn mức</string>
+    <string name="new_budget_repeat">Lặp lại</string>
+    <string name="new_budget_to_date">Ngày kết thúc</string>
+    <string name="new_category_description">Diễn giải</string>
+    <string name="new_category_hint">Tên hạng mục</string>
+    <string name="new_category_name">Tên</string>
+    <string name="new_category_parent_category">Hạng mục cha</string>
+    <string name="new_category_select_as_parent">(Không chọn)</string>
+    <string name="new_transaction_account">Của tài khoản</string>
+    <string name="new_transaction_adjustment">Ghi theo tiền còn</string>
+    <string name="new_transaction_amount">Số tiền</string>
+    <string name="new_transaction_date">Ngày</string>
+    <string name="new_transaction_description">Diễn giải</string>
+    <string name="new_transaction_event">Chuyến đi/Sự kiện</string>
+    <string name="new_transaction_from_account">Từ tài khoản</string>
+    <string name="new_transaction_payee">Chi cho ai</string>
+    <string name="new_transaction_remaining_amount">Số tiền hiện còn</string>
+    <string name="new_transaction_to_account">Tới tài khoản</string>
+    <string name="new_transaction_today">Hôm nay</string>
+    <string name="new_transaction_transfer_fee">Phí chuyển khoản/rút tiền</string>
+    <string name="new_transaction_transfer_fee_hint">Phí chuyển khoản</string>
+    <string name="report_Lent_borrow_borrow">Money Borrowed</string>
+    <string name="report_Lent_borrow_borrower">Borrower</string>
+    <string name="report_Lent_borrow_collect">Collect</string>
+    <string name="report_Lent_borrow_lender">Lender</string>
+    <string name="report_Lent_borrow_lent">Money Lent</string>
+    <string name="report_Lent_borrow_repay">Repay</string>
+    <string name="report_event_completed">Đã kết thúc</string>
+    <string name="report_event_in_progress">Đang diễn ra</string>
+    <string name="report_evi_monthly_balance">Balance: %s</string>
+    <string name="report_evi_period_expense">Chi</string>
+    <string name="report_evi_period_income">Thu</string>
+    <string name="report_evi_period_legend_expense">\%%s \%%s</string>
+    <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
+    <string name="report_evi_quarterly">Quý \%%s - Balance: \%%s</string>
+    <string name="report_evi_year">Năm %s</string>
+    <string name="report_evi_yearly">Năm \%%02d - Balance: \%%s</string>
+    <string name="report_expense_analysis_accounts">Tài khoản</string>
+    <string name="report_expense_analysis_accounts_all_accounts">Tất cả tài khoản</string>
+    <string name="report_expense_analysis_categories">Hạng mục</string>
+    <string name="report_expense_analysis_categories_all_categories">Tất cả các hạng mục</string>
+    <string name="report_expense_analysis_categories_all_expense_categories">Tất cả các hạng mục chi</string>
+    <string name="report_expense_analysis_categories_all_income_categories">Tất cả các hạng mục thu</string>
+    <string name="report_expense_analysis_categories_expense">Mục Chi</string>
+    <string name="report_expense_analysis_categories_income">Mục thu</string>
+    <string name="report_expense_analysis_categories_select_all_categories">Chọn tất cả các hạng mục</string>
+    <string name="report_expense_analysis_viewedby">Xem Theo</string>
+    <string name="report_financial_statement_asset">Có (1)</string>
+    <string name="report_financial_statement_bank_account">Tài khoản ngân hàng</string>
+    <string name="report_financial_statement_cash">Tiền mặt</string>
+    <string name="report_financial_statement_credit_card">Thẻ tìn dụng</string>
+    <string name="report_financial_statement_investment">Tài khoản đầu tư</string>
+    <string name="report_financial_statement_liabilities">Còn nợ (2)</string>
+    <string name="report_financial_statement_money_borrowed">Nợ phải trả</string>
+    <string name="report_financial_statement_money_lent">Cho vay</string>
+    <string name="report_financial_statement_net_worth">Thực có: (1) - (2)</string>
+    <string name="report_financial_statement_other">Khác</string>
+    <string name="report_financial_statement_saving_deposit">Tài khoản tiết kiệm</string>
+    <string name="report_lent_borrowed_detail_borrowed_remaining">Phải trả (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_repaid">Đã trả (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_starting_balance">Tổng đi vay</string>
+    <string name="report_lent_borrowed_detail_lent_collected">Đã thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_remaining">Phải thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_starting_balance">Tổng cho vay</string>
+    <string name="select_file_title">Select cert. file</string>
+    <string name="serializable">Serializable</string>
+    <string name="tab_account">Tài khoản</string>
+    <string name="tab_budget">Hạn mức chi</string>
+    <string name="tab_report">Báo cáo</string>
+    <string name="tab_transaction">Ghi chép</string>
+    <string name="tab_utilities">Tiện ích</string>
+    <string name="title_account">Tài khoản</string>
+    <string name="title_account_add">Thêm tài khoản</string>
+    <string name="title_account_select_currency">Loại tiền tệ</string>
+    <string name="title_account_select_type">Thuộc loại</string>
+    <string name="title_borrower">Người Vay</string>
+    <string name="title_budget">Hạn mức chi</string>
+    <string name="title_budget_create">Thêm hạn mức</string>
+    <string name="title_budget_history">Hạn mức chi các kỳ trước</string>
+    <string name="title_category_expense">Hạng mục chi</string>
+    <string name="title_category_expense_add">Thêm hạng mục chi</string>
+    <string name="title_category_expense_select_parent">Hạng mục cha</string>
+    <string name="title_category_income">Hạng mục thu</string>
+    <string name="title_category_income_add">Thêm hạng mục thu</string>
+    <string name="title_category_income_select_parent">Hạng mục cha</string>
+    <string name="title_description">Description</string>
+    <string name="title_event">Chuyến đi/Sự kiện</string>
+    <string name="title_lender">Người Cho Vay</string>
+    <string name="title_payee">Chi cho ai</string>
+    <string name="title_report_evi_account">Tài Khoản</string>
+    <string name="title_report_evi_time">Thời Gian</string>
+    <string name="title_report_expense_analysis_category">Hạn Mục Thu Chi</string>
+    <string name="title_report_financial_statement_Borrow">Nợ Phải Trả</string>
+    <string name="title_report_financial_statement_lent">Cho Vay</string>
+    <string name="title_utility">Utilities</string>
+    <string name="transaction_category_expense">Mục chi</string>
+    <string name="transaction_category_income">Mục thu</string>
+</resources>

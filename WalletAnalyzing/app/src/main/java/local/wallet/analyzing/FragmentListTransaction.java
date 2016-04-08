@@ -41,6 +41,14 @@ public class FragmentListTransaction extends Fragment {
     private ListView                lvTransaction;
     private TransactionAdapter      mAdapter;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,13 +90,22 @@ public class FragmentListTransaction extends Fragment {
 
     @Override
     public void onResume() {
+        LogUtils.logEnterFunction(Tag, null);
         super.onResume();
-        if(getFragmentManager().getBackStackEntryCount() > 0) {
+
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTIONS) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
+
+        if(getFragmentManager().getBackStackEntryCount() > 0) {
+            LogUtils.error(Tag, "Back Stack Entry > 0. Return");
+            return;
+        }
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);
+
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
         updateListTransaction();

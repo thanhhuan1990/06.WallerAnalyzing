@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/layout_account"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main_frame"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <ListView
+        android:id="@+id/lvAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@color/listview_divider"
+        android:dividerHeight="0.2dp"
+        android:scrollbars="none"/>
+
+    <!-- Here is the view to show if the list is emtpy -->
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="No items."
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+</FrameLayout>

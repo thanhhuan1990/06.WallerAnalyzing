@@ -429,40 +429,24 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
         }
 
         boolean isDebtValid = true;
-        // Less: Repayment, More: Lend
-        if(mCategory.getDebtType() == Category.EnumDebt.LESS || mCategory.getDebtType() == Category.EnumDebt.MORE) {
+        if(mCategory.getDebtType() == Category.EnumDebt.LESS) { // Expense -> Repayment
+            List<Debt> debts = mDbHelper.getAllDebtByPeople(tvPeople.getText().toString());
 
-
-            if(mCategory.getDebtType() == Category.EnumDebt.LESS) { // Expense -> Repayment
-                List<Debt> debts = mDbHelper.getAllDebts();
-
-                Double borrowed = 0.0, repayment = 0.0, lend = 0.0, debtCollect = 0.0;
-                for(Debt debt : debts) {
-                    if(debt.getPeople().equals(tvPeople.getText().toString())) {
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            repayment += debt.getAmount();
-                        }
-
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            lend += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            debtCollect += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            borrowed += debt.getAmount();
-                        }
-                    }
+            Double borrowed = 0.0, repayment = 0.0;
+            for(Debt debt : debts) {
+                if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
+                    repayment += debt.getAmount();
                 }
 
-                if(repayment + lend + amount > borrowed + debtCollect) {
-                    isDebtValid = false;
-                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
+                if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
+                    borrowed += debt.getAmount();
                 }
             }
 
+            if(repayment + amount > borrowed) {
+                isDebtValid = false;
+                ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
+            }
         }
 
         if(isDebtValid) {
@@ -514,7 +498,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
             } else {
                 ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_transaction_create_fail));
             }
-        }
+        } // End if(isDebtValid)
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End createTransaction
@@ -561,31 +545,24 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
             if(mCategory.getDebtType() == Category.EnumDebt.LESS) { // Expense -> Repayment
                 List<Debt> debts = mDbHelper.getAllDebts();
 
-                Double borrowed = 0.0, repayment = 0.0, lend = 0.0, debtCollect = 0.0;
+                Double borrowed = 0.0, repayment = 0.0;
                 for(Debt debt : debts) {
-                    if(debt.getPeople().equals(tvPeople.getText().toString())) {
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            repayment += debt.getAmount();
-                        }
+                    if(debt.getTransactionId() == mTransaction.getId()) {
+                        continue;
+                    }
+                    if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
+                        repayment += debt.getAmount();
+                    }
 
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            lend += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            debtCollect += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            borrowed += debt.getAmount();
-                        }
+                    if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
+                        borrowed += debt.getAmount();
                     }
                 }
 
-                if(repayment + lend + amount > borrowed + debtCollect) {
+                if(repayment + amount > borrowed) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
-                } // End Check DEBT OK
+                }
 
             } // End DebtType() == Category.EnumDebt.LESS
             if(isDebtValid) {

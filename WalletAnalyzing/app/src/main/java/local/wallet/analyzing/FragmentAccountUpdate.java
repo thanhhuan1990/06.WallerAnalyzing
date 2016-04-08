@@ -38,6 +38,7 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
     private Account             mAccount;
     private int                 mAccountId = 0;
     private IAccountCallback    mCallback;
+    private int                 mContainerViewId;
 
     private ClearableEditText   etName;
     private LinearLayout        llType;
@@ -61,6 +62,7 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
         Bundle bundle   = this.getArguments();
         mAccountId      = bundle.getInt("AccountID", 0);
         mCallback       = (IAccountCallback) bundle.getSerializable("Callback");
+        mContainerViewId    = bundle.getInt("ContainerViewId");
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -127,7 +129,7 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
                 bundle.putSerializable("Callback", FragmentAccountUpdate.this);
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentAccountTypeSelect.Tag)
+                        .add(mContainerViewId, nextFrag, FragmentAccountTypeSelect.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -141,7 +143,7 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
                 bundle.putInt("Currency", mAccount.getCurrencyId());
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentCurrencySelect.Tag)
+                        .add(mContainerViewId, nextFrag, FragmentCurrencySelect.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -158,7 +160,7 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
                 bundle.putSerializable("Callback", FragmentAccountUpdate.this);
                 nextFrag.setArguments(bundle);
                 FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentDescription.Tag)
+                        .add(mContainerViewId, nextFrag, FragmentDescription.Tag)
                         .addToBackStack(null)
                         .commit();
             }
@@ -175,10 +177,9 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
                     return;
                 }
 
-                String accountName = etName.getText().toString();
-                Double initialBalance =  etInitialBalance.getText().toString().equals("") ? 0 : Double.parseDouble(etInitialBalance.getText().toString().replaceAll(",", ""));
-                String description = tvDescription.getText().toString();
-
+                String accountName      = etName.getText().toString();
+                Double initialBalance   =  etInitialBalance.getText().toString().equals("") ? 0 : Double.parseDouble(etInitialBalance.getText().toString().replaceAll(",", ""));
+                String description      = tvDescription.getText().toString();
 
                 // Update account in DB
                 mDbHelper.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));

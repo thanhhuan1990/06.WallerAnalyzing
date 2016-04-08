@@ -33,6 +33,7 @@ public class FragmentAccountTransactions extends Fragment {
     public static final String Tag = "AccountTransactions";
 
     private int                 mAccountId;
+    private int                 mContainerViewId;
 
     private DatabaseHelper      mDbHelper;
     private List<Transaction>   arTransactions = new ArrayList<Transaction>();
@@ -52,6 +53,7 @@ public class FragmentAccountTransactions extends Fragment {
         /* Get data from Bundle */
         Bundle bundle                   = this.getArguments();
         mAccountId                      = bundle.getInt("AccountID", 0);
+        mContainerViewId                = bundle.getInt("ContainerViewId");
 
         LogUtils.trace(Tag, "mAccountId     = " + mAccountId);
 
@@ -80,16 +82,13 @@ public class FragmentAccountTransactions extends Fragment {
         tvInitBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccount(mAccountId).getInitBalance()));
 
         tvBalance           = (TextView) getView().findViewById(R.id.tvAccountRemain);
+        tvBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccountRemain(mAccountId)));
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_ACCOUNT) {
-            return;
-        }
-
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -120,19 +119,17 @@ public class FragmentAccountTransactions extends Fragment {
     private void updateListTransactions() {
         LogUtils.logEnterFunction(Tag, null);
 
-        Account account = mDbHelper.getAccount(mAccountId);
-        tvBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccountRemain(mAccountId)));
-
         arTransactions = mDbHelper.getTransactionsByAccount(mAccountId);
         Collections.sort(arTransactions);
 
         LinearLayout    llTransactions = (LinearLayout) getView().findViewById(R.id.llTransactions);
         llTransactions.removeAllViews();
 
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+
         int position = 0;
         for(final Transaction tran : arTransactions) {
-
-            LayoutInflater mInflater = LayoutInflater.from(getActivity());
+            LogUtils.trace(Tag, tran.toString());
             View mTransactionView = mInflater.inflate(R.layout.listview_item_account_transaction, null);
             TextView tvCategory     = (TextView) mTransactionView.findViewById(R.id.tvCategory);
             TextView tvDescription  = (TextView) mTransactionView.findViewById(R.id.tvDescription);
@@ -262,21 +259,14 @@ public class FragmentAccountTransactions extends Fragment {
             mTransactionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    /*FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("Transaction", tran);
-                    bundle.putInt("ContainerViewId", R.id.layout_account);
-                    nextFrag.setArguments(bundle);
-                    FragmentAccountTransactions.this.getFragmentManager().beginTransaction()
-                            .add(R.id.layout_account, nextFrag, "FragmentTransactionUpdate")
-                            .addToBackStack(null)
-                            .commit();*/
+                    LogUtils.warn(Tag, "AccountTransaction -> TransactionCUD");
+
                     FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("Transaction", tran);
                     nextFrag.setArguments(bundle);
                     FragmentAccountTransactions.this.getFragmentManager().beginTransaction()
-                            .add(R.id.layout_account, nextFrag, FragmentTransactionCUD.Tag)
+                            .add(mContainerViewId, nextFrag, FragmentTransactionCUD.Tag)
                             .addToBackStack(null)
                             .commit();
                 }
@@ -284,5 +274,7 @@ public class FragmentAccountTransactions extends Fragment {
             llTransactions.addView(mTransactionView);
             position++;
         } // End loop arTransactions
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     } // End updateTransactionList
 }

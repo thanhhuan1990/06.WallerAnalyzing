@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_account"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main_frame"
+    android:clickable="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="?attr/actionBarSize">
+
+    <ListView
+        android:id="@+id/lvAccount"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@color/listview_divider"
+        android:dividerHeight="0.5dp"
+        android:scrollbars="none" />
+
+    <!-- Here is the view to show if the list is empty -->
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="No items."
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="visible" />
+</RelativeLayout>

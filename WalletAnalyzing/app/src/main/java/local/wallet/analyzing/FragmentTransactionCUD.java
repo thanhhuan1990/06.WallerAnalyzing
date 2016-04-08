@@ -76,6 +76,12 @@ public class FragmentTransactionCUD extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
 
+        if(mTransaction.getId() == 0 && ((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
         if(mActionBar == null) {
             initActionBar();
         }
@@ -120,6 +126,49 @@ public class FragmentTransactionCUD extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+//        if(mTransaction.getId() == 0 && ((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
+//            LogUtils.error(Tag, "Wrong Tab. Return");
+//            LogUtils.logLeaveFunction(Tag, null, null);
+//            return;
+//        }
+
+        if(mActionBar == null) {
+            initActionBar();
+        }
+
+        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
+
+//        if((getFragmentManager().findFragmentByTag(FragmentTransactionCUDExpense.Tag) != null &&
+//                getFragmentManager().findFragmentByTag(FragmentTransactionCUDExpense.Tag).isVisible()) ||
+//                (getFragmentManager().findFragmentByTag(FragmentTransactionCUDIncome.Tag) != null &&
+//                        getFragmentManager().findFragmentByTag(FragmentTransactionCUDIncome.Tag).isVisible()) ||
+//                (getFragmentManager().findFragmentByTag(FragmentTransactionCUDTransfer.Tag) != null &&
+//                        getFragmentManager().findFragmentByTag(FragmentTransactionCUDTransfer.Tag).isVisible()) ||
+//                (getFragmentManager().findFragmentByTag(FragmentTransactionCUDAdjustment.Tag) != null &&
+//                        getFragmentManager().findFragmentByTag(FragmentTransactionCUDAdjustment.Tag).isVisible())) {
+//        } else {
+//            switch (TransactionEnum.getTransactionEnum(mTransaction.getTransactionType())) {
+//                case Expense:
+//                    spTransactionType.setSelection(0);
+//                    showExpense();
+//                    break;
+//                case Income:
+//                    spTransactionType.setSelection(1);
+//                    showIncome();
+//                    break;
+//                case Transfer:
+//                    spTransactionType.setSelection(2);
+//                    showTransfer();
+//                    break;
+//                case Adjustment:
+//                    spTransactionType.setSelection(3);
+//                    showAdjustment();
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

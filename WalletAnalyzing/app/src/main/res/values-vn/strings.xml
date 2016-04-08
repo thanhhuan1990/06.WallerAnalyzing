@@ -132,8 +132,12 @@
     <string name="title_description">Description</string>
     <string name="title_payee">Chi cho ai</string>
     <string name="title_event">Chuyến đi/Sự kiện</string>
+    <string name="title_borrower">Người Vay</string>
+    <string name="title_lender">Người Cho Vay</string>
     <string name="title_report_evi_account">Tài Khoản</string>
     <string name="title_report_evi_time">Thời Gian</string>
+    <string name="title_report_financial_statement_lent">Cho Vay</string>
+    <string name="title_report_financial_statement_Borrow">Nợ Phải Trả</string>
     <string name="title_report_expense_analysis_category">Hạn Mục Thu Chi</string>
 
     <string name="Save">Ghi</string>
@@ -179,6 +183,14 @@
     <string name="report_financial_statement_other">Khác</string>
     <string name="report_financial_statement_money_lent">Cho vay</string>
     <string name="report_financial_statement_money_borrowed">Nợ phải trả</string>
+
+    <!-- 5_REPORT_4_Financial_Statement_Lent_Borrowed_Detail -->
+    <string name="report_lent_borrowed_detail_lent_starting_balance">Tổng cho vay</string>
+    <string name="report_lent_borrowed_detail_lent_collected">Đã thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_remaining">Phải thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_starting_balance">Tổng đi vay</string>
+    <string name="report_lent_borrowed_detail_borrowed_repaid">Đã trả (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_remaining">Phải trả (%d%%)</string>
 
     <!-- 5_REPORT_5_LENT_BORROW -->
     <string name="report_Lent_borrow_lent">Money Lent</string>

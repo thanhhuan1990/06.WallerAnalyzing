@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:paddingBottom="?attr/actionBarSize"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="8dp">
+
+    <org.droidparts.widget.ClearableEditText
+        android:id="@+id/etEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/title_event"
+        android:textColorHint="@color/textcolor_hint"/>
+
+    <ListView
+        android:id="@+id/lvEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/listview_divider"
+        android:dividerHeight="0.2dp"
+        android:scrollbars="none"/>
+
+</LinearLayout>
