@@ -45,7 +45,7 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="0.2dip"
-        android:background="#504f4f"/>
+        android:background="@color/background_divider"/>
 
     <ListView
         android:id="@+id/lvAssets"
@@ -54,56 +54,62 @@
         android:cacheColorHint="@android:color/transparent"
         android:divider="@color/listview_divider"
         android:dividerHeight="0.2dip"
-        android:scrollbars="none"/>
+        android:scrollbars="none"
+        android:visibility="visible"/>
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="0.2dip"
-        android:background="#504f4f"/>
-
-    <!--<LinearLayout
+    <LinearLayout
         android:id="@+id/llLent"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        android:weightSum="20">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:background="@android:color/transparent"
-            android:text="@string/report_financial_statement_money_lent"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/textcolor_title_attribute"
-            android:textStyle="bold"/>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="@color/listview_divider"/>
 
-        <TextView
-            android:id="@+id/tvLent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="13"
-            android:background="@android:color/transparent"
-            android:gravity="right|center_vertical"
-            android:text="10.000.000 đ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
 
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/icon_next"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:background="@android:color/transparent"
+                android:text="@string/report_financial_statement_money_lent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/tvLent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="13"
+                android:background="@android:color/transparent"
+                android:gravity="right|center_vertical"
+                android:text="X.000 đ"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
     </LinearLayout>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="0.2dip"
-        android:background="#504f4f"/>-->
+        android:background="@color/background_divider"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -138,47 +144,53 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="0.2dip"
-        android:background="#504f4f"/>
-
     <LinearLayout
         android:id="@+id/llBorrowed"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="5dp"
-        android:weightSum="20">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:background="@android:color/transparent"
-            android:text="@string/report_financial_statement_money_borrowed"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"/>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="@color/listview_divider"/>
 
-        <TextView
-            android:id="@+id/tvBorrowed"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="11"
-            android:background="@android:color/transparent"
-            android:gravity="right|center_vertical"
-            android:text="10.000.000 đ"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="20">
 
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/icon_next"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:background="@android:color/transparent"
+                android:text="@string/report_financial_statement_money_borrowed"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/tvBorrowed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="11"
+                android:background="@android:color/transparent"
+                android:gravity="right|center_vertical"
+                android:text="10.000.000 đ"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@android:color/black"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next"/>
+        </LinearLayout>
     </LinearLayout>
 
     <View

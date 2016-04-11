@@ -69,27 +69,97 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
 
     private Transaction         mTransaction;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_transaction_cud_transfer, container, false);
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
+
+        mConfigs = new Configurations(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity());
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             mTransaction = (Transaction) bundle.get("Transaction");
 
             LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
+
+            mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
+
+            if(mTransaction.getFromAccountId() != 0) {
+                mFromAccount    = mDbHelper.getAccount(mTransaction.getFromAccountId());
+            } else if(mDbHelper.getAllAccounts().size() > 0){
+                mFromAccount    = mDbHelper.getAllAccounts().get(0);
+            }
+
+            if(mTransaction.getToAccountId() != 0) {
+                mToAccount  = mDbHelper.getAccount(mTransaction.getToAccountId());
+            } else if(mDbHelper.getAllAccounts().size() > 1){
+                mFromAccount    = mDbHelper.getAllAccounts().get(1);
+            }
+
+            mCal            = mTransaction.getTime();
+        } else {
+            ((ActivityMain) getActivity()).showError("Bundle is NULL!");
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        View view           = inflater.inflate(R.layout.layout_fragment_transaction_cud_transfer, container, false);
+
+        llSave              = (LinearLayout) view.findViewById(R.id.llSave);
+        llSave.setOnClickListener(this);
+        llDelete            = (LinearLayout) view.findViewById(R.id.llDelete);
+        llDelete.setOnClickListener(this);
+
+        if (mTransaction.getId() == 0) {
+            llDelete.setVisibility(View.GONE);
+        }
+
+        etAmount            = (ClearableEditText) view.findViewById(R.id.etAmount);
+        etAmount.addTextChangedListener(new CurrencyTextWatcher(etAmount));
+        tvCurrencyIcon      = (TextView) view.findViewById(R.id.tvCurrencyIcon);
+
+        llFromAccount       = (LinearLayout) view.findViewById(R.id.llFromAccount);
+        llFromAccount.setOnClickListener(this);
+        tvFromAccount       = (TextView) view.findViewById(R.id.tvFromAccount);
+
+        llToAccount         = (LinearLayout) view.findViewById(R.id.llToAccount);
+        llToAccount.setOnClickListener(this);
+        tvToAccount         = (TextView) view.findViewById(R.id.tvToAccount);
+
+        llDescription       = (LinearLayout) view.findViewById(R.id.llDescription);
+        llDescription.setOnClickListener(this);
+        tvDescription       = (TextView) view.findViewById(R.id.tvDescription);
+
+        llDate              = (LinearLayout) view.findViewById(R.id.llDate);
+        llDate.setOnClickListener(this);
+        tvDate              = (TextView) view.findViewById(R.id.tvDate);
+
+        etFee               = (ClearableEditText) view.findViewById(R.id.etFee);
+        etFee.addTextChangedListener(new CurrencyTextWatcher(etFee));
+        tvFeeCurrencyIcon   = (TextView) view.findViewById(R.id.tvFeeCurrencyIcon);
+
+        llCategory          = (LinearLayout) view.findViewById(R.id.llCategory);
+        llCategory.setOnClickListener(this);
+        tvCategory          = (TextView) view.findViewById(R.id.tvCategory);
+
+        // Setup View by Data from Transaction
+        etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
+        tvCurrencyIcon.setText(Currency.getDefaultCurrencyIcon(getContext()));
+        tvFromAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
+        tvToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
+        tvDescription.setText(mTransaction.getDescription());
+        tvDate.setText(getDateString(mCal));
+        tvCategory.setText(mCategory != null ? mCategory.getName() : "");
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return view;
     }
 
     @Override
@@ -97,25 +167,6 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
-
-        mConfigs = new Configurations(getActivity());
-        mDbHelper = new DatabaseHelper(getActivity());
-
-        llSave = (LinearLayout) getView().findViewById(R.id.llSave);
-        llSave.setOnClickListener(this);
-        llDelete = (LinearLayout) getView().findViewById(R.id.llDelete);
-        llDelete.setOnClickListener(this);
-
-        if (mTransaction.getId() == 0) {
-            llDelete.setVisibility(View.GONE);
-        }
-
-        mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
-        mFromAccount    = mTransaction.getFromAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getFromAccountId()) : null;
-        mToAccount      = mTransaction.getToAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getToAccountId()) : null;
-        mCal            = mTransaction.getTime();
-
-        initView();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -205,51 +256,6 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         }
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
-    }
-
-    /**
-     * Todo: Init view
-     */
-    private void initView() {
-        LogUtils.logEnterFunction(Tag, null);
-
-        etAmount            = (ClearableEditText) getView().findViewById(R.id.etAmount);
-        etAmount.addTextChangedListener(new CurrencyTextWatcher(etAmount));
-        tvCurrencyIcon      = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
-
-        llFromAccount       = (LinearLayout) getView().findViewById(R.id.llFromAccount);
-        llFromAccount.setOnClickListener(this);
-        tvFromAccount       = (TextView) getView().findViewById(R.id.tvFromAccount);
-
-        llToAccount         = (LinearLayout) getView().findViewById(R.id.llToAccount);
-        llToAccount.setOnClickListener(this);
-        tvToAccount         = (TextView) getView().findViewById(R.id.tvToAccount);
-
-        llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
-        llDescription.setOnClickListener(this);
-        tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
-
-        llDate = (LinearLayout) getView().findViewById(R.id.llDate);
-        llDate.setOnClickListener(this);
-        tvDate = (TextView) getView().findViewById(R.id.tvDate);
-
-        etFee               = (ClearableEditText) getView().findViewById(R.id.etFee);
-        etFee.addTextChangedListener(new CurrencyTextWatcher(etFee));
-        tvFeeCurrencyIcon   = (TextView) getView().findViewById(R.id.tvFeeCurrencyIcon);
-
-        llCategory          = (LinearLayout) getView().findViewById(R.id.llCategory);
-        llCategory.setOnClickListener(this);
-        tvCategory          = (TextView) getView().findViewById(R.id.tvCategory);
-
-        etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mConfigs.getInt(Configurations.Key.Currency)));
-        tvFromAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
-        tvToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
-        tvDescription.setText(mTransaction.getDescription());
-        tvDate.setText(getDateString(mCal));
-        tvCategory.setText(mCategory != null ? mCategory.getName() : "");
-
-        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -515,7 +521,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         } else if ((cal.get(Calendar.DAY_OF_YEAR) - 1) == current.get(Calendar.DAY_OF_YEAR)) {
             date = getResources().getString(R.string.content_yesterday) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         } else if ((cal.get(Calendar.DAY_OF_YEAR) - 2) == current.get(Calendar.DAY_OF_YEAR)
-                && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
+                && getResources().getConfiguration().locale.equals(new Locale("vn"))) {
             date = getResources().getString(R.string.content_before_yesterday) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         } else {
             date = String.format("%02d-%02d-%02d %02d:%02d", mCal.get(Calendar.DAY_OF_MONTH), mCal.get(Calendar.MONTH) + 1, mCal.get(Calendar.YEAR), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));

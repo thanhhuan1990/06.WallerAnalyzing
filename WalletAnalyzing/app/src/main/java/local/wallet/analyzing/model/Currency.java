@@ -1,10 +1,13 @@
 package local.wallet.analyzing.model;
 
+import android.app.usage.ConfigurationStats;
 import android.content.Context;
+import android.content.res.Configuration;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import local.wallet.analyzing.Configurations;
 import local.wallet.analyzing.R;
 
 /**
@@ -49,6 +52,27 @@ public class Currency {
         return currency;
     }
 
+    public static int getDefaultCurrencyIcon(Context context) {
+        int strResource = -1;
+        Configurations mConfigs        = new Configurations(context);
+        CurrencyList currency = getCurrencyById(mConfigs.getInt(Configurations.Key.Currency));
+        switch (currency) {
+            case VND:
+                strResource = R.string.currency_icon_vietnam;
+                break;
+            case USD:
+                strResource = R.string.currency_icon_usd;
+                break;
+            case JPY:
+                strResource = R.string.currency_icon_jpy;
+                break;
+            default:
+                strResource = R.string.currency_icon_vietnam;
+                break;
+        }
+
+        return strResource;
+    }
     public static int getCurrencyIcon(int currencyId) {
         int strResource = -1;
 

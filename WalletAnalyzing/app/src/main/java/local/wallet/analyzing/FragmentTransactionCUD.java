@@ -76,6 +76,12 @@ public class FragmentTransactionCUD extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
 
+        if(mTransaction.getId() == 0 && ((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
         if(mActionBar == null) {
             initActionBar();
         }
@@ -120,6 +126,12 @@ public class FragmentTransactionCUD extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mActionBar == null) {
+            initActionBar();
+        }
+
+        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

@@ -112,7 +112,7 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="@color/background_divider"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -155,7 +155,7 @@
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="0.2dip"
-                    android:background="#504f4f"/>
+                    android:background="@color/background_divider"/>
 
                 <LinearLayout
                     android:id="@+id/llDescription"
@@ -240,47 +240,54 @@
                         android:src="@drawable/icon_next"/>
                 </LinearLayout>
 
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="0.2dip"
-                    android:background="#504f4f"/>
-
                 <LinearLayout
                     android:id="@+id/llDate"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_margin="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingBottom="5dp"
-                    android:paddingTop="5dp"
-                    android:weightSum="20">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="6"
-                        android:background="@android:color/transparent"
-                        android:text="@string/new_transaction_date"
-                        android:textColor="@color/textcolor_title_attribute"
-                        android:textStyle="bold"/>
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.2dip"
+                        android:background="@color/background_divider"/>
 
-                    <TextView
-                        android:id="@+id/tvDate"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="13"
-                        android:background="@android:color/transparent"
-                        android:gravity="right|center_vertical"
-                        android:textColor="@android:color/black"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_margin="5dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:weightSum="20">
 
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="20dp"
-                        android:layout_weight="1"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/icon_next"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="6"
+                            android:background="@android:color/transparent"
+                            android:text="@string/new_transaction_date"
+                            android:textColor="@color/textcolor_title_attribute"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvDate"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="13"
+                            android:background="@android:color/transparent"
+                            android:gravity="right|center_vertical"
+                            android:textColor="@android:color/black"/>
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_weight="1"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/icon_next"/>
+                    </LinearLayout>
                 </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/llPayee"
@@ -291,7 +298,7 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="@color/background_divider"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -341,7 +348,7 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="0.2dip"
-                        android:background="#504f4f"/>
+                        android:background="@color/background_divider"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"

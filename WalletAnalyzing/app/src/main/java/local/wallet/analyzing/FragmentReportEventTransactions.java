@@ -34,7 +34,6 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
 
-    private int             mEventId;
     private Event           mEvent;
 
     private ImageView       ivExpandExpense;
@@ -45,59 +44,15 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     private LinearLayout    llIncomes;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
-        Bundle bundle = this.getArguments();
-        mEventId      = bundle.getInt("EventID", 0);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onCreate
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_report_event_transactions, container, false);
-    } // End onCreateView
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onActivityCreated(savedInstanceState);
-
-        mConfigs        = new Configurations(getContext());
-        mDbHelper       = new DatabaseHelper(getActivity());
-
-        ivExpandExpense = (ImageView) getView().findViewById(R.id.ivExpandExpense);
-        ivExpandExpense.setOnClickListener(this);
-        tvTotalExpense  = (TextView) getView().findViewById(R.id.tvTotalExpense);
-        llExpenses      = (LinearLayout) getView().findViewById(R.id.llExpenses);
-        ivExpandIncome  = (ImageView) getView().findViewById(R.id.ivExpandIncome);
-        ivExpandIncome.setOnClickListener(this);
-        tvTotalIncome   = (TextView) getView().findViewById(R.id.tvTotalIncome);
-        llIncomes       = (LinearLayout) getView().findViewById(R.id.llIncomes);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onActivityCreated
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            return;
-        }
-
-        mEvent = mDbHelper.getEvent(mEventId);
-        if(mEvent == null) {
-            getFragmentManager().popBackStackImmediate();
-            return;
-        }
-
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            LogUtils.warn(Tag, "Wrong Tab, RETURN");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_update_export, null);
@@ -117,12 +72,61 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     } // End onCreateOptionsMenu
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        mConfigs        = new Configurations(getContext());
+        mDbHelper       = new DatabaseHelper(getActivity());
+
+        Bundle bundle = this.getArguments();
+        if(bundle != null) {
+            mEvent = mDbHelper.getEvent(bundle.getInt("EventID", 0));
+
+            if(mEvent == null) {
+                LogUtils.warn(Tag, "Event is null, RETURN");
+                LogUtils.logLeaveFunction(Tag, null, null);
+                getFragmentManager().popBackStackImmediate();
+                return;
+            }
+
+            LogUtils.trace(Tag, "Event: " + mEvent.toString());
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreate
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+
+        View view   = inflater.inflate(R.layout.layout_fragment_report_event_transactions, container, false);
+
+        ivExpandExpense = (ImageView) view.findViewById(R.id.ivExpandExpense);
+        ivExpandExpense.setOnClickListener(this);
+        tvTotalExpense  = (TextView) view.findViewById(R.id.tvTotalExpense);
+        llExpenses      = (LinearLayout) view.findViewById(R.id.llExpenses);
+        ivExpandIncome  = (ImageView) view.findViewById(R.id.ivExpandIncome);
+        ivExpandIncome.setOnClickListener(this);
+        tvTotalIncome   = (TextView) view.findViewById(R.id.tvTotalIncome);
+        llIncomes       = (LinearLayout) view.findViewById(R.id.llIncomes);
+
+        // Todo: Update view by data from mDbHelper
+        updateListTransactions();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return view;
+    } // End onCreateView
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivUpdate:
                 FragmentReportEventUpdate nextFrag = new FragmentReportEventUpdate();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("EventID", mEventId);
+                bundle.putSerializable("EventID", mEvent.getId());
                 nextFrag.setArguments(bundle);
                 FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
                         .replace(R.id.ll_report, nextFrag, FragmentReportEventUpdate.Tag)
@@ -222,7 +226,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
         Double expense = 0.0, income = 0.0;
 
-        List<Transaction> arTransactions = mDbHelper.getTransactionsByEvent(mEventId);
+        List<Transaction> arTransactions = mDbHelper.getTransactionsByEvent(mEvent.getId());
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         for(final Transaction transaction : arTransactions) {

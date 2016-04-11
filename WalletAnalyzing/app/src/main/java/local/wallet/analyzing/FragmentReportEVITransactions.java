@@ -634,6 +634,7 @@ public class FragmentReportEVITransactions extends Fragment {
                 transactionView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        LogUtils.trace(Tag, "ReportEVITransactions -> TransactionCUD");
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("Transaction", transaction);

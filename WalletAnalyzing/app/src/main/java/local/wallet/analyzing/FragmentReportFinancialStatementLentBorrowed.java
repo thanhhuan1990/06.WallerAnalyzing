@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -29,14 +30,15 @@ import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
- * Created by huynh.thanh.huan on 3/28/2016.
+ * Created by huynh.thanh.huan on 04/04/2016.
  */
-public class FragmentReportLentBorrowed extends Fragment {
-    public static final String Tag = "ReportLentBorrowed";
+public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
+    public static final String Tag = "ReportFinancialStatementLentBorrowed";
 
     private DatabaseHelper      mDbHelper;
     private Configurations      mConfigs;
 
+    private boolean             isLent  = true;
     private TextView            tvBorrowing;
     private ListView            lvBorrowing;
     private TextView            tvLending;
@@ -49,42 +51,83 @@ public class FragmentReportLentBorrowed extends Fragment {
     private List<Map.Entry<String, Double>> arLent = new ArrayList<Map.Entry<String, Double>>();
     private List<Map.Entry<String, Double>> arBorrowed = new ArrayList<Map.Entry<String, Double>>();
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            LogUtils.warn(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mActionBar             = mInflater.inflate(R.layout.action_bar_only_title, null);
+        if(isLent) {
+            ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.title_report_financial_statement_lent));
+        } else {
+            ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.title_report_financial_statement_Borrow));
+        }
+
+        ((ActivityMain) getActivity()).updateActionBar(mActionBar);
+
+        initDataSource();
+
+        if(isLent) {
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            mLendingAdapter.notifyDataSetChanged();
+        } else {
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            mBorrowingAdapter.notifyDataSetChanged();
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        Bundle bundle   = this.getArguments();
+        isLent          = bundle.getBoolean("Lent");
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
 
-        View view           = inflater.inflate(R.layout.layout_fragment_report_lent_borrow, container, false);
-        tvLending           = (TextView) view.findViewById(R.id.tvLending);
-        lvLending           = (ListView) view.findViewById(R.id.lvLending);
-        mLendingAdapter     = new LentBorrowedAdapter(getActivity(), arLent, true);
-        lvLending.setAdapter(mLendingAdapter);
-
-        tvBorrowing          = (TextView) view.findViewById(R.id.tvBorrowing);
-        lvBorrowing         = (ListView) view.findViewById(R.id.lvBorrowing);
-        mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), arBorrowed, false);
-        lvBorrowing.setAdapter(mBorrowingAdapter);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onActivityCreated(savedInstanceState);
+        View view = inflater.inflate(R.layout.layout_fragment_report_financial_statement_lent_borrow, container, false);
 
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
-        initDataSource();
+        if(isLent) {
+            tvLending           = (TextView) view.findViewById(R.id.tvLending);
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            lvLending           = (ListView) view.findViewById(R.id.lvLending);
+            mLendingAdapter     = new LentBorrowedAdapter(getActivity(), arLent);
+            lvLending.setAdapter(mLendingAdapter);
 
-        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Math.abs(borrowing)));
-        mLendingAdapter.notifyDataSetChanged();
-        mBorrowingAdapter.notifyDataSetChanged();
+            view.findViewById(R.id.llBorrowed).setVisibility(View.GONE);
+
+        } else {
+            tvBorrowing         = (TextView) view.findViewById(R.id.tvBorrowing);
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            lvBorrowing         = (ListView) view.findViewById(R.id.lvBorrowing);
+            mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), arBorrowed);
+            lvBorrowing.setAdapter(mBorrowingAdapter);
+
+            view.findViewById(R.id.llLent).setVisibility(View.GONE);
+        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
+        return view;
     }
 
     @Override
@@ -94,31 +137,13 @@ public class FragmentReportLentBorrowed extends Fragment {
 
         initDataSource();
 
-        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Math.abs(borrowing)));
-        mLendingAdapter.notifyDataSetChanged();
-        mBorrowingAdapter.notifyDataSetChanged();
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.trace(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
+        if(isLent) {
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            mLendingAdapter.notifyDataSetChanged();
+        } else {
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            mBorrowingAdapter.notifyDataSetChanged();
         }
-
-        initDataSource();
-
-        tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-        tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Math.abs(borrowing)));
-        mLendingAdapter.notifyDataSetChanged();
-        mBorrowingAdapter.notifyDataSetChanged();
-
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -205,10 +230,8 @@ public class FragmentReportLentBorrowed extends Fragment {
             Button          btnRepay;
         }
 
-        private boolean isLent = false;
-        public LentBorrowedAdapter(Context context, List<Map.Entry<String, Double>> objects, boolean isLent) {
+        public LentBorrowedAdapter(Context context, List<Map.Entry<String, Double>> objects) {
             super(context, R.layout.listview_item_lent_borrowed, objects);
-            this.isLent = isLent;
         }
 
         @Override
@@ -230,6 +253,8 @@ public class FragmentReportLentBorrowed extends Fragment {
 
             final Map.Entry<String, Double> entry = (Map.Entry<String, Double>) this.getItem(position);
 
+            viewHolder.tvPeople.setText(entry.getKey());
+
             viewHolder.llMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -239,15 +264,37 @@ public class FragmentReportLentBorrowed extends Fragment {
                     bundle.putString("People", entry.getKey());
                     bundle.putBoolean("Lent", isLent);
                     nextFrag.setArguments(bundle);
-                    FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
+                    FragmentReportFinancialStatementLentBorrowed.this.getFragmentManager().beginTransaction()
                             .add(R.id.ll_report, nextFrag, FragmentReportLentBorrowedDetail.Tag)
                             .addToBackStack(null)
                             .commit();
                 }
             });
-            viewHolder.tvPeople.setText(entry.getKey());
 
-            if (isLent) {
+            if (entry.getValue() < 0) {
+                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue() * -1));
+                viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_repay));
+                viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        Transaction transaction = new Transaction();
+                        transaction.setAmount(entry.getValue() * -1);
+                        transaction.setCategoryId(mDbHelper.getAllCategories(true, Category.EnumDebt.LESS).get(0).getId());
+                        transaction.setPayee(entry.getKey());
+                        transaction.setTransactionType(Transaction.TransactionEnum.Expense.getValue());
+
+                        FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Transaction", transaction);
+                        nextFrag.setArguments(bundle);
+                        FragmentReportFinancialStatementLentBorrowed.this.getFragmentManager().beginTransaction()
+                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+            } else if(entry.getValue() > 0) {
                 viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
                 viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_collect));
                 viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
@@ -264,30 +311,7 @@ public class FragmentReportLentBorrowed extends Fragment {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                });
-            } else {
-                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
-                viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_repay));
-                viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        Transaction transaction = new Transaction();
-                        transaction.setAmount(entry.getValue());
-                        transaction.setCategoryId(mDbHelper.getAllCategories(true, Category.EnumDebt.LESS).get(0).getId());
-                        transaction.setPayee(entry.getKey());
-                        transaction.setTransactionType(Transaction.TransactionEnum.Expense.getValue());
-
-                        FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("Transaction", transaction);
-                        nextFrag.setArguments(bundle);
-                        FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
+                        FragmentReportFinancialStatementLentBorrowed.this.getFragmentManager().beginTransaction()
                                 .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
                                 .addToBackStack(null)
                                 .commit();

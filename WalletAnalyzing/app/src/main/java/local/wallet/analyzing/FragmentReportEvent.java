@@ -87,10 +87,11 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
         if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
 
         arEvents.clear();
         List<Event> arTmp = isRunning ? mDbHelper.getRunningEvents() : mDbHelper.getFinishedEvents();
@@ -100,7 +101,6 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
         adapter.notifyDataSetChanged();
 
         LogUtils.logLeaveFunction(Tag, null, null);
-        super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

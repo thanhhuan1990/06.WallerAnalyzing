@@ -12,7 +12,7 @@ import android.util.Log;
 
 import local.wallet.analyzing.model.Currency;
 
-class Configurations {
+public class Configurations {
 
 	private static final String Tag = "Configurations";
 	private static final String PreferencesFile = "wallet_analyzing_preferences";
@@ -33,7 +33,7 @@ class Configurations {
 
 	private SharedPreferences mPreferences;
 
-	Configurations(Context context) {
+	public Configurations(Context context) {
 
 		InputStream fis = null;
 		try {
@@ -117,7 +117,7 @@ class Configurations {
 		return value;
 	}
 
-	synchronized int getInt(Key key) {
+	synchronized public int getInt(Key key) {
 		final int value = mPreferences.getInt(key.name(), 0);
 		trace("getInt(" + key + ", " + value + ")");
 		return value;

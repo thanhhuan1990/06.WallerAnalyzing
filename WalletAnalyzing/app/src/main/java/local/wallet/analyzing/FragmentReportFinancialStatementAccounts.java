@@ -5,38 +5,36 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.model.Account;
+import local.wallet.analyzing.model.Account.IAccountCallback;
 import local.wallet.analyzing.model.AccountType;
-import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
-import local.wallet.analyzing.model.Debt;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
  * Created by huynh.thanh.huan on 3/31/2016.
  */
-public class FragmentReportFinancialStatementAccounts extends Fragment implements View.OnClickListener, Account.IAccountCallback {
+public class FragmentReportFinancialStatementAccounts extends Fragment implements View.OnClickListener, IAccountCallback {
     public static final String Tag = "ReportFinancialStatementAccounts";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
 
-    private int             mAccountTypeId;
+    private AccountType     mAccount;
     private ListView        lvAccount;
     private AccountAdapter  accAdapter;
     private List<Account>   listAccount     = new ArrayList<Account>();
@@ -47,10 +45,16 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         Bundle bundle = this.getArguments();
         if(bundle != null) {
-            mAccountTypeId = bundle.getInt("AccountType", 0);
+            int accountTypeId = bundle.getInt("AccountType", 0);
+            for (AccountType accType : AccountType.Accounts) {
+                if(accountTypeId == accType.getId()) {
+                    mAccount = accType;
+                }
+            }
         }
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -59,36 +63,32 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_list_account, container, false);
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onActivityCreated(savedInstanceState);
+        mConfigs    = new Configurations(getContext());
+        mDbHelper   = new DatabaseHelper(getActivity());
 
-        mConfigs        = new Configurations(getContext());
-        mDbHelper       = new DatabaseHelper(getActivity());
+        View view = inflater.inflate(R.layout.layout_fragment_list_account, container, false);
+        lvAccount   = (ListView) view.findViewById(R.id.lvAccount);
+        tvEmpty     = (TextView) view.findViewById(R.id.tvEmpty);
 
-        lvAccount   = (ListView) getView().findViewById(R.id.lvAccount);
-        tvEmpty     = (TextView) getView().findViewById(R.id.tvEmpty);
-
-        listAccount = mDbHelper.getAllAccountsByTypeId(mAccountTypeId);
+        listAccount = mDbHelper.getAllAccountsByTypeId(mAccount.getId());
         accAdapter  = new AccountAdapter(getActivity(), listAccount);
         lvAccount.setAdapter(accAdapter);
 
         lvAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
-                // Go to list of transaction related with this Account
+                LogUtils.info(Tag, "ReportFinancialStatementAccounts ----------> AccountTransactions");
+
                 FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
                 Bundle bundle = new Bundle();
                 bundle.putInt("AccountID", accAdapter.getItem(position).getId());
+                bundle.putInt("ContainerViewId", R.id.ll_report);
                 nextFrag.setArguments(bundle);
                 FragmentReportFinancialStatementAccounts.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag)
+                        .add(R.id.ll_report, nextFrag, FragmentAccountTransactions.Tag)
                         .addToBackStack(null)
                         .commit();
 
@@ -96,9 +96,35 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
         });
 
         if (listAccount.size() > 0) {
-            tvEmpty = (TextView) getView().findViewById(R.id.tvEmpty);
+            tvEmpty = (TextView) view.findViewById(R.id.tvEmpty);
             tvEmpty.setVisibility(View.GONE);
         }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View actionBar              = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView    tvTitle         = (TextView) actionBar.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(mAccount.getName()));
+
+        ((ActivityMain) getActivity()).updateActionBar(actionBar);
+
+        // Update List Account
+        this.onListAccountUpdated();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -114,6 +140,21 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
     @Override
     public void onListAccountUpdated() {
         LogUtils.logEnterFunction(Tag, null);
+        List<Account> arTemp = mDbHelper.getAllAccountsByTypeId(mAccount.getId());
+        listAccount.clear();
+
+        for(Account acc : arTemp) {
+            listAccount.add(acc);
+        }
+
+        accAdapter.notifyDataSetChanged();
+
+        if (listAccount.size() > 0) {
+            tvEmpty.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.VISIBLE);
+        }
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -157,12 +198,12 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
             ViewHolder viewHolder; // view lookup cache stored in tag
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(R.layout.listview_item_account, parent, false);
-                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.ivIcon);
-                viewHolder.tvAccountName = (TextView) convertView.findViewById(R.id.tvAccount);
-                viewHolder.tvRemain = (TextView) convertView.findViewById(R.id.tvRemain);
-                viewHolder.ivEdit = (ImageView) convertView.findViewById(R.id.ivEdit);
+                LayoutInflater inflater     = LayoutInflater.from(getContext());
+                convertView                 = inflater.inflate(R.layout.listview_item_account, parent, false);
+                viewHolder.ivIcon           = (ImageView) convertView.findViewById(R.id.ivIcon);
+                viewHolder.tvAccountName    = (TextView) convertView.findViewById(R.id.tvAccount);
+                viewHolder.tvRemain         = (TextView) convertView.findViewById(R.id.tvRemain);
+                viewHolder.ivEdit           = (ImageView) convertView.findViewById(R.id.ivEdit);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -183,9 +224,10 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
                     Bundle bundle = new Bundle();
                     bundle.putInt("AccountID", listAccount.get(position).getId());
                     bundle.putSerializable("Callback", FragmentReportFinancialStatementAccounts.this);
+                    bundle.putInt("ContainerViewId", R.id.ll_report);
                     nextFrag.setArguments(bundle);
                     FragmentReportFinancialStatementAccounts.this.getFragmentManager().beginTransaction()
-                            .add(R.id.layout_account, nextFrag, FragmentAccountUpdate.Tag)
+                            .add(R.id.ll_report, nextFrag, FragmentAccountUpdate.Tag)
                             .addToBackStack(null)
                             .commit();
                 }

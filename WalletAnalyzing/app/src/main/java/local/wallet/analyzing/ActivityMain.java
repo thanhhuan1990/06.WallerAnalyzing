@@ -145,6 +145,13 @@ public class ActivityMain extends AppCompatActivity {
                         case TAB_POSITION_LIST_BUDGET:
                             break;
                         case TAB_POSITION_REPORTS:
+                            if(backStackEntryCount == 0) {
+                                FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
+                                fragment.onResume();
+                            } else {
+                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
+                                fragment.onResume();
+                            }
                             break;
                         case TAB_POSITION_UTILITIES:
                             break;
@@ -205,28 +212,21 @@ public class ActivityMain extends AppCompatActivity {
         android.support.v4.app.FragmentManager.OnBackStackChangedListener result = new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
             public void onBackStackChanged() {
                 android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-                if (manager != null)
-                {
+                if (manager != null) {
                     int backStackEntryCount = manager.getBackStackEntryCount();
-
                     int index = getCurrentVisibleItem();
+                    LogUtils.info(TAG, "Tab " + index + " backStack: " + backStackEntryCount);
                     switch (index) {
                         case TAB_POSITION_TRANSACTIONS:
                             if(backStackEntryCount == 0) {
                                 FragmentListTransaction listTransaction = (FragmentListTransaction)adapter.getRegisteredFragment(index);
                                 listTransaction.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
                             }
                             break;
                         case TAB_POSITION_TRANSACTION_CREATE:
                             if(backStackEntryCount == 0) {
                                 FragmentTransactionCUD transactionCreate = (FragmentTransactionCUD)adapter.getRegisteredFragment(index);
                                 transactionCreate.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
                             }
                             break;
                         case TAB_POSITION_LIST_ACCOUNT:
@@ -234,12 +234,11 @@ public class ActivityMain extends AppCompatActivity {
                         case TAB_POSITION_LIST_BUDGET:
                             break;
                         case TAB_POSITION_REPORTS:
-                            if(backStackEntryCount == 0) {
+                            if(backStackEntryCount == 1) {
                                 FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
                                 fragment.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
+                            } else if(backStackEntryCount > 1) {
+                                manager.getFragments().get(backStackEntryCount).onResume();
                             }
                             break;
                         case TAB_POSITION_UTILITIES:

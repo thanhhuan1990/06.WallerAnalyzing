@@ -48,7 +48,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
     private DatabaseHelper      mDbHelper;
 
     private Category            mCategory;
-    private Account             mFromAccount;
+    private Account             mAccount;
 
     private ClearableEditText   etAmount;
     private TextView            tvCurrencyIcon;
@@ -75,53 +75,119 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
 
     private Transaction         mTransaction;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_transaction_cud_expense, container, false);
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
 
-        Bundle bundle           = this.getArguments();
+        mConfigs            = new Configurations(getActivity());
+        mDbHelper           = new DatabaseHelper(getActivity());
+
+        Bundle bundle       = this.getArguments();
         if(bundle != null) {
-            mTransaction            = (Transaction)bundle.get("Transaction");
+            mTransaction    = (Transaction)bundle.get("Transaction");
 
             LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
+
+            mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
+
+            if(mTransaction.getFromAccountId() != 0) {
+                mAccount    = mDbHelper.getAccount(mTransaction.getFromAccountId());
+            } else if(mTransaction.getToAccountId() != 0){
+                mAccount    = mDbHelper.getAccount(mTransaction.getToAccountId());
+            } else if(mDbHelper.getAllAccounts().size() > 0){
+                mAccount    = mDbHelper.getAllAccounts().get(0);
+            }
+
+            mCal            = mTransaction.getTime();
+        } else {
+            ((ActivityMain) getActivity()).showError("Bundle is NULL!");
         }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    @Nullable
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
 
-        super.onActivityCreated(savedInstanceState);
-
-        mConfigs    = new Configurations(getActivity());
-        mDbHelper   = new DatabaseHelper(getActivity());
-
-        llSave      = (LinearLayout) getView().findViewById(R.id.llSave);
+        View view       = inflater.inflate(R.layout.layout_fragment_transaction_cud_expense, container, false);
+        llSave          = (LinearLayout) view.findViewById(R.id.llSave);
         llSave.setOnClickListener(this);
-        llDelete    = (LinearLayout) getView().findViewById(R.id.llDelete);
+        llDelete        = (LinearLayout) view.findViewById(R.id.llDelete);
         llDelete.setOnClickListener(this);
 
         if(mTransaction.getId() == 0) {
             llDelete.setVisibility(View.GONE);
         }
 
-        mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
-        mFromAccount    = mTransaction.getFromAccountId() != 0 ? mDbHelper.getAccount(mTransaction.getFromAccountId()) : mDbHelper.getAccount(mTransaction.getToAccountId());
-        mCal            = mTransaction.getTime();
+        etAmount        = (ClearableEditText) view.findViewById(R.id.etAmount);
+        etAmount.addTextChangedListener(new CurrencyTextWatcher(etAmount));
+        tvCurrencyIcon  = (TextView) view.findViewById(R.id.tvCurrencyIcon);
 
-        initView();
+        llCategory      = (LinearLayout) view.findViewById(R.id.llCategory);
+        llCategory.setOnClickListener(this);
+        tvCategory      = (TextView) view.findViewById(R.id.tvCategory);
 
+        llPeople        = (LinearLayout) view.findViewById(R.id.llPeople);
+        llPeople.setOnClickListener(this);
+        tvTitlePeople   = (TextView) view.findViewById(R.id.tvTitlePeople);
+        tvPeople        = (TextView) view.findViewById(R.id.tvPeople);
+
+        llDescription   = (LinearLayout) view.findViewById(R.id.llDescription);
+        llDescription.setOnClickListener(this);
+        tvDescription   = (TextView) view.findViewById(R.id.tvDescription);
+
+        llAccount       = (LinearLayout) view.findViewById(R.id.llAccount);
+        llAccount.setOnClickListener(this);
+        tvAccount       = (TextView) view.findViewById(R.id.tvAccount);
+
+        llDate          = (LinearLayout) view.findViewById(R.id.llDate);
+        llDate.setOnClickListener(this);
+        tvDate          = (TextView) view.findViewById(R.id.tvDate);
+        tvDate.setText(getDateString(mCal));
+
+        llPayee         = (LinearLayout) view.findViewById(R.id.llPayee);
+        llPayee.setOnClickListener(this);
+        tvPayee         = (TextView) view.findViewById(R.id.tvPayee);
+
+        llEvent         = (LinearLayout) view.findViewById(R.id.llEvent);
+        llEvent.setOnClickListener(this);
+        tvEvent         = (TextView) view.findViewById(R.id.tvEvent);
+
+        // This block using for Create Debt's transaction
+        if(mTransaction.getId() == 0 && !mTransaction.getPayee().equals("")) {
+            tvPeople.setText(mTransaction.getPayee());
+            mTransaction.setPayee("");
+        } else {
+            tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
+        }
+        // Setup View by Data from Transaction
+        etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
+        tvCurrencyIcon.setText(Currency.getDefaultCurrencyIcon(getContext()));
+        tvDescription.setText(mTransaction.getDescription());
+        tvAccount.setText(mAccount != null ? mAccount.getName() : "");
+        tvPayee.setText(mTransaction.getPayee());
+        tvEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
+
+        // Show/Hide View follow Category's Type
+        if(mCategory == null) {
+            llPeople.setVisibility(View.GONE);
+            llEvent.setVisibility(View.VISIBLE);
+            llPayee.setVisibility(View.VISIBLE);
+        } else {
+            onCategorySelected(mCategory.getId());
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -142,7 +208,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
                 break;
             case R.id.llAccount:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                startFragmentSelectAccount(TransactionEnum.Expense, mFromAccount != null ? mFromAccount.getId() : 0);
+                startFragmentSelectAccount(TransactionEnum.Expense, mAccount != null ? mAccount.getId() : 0);
                 break;
             case R.id.llDate:
                 ((ActivityMain) getActivity()).hideKeyboard(getActivity());
@@ -221,9 +287,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
     @Override
     public void onDescriptionUpdated(String description) {
         LogUtils.logEnterFunction(Tag, "description = " + description);
-
         tvDescription.setText(description);
-
         LogUtils.logLeaveFunction(Tag, "description = " + description, null);
     }
 
@@ -232,9 +296,9 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
         LogUtils.logEnterFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId);
 
         if(type == TransactionEnum.Expense) {
-            mFromAccount = mDbHelper.getAccount(accountId);
-            tvAccount.setText(mFromAccount.getName());
-            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mFromAccount.getCurrencyId())));
+            mAccount = mDbHelper.getAccount(accountId);
+            tvAccount.setText(mAccount.getName());
+            tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mAccount.getCurrencyId())));
         }
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
@@ -243,111 +307,15 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
     @Override
     public void onPayeeUpdated(String payee) {
         LogUtils.logEnterFunction(Tag, "payee = " + payee);
-
         tvPayee.setText(payee);
-
         LogUtils.logLeaveFunction(Tag, "payee = " + payee, null);
     }
 
     @Override
     public void onEventUpdated(String event) {
         LogUtils.logEnterFunction(Tag, "event = " + event);
-
         tvEvent.setText(event);
-
         LogUtils.logLeaveFunction(Tag, "event = " + event, null);
-    }
-
-    /**
-     * Todo: Init view EXPENSE
-     */
-    private void initView() {
-        LogUtils.logEnterFunction(Tag, null);
-
-        etAmount         = (ClearableEditText) getView().findViewById(R.id.etAmount);
-        etAmount.addTextChangedListener(new CurrencyTextWatcher(etAmount));
-        tvCurrencyIcon   = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mConfigs.getInt(Configurations.Key.Currency)));
-
-        llCategory       = (LinearLayout) getView().findViewById(R.id.llCategory);
-        llCategory.setOnClickListener(this);
-        tvCategory       = (TextView) getView().findViewById(R.id.tvCategory);
-
-        llPeople = (LinearLayout) getView().findViewById(R.id.llPeople);
-        llPeople.setOnClickListener(this);
-        tvTitlePeople = (TextView) getView().findViewById(R.id.tvTitlePeople);
-        tvPeople = (TextView) getView().findViewById(R.id.tvPeople);
-
-
-        llDescription    = (LinearLayout) getView().findViewById(R.id.llDescription);
-        llDescription.setOnClickListener(this);
-        tvDescription    = (TextView) getView().findViewById(R.id.tvDescription);
-        tvDescription.setText(mTransaction != null ? mTransaction.getDescription() : "");
-
-        llAccount        = (LinearLayout) getView().findViewById(R.id.llAccount);
-        llAccount.setOnClickListener(this);
-        tvAccount        = (TextView) getView().findViewById(R.id.tvAccount);
-        tvAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
-
-        llDate           = (LinearLayout) getView().findViewById(R.id.llDate);
-        llDate.setOnClickListener(this);
-        tvDate           = (TextView) getView().findViewById(R.id.tvDate);
-        tvDate.setText(getDateString(mCal));
-
-        llPayee          = (LinearLayout) getView().findViewById(R.id.llPayee);
-        llPayee.setOnClickListener(this);
-        tvPayee          = (TextView) getView().findViewById(R.id.tvPayee);
-
-        llEvent          = (LinearLayout) getView().findViewById(R.id.llEvent);
-        llEvent.setOnClickListener(this);
-        tvEvent          = (TextView) getView().findViewById(R.id.tvEvent);
-
-        if(mCategory != null) {
-            tvCategory.setText(mCategory.getName());
-            onCategorySelected(mCategory.getId());
-        } else {
-            tvCategory.setText("");
-        }
-        if(mTransaction.getId() == 0 && !mTransaction.getPayee().equals("")) {
-            tvPeople.setText(mTransaction.getPayee());
-            mTransaction.setPayee("");
-        } else {
-            tvPeople.setText(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null ? mDbHelper.getDebtByTransactionId(mTransaction.getId()).getPeople() : "");
-        }
-        etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
-        tvDescription.setText(mTransaction.getDescription());
-        tvPayee.setText(mTransaction.getPayee());
-        tvEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
-
-        if(mCategory == null) {
-            llPeople.setVisibility(View.GONE);
-            llEvent.setVisibility(View.VISIBLE);
-            llPayee.setVisibility(View.VISIBLE);
-        } else {
-            switch (mCategory.getDebtType()) {
-                case MORE:
-                    llPeople.setVisibility(View.VISIBLE);
-                    tvTitlePeople.setText(getResources().getString(R.string.new_transaction_borrower));
-                    llEvent.setVisibility(View.GONE);
-                    llPayee.setVisibility(View.GONE);
-                    break;
-                case NONE:
-                    llPeople.setVisibility(View.GONE);
-                    llEvent.setVisibility(View.VISIBLE);
-                    llPayee.setVisibility(View.VISIBLE);
-                    break;
-                case LESS:
-                    llPeople.setVisibility(View.VISIBLE);
-                    tvTitlePeople.setText(getResources().getString(R.string.new_transaction_lender));
-                    llEvent.setVisibility(View.GONE);
-                    llPayee.setVisibility(View.GONE);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**
@@ -374,8 +342,8 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
 
                 String inputted = s.toString().replaceAll(",", "").replaceAll(" ", "");
                 if(!inputted.equals("")) {
-                    String formatted = Currency.formatCurrencyDouble(mFromAccount != null ?
-                                    mFromAccount.getCurrencyId()
+                    String formatted = Currency.formatCurrencyDouble(mAccount != null ?
+                                    mAccount.getCurrencyId()
                                     : mConfigs.getInt(Configurations.Key.Currency),
                             Double.parseDouble(inputted));
 
@@ -405,15 +373,26 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
             return;
         }
 
-        if(mFromAccount == null) {
+        if(mAccount == null) {
             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
             return;
         }
 
+        if(mCategory == null) {
+            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Category_Expense_Empty));
+            return;
+        }
+
         Double  amount        = Double.parseDouble(etAmount.getText().toString().replaceAll(",", ""));
+
+        if(amount > mDbHelper.getAccountRemainBefore(mAccount.getId(), mCal)) {
+            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Amount_Greater_Than_Remain));
+            return;
+        }
+
         int     CategoryId    = mCategory != null ? mCategory.getId() : 0;
         String  Description   = tvDescription.getText().toString();
-        int     accountId     = mFromAccount.getId();
+        int     accountId     = mAccount.getId();
         String  payee         = tvPayee.getText().toString();
         String  strEvent      = tvEvent.getText().toString();
         Event   event         = null;
@@ -429,40 +408,24 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
         }
 
         boolean isDebtValid = true;
-        // Less: Repayment, More: Lend
-        if(mCategory.getDebtType() == Category.EnumDebt.LESS || mCategory.getDebtType() == Category.EnumDebt.MORE) {
+        if(mCategory.getDebtType() == Category.EnumDebt.LESS) { // Expense -> Repayment
+            List<Debt> debts = mDbHelper.getAllDebtByPeople(tvPeople.getText().toString());
 
-
-            if(mCategory.getDebtType() == Category.EnumDebt.LESS) { // Expense -> Repayment
-                List<Debt> debts = mDbHelper.getAllDebts();
-
-                Double borrowed = 0.0, repayment = 0.0, lend = 0.0, debtCollect = 0.0;
-                for(Debt debt : debts) {
-                    if(debt.getPeople().equals(tvPeople.getText().toString())) {
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            repayment += debt.getAmount();
-                        }
-
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            lend += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            debtCollect += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            borrowed += debt.getAmount();
-                        }
-                    }
+            Double borrowed = 0.0, repayment = 0.0;
+            for(Debt debt : debts) {
+                if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) { // Repayment
+                    repayment += debt.getAmount();
                 }
 
-                if(repayment + lend + amount > borrowed + debtCollect) {
-                    isDebtValid = false;
-                    ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
+                if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) { // Borrow
+                    borrowed += debt.getAmount();
                 }
             }
 
+            if(repayment + amount > borrowed) {
+                isDebtValid = false;
+                ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
+            }
         }
 
         if(isDebtValid) {
@@ -514,7 +477,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
             } else {
                 ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_transaction_create_fail));
             }
-        }
+        } // End if(isDebtValid)
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End createTransaction
@@ -531,15 +494,23 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
             return;
         }
 
-        if (mFromAccount == null) {
+        if (mAccount == null) {
             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
             return;
         }
 
         Double  amount          = Double.parseDouble(inputtedAmount);
+        if(amount > mDbHelper.getAccountRemainBefore(mAccount.getId(), mCal)) {
+            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Amount_Greater_Than_Remain));
+            return;
+        } else if(amount < 0) {
+            ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Amount_Invalid));
+            return;
+        }
+
         int     categoryId      = mCategory != null ? mCategory.getId() : 0;
         String  description     = tvDescription.getText().toString();
-        int     accountId       = mFromAccount.getId();
+        int     accountId       = mAccount.getId();
         String  payee           = tvPayee.getText().toString();
         String  strEvent        = tvEvent.getText().toString();
         Event   event = null;
@@ -561,31 +532,24 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
             if(mCategory.getDebtType() == Category.EnumDebt.LESS) { // Expense -> Repayment
                 List<Debt> debts = mDbHelper.getAllDebts();
 
-                Double borrowed = 0.0, repayment = 0.0, lend = 0.0, debtCollect = 0.0;
+                Double borrowed = 0.0, repayment = 0.0;
                 for(Debt debt : debts) {
-                    if(debt.getPeople().equals(tvPeople.getText().toString())) {
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            repayment += debt.getAmount();
-                        }
+                    if(debt.getTransactionId() == mTransaction.getId()) {
+                        continue;
+                    }
+                    if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) { // Repayment
+                        repayment += debt.getAmount();
+                    }
 
-                        if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            lend += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) {
-                            debtCollect += debt.getAmount();
-                        }
-
-                        if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) {
-                            borrowed += debt.getAmount();
-                        }
+                    if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) { // Borrow
+                        borrowed += debt.getAmount();
                     }
                 }
 
-                if(repayment + lend + amount > borrowed + debtCollect) {
+                if(repayment + amount > borrowed) {
                     isDebtValid = false;
                     ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_repayment_invalid));
-                } // End Check DEBT OK
+                }
 
             } // End DebtType() == Category.EnumDebt.LESS
             if(isDebtValid) {
@@ -677,16 +641,40 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
      */
     private void deleteTransaction() {
         LogUtils.logEnterFunction(Tag, null);
-        mDbHelper.deleteTransaction(mTransaction.getId());
-        if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
-            mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
+
+        boolean isDebtValid = true;
+        if(mDbHelper.getCategory(mTransaction.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) { // Lent
+            List<Debt> debts = mDbHelper.getAllDebts();
+
+            Double debtCollect = 0.0, lent = 0.0;
+            for(Debt debt : debts) {
+                if(!mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.LESS) { // Debt Collected
+                    debtCollect += debt.getAmount();
+                }
+
+                if(mDbHelper.getCategory(debt.getCategoryId()).isExpense() && mDbHelper.getCategory(debt.getCategoryId()).getDebtType() == Category.EnumDebt.MORE) { // Lent
+                    lent += debt.getAmount();
+                }
+            }
+
+            if(lent - mTransaction.getAmount() < debtCollect) {
+                isDebtValid = false;
+                ((ActivityMain) getActivity()).showError(getResources().getString(R.string.message_debt_delete_invalid));
+            }
         }
 
-        cleanup();
+        if(isDebtValid) {
+            mDbHelper.deleteTransaction(mTransaction.getId());
+            if(mDbHelper.getDebtByTransactionId(mTransaction.getId()) != null) {
+                mDbHelper.deleteDebt(mDbHelper.getDebtByTransactionId(mTransaction.getId()).getId());
+            }
 
-        // Return to FragmentListTransaction
-        getFragmentManager().popBackStackImmediate();
-        LogUtils.logLeaveFunction(Tag, null, null);
+            cleanup();
+
+            // Return to FragmentListTransaction
+            getFragmentManager().popBackStackImmediate();
+            LogUtils.logLeaveFunction(Tag, null, null);
+        }
     }
 
     /**
@@ -840,7 +828,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
         } else if((cal.get(Calendar.DAY_OF_YEAR) - 1) == current.get(Calendar.DAY_OF_YEAR)) {
             date = getResources().getString(R.string.content_yesterday) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         } else if((cal.get(Calendar.DAY_OF_YEAR) - 2) == current.get(Calendar.DAY_OF_YEAR)
-                && getResources().getConfiguration().locale.equals(Locale.forLanguageTag("vi_VN"))) {
+                && getResources().getConfiguration().locale.equals(new Locale("vn"))) {
             date = getResources().getString(R.string.content_before_yesterday) + String.format(" %02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
         } else {
             date = String.format("%02d-%02d-%02d %02d:%02d", mCal.get(Calendar.DAY_OF_MONTH), mCal.get(Calendar.MONTH) + 1, mCal.get(Calendar.YEAR), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
@@ -854,7 +842,7 @@ public class FragmentTransactionCUDExpense extends Fragment implements  View.OnC
      */
     private void cleanup() {
         mCategory                   = null;
-        mFromAccount                = null;
+        mAccount = null;
         mCal                        = null;
 
         /* Reset value */

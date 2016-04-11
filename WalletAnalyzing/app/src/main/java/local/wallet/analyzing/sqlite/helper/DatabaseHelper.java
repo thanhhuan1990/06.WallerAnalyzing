@@ -2001,7 +2001,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(updateTransaction);
 
-        db.delete(TABLE_EVENT, KEY_ID + " = ?", new String[] { String.valueOf(event_id) });
+        db.delete(TABLE_EVENT, KEY_ID + " = ?", new String[]{String.valueOf(event_id)});
     }
 
     /**
@@ -2094,7 +2094,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 debt.setId(c.getInt((c.getColumnIndex(KEY_ID))));
                 debt.setCategoryId(c.getInt(c.getColumnIndex(KEY_DEBT_CATEGORY)));
                 debt.setTransactionId(c.getInt(c.getColumnIndex(KEY_DEBT_TRANSACTION)));
-                debt.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
+                debt.setAmount(c.getDouble(c.getColumnIndex(KEY_DEBT_AMOUNT)));
+                debt.setPeople(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
+
+                debts.add(debt);
+            } while (c.moveToNext());
+        }
+
+        leave(TAG, null, "debts = " + debts.toString());
+
+        return debts;
+    }
+
+    public List<Debt> getAllDebtByPeople(String people) {
+        enter(TAG, null);
+
+        List<Debt> debts = new ArrayList<Debt>();
+        String selectQuery = "SELECT  * FROM " + TABLE_DEBTS + " WHERE " + KEY_DEBT_PEOPLE + " LIKE '" + people + "'";
+
+        trace(TAG, selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Debt debt = new Debt();
+                debt.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                debt.setCategoryId(c.getInt(c.getColumnIndex(KEY_DEBT_CATEGORY)));
+                debt.setTransactionId(c.getInt(c.getColumnIndex(KEY_DEBT_TRANSACTION)));
+                debt.setAmount(c.getDouble(c.getColumnIndex(KEY_DEBT_AMOUNT)));
                 debt.setPeople(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
 
                 debts.add(debt);
@@ -2192,8 +2222,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_DEBTS, KEY_ID + " = ?", new String[]{String.valueOf(debtId)});
     }
-
-
 
     /**
      * Get list of Lender & Borrower from list Debt

@@ -132,8 +132,12 @@
     <string name="title_description">Description</string>
     <string name="title_payee">Chi cho ai</string>
     <string name="title_event">Chuyến đi/Sự kiện</string>
+    <string name="title_borrower">Người Vay</string>
+    <string name="title_lender">Người Cho Vay</string>
     <string name="title_report_evi_account">Tài Khoản</string>
     <string name="title_report_evi_time">Thời Gian</string>
+    <string name="title_report_financial_statement_lent">Cho Vay</string>
+    <string name="title_report_financial_statement_Borrow">Nợ Phải Trả</string>
     <string name="title_report_expense_analysis_category">Hạn Mục Thu Chi</string>
 
     <string name="Save">Ghi</string>
@@ -180,6 +184,14 @@
     <string name="report_financial_statement_money_lent">Cho vay</string>
     <string name="report_financial_statement_money_borrowed">Nợ phải trả</string>
 
+    <!-- 5_REPORT_4_Financial_Statement_Lent_Borrowed_Detail -->
+    <string name="report_lent_borrowed_detail_lent_starting_balance">Tổng cho vay</string>
+    <string name="report_lent_borrowed_detail_lent_collected">Đã thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_remaining">Phải thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_starting_balance">Tổng đi vay</string>
+    <string name="report_lent_borrowed_detail_borrowed_repaid">Đã trả (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_remaining">Phải trả (%d%%)</string>
+
     <!-- 5_REPORT_5_LENT_BORROW -->
     <string name="report_Lent_borrow_lent">Money Lent</string>
     <string name="report_Lent_borrow_borrow">Money Borrowed</string>
@@ -202,6 +214,10 @@
 
     <string name="Input_Error_Account_Name_Empty">Tên tài khoản không được để trống!</string>
     <string name="Input_Error_Amount_Empty">Số tiền không được để trống!</string>
+    <string name="Input_Error_Amount_Invalid">Số tiền không không hợp lệ!</string>
+    <string name="Input_Error_Amount_Greater_Than_Remain">Bạn chi nhiều hơn số tiền còn lại!</string>
+    <string name="Input_Error_Category_Expense_Empty">Mục chi không được để trống!</string>
+    <string name="Input_Error_Category_Income_Empty">Mục thu không được để trống!</string>
     <string name="Input_Error_Account_Empty">Tài khoản không được để trống!</string>
     <string name="Input_Error_ToAccount_Empty">Tài khoản chuyển tới không được để trống!</string>
     <string name="Input_Error_Transfer_Same_Account">Không thể chuyển khoản trong cùng tài khoản!</string>
@@ -215,6 +231,7 @@
 
     <string name="message_debt_repayment_invalid">Bạn còn thiếu ít hơn số tiền muốn trả!</string>
     <string name="message_debt_collect_invalid">Bạn thu nhiều hơn số tiền bạn đã cho vay!</string>
+    <string name="message_debt_delete_invalid">Bạn không thể xóa ghi nợ này!</string>
 
     <string name="expense_category">Chi Tiêu</string>
     <string name="income_category">Thu Vào</string>

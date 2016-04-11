@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/ll_report_financial_statement_lent_borrow"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main_frame"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/llLent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/listview_account_transactions_parent_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="5">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/transparent"
+                android:text="@string/report_Lent_borrow_lent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textcolor_title_attribute"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvLending"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:background="@android:color/transparent"
+                android:gravity="right|center_vertical"
+                android:text="1.000.000.000 đ"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textcolor_title_attribute"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <ListView
+            android:id="@+id/lvLending"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@color/listview_divider"
+            android:dividerHeight="0.2dip"
+            android:scrollbars="none"
+            android:visibility="visible"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llBorrowed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/listview_account_transactions_parent_background"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:weightSum="5">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/transparent"
+                android:text="@string/report_Lent_borrow_borrow"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textcolor_title_attribute"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvBorrowing"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:background="@android:color/transparent"
+                android:gravity="right|center_vertical"
+                android:text="10.000.000 đ"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textcolor_title_attribute"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.2dip"
+            android:background="#504f4f"/>
+
+        <ListView
+            android:id="@+id/lvBorrowing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@color/listview_divider"
+            android:dividerHeight="0.2dip"
+            android:scrollbars="none"/>
+    </LinearLayout>
+</LinearLayout>

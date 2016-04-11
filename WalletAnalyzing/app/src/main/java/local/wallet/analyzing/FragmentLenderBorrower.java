@@ -117,7 +117,12 @@ public class FragmentLenderBorrower extends Fragment {
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
         TextView    tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_payee));
+        if((mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.LESS) || (!mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.MORE)) {
+            tvTitle.setText(getResources().getString(R.string.title_lender));
+        } else if((mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.MORE) || (!mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.LESS)) {
+            tvTitle.setText(getResources().getString(R.string.title_borrower));
+        }
+
         ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override

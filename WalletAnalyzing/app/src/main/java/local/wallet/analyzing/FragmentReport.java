@@ -31,6 +31,25 @@ public class FragmentReport extends Fragment {
     private Spinner             spReportType;
     private int                 mCurrentReportType = 0;
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+            LogUtils.trace(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        if(mActionBar == null) {
+            initActionBar();
+        }
+
+        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,10 +71,6 @@ public class FragmentReport extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
-
-        if(mActionBar != null) {
-            spReportType.setSelection(0);
-        }
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -64,23 +79,26 @@ public class FragmentReport extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
 
-        if(mActionBar == null) {
-            initActionBar();
-        }
-
-        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
-
         if((getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag) != null &&
-                getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).isVisible())) {
-            LogUtils.trace(Tag, "Fragment is Visible, not update.");
+                getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportEVI is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).onResume();
+        } else if((getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportExpenseAnalysis is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).onResume();
+        } else if((getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportFinancialStatement is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).onResume();
+        } else if((getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportLentBorrowed is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).onResume();
+        } else if((getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportEvent is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).onResume();
         } else {
             switch (mCurrentReportType) {
                 case 0:
@@ -106,78 +124,9 @@ public class FragmentReport extends Fragment {
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.trace(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
-        }
-
-        if(mActionBar == null) {
-            initActionBar();
-        }
-
-        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
-
-        if((getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag) != null &&
-                getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).isVisible()) ||
-                (getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag) != null &&
-                        getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).isVisible())) {
-            LogUtils.trace(Tag, "Fragment is Visible, not update.");
-
-            if(mCurrentReportType != 0) {
-                switch (mCurrentReportType) {
-                    case 1:
-                        showExpenseAnalysis();
-                        break;
-                    case 2:
-                        showFinancialStatement();
-                        break;
-                    case 3:
-                        showLentBorrowed();
-                        break;
-                    case 4:
-                        showListEvents();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else {
-            switch (mCurrentReportType) {
-                case 0:
-                    showExpenseVsIncome();
-                    break;
-                case 1:
-                    showExpenseAnalysis();
-                    break;
-                case 2:
-                    showFinancialStatement();
-                    break;
-                case 3:
-                    showLentBorrowed();
-                    break;
-                case 4:
-                    showListEvents();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
+    /**
+     * Create action bar
+     */
     private void initActionBar() {
         /* Todo: Update ActionBar: Spinner ReportType */
         String[] arReportType       = getResources().getStringArray(R.array.report_type);
@@ -226,12 +175,12 @@ public class FragmentReport extends Fragment {
      */
     private void showExpenseVsIncome() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportEVI myFragment = (FragmentReportEVI)getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag);
-        if (myFragment != null && myFragment.isVisible()) {
-            LogUtils.trace(Tag, "FragmentReportEVI is visible, NOT showing.");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
+        if((getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportEVI is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).onResume();
         }
+
         FragmentReportEVI nextFrag = new FragmentReportEVI();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, FragmentReportEVI.Tag)
@@ -244,12 +193,12 @@ public class FragmentReport extends Fragment {
      */
     private void showExpenseAnalysis() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportExpenseAnalysis myFragment = (FragmentReportExpenseAnalysis)getFragmentManager().findFragmentByTag("FragmentReportExpenseAnalysis");
-        if (myFragment != null && myFragment.isVisible()) {
-            LogUtils.trace(Tag, "FragmentReportExpenseAnalysis is visible, NOT showing.");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
+        if((getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportExpenseAnalysis is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).onResume();
         }
+
         FragmentReportExpenseAnalysis nextFrag = new FragmentReportExpenseAnalysis();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysis.Tag)
@@ -262,12 +211,12 @@ public class FragmentReport extends Fragment {
      */
     private void showFinancialStatement() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportFinancialStatement myFragment = (FragmentReportFinancialStatement)getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag);
-        if (myFragment != null && myFragment.isVisible()) {
-            LogUtils.trace(Tag, "FragmentReportFinancialStatement is visible, NOT showing.");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
+        if((getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportFinancialStatement is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).onResume();
         }
+
         FragmentReportFinancialStatement nextFrag = new FragmentReportFinancialStatement();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, FragmentReportFinancialStatement.Tag)
@@ -280,13 +229,12 @@ public class FragmentReport extends Fragment {
      */
     private void showLentBorrowed() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportLentBorrowed myFragment = (FragmentReportLentBorrowed)getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag);
-        if (myFragment != null && myFragment.isVisible()) {
-            LogUtils.trace(Tag, "FragmentReportLentBorrowed is visible, NOT add new, RESUME");
-            myFragment.onResume();
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
+        if((getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportLentBorrowed is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).onResume();
         }
+
         FragmentReportLentBorrowed nextFrag = new FragmentReportLentBorrowed();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, FragmentReportLentBorrowed.Tag)
@@ -299,12 +247,12 @@ public class FragmentReport extends Fragment {
      */
     private void showListEvents() {
         LogUtils.logEnterFunction(Tag, null);
-        FragmentReportEvent myFragment = (FragmentReportEvent)getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag);
-        if (myFragment != null && myFragment.isVisible()) {
-            LogUtils.trace(Tag, "FragmentReportEvent is visible, NOT showing.");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
+        if((getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag) != null &&
+                getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).isVisible())) {
+            LogUtils.warn(Tag, "FragmentReportEvent is visible ---> Resume");
+            getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).onResume();
         }
+
         FragmentReportEvent nextFrag = new FragmentReportEvent();
         FragmentReport.this.getFragmentManager().beginTransaction()
                 .replace(R.id.ll_report, nextFrag, FragmentReportEvent.Tag)
