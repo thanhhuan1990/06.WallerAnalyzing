@@ -8,12 +8,20 @@
              android:orientation="vertical">
 
     <ListView
-        android:id="@+id/lvTransaction"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="@android:color/transparent"
         android:dividerHeight="0.1dp"
         android:divider="@color/listview_divider"
         android:scrollbars="none"/>
+
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ListView_Transaction_Empty"
+        android:gravity="center"
+        android:layout_gravity="center"/>
 
 </FrameLayout>

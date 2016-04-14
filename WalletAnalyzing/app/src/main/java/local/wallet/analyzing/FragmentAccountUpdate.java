@@ -29,7 +29,7 @@ import local.wallet.analyzing.FragmentCurrencySelect.ISelectCurrency;
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentAccountUpdate extends Fragment implements IUpdateDescription, ISelectAccountType, ISelectCurrency {
+public class FragmentAccountUpdate extends Fragment implements View.OnClickListener, IUpdateDescription, ISelectAccountType, ISelectCurrency {
 
     public static final String Tag = "AccountUpdate";
 
@@ -59,9 +59,12 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        Bundle bundle   = this.getArguments();
-        mAccountId      = bundle.getInt("AccountID", 0);
-        mCallback       = (IAccountCallback) bundle.getSerializable("Callback");
+        mDbHelper           = new DatabaseHelper(getActivity());
+        mAccount            = mDbHelper.getAccount(mAccountId);
+
+        Bundle bundle       = this.getArguments();
+        mAccountId          = bundle.getInt("AccountID", 0);
+        mCallback           = (IAccountCallback) bundle.getSerializable("Callback");
         mContainerViewId    = bundle.getInt("ContainerViewId");
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -71,13 +74,14 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
 
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_account_add));
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
         super.onCreateOptionsMenu(menu, inflater);
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle            = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_add));
+
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -86,32 +90,21 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
 
-        return inflater.inflate(R.layout.layout_fragment_account_update, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        mDbHelper           = new DatabaseHelper(getActivity());
-        mAccount            = mDbHelper.getAccount(mAccountId);
+        View    view        = inflater.inflate(R.layout.layout_fragment_account_update, container, false);
 
         // Initialize View
-        etName = (ClearableEditText) getView().findViewById(R.id.etName);
-        llType              = (LinearLayout) getView().findViewById(R.id.llType);
-        tvType              = (TextView) getView().findViewById(R.id.tvType);
-        llCurrency          = (LinearLayout) getView().findViewById(R.id.llCurrency);
-        tvCurrency          = (TextView) getView().findViewById(R.id.tvCurrency);
-        etInitialBalance    = (EditText) getView().findViewById(R.id.etInitialBalance);
-        tvCurrencyIcon      = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
-        llDescription       = (LinearLayout) getView().findViewById(R.id.llDescription);
-        tvDescription       = (TextView) getView().findViewById(R.id.tvDescription);
-        llSave              = (LinearLayout) getView().findViewById(R.id.llSave);
-        llDelete            = (LinearLayout) getView().findViewById(R.id.llDelete);
+        etName              = (ClearableEditText)   view.findViewById(R.id.etName);
+        llType              = (LinearLayout)        view.findViewById(R.id.llType);
+        tvType              = (TextView)            view.findViewById(R.id.tvType);
+        llCurrency          = (LinearLayout)        view.findViewById(R.id.llCurrency);
+        tvCurrency          = (TextView)            view.findViewById(R.id.tvCurrency);
+        etInitialBalance    = (EditText)            view.findViewById(R.id.etInitialBalance);
+        tvCurrencyIcon      = (TextView)            view.findViewById(R.id.tvCurrencyIcon);
+        llDescription       = (LinearLayout)        view.findViewById(R.id.llDescription);
+        tvDescription       = (TextView)            view.findViewById(R.id.tvDescription);
+        llSave              = (LinearLayout)        view.findViewById(R.id.llSave);
+        llDelete            = (LinearLayout)        view.findViewById(R.id.llDelete);
 
         etName.setText(mAccount.getName());
         tvType.setText(AccountType.getAccountTypeById(mAccount.getTypeId()).getName());
@@ -120,93 +113,16 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(mAccount.getCurrencyId()));
         tvDescription.setText(mAccount.getDescription());
 
-        llType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
-                Bundle bundle = new Bundle();
-                bundle.putInt("AccountType", mAccount.getTypeId());
-                bundle.putSerializable("Callback", FragmentAccountUpdate.this);
-                nextFrag.setArguments(bundle);
-                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentAccountTypeSelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        llCurrency.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
-                Bundle bundle = new Bundle();
-                bundle.putInt("Currency", mAccount.getCurrencyId());
-                nextFrag.setArguments(bundle);
-                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentCurrencySelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
         etInitialBalance.addTextChangedListener(new CurrencyTextWatcher());
-
-        llDescription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentDescription nextFrag = new FragmentDescription();
-                Bundle bundle = new Bundle();
-                bundle.putString("Description", tvDescription.getText().toString());
-                bundle.putSerializable("Callback", FragmentAccountUpdate.this);
-                nextFrag.setArguments(bundle);
-                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentDescription.Tag)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        llSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LogUtils.trace(Tag, "Click button SAVE");
-                // Check Account's name
-                if(etName.getText().toString().equals("")) {
-                    LogUtils.trace(Tag, "Name is empty");
-                    etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
-                    return;
-                }
-
-                String accountName      = etName.getText().toString();
-                Double initialBalance   =  etInitialBalance.getText().toString().equals("") ? 0 : Double.parseDouble(etInitialBalance.getText().toString().replaceAll(",", ""));
-                String description      = tvDescription.getText().toString();
-
-                // Update account in DB
-                mDbHelper.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));
-
-                // Update list of Account in FragmentListAccount
-                mCallback.onListAccountUpdated();
-
-                // Return to FragmentListAccount
-                getFragmentManager().popBackStackImmediate();
-            }
-        });
-
-        llDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDbHelper.deleteAccount(mAccountId);
-
-                // Update list of Account in FragmentListAccount
-                mCallback.onListAccountUpdated();
-
-                // Return to FragmentListAccount
-                getFragmentManager().popBackStackImmediate();
-            }
-        });
-
+        llType.setOnClickListener(this);
+        llCurrency.setOnClickListener(this);
+        llDescription.setOnClickListener(this);
+        llSave.setOnClickListener(this);
+        llDelete.setOnClickListener(this);
 
         LogUtils.logLeaveFunction(Tag, null, null);
+
+        return view;
     }
 
     @Override
@@ -237,6 +153,87 @@ public class FragmentAccountUpdate extends Fragment implements IUpdateDescriptio
         tvDescription.setText(description);
 
         LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.llType: {
+                FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
+                Bundle bundle = new Bundle();
+                bundle.putInt("AccountType", mAccount.getTypeId());
+                bundle.putSerializable("Callback", FragmentAccountUpdate.this);
+                nextFrag.setArguments(bundle);
+                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
+                        .add(mContainerViewId, nextFrag, FragmentAccountTypeSelect.Tag)
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            }
+            case R.id.llCurrency: {
+                FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
+                Bundle bundle = new Bundle();
+                bundle.putInt("Currency", mAccount.getCurrencyId());
+                nextFrag.setArguments(bundle);
+                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
+                        .add(mContainerViewId, nextFrag, FragmentCurrencySelect.Tag)
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            }
+            case R.id.llDescription: {
+                FragmentDescription nextFrag = new FragmentDescription();
+                Bundle bundle = new Bundle();
+                bundle.putString("Description", tvDescription.getText().toString());
+                bundle.putSerializable("Callback", FragmentAccountUpdate.this);
+                nextFrag.setArguments(bundle);
+                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
+                        .add(mContainerViewId, nextFrag, FragmentDescription.Tag)
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            }
+            case R.id.llSave: {
+                LogUtils.trace(Tag, "Click button SAVE");
+                // Check Account's name
+                if (etName.getText().toString().equals("")) {
+                    LogUtils.trace(Tag, "Name is empty");
+                    etName.setError(getResources().getString(R.string.Input_Error_Account_Name_Empty));
+                    return;
+                }
+
+                String accountName = etName.getText().toString();
+                Double initialBalance = etInitialBalance.getText().toString().equals("") ? 0 : Double.parseDouble(etInitialBalance.getText().toString().replaceAll(",", ""));
+                String description = tvDescription.getText().toString();
+
+                // Update account in DB
+                mDbHelper.updateAccount(new Account(mAccountId, accountName, mAccount.getTypeId(), mAccount.getCurrencyId(), initialBalance, description));
+
+                // Update list of Account in FragmentListAccount
+                mCallback.onListAccountUpdated();
+
+                // Return to FragmentListAccount
+                getFragmentManager().popBackStackImmediate();
+                break;
+            }
+            case R.id.llDelete: {
+                // Todo: Confirm, delete all transaction
+                // Delete all related Transaction with this Account
+                mDbHelper.deleteAllTransaction(mAccountId);
+
+                // Delete this Account
+                mDbHelper.deleteAccount(mAccountId);
+
+                // Update list of Account in FragmentListAccount
+                mCallback.onListAccountUpdated();
+
+                // Return to FragmentListAccount
+                getFragmentManager().popBackStackImmediate();
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     /**

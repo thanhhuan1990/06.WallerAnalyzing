@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <ListView
-        android:id="@+id/lvBudget"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -18,12 +18,12 @@
         android:dividerHeight="10dp"
         android:scrollbars="none" />
 
-    <!-- Here is the view to show if the list is emtpy -->
+    <!-- Here is the view to show if the list is empty -->
     <TextView
-        android:id="@+id/tvEmpty"
+        android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="No items."
+        android:text="@string/budget_list_empty"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 </FrameLayout>

@@ -3,13 +3,12 @@ package local.wallet.analyzing;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -19,16 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Account.IAccountCallback;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
-import local.wallet.analyzing.model.Account;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentListAccount extends Fragment implements IAccountCallback {
+public class FragmentListAccount extends ListFragment implements View.OnClickListener, IAccountCallback {
 
     public static final String Tag         = "ListAccount";
 
@@ -40,11 +39,8 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
     private int             mCurrentMode    = NORMAL_MODE;
 
     private DatabaseHelper  mDbHelper;
-    private ListView        lvAccount;
     private AccountAdapter  accAdapter;
     private List<Account>   listAccount     = new ArrayList<Account>();
-
-    private TextView        tvEmpty;
 
     public static FragmentListAccount getInstance() {
         if(instance == null) {
@@ -59,6 +55,13 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mDbHelper   = new DatabaseHelper(getActivity());
+
+        listAccount = mDbHelper.getAllAccounts();
+        accAdapter  = new AccountAdapter(getActivity(), listAccount);
+        setListAdapter(accAdapter);
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -71,45 +74,20 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        mDbHelper   = new DatabaseHelper(getActivity());
-
-        lvAccount   = (ListView) getView().findViewById(R.id.lvAccount);
-        tvEmpty     = (TextView) getView().findViewById(R.id.tvEmpty);
-
-        listAccount = mDbHelper.getAllAccounts();
-        accAdapter  = new AccountAdapter(getActivity(), listAccount);
-        lvAccount.setAdapter(accAdapter);
-
-        lvAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
-                LogUtils.warn(Tag, "ListAccount ----------> AccountTransactions");
-                // Go to list of transaction related with this Account
-                FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
-                Bundle bundle = new Bundle();
-                bundle.putInt("AccountID", accAdapter.getItem(position).getId());
-                bundle.putInt("ContainerViewId", R.id.layout_account);
-                nextFrag.setArguments(bundle);
-                FragmentListAccount.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
-
-            }
-        });
-
-        if (listAccount.size() > 0) {
-            tvEmpty = (TextView) getView().findViewById(R.id.tvEmpty);
-            tvEmpty.setVisibility(View.GONE);
-        }
-
-        LogUtils.logLeaveFunction(Tag, null, null);
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
+        LogUtils.warn(Tag, "ListAccount ----------> AccountTransactions");
+        // Go to list of transaction related with this Account
+        FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
+        Bundle bundle = new Bundle();
+        bundle.putInt("AccountID", accAdapter.getItem(position).getId());
+        bundle.putInt("ContainerViewId", R.id.layout_account);
+        nextFrag.setArguments(bundle);
+        FragmentListAccount.this.getFragmentManager().beginTransaction()
+                .add(R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -139,40 +117,9 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
             ivDone.setVisibility(View.VISIBLE);
         }
 
-        ivAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LogUtils.trace(Tag, "Click Menu Action Add Account.");
-                FragmentAccountCreate nextFrag = new FragmentAccountCreate();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Callback", FragmentListAccount.this);
-                nextFrag.setArguments(bundle);
-                FragmentListAccount.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentAccountCreate.Tag)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-
-        ivEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LogUtils.trace(Tag, "Click Menu Action Edit.");
-                accAdapter.notifyDataSetChanged();
-                mCurrentMode = EDIT_MODE;
-                getActivity().invalidateOptionsMenu();
-            }
-        });
-
-        ivDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LogUtils.trace(Tag, "Click Menu Action Done.");
-                accAdapter.notifyDataSetChanged();
-                mCurrentMode = NORMAL_MODE;
-                getActivity().invalidateOptionsMenu();
-            }
-        });
+        ivAdd.setOnClickListener(this);
+        ivEdit.setOnClickListener(this);
+        ivDone.setOnClickListener(this);
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
@@ -188,6 +135,40 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ivAdd: {
+                LogUtils.trace(Tag, "Click Menu Action Add Account.");
+                FragmentAccountCreate nextFrag = new FragmentAccountCreate();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Callback", FragmentListAccount.this);
+                nextFrag.setArguments(bundle);
+                FragmentListAccount.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_account, nextFrag, FragmentAccountCreate.Tag)
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            }
+            case R.id.ivEdit: {
+                LogUtils.trace(Tag, "Click Menu Action Edit.");
+                accAdapter.notifyDataSetChanged();
+                mCurrentMode = EDIT_MODE;
+                getActivity().invalidateOptionsMenu();
+                break;
+            }
+            case R.id.ivDone: {
+                LogUtils.trace(Tag, "Click Menu Action Done.");
+                accAdapter.notifyDataSetChanged();
+                mCurrentMode = NORMAL_MODE;
+                getActivity().invalidateOptionsMenu();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void onListAccountUpdated() {
         LogUtils.logEnterFunction(Tag, null);
         List<Account> arTemp = mDbHelper.getAllAccounts();
@@ -198,12 +179,6 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
         }
 
         accAdapter.notifyDataSetChanged();
-
-        if (listAccount.size() > 0) {
-            tvEmpty.setVisibility(View.GONE);
-        } else {
-            tvEmpty.setVisibility(View.VISIBLE);
-        }
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -216,7 +191,6 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
             ImageView ivIcon;
             TextView tvAccountName;
             TextView tvRemain;
-            ImageView ivCurrency;
             ImageView ivEdit;
         }
 
@@ -248,12 +222,12 @@ public class FragmentListAccount extends Fragment implements IAccountCallback {
             ViewHolder viewHolder; // view lookup cache stored in tag
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                LayoutInflater inflater = LayoutInflater.from(getContext());
-                convertView = inflater.inflate(R.layout.listview_item_account, parent, false);
-                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.ivIcon);
-                viewHolder.tvAccountName = (TextView) convertView.findViewById(R.id.tvAccount);
-                viewHolder.tvRemain = (TextView) convertView.findViewById(R.id.tvRemain);
-                viewHolder.ivEdit = (ImageView) convertView.findViewById(R.id.ivEdit);
+                LayoutInflater inflater     = LayoutInflater.from(getContext());
+                convertView                 = inflater.inflate(R.layout.listview_item_account, parent, false);
+                viewHolder.ivIcon           = (ImageView) convertView.findViewById(R.id.ivIcon);
+                viewHolder.tvAccountName    = (TextView) convertView.findViewById(R.id.tvAccount);
+                viewHolder.tvRemain         = (TextView) convertView.findViewById(R.id.tvRemain);
+                viewHolder.ivEdit           = (ImageView) convertView.findViewById(R.id.ivEdit);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();

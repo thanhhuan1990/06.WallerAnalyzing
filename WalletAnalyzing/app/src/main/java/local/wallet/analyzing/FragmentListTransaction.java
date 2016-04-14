@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentListTransaction extends Fragment {
+public class FragmentListTransaction extends ListFragment {
 
     public static final String     Tag = "ListTransaction";
 
@@ -38,7 +39,6 @@ public class FragmentListTransaction extends Fragment {
     private Configurations          mConfigs;
 
     private List<TransactionGroup>  arGroupTrans;
-    private ListView                lvTransaction;
     private TransactionAdapter      mAdapter;
 
     @Override
@@ -75,9 +75,8 @@ public class FragmentListTransaction extends Fragment {
         // Add to Group Transaction
         arGroupTrans    = TransactionGroup.parseTransactions(arTrans);
 
-        lvTransaction   = (ListView) getView().findViewById(R.id.lvTransaction);
         mAdapter = new TransactionAdapter(getActivity(), arGroupTrans);
-        lvTransaction.setAdapter(mAdapter);
+        setListAdapter(mAdapter);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_transaction, null);

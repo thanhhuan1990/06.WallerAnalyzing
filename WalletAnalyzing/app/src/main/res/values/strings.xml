@@ -17,17 +17,20 @@
     <string name="Input_Error_todate_invalid">To Date Invalid!</string>
     <string name="Error_Startup_No_Data">You have not save any transaction!</string>
 
-    <string name="icon_sum">Σ</string>
+    <string name="ListView_Transaction_Empty">Empty</string>
+    <string name="ListView_Account_Empty">No account. Add one with (+) button.</string>
+
+    <string name="icon_sum" translatable="false">Σ</string>
 
     <string name="button_delete">Delete</string>
 
-    <string name="format_month_year">\%%02d/\%%02d</string>
-    <string name="format_day_month_year">\%%02d/\%%02d/\%%02d</string>
-    <string name="format_budget_day_month">\%%02d/\%%02d</string>
-    <string name="format_budget_day_month_year">(\%%02d/\%%02d/\%%02d)</string>
-    <string name="format_budget_day_month_year_2">\%%02d/\%%02d/\%%02d</string>
-    <string name="format_budget_date">(\%%02d/\%%02d - \%%02d/\%%02d)</string>
-    <string name="format_budget_date_2">\%%02d/\%%02d ~ \%%02d/\%%02d</string>
+    <string name="format_month_year" translatable="false">%02d/%02d</string>
+    <string name="format_day_month_year" translatable="false">%02d/%02d/%02d</string>
+    <string name="format_budget_day_month" translatable="false">%02d/%02d</string>
+    <string name="format_budget_day_month_year" translatable="false">(%02d/%02d/%02d)</string>
+    <string name="format_budget_day_month_year_2" translatable="false">%02d/%02d/%02d</string>
+    <string name="format_budget_date" translatable="false">(%02d/%02d - %02d/%02d)</string>
+    <string name="format_budget_date_2" translatable="false">%02d/%02d ~ %02d/%02d</string>
 
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
@@ -63,9 +66,9 @@
     <string name="account_list_init_balance">Initial balance</string>
     <string name="account_list_balance">Balance: %s</string>
 
-    <string name="currency_vnd">₫ - Việt Nam Đồng(VND)</string>
-    <string name="currency_usd">$ - United States Dollar(USD)</string>
-    <string name="currency_jpy">¥ - Japanese Yen(JPY)</string>
+    <string name="currency_vnd" translatable="false">₫ - Việt Nam Đồng(VND)</string>
+    <string name="currency_usd" translatable="false">$ - United States Dollar(USD)</string>
+    <string name="currency_jpy" translatable="false">¥ - Japanese Yen(JPY)</string>
 
     <!-- 2_TRANSACTION_CREATE -->
     <string-array name="transaction_type">
@@ -96,7 +99,7 @@
     <string name="new_transaction_event">Event</string>
     <string name="new_transaction_to_account">To Account</string>
     <string name="new_transaction_transfer_fee">Transfer fee</string>
-    <string name="new_transaction_transfer_fee_hint">Transfer fee</string>
+    <string name="new_transaction_transfer_fee_hint">Transfer fee</string>report_evi_period_legend_expense
     <string name="new_transaction_account">Account</string>
     <string name="new_transaction_remaining_amount">Remaining amount</string>
     <string name="new_transaction_adjustment">Adjustment</string>
@@ -107,15 +110,8 @@
     <string name="new_category_description">Description</string>
     <string name="new_category_select_as_parent">(No item selected)</string>
 
-    <string name="budget_detail_description">Budget: \%%s \%%s for expense category: \%%s</string>
-    <string name="budget_detail_description_many">Budget: \%%s \%%s for expense categories: \%%s</string>
-    <string name="budget_detail_description_all">Budget: \%%s \%%s for all expense categories</string>
-    <string name="budget_detail_detail">Details</string>
-    <string name="budget_detail_history">Budget history</string>
-    <string name="budget_history_description">Budget history of %s</string>
-    <string name="budget_detail_transaction_description">Budget \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
-    <string name="budget_detail_transaction_category_sum">Σ %s</string>
-    <string name="budget_detail_transaction_total">Total: %s</string>
+    <!-- 4_BUDGET -->
+    <string name="budget_list_empty">No data.</string>
 
     <string name="budget_item_total">Total: %s</string>
     <string name="budget_item_incremental">Incremental: %s</string>
@@ -125,6 +121,16 @@
     <string name="budget_item_expensed_no_format">Expensed:</string>
     <string name="budget_item_balance_no_format">Balance:</string>
     <string name="budget_item_over_no_format">Over:</string>
+
+    <string name="budget_detail_description">Budget: \%%s \%%s for expense category: \%%s</string>
+    <string name="budget_detail_description_many">Budget: \%%s \%%s for expense categories: \%%s</string>
+    <string name="budget_detail_description_all">Budget: \%%s \%%s for all expense categories</string>
+    <string name="budget_detail_detail">Details</string>
+    <string name="budget_detail_history">Budget history</string>
+    <string name="budget_history_description">Budget history of %s</string>
+    <string name="budget_detail_transaction_description">Budget \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
+    <string name="budget_detail_transaction_category_sum">Σ %s</string>
+    <string name="budget_detail_transaction_total">Total: %s</string>
 
     <string name="new_budget_name">Name</string>
     <string name="new_budget_name_hit">Name</string>
@@ -169,11 +175,11 @@
     <string name="report_evi_viewedby_fromdate">From Date:</string>
     <string name="report_evi_viewedby_todate">To Date:</string>
 
-    <string name="report_evi_today">Today (\%%02d/\%%02d/\%%02d)</string>
-    <string name="report_evi_this_week">This Week (\%%02d/\%%02d - \%%02d/\%%02d)</string>
-    <string name="report_evi_this_month">This Month (\%%02d/\%%02d)</string>
-    <string name="report_evi_this_year">This Year (\%%02d)</string>
-    <string name="report_evi_period">\%%02d/\%%02d/\%%02d - \%%02d/\%%02d/\%%02d</string>
+    <string name="report_evi_today">Today (%%02d/%%02d/%%02d)</string>
+    <string name="report_evi_this_week">This Week (%%02d/%%02d - %%02d/%%02d)</string>
+    <string name="report_evi_this_month">This Month (%%02d/%%02d)</string>
+    <string name="report_evi_this_year">This Year (%02d)</string>
+    <string name="report_evi_period" translatable="false">%%02d/%%02d/%%02d - %%02d/%%02d/%%02d</string>
     <string name="report_evi_income">Income</string>
     <string name="report_evi_expense">Expense</string>
     <string name="report_evi_all">All</string>
@@ -182,11 +188,11 @@
     <!-- 5_REPORT_2_Expense_Vs_Income Data -->
     <string name="report_evi_year">Year %s</string>
     <string name="report_evi_monthly_balance">Balance: %s</string>
-    <string name="report_evi_quarterly">Quarter \%%s - Balance: \%%s</string>
-    <string name="report_evi_yearly">Year \%%02d - Balance: \%%s</string>
+    <string name="report_evi_quarterly">Quarter %%s - Balance: %%s</string>
+    <string name="report_evi_yearly">Year %%02d - Balance: %%s</string>
     <string name="report_evi_period_expense">Expense</string>
     <string name="report_evi_period_income">Income</string>
-    <string name="report_evi_period_legend_expense">\%%s \%%s</string>
+    <string name="report_evi_period_legend_expense">%%s %%s</string>
     <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
 
     <!-- 5_REPORT_3_Expense_Analysis -->
@@ -299,8 +305,10 @@
     <string name="content_transfer_from">Transfer from %s</string>
     <string name="content_transfer_fee">Transfer fee: %s</string>
 
-    <string name="currency_icon_vietnam">₫</string>
-    <string name="currency_icon_usd">$</string>
-    <string name="currency_icon_jpy">¥</string>
+    <string name="currency_icon_vietnam" translatable="false">₫</string>
+    <string name="currency_icon_usd" translatable="false">$</string>
+    <string name="currency_icon_jpy" translatable="false">¥</string>
+    <string name="Input_Error_Amount_Greater_Than_Remain">Amount greater than Remain!</string>
+    <string name="content_before_yesterday"></string>
 
 </resources>

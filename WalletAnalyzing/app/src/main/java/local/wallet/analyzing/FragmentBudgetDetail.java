@@ -26,7 +26,7 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 2/25/2016.
  */
-public class FragmentBudgetDetail extends Fragment {
+public class FragmentBudgetDetail extends Fragment implements View.OnClickListener {
 
     public static final String Tag = "BudgetDetail";
 
@@ -51,10 +51,13 @@ public class FragmentBudgetDetail extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        Bundle bundle           = this.getArguments();
-        mBudget                 = (Budget)bundle.get("Budget");
+        mDbHelper       = new DatabaseHelper(getActivity());
+        mConfigs        = new Configurations(getActivity());
 
-        LogUtils.trace(Tag, mBudget.toString());
+        Bundle bundle   = this.getArguments();
+        mBudget         = (Budget)bundle.get("Budget");
+
+        LogUtils.trace(Tag, "Budget: " + mBudget.toString());
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onCreate
@@ -63,65 +66,31 @@ public class FragmentBudgetDetail extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_budget_detail, container, false);
-    } // End onCreateView
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onActivityCreated(savedInstanceState);
+        View    view                = inflater.inflate(R.layout.layout_fragment_budget_detail, container, false);
 
-        mDbHelper                   = new DatabaseHelper(getActivity());
-        mConfigs                    = new Configurations(getActivity());
-
-        tvDescription               = (TextView) getView().findViewById(R.id.tvDescription);
-        tvName                      = (TextView) getView().findViewById(R.id.tvName);
-        tvAmount                    = (TextView) getView().findViewById(R.id.tvAmount);
-        tvIncremental               = (TextView) getView().findViewById(R.id.tvIncremental);
-        tvDate                      = (TextView) getView().findViewById(R.id.tvDate);
-        tvExpensed                  = (TextView) getView().findViewById(R.id.tvExpensed);
-        tvBalance                   = (TextView) getView().findViewById(R.id.tvBalance);
-        sbExpensed                  = (SeekBar) getView().findViewById(R.id.sbExpensed);
+        tvDescription               = (TextView) view.findViewById(R.id.tvDescription);
+        tvName                      = (TextView) view.findViewById(R.id.tvName);
+        tvAmount                    = (TextView) view.findViewById(R.id.tvAmount);
+        tvIncremental               = (TextView) view.findViewById(R.id.tvIncremental);
+        tvDate                      = (TextView) view.findViewById(R.id.tvDate);
+        tvExpensed                  = (TextView) view.findViewById(R.id.tvExpensed);
+        tvBalance                   = (TextView) view.findViewById(R.id.tvBalance);
+        sbExpensed                  = (SeekBar) view.findViewById(R.id.sbExpensed);
         sbExpensed.setEnabled(false);
-        llBudgetDetailTransactions  = (LinearLayout) getView().findViewById(R.id.llBudgetDetailTransactions);
-        llHistory                   = (LinearLayout) getView().findViewById(R.id.llHistory);
+        llBudgetDetailTransactions  = (LinearLayout) view.findViewById(R.id.llBudgetDetailTransactions);
+        llHistory                   = (LinearLayout) view.findViewById(R.id.llHistory);
+
+        llBudgetDetailTransactions.setOnClickListener(this);
+        llHistory.setOnClickListener(this);
 
         if(mBudget.getRepeatType() == 0) {
             llHistory.setVisibility(View.GONE);
         }
 
-        llBudgetDetailTransactions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentBudgetDetailTransactions nextFrag = new FragmentBudgetDetailTransactions();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Budget", mBudget);
-                nextFrag.setArguments(bundle);
-                FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, FragmentBudgetDetailTransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
-        llHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mBudget.getRepeatType() != 0) {
-                    FragmentBudgetHistory nextFrag = new FragmentBudgetHistory();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("Budget", mBudget);
-                    nextFrag.setArguments(bundle);
-                    FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                            .add(R.id.layout_budget, nextFrag, FragmentBudgetHistory.Tag)
-                            .addToBackStack(null)
-                            .commit();
-                }
-            }
-        });
-
         LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onActivityCreated
+        return view;
+    } // End onCreateView
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -137,9 +106,19 @@ public class FragmentBudgetDetail extends Fragment {
         tvTitle.setText(mBudget.getName());
 
         ImageView ivUpdate  = (ImageView) mCustomView.findViewById(R.id.ivUpdate);
-        ivUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        ivUpdate.setOnClickListener(this);
+
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        setViewData();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreateOptionsMenu
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ivUpdate: {
                 LogUtils.trace(Tag, "Click Menu Action Update Budget.");
                 FragmentBudgetCUD nextFrag = new FragmentBudgetCUD();
                 Bundle bundle = new Bundle();
@@ -149,15 +128,36 @@ public class FragmentBudgetDetail extends Fragment {
                         .add(R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag)
                         .addToBackStack(null)
                         .commit();
+                break;
             }
-        });
-
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        setViewData();
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onCreateOptionsMenu
+            case R.id.llBudgetDetailTransactions: {
+                FragmentBudgetDetailTransactions nextFrag = new FragmentBudgetDetailTransactions();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Budget", mBudget);
+                nextFrag.setArguments(bundle);
+                FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
+                        .add(R.id.layout_budget, nextFrag, FragmentBudgetDetailTransactions.Tag)
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            }
+            case R.id.llHistory: {
+                if (mBudget.getRepeatType() != 0) {
+                    FragmentBudgetHistory nextFrag = new FragmentBudgetHistory();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("Budget", mBudget);
+                    nextFrag.setArguments(bundle);
+                    FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
+                            .add(R.id.layout_budget, nextFrag, FragmentBudgetHistory.Tag)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
 
     private void setViewData() {
         LogUtils.logEnterFunction(Tag, null);

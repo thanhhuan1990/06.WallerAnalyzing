@@ -1500,6 +1500,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Deleting all TRANSACTION related with account
+     */
+    public void deleteAllTransaction(long accountId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_TRANSACTION, KEY_TRANSACTION_FROM_ACCOUNT_ID + " = ? OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = ?", new String[] { String.valueOf(accountId), String.valueOf(accountId) });
+
+    }
+
+    /**
      * Get list of PAYEE from list Transaction
      */
     public List<String> getPayees(String contain) {

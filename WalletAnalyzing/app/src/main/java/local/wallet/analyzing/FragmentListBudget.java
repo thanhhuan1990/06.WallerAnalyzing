@@ -3,7 +3,7 @@ package local.wallet.analyzing;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,14 +29,13 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
-public class FragmentListBudget extends Fragment {
+public class FragmentListBudget extends ListFragment {
 
     public static final String Tag = "ListBudget";
 
     private DatabaseHelper  mDbHelper;
     private Configurations  mConfigs;
-    private ListView        lvBudget;
-    private BudgetAdapter   adapter;
+    private BudgetAdapter   mAdapter;
     private List<Budget>    arBudgets = new ArrayList<>();
 
     @Override
@@ -63,25 +62,24 @@ public class FragmentListBudget extends Fragment {
         mDbHelper   = new DatabaseHelper(getActivity());
         mConfigs    = new Configurations(getActivity());
 
-        lvBudget    = (ListView) getView().findViewById(R.id.lvBudget);
         arBudgets   = mDbHelper.getAllBudgets();
-        adapter     = new BudgetAdapter(getContext(), arBudgets);
-        lvBudget.setAdapter(adapter);
-        lvBudget.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentBudgetDetail nextFrag = new FragmentBudgetDetail();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Budget", arBudgets.get(position));
-                nextFrag.setArguments(bundle);
-                FragmentListBudget.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, FragmentBudgetDetail.Tag)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
+        mAdapter = new BudgetAdapter(getContext(), arBudgets);
+        setListAdapter(mAdapter);
 
         LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        FragmentBudgetDetail nextFrag = new FragmentBudgetDetail();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Budget", arBudgets.get(position));
+        nextFrag.setArguments(bundle);
+        FragmentListBudget.this.getFragmentManager().beginTransaction()
+                .add(R.id.layout_budget, nextFrag, FragmentBudgetDetail.Tag)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -117,6 +115,9 @@ public class FragmentListBudget extends Fragment {
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
+    /**
+     * Update Data Source
+     */
     private void updateListBudget() {
         LogUtils.logEnterFunction(Tag, null);
 
@@ -124,19 +125,11 @@ public class FragmentListBudget extends Fragment {
 
         List<Budget> temp = mDbHelper.getAllBudgets();
 
-        for(int i = 0 ; i < temp.size(); i++) {
-            arBudgets.add(temp.get(i));
-        }
+        arBudgets.addAll(temp);
 
         LogUtils.trace(Tag, "arBudgets = " + arBudgets.toString());
 
-        getView().findViewById(R.id.tvEmpty).setVisibility(View.GONE);
-
-        if(arBudgets.size() == 0) {
-            getView().findViewById(R.id.tvEmpty).setVisibility(View.VISIBLE);
-        }
-
-        adapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
