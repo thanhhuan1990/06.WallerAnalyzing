@@ -7,10 +7,7 @@
     android:background="@color/light_gray"
     android:clickable="true"
     android:orientation="vertical"
-    android:paddingBottom="3dp"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="3dp">
+    android:padding="8dp">
 
     <ScrollView
         android:layout_width="match_parent"

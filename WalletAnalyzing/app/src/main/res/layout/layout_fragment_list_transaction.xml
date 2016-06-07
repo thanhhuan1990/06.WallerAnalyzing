@@ -1,27 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:id="@+id/ll_transactions"
-             xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/background_main_frame"
-             android:clickable="true"
-             android:orientation="vertical">
+<FrameLayout
+    android:id="@+id/ll_transactions"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main_frame"
+    android:clickable="true">
 
-    <ListView
-        android:id="@android:id/list"
+    <android.support.v4.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="@android:color/transparent"
-        android:dividerHeight="0.1dp"
-        android:divider="@color/listview_divider"
-        android:scrollbars="none"/>
+        android:fitsSystemWindows="true">
 
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/ListView_Transaction_Empty"
-        android:gravity="center"
-        android:layout_gravity="center"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <ListView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="@color/listview_divider"
+                android:dividerHeight="0.1dp"
+                android:scrollbars="none"/>
+
+            <TextView
+                android:id="@android:id/empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/ListView_Transaction_Empty"/>
+
+            <!--<android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:elevation="5dp"
+                android:src="@drawable/icon_add_2"
+                app:borderWidth="0dp"
+                app:floatingActionButtonSize="mini"
+                app:pressedTranslationZ="12dp"
+                android:tint="@android:color/white"
+                android:background="@drawable/oval_ripple"
+                android:stateListAnimator="@drawable/button_elevation"
+                />-->
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>
 
 </FrameLayout>

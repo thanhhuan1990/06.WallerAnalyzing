@@ -6,7 +6,9 @@
 
     <color name="colorPrimary">#36a3a0</color>
     <color name="colorPrimaryDark">#028372</color>
-    <color name="colorAccent">#afafaf</color>
+    <!--<color name="colorAccent">#afafaf</color>-->
+    <color name="colorAccent">#36a3a0</color>
+    <!--<color name="colorAccent">@android:color/transparent</color>-->
 
     <color name="blue_text">#0099CC</color>
     <color name="transaction_type_name">#419E94</color>

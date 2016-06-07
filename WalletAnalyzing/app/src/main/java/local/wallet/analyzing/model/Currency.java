@@ -1,13 +1,10 @@
 package local.wallet.analyzing.model;
 
-import android.app.usage.ConfigurationStats;
 import android.content.Context;
-import android.content.res.Configuration;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
-import local.wallet.analyzing.Configurations;
+import local.wallet.analyzing.main.Configurations;
 import local.wallet.analyzing.R;
 
 /**

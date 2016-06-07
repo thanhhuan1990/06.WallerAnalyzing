@@ -20,7 +20,7 @@
             android:value="1" />
 
         <activity
-            android:name="local.wallet.analyzing.ActivitySplash"
+            android:name=".main.ActivitySplash"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -31,12 +31,12 @@
         </activity>
 
         <activity
-            android:name="local.wallet.analyzing.ActivityEnter"
+            android:name=".main.ActivityEnter"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme" />
 
         <activity
-            android:name="local.wallet.analyzing.ActivityMain"
+            android:name=".main.ActivityMain"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden"/>
