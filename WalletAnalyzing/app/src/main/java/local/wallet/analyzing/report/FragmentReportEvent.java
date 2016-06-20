@@ -33,10 +33,13 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEvent extends Fragment implements View.OnClickListener {
-    public static final String Tag = "ReportEvent";
+    public static final int         mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".5]---ReportEvent";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configurations  mConfigs;
 
     private boolean         isRunning   = true;
     private Button          btnInProgress;
@@ -58,6 +61,8 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mActivity       = (ActivityMain) getActivity();
+
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
@@ -75,12 +80,10 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FragmentReportEventTransactions nextFrag = new FragmentReportEventTransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putInt("EventID", arEvents.get(position).getId());
                 nextFrag.setArguments(bundle);
-                FragmentReportEvent.this.getFragmentManager().beginTransaction()
-                        .replace(R.id.ll_report, nextFrag, FragmentReportEventTransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEventTransactions.Tag, true);
             }
         });
 
@@ -92,7 +95,9 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
 

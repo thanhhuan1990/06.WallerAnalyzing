@@ -32,6 +32,7 @@ import java.util.List;
 
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.account.FragmentAccountTransactions;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.main.Configurations;
 import local.wallet.analyzing.model.Budget;
@@ -44,8 +45,9 @@ import local.wallet.analyzing.budget.FragmentBudgetCategory.ISelectBudgetCategor
  * Created by huynh.thanh.huan on 2/19/2016.
  */
 public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, ISelectBudgetCategory {
-
-    public static final String Tag = "BudgetCUD";
+    public static int               mTab = 3;
+    public static final String      Tag = "---[" + mTab + "]---BudgetCUD";
+    private ActivityMain            mActivity;
 
     private Calendar            mStartCal;
     private Calendar            mEndCal;
@@ -82,6 +84,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         Bundle  bundle              = this.getArguments();
         if(bundle != null) {
+            mTab                    = bundle.getInt("Tab", mTab);
             mBudget                 = (Budget)bundle.get("Budget");
 
             if(mBudget != null) {
@@ -103,6 +106,8 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
 
         mStartCal = Calendar.getInstance();
         mStartCal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
@@ -163,11 +168,14 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
-            return;
-        }
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_cancel, null);
@@ -200,23 +208,23 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.llCategory:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 startFragmentBudgetCategory();
                 break;
             case R.id.llRepeat:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 showDialogRepeatType();
                 break;
             case R.id.llStartDate:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 showDialogTime(R.id.llStartDate);
                 break;
             case R.id.llEndDate:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 showDialogTime(R.id.llEndDate);
                 break;
             case R.id.llSave:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 if(mBudget == null) {
                     createBudget();
                 } else {
@@ -224,7 +232,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
                 }
                 break;
             case R.id.llDelete:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 deleteBudget();
                 break;
             default:
@@ -447,13 +455,11 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
     private void startFragmentBudgetCategory() {
         FragmentBudgetCategory nextFrag = new FragmentBudgetCategory();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putIntArray("Categories", arCategories);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentBudgetCUD.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_budget, nextFrag, FragmentBudgetCategory.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetCategory.Tag, true);
     }
 
     @Override

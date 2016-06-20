@@ -25,13 +25,16 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentCategoryCreate extends Fragment implements FragmentCategoryParentSelect.ISelectParentCategory, FragmentDescription.IUpdateDescription {
+    public static int           mTab = 1;
+    public static final String  Tag = "---[" + mTab + "]---CategoryCreate";
 
-    public static final String Tag = "CategoryCreate";
+    private ActivityMain        mActivity;
 
     private DatabaseHelper      mDbHelper;
 
     // Keep return value from FragmentCategoryParentSelect
     private Category            mParentCategory;
+    private int                 mContainerID;
     private boolean             mIsExpense = true;
 
     private ClearableEditText   etName;
@@ -47,28 +50,10 @@ public class FragmentCategoryCreate extends Fragment implements FragmentCategory
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mIsExpense          = bundle.getBoolean("CategoryType");
+        mContainerID        = bundle.getInt("ContainerID");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView        = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle        = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        if(mIsExpense) {
-            tvTitle.setText(getResources().getString(R.string.title_category_expense_add));
-        } else {
-            tvTitle.setText(getResources().getString(R.string.title_category_income_add));
-        }
-
-        // Update ActionBar
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -84,10 +69,11 @@ public class FragmentCategoryCreate extends Fragment implements FragmentCategory
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getActivity());
+        mActivity           = (ActivityMain) getActivity();
+
+        mDbHelper           = new DatabaseHelper(getActivity());
 
         // Initialize View
         etName              = (ClearableEditText) getView().findViewById(R.id.etName);
@@ -99,32 +85,28 @@ public class FragmentCategoryCreate extends Fragment implements FragmentCategory
         llParentCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 FragmentCategoryParentSelect nextFrag = new FragmentCategoryParentSelect();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putSerializable("Callback", FragmentCategoryCreate.this);
                 bundle.putBoolean("CategoryType", mIsExpense);
                 bundle.putInt("ParentCategoryId", mParentCategory != null ? mParentCategory.getId() : 0);
                 nextFrag.setArguments(bundle);
-                FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_transaction_create, nextFrag, FragmentCategoryParentSelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, mContainerID, nextFrag, FragmentCategoryParentSelect.Tag, true);
             }
         });
 
         etDescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentDescription fragmentDescription = new FragmentDescription();
+                FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putString("Description", etDescription.getText().toString());
                 bundle.putSerializable("Callback", FragmentCategoryCreate.this);
-                fragmentDescription.setArguments(bundle);
-                FragmentCategoryCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_transaction_create, fragmentDescription, FragmentDescription.Tag)
-                        .addToBackStack(Tag)
-                        .commit();
+                nextFrag.setArguments(bundle);
+                mActivity.addFragment(mTab, mContainerID, nextFrag, FragmentDescription.Tag, true);
             }
         });
 
@@ -132,7 +114,7 @@ public class FragmentCategoryCreate extends Fragment implements FragmentCategory
             @Override
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click button SAVE");
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 // Check Category's name
                 if (etName.getText().toString().equals("")) {
                     LogUtils.trace(Tag, "Name is empty");
@@ -158,6 +140,31 @@ public class FragmentCategoryCreate extends Fragment implements FragmentCategory
                 }
             }
         });
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView        = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle        = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        if(mIsExpense) {
+            tvTitle.setText(getResources().getString(R.string.title_category_expense_add));
+        } else {
+            tvTitle.setText(getResources().getString(R.string.title_category_income_add));
+        }
+
+        // Update ActionBar
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 

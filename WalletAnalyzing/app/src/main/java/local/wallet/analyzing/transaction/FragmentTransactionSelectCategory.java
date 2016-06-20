@@ -35,7 +35,12 @@ public class FragmentTransactionSelectCategory extends Fragment {
         void onCategorySelected(int categoryId);
     }
 
-    public static final String Tag = "TransactionCategorySelect";
+    private int                 mTab = 1;
+    public final String         Tag = "---[" + mTab + "]---TransactionSelectCategory";
+
+    private ActivityMain        mActivity;
+
+    private int                 mContainerViewId = -1;
 
     private boolean             isExpense = true;
     private int                 mUsingCategoryId;
@@ -48,7 +53,7 @@ public class FragmentTransactionSelectCategory extends Fragment {
     private Button              btnExpense;
     private Button              btnDebt;
 
-    private ISelectCategory       mCallback;
+    private ISelectCategory     mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,9 +65,18 @@ public class FragmentTransactionSelectCategory extends Fragment {
 
         /* Get data from Bundle */
         Bundle bundle                   = this.getArguments();
+
+        mTab                            = bundle.getInt("Tab", mTab);
         isExpense                       = bundle.getBoolean("CategoryType");
         mUsingCategoryId                = bundle.getInt("CategoryID", 0);
         mCallback                       = (ISelectCategory) bundle.getSerializable("Callback");
+
+        // Retry ContainerViewId from bundle
+        if(bundle.getInt("ContainerViewId") != 0) {
+            mContainerViewId = bundle.getInt("ContainerViewId");
+        } else {
+            mContainerViewId    = mUsingCategoryId != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create;
+        }
 
         LogUtils.trace(Tag, "mUsingCategoryId = " + mUsingCategoryId);
 
@@ -83,6 +97,7 @@ public class FragmentTransactionSelectCategory extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
+        mActivity       = (ActivityMain) getActivity();
         /* Initialize Database, insert default category */
         mDbHelper = new DatabaseHelper(getActivity());
 
@@ -158,6 +173,12 @@ public class FragmentTransactionSelectCategory extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem());
+            LogUtils.logLeaveFunction(Tag, null ,null);
+            return;
+        }
+
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_add, null);
@@ -178,12 +199,11 @@ public class FragmentTransactionSelectCategory extends Fragment {
                 LogUtils.trace(Tag, "Click Menu Action Add Category.");
                 FragmentCategoryCreate nextFrag = new FragmentCategoryCreate();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putBoolean("CategoryType", isExpense);
+                bundle.putInt("ContainerID", mUsingCategoryId != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create);
                 nextFrag.setArguments(bundle);
-                FragmentTransactionSelectCategory.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_transaction_create, nextFrag, FragmentCategoryCreate.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentCategoryCreate.Tag, true);
             }
         });
 

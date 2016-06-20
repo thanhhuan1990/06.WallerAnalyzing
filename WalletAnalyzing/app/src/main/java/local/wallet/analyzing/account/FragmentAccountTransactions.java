@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import local.wallet.analyzing.transaction.FragmentDescription;
 import local.wallet.analyzing.transaction.FragmentTransactionCUD;
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
@@ -32,8 +33,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/3/2016.
  */
 public class FragmentAccountTransactions extends Fragment {
+    public static int                   mTab = 2;
+    public static final String          Tag = "---[" + mTab + "]---AccountTransactions";
 
-    public static final String Tag = "AccountTransactions";
+    private ActivityMain                mActivity;
 
     private int                 mAccountId;
     private int                 mContainerViewId;
@@ -56,6 +59,7 @@ public class FragmentAccountTransactions extends Fragment {
         /* Get data from Bundle */
         Bundle bundle           = this.getArguments();
         if(bundle != null) {
+            mTab                = bundle.getInt("Tab", mTab);
             mAccountId          = bundle.getInt("AccountID", 0);
             mContainerViewId    = bundle.getInt("ContainerViewId");
 
@@ -85,10 +89,35 @@ public class FragmentAccountTransactions extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        // Update Action bar
+        updateActionBar();
+        // Update list Transactions
+        updateListTransactions();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void updateActionBar() {
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_add, null);
@@ -102,23 +131,18 @@ public class FragmentAccountTransactions extends Fragment {
             public void onClick(View v) {
                 FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                 Bundle bundle = new Bundle();
+//                bundle.putInt("Tab", mTab);
+//                bundle.putInt("ContainerViewId", mContainerViewId);
                 Transaction transaction = new Transaction();
                 transaction.setFromAccountId(mAccountId);
                 bundle.putSerializable("Transaction", transaction);
                 nextFrag.setArguments(bundle);
-                FragmentAccountTransactions.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentTransactionCUD.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionCUD", true);
             }
         });
 
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
 
-        // Update list Transactions
-        updateListTransactions();
-
-        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     private void updateListTransactions() {
@@ -272,12 +296,10 @@ public class FragmentAccountTransactions extends Fragment {
 
                     FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putSerializable("Transaction", tran);
                     nextFrag.setArguments(bundle);
-                    FragmentAccountTransactions.this.getFragmentManager().beginTransaction()
-                            .add(mContainerViewId, nextFrag, FragmentTransactionCUD.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionCUD", true);
                 }
             });
             llTransactions.addView(mTransactionView);

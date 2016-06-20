@@ -22,8 +22,10 @@ import local.wallet.analyzing.main.ActivityMain;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentDescription extends Fragment {
+    public static int           mTab = 1;
+    public static final String  Tag = "---[" + mTab + "]---Description";
 
-    public static final String Tag = "FragmentDescription";
+    private ActivityMain        mActivity;
 
     public interface IUpdateDescription extends Serializable {
         void onDescriptionUpdated(String description);
@@ -44,6 +46,7 @@ public class FragmentDescription extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         oldDescription      = bundle.getString("Description", "");
         mCallback           = (IUpdateDescription) bundle.get("Callback");
 
@@ -66,6 +69,8 @@ public class FragmentDescription extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
+        mActivity           = (ActivityMain) getActivity();
+
         etDescription = (EditText) getView().findViewById(R.id.etDescription);
         etDescription.setText(oldDescription);
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -75,6 +80,12 @@ public class FragmentDescription extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         /* Todo: Update ActionBar: Spinner TransactionType */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
@@ -86,7 +97,7 @@ public class FragmentDescription extends Fragment {
             @Override
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click Menu Action Done.");
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
 
                 mCallback.onDescriptionUpdated(etDescription.getText().toString());
                 // Back

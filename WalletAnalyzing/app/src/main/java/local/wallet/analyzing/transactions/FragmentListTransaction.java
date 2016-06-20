@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -17,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import local.wallet.analyzing.transaction.FragmentCategoryCreate;
 import local.wallet.analyzing.transaction.FragmentTransactionCUD;
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
@@ -34,8 +37,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentListTransaction extends ListFragment {
+    public static final int         mTab = 0;
+    public static final String      Tag = "---[" + mTab + "]---ListTransaction";
 
-    public static final String      Tag = "ListTransaction";
+    private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
     private Configurations          mConfigs;
@@ -62,8 +67,9 @@ public class FragmentListTransaction extends ListFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mDbHelper       = new DatabaseHelper(getActivity());
         mDbHelper.insertDefaultCategories();
@@ -91,20 +97,31 @@ public class FragmentListTransaction extends ListFragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
 
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTIONS) {
-            LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
-        }
-
-        if(getFragmentManager().getBackStackEntryCount() > 0) {
-            LogUtils.error(Tag, "Back Stack Entry > 0. Return");
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem());
+            LogUtils.logLeaveFunction(Tag, null ,null);
             return;
         }
 
         updateActionBar();
         updateListTransaction();
 
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem());
+            LogUtils.logLeaveFunction(Tag, null ,null);
+            return;
+        }
+
+        updateActionBar();
+        updateListTransaction();
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -305,13 +322,10 @@ public class FragmentListTransaction extends ListFragment {
                         public void onClick(View v) {
                             FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                             Bundle bundle = new Bundle();
+                            bundle.putInt("Tab", mTab);
                             bundle.putSerializable("Transaction", tran);
-                            bundle.putInt("ContainerViewId", R.id.ll_transactions);
                             nextFrag.setArguments(bundle);
-                            FragmentListTransaction.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_transactions, nextFrag, FragmentTransactionCUD.Tag)
-                                    .addToBackStack(null)
-                                    .commit();
+                            mActivity.addFragment(mTab, R.id.ll_transactions, nextFrag, "FragmentTransactionCUD", true);
                         }
                     });
 

@@ -31,8 +31,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/19/2016.
  */
 public class FragmentReportExpenseAnalysisCategory extends Fragment implements CompoundButton.OnCheckedChangeListener {
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".2]---ReportExpenseAnalysisCategory";
 
-    public static final String Tag = "ReportExpenseAnalysisCategory";
+    private ActivityMain            mActivity;
 
     public interface ISelectReportExpenseAnalysisCategory {
         void onReportExpenseAnalysisCategorySelected(int[] categories);
@@ -63,6 +65,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
         /* Get data from Bundle */
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         arCategories        = bundle.getIntArray("Categories");
         mCallback           = (ISelectReportExpenseAnalysisCategory) bundle.getSerializable("Callback");
 
@@ -82,8 +85,38 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
     } // End onCreateView
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
+
+        mDbHelper       = new DatabaseHelper(getActivity());
+
+        initIncomeView();
+        initExpenseView();
+
+        tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
+        tbAllCategory.setOnCheckedChangeListener(this);
+        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories().size()) {
+            tbAllCategory.setChecked(true);
+        } else {
+            tbAllCategory.setChecked(false);
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onActivityCreated
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -128,32 +161,8 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        super.onCreateOptionsMenu(menu, inflater);
-
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onCreateOptionsMenu
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        mDbHelper = new DatabaseHelper(getActivity());
-
-        initIncomeView();
-        initExpenseView();
-
-        tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
-        tbAllCategory.setOnCheckedChangeListener(this);
-        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories().size()) {
-            tbAllCategory.setChecked(true);
-        } else {
-            tbAllCategory.setChecked(false);
-        }
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onActivityCreated
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

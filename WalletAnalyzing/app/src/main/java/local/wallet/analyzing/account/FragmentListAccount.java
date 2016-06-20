@@ -29,10 +29,12 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentListAccount extends ListFragment implements View.OnClickListener, IAccountCallback {
 
-    public static final String Tag         = "ListAccount";
+    public static final int         mTab = 2;
+    public static final String      Tag = "---[" + mTab + "]---ListAccount";
 
-    private static FragmentListAccount instance;
-    public static FragmentListAccount getInstance() {
+    private         ActivityMain            mActivity;
+    private static  FragmentListAccount     instance;
+    public static   FragmentListAccount getInstance() {
         if(instance == null) {
             instance    = new FragmentListAccount();
         }
@@ -54,6 +56,7 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        mActivity   = (ActivityMain) getActivity();
         mDbHelper   = new DatabaseHelper(getActivity());
 
         listAccount = mDbHelper.getAllAccounts();
@@ -72,28 +75,11 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
-        LogUtils.warn(Tag, "ListAccount ----------> AccountTransactions");
-        // Go to list of transaction related with this Account
-        FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
-        Bundle bundle = new Bundle();
-        bundle.putInt("AccountID", accAdapter.getItem(position).getId());
-        bundle.putInt("ContainerViewId", R.id.layout_account);
-        nextFrag.setArguments(bundle);
-        FragmentListAccount.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
     public void onResume() {
         LogUtils.logEnterFunction(Tag, null);
         super.onResume();
 
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_ACCOUNT) {
+        if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
             LogUtils.logLeaveFunction(Tag, null, null);
             return;
@@ -114,12 +100,10 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
                 LogUtils.trace(Tag, "Click Menu Action Add Account.");
                 FragmentAccountCreate nextFrag = new FragmentAccountCreate();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putSerializable("Callback", FragmentListAccount.this);
                 nextFrag.setArguments(bundle);
-                FragmentListAccount.this.getFragmentManager().beginTransaction()
-                        .replace(R.id.layout_account, nextFrag, FragmentAccountCreate.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.layout_account, nextFrag, FragmentAccountCreate.Tag, true);
                 break;
             }
             case R.id.ivEdit: {
@@ -139,6 +123,21 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        LogUtils.trace(Tag, "Click on Account number " + position + " -> ID = " + listAccount.get(position).getId());
+        LogUtils.warn(Tag, "ListAccount ----------> AccountTransactions");
+        // Go to list of transaction related with this Account
+        FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        bundle.putInt("AccountID", accAdapter.getItem(position).getId());
+        bundle.putInt("ContainerViewId", R.id.layout_account);
+        nextFrag.setArguments(bundle);
+        mActivity.addFragment(mTab, R.id.layout_account, nextFrag, FragmentAccountTransactions.Tag, true);
     }
 
     @Override
@@ -255,14 +254,12 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
                         LogUtils.trace(Tag, "Edit item number " + position + " -> AccountID = " + listAccount.get(position));
                         FragmentAccountUpdate nextFrag = new FragmentAccountUpdate();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putInt("AccountID", listAccount.get(position).getId());
                         bundle.putSerializable("Callback", FragmentListAccount.this);
                         bundle.putInt("ContainerViewId", R.id.layout_account);
                         nextFrag.setArguments(bundle);
-                        FragmentListAccount.this.getFragmentManager().beginTransaction()
-                                .add(R.id.layout_account, nextFrag, FragmentAccountUpdate.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.layout_account, nextFrag, FragmentAccountUpdate.Tag, true);
                     }
                 });
             } else if (mCurrentMode == EDIT_MODE) {

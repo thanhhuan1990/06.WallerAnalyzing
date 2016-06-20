@@ -34,18 +34,20 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentBudgetCategory extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
-    public static final String Tag = "BudgetCategory";
+    public static int               mTab = 3;
+    public static final String      Tag = "---[" + mTab + "]---BudgetCategory";
+    private ActivityMain            mActivity;
 
     public interface ISelectBudgetCategory extends Serializable {
         void onBudgetCategorySelected(int[] categories);
     }
 
-    private DatabaseHelper      mDbHelper;
+    private DatabaseHelper          mDbHelper;
 
-    private ToggleButton        tbAllCategory;
-    private LinearLayout        llCategories;
-    private List<CategoryView>  arCategoriesView = new ArrayList<CategoryView>();
-    private int[]               arCategories;
+    private ToggleButton            tbAllCategory;
+    private LinearLayout            llCategories;
+    private List<CategoryView>      arCategoriesView = new ArrayList<CategoryView>();
+    private int[]                   arCategories;
 
     private ISelectBudgetCategory   mCallback;
 
@@ -57,6 +59,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         /* Get data from Bundle */
         Bundle bundle   = this.getArguments();
+        mTab            = bundle.getInt("Tab", mTab);
         arCategories    = bundle.getIntArray("Categories");
         mCallback       = (ISelectBudgetCategory) bundle.getSerializable("Callback");
 
@@ -76,8 +79,53 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
     } // End onCreateView
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
+        mDbHelper = new DatabaseHelper(getActivity());
+
+        llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
+        arCategoriesView.clear();
+        List<Category> arParentCategories = mDbHelper.getAllParentCategories(true, EnumDebt.NONE);
+        for(Category category : arParentCategories) {
+
+            arCategoriesView.add(new CategoryView(category, true, checkContain(category.getId())));
+
+            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
+
+            for(Category cate : arChildCategories) {
+
+                arCategoriesView.add(new CategoryView(cate, true, checkContain(cate.getId())));
+
+            }
+        }
+
+        updateListCategories();
+
+        tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
+        tbAllCategory.setOnCheckedChangeListener(this);
+        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories(true, EnumDebt.NONE).size()) {
+            tbAllCategory.setChecked(true);
+        } else {
+            tbAllCategory.setChecked(false);
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onActivityCreated
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -117,47 +165,8 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        super.onCreateOptionsMenu(menu, inflater);
-
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onCreateOptionsMenu
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onActivityCreated(savedInstanceState);
-
-        mDbHelper = new DatabaseHelper(getActivity());
-
-        llCategories    = (LinearLayout) getView().findViewById(R.id.llCategories);
-        arCategoriesView.clear();
-        List<Category> arParentCategories = mDbHelper.getAllParentCategories(true, EnumDebt.NONE);
-        for(Category category : arParentCategories) {
-
-            arCategoriesView.add(new CategoryView(category, true, checkContain(category.getId())));
-
-            List<Category> arChildCategories = mDbHelper.getCategoriesByParent(category.getId());
-
-            for(Category cate : arChildCategories) {
-
-                arCategoriesView.add(new CategoryView(cate, true, checkContain(cate.getId())));
-
-            }
-        }
-
-        updateListCategories();
-
-        tbAllCategory   = (ToggleButton) getView().findViewById(R.id.tbAllCategory);
-        tbAllCategory.setOnCheckedChangeListener(this);
-        if(arCategories == null || arCategories.length == mDbHelper.getAllCategories(true, EnumDebt.NONE).size()) {
-            tbAllCategory.setChecked(true);
-        } else {
-            tbAllCategory.setChecked(false);
-        }
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onActivityCreated
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

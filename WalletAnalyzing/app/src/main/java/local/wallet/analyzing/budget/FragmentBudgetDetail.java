@@ -30,11 +30,12 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/25/2016.
  */
 public class FragmentBudgetDetail extends Fragment implements View.OnClickListener {
-
-    public static final String Tag = "BudgetDetail";
+    public static int               mTab = 3;
+    public static final String      Tag = "---[" + mTab + "]---BudgetDetail";
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configurations  mConfigs;
     private Budget          mBudget;
 
     private TextView        tvDescription;
@@ -58,6 +59,7 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
         mConfigs        = new Configurations(getActivity());
 
         Bundle bundle   = this.getArguments();
+        mTab            = bundle.getInt("Tab", mTab);
         mBudget         = (Budget)bundle.get("Budget");
 
         LogUtils.trace(Tag, "Budget: " + mBudget.toString());
@@ -96,12 +98,25 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
     } // End onCreateView
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
-            return;
-        }
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView    = mInflater.inflate(R.layout.action_bar_with_button_update, null);
@@ -125,35 +140,29 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
                 LogUtils.trace(Tag, "Click Menu Action Update Budget.");
                 FragmentBudgetCUD nextFrag = new FragmentBudgetCUD();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putSerializable("Budget", mBudget);
                 nextFrag.setArguments(bundle);
-                FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag, true);
                 break;
             }
             case R.id.llBudgetDetailTransactions: {
                 FragmentBudgetDetailTransactions nextFrag = new FragmentBudgetDetailTransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putSerializable("Budget", mBudget);
                 nextFrag.setArguments(bundle);
-                FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_budget, nextFrag, FragmentBudgetDetailTransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetDetailTransactions.Tag, true);
                 break;
             }
             case R.id.llHistory: {
                 if (mBudget.getRepeatType() != 0) {
                     FragmentBudgetHistory nextFrag = new FragmentBudgetHistory();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putSerializable("Budget", mBudget);
                     nextFrag.setArguments(bundle);
-                    FragmentBudgetDetail.this.getFragmentManager().beginTransaction()
-                            .add(R.id.layout_budget, nextFrag, FragmentBudgetHistory.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetHistory.Tag, true);
                 }
                 break;
             }

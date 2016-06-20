@@ -32,8 +32,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 3/28/2016.
  */
 public class FragmentLenderBorrower extends Fragment {
+    private int                     mTab = 1;
+    public final String             Tag = "---[" + mTab + "]---LenderBorrower";
 
-    public static final String     Tag                     = "LenderBorrower";
+    private ActivityMain            mActivity;
 
     public interface IUpdateLenderBorrower extends Serializable {
         void onLenderBorrowerUpdated(String people);
@@ -60,6 +62,7 @@ public class FragmentLenderBorrower extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
+        mTab                            = bundle.getInt("Tab", mTab);
         mCategory                       = (Category) bundle.getSerializable("Category");
         mPeople                         = bundle.getString("People", "");
         mCallback                       = (IUpdateLenderBorrower) bundle.get("Callback");
@@ -80,12 +83,13 @@ public class FragmentLenderBorrower extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getActivity());
+        mActivity   = (ActivityMain) getActivity();
 
-        etPeople = (ClearableEditText) getView().findViewById(R.id.etPeople);
+        mDbHelper   = new DatabaseHelper(getActivity());
+
+        etPeople    = (ClearableEditText) getView().findViewById(R.id.etPeople);
         if((mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.LESS) ||
                 (!mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.MORE)) {
             etPeople.setHint(getResources().getText(R.string.report_Lent_borrow_lender));
@@ -104,7 +108,7 @@ public class FragmentLenderBorrower extends Fragment {
         lvPeople.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 etPeople.setText(peoples.get(position));
             }
         });
@@ -115,6 +119,13 @@ public class FragmentLenderBorrower extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -129,7 +140,7 @@ public class FragmentLenderBorrower extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
 
                 mCallback.onLenderBorrowerUpdated(etPeople.getText().toString());
                 // Back
@@ -137,8 +148,6 @@ public class FragmentLenderBorrower extends Fragment {
             }
         });
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

@@ -31,8 +31,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentEvent extends Fragment {
+    private int                     mTab = 1;
+    public final String             Tag = "---[" + mTab + "]---Event";
 
-    public static final String     Tag                     = "FragmentEvent";
+    private ActivityMain            mActivity;
 
     public interface IUpdateEvent extends Serializable {
         void onEventUpdated(String event);
@@ -41,6 +43,7 @@ public class FragmentEvent extends Fragment {
     private DatabaseHelper          mDbHelper;
 
     private String                  mEvent;
+    private int                     mContainerViewId;
 
     private ClearableEditText       etEvent;
     private ListView                lvEvent;
@@ -58,36 +61,12 @@ public class FragmentEvent extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
+        mTab                            = bundle.getInt("Tab", mTab);
         mEvent                          = bundle.getString("Event", "");
+        mContainerViewId                = bundle.getInt("ContainerViewId");
         mCallback                       = (IUpdateEvent) bundle.get("Callback");
 
         LogUtils.trace(Tag, "mEvent = " + mEvent);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_event));
-        ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
-        ivDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
-                mCallback.onEventUpdated(etEvent.getText().toString());
-
-                // Back
-                getFragmentManager().popBackStackImmediate();
-            }
-        });
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -104,8 +83,9 @@ public class FragmentEvent extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity           = (ActivityMain) getActivity();
 
         mDbHelper = new DatabaseHelper(getActivity());
 
@@ -121,12 +101,47 @@ public class FragmentEvent extends Fragment {
         lvEvent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 etEvent.setText(events.get(position));
             }
         });
 
         LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        updateActionBar();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void updateActionBar() {
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_event));
+        ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
+        ivDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ActivityMain) getActivity()).hideKeyboard();
+                mCallback.onEventUpdated(etEvent.getText().toString());
+
+                // Back
+                getFragmentManager().popBackStackImmediate();
+            }
+        });
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
     }
 
     /**

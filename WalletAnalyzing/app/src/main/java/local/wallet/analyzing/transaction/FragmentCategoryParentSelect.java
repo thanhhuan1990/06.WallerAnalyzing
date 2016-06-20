@@ -30,8 +30,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentCategoryParentSelect extends Fragment {
+    public static int           mTab = 1;
+    public static final String  Tag = "---[" + mTab + "]---CategoryParentSelect";
 
-    public static final String Tag = "FragmentCategoryParentSelect";
+    private ActivityMain        mActivity;
 
     public interface ISelectParentCategory extends Serializable {
         void onParentCategorySelected(int categoryId);
@@ -53,8 +55,8 @@ public class FragmentCategoryParentSelect extends Fragment {
 
         setHasOptionsMenu(true);
 
-        Bundle bundle = this.getArguments();
-
+        Bundle bundle                   = this.getArguments();
+        mTab                            = bundle.getInt("Tab", mTab);
         mIsExpense                      = bundle.getBoolean("CategoryType");
         mCallback                       = (ISelectParentCategory) bundle.getSerializable("Callback");
         mCurrentParentCategoryId        = bundle.getInt("ParentCategoryId", 0);
@@ -75,8 +77,9 @@ public class FragmentCategoryParentSelect extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity           = (ActivityMain) getActivity();
 
         mDbHelper = new DatabaseHelper(getActivity());
 
@@ -103,8 +106,13 @@ public class FragmentCategoryParentSelect extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);

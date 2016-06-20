@@ -33,8 +33,10 @@ import local.wallet.analyzing.account.FragmentCurrencySelect.ISelectCurrency;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentAccountUpdate extends Fragment implements View.OnClickListener, IUpdateDescription, ISelectAccountType, ISelectCurrency {
+    public static int                   mTab = 2;
+    public static final String          Tag = "---[" + mTab + "]---AccountUpdate";
 
-    public static final String Tag = "AccountUpdate";
+    private ActivityMain                mActivity;
 
     private DatabaseHelper      mDbHelper;
 
@@ -66,25 +68,10 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
         mAccount            = mDbHelper.getAccount(mAccountId);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mAccountId          = bundle.getInt("AccountID", 0);
         mCallback           = (IAccountCallback) bundle.getSerializable("Callback");
         mContainerViewId    = bundle.getInt("ContainerViewId");
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
-
-        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle            = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_account_add));
-
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -129,6 +116,37 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle            = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_add));
+
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
     public void onAccountTypeSelected(int accountTypeId) {
         LogUtils.logEnterFunction(Tag, "accountTypeId = " + accountTypeId);
 
@@ -164,36 +182,30 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
             case R.id.llType: {
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putInt("AccountType", mAccount.getTypeId());
                 bundle.putSerializable("Callback", FragmentAccountUpdate.this);
                 nextFrag.setArguments(bundle);
-                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentAccountTypeSelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentAccountTypeSelect.Tag, true);
                 break;
             }
             case R.id.llCurrency: {
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putInt("Currency", mAccount.getCurrencyId());
                 nextFrag.setArguments(bundle);
-                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentCurrencySelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentCurrencySelect.Tag, true);
                 break;
             }
             case R.id.llDescription: {
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putString("Description", tvDescription.getText().toString());
                 bundle.putSerializable("Callback", FragmentAccountUpdate.this);
                 nextFrag.setArguments(bundle);
-                FragmentAccountUpdate.this.getFragmentManager().beginTransaction()
-                        .add(mContainerViewId, nextFrag, FragmentDescription.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentDescription.Tag, true);
                 break;
             }
             case R.id.llSave: {

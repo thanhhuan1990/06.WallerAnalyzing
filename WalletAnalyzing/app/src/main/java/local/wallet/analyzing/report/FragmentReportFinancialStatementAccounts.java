@@ -34,17 +34,20 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 3/31/2016.
  */
 public class FragmentReportFinancialStatementAccounts extends Fragment implements View.OnClickListener, IAccountCallback {
-    public static final String Tag = "ReportFinancialStatementAccounts";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---ReportFinancialStatementAccounts";
 
-    private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private ActivityMain            mActivity;
 
-    private AccountType     mAccount;
-    private ListView        lvAccount;
-    private AccountAdapter  accAdapter;
-    private List<Account>   listAccount     = new ArrayList<Account>();
+    private DatabaseHelper          mDbHelper;
+    private Configurations          mConfigs;
 
-    private TextView        tvEmpty;
+    private AccountType             mAccount;
+    private ListView                lvAccount;
+    private AccountAdapter          accAdapter;
+    private List<Account>           listAccount     = new ArrayList<Account>();
+
+    private TextView                tvEmpty;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +57,8 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
 
         Bundle bundle = this.getArguments();
         if(bundle != null) {
-            int accountTypeId = bundle.getInt("AccountType", 0);
+            mTab                = bundle.getInt("Tab", mTab);
+            int accountTypeId   = bundle.getInt("AccountType", 0);
             for (AccountType accType : AccountType.Accounts) {
                 if(accountTypeId == accType.getId()) {
                     mAccount = accType;
@@ -89,13 +93,11 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
 
                 FragmentAccountTransactions nextFrag = new FragmentAccountTransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putInt("AccountID", accAdapter.getItem(position).getId());
                 bundle.putInt("ContainerViewId", R.id.ll_report);
                 nextFrag.setArguments(bundle);
-                FragmentReportFinancialStatementAccounts.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentAccountTransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentAccountTransactions.Tag, true);
 
             }
         });
@@ -113,6 +115,9 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -120,6 +125,12 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View actionBar              = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -227,14 +238,12 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
                     LogUtils.trace(Tag, "Edit item number " + position + " -> AccountID = " + listAccount.get(position));
                     FragmentAccountUpdate nextFrag = new FragmentAccountUpdate();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putInt("AccountID", listAccount.get(position).getId());
                     bundle.putSerializable("Callback", FragmentReportFinancialStatementAccounts.this);
                     bundle.putInt("ContainerViewId", R.id.ll_report);
                     nextFrag.setArguments(bundle);
-                    FragmentReportFinancialStatementAccounts.this.getFragmentManager().beginTransaction()
-                            .add(R.id.ll_report, nextFrag, FragmentAccountUpdate.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentAccountUpdate.Tag, true);
                 }
             });
 

@@ -32,10 +32,11 @@ import local.wallet.analyzing.account.FragmentCurrencySelect.ISelectCurrency;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentAccountCreate extends Fragment implements IUpdateDescription, FragmentAccountTypeSelect.ISelectAccountType, ISelectCurrency {
+    public static int                   mTab = 2;
+    public static final String          Tag = "---[" + mTab + "]---AccountCreate";
 
-    public static final String Tag      = "AccountCreate";
-
-    private Configurations mConfigs;
+    private ActivityMain                mActivity;
+    private Configurations              mConfigs;
     private DatabaseHelper              mDbHelper;
     private IAccountCallback            mCallback;
 
@@ -60,26 +61,8 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mCallback           = (IAccountCallback) bundle.getSerializable("Callback");
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_ACCOUNT) {
-            return;
-        }
-
-        LogUtils.logEnterFunction(Tag, null);
-
-        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle            = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_account_add));
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -89,7 +72,6 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         LogUtils.logLeaveFunction(Tag, null, null);
-
         return inflater.inflate(R.layout.layout_fragment_account_create, container, false);
     }
 
@@ -99,9 +81,11 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
 
         super.onActivityCreated(savedInstanceState);
 
-        mConfigs    = new Configurations(getActivity());
-        mCurrency   = Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency));
-        mDbHelper   = new DatabaseHelper(getActivity());
+        mActivity           = (ActivityMain) getActivity();
+
+        mConfigs            = new Configurations(getActivity());
+        mCurrency           = Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency));
+        mDbHelper           = new DatabaseHelper(getActivity());
 
         // Initialize View
         etName              = (ClearableEditText) getView().findViewById(R.id.etName);
@@ -120,32 +104,28 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         llType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 FragmentAccountTypeSelect nextFrag = new FragmentAccountTypeSelect();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putInt("AccountType", mAccountType.getId());
                 bundle.putSerializable("Callback", FragmentAccountCreate.this);
                 nextFrag.setArguments(bundle);
-                FragmentAccountCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentAccountTypeSelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.layout_account, nextFrag, FragmentAccountTypeSelect.Tag, true);
             }
         });
 
         llCurrency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 FragmentCurrencySelect nextFrag = new FragmentCurrencySelect();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putInt("Currency", mCurrency.getValue());
                 bundle.putSerializable("Callback", FragmentAccountCreate.this);
                 nextFrag.setArguments(bundle);
-                FragmentAccountCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentCurrencySelect.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.layout_account, nextFrag, FragmentCurrencySelect.Tag, true);
             }
         });
 
@@ -154,23 +134,21 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         llDescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 FragmentDescription nextFrag = new FragmentDescription();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putString("Description", tvDescription.getText().toString());
                 bundle.putSerializable("Callback", FragmentAccountCreate.this);
                 nextFrag.setArguments(bundle);
-                FragmentAccountCreate.this.getFragmentManager().beginTransaction()
-                        .add(R.id.layout_account, nextFrag, FragmentDescription.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.layout_account, nextFrag, FragmentDescription.Tag, true);
             }
         });
 
         llSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 LogUtils.trace(Tag, "Click button SAVE");
                 // Check Account's name
                 if(etName.getText().toString().equals("")) {
@@ -202,6 +180,20 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
     public void onAccountTypeSelected(int accountTypeId) {
         LogUtils.logEnterFunction(Tag, "accountTypeId = " + accountTypeId);
 
@@ -229,6 +221,14 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         tvDescription.setText(description);
 
         LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+    }
+
+    private void initActionBar() {
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle            = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_add));
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
     }
 
     /**

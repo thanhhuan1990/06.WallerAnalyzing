@@ -21,14 +21,17 @@ import java.util.List;
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
+import local.wallet.analyzing.main.RootFragment;
 import local.wallet.analyzing.model.AccountType;
 
 /**
  * Created by huynh.thanh.huan on 1/6/2016.
  */
-public class FragmentAccountTypeSelect extends Fragment {
+public class FragmentAccountTypeSelect extends RootFragment {
+    public static int                   mTab = 2;
+    public static final String          Tag = "---[" + mTab + "]---AccountTypeSelect";
 
-    public static final String Tag = "FragmentAccountTypeSelect";
+    private ActivityMain                mActivity;
 
     public interface ISelectAccountType extends Serializable {
         void onAccountTypeSelected(int accountTypeId);
@@ -47,23 +50,10 @@ public class FragmentAccountTypeSelect extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mUsingAccountTypeId = bundle.getInt("AccountType", 1);
         mCallback           = (ISelectAccountType) bundle.getSerializable("Callback");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_account_select_type));
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -81,6 +71,8 @@ public class FragmentAccountTypeSelect extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
+        mActivity               = (ActivityMain) getActivity();
+
         ListView lvAccountType   = (ListView) getView().findViewById(R.id.lvAccountType);
         AccountTypeAdapter accountTypeAdapter = new AccountTypeAdapter(getActivity(), AccountType.Accounts);
         lvAccountType.setAdapter(accountTypeAdapter);
@@ -94,6 +86,26 @@ public class FragmentAccountTypeSelect extends Fragment {
                 getFragmentManager().popBackStackImmediate();
             }
         });
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_select_type));
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

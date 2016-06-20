@@ -28,8 +28,10 @@ import local.wallet.analyzing.model.Currency.CurrencyList;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentCurrencySelect extends Fragment {
+    public static int                   mTab = 2;
+    public static final String          Tag = "---[" + mTab + "]---CurrencySelect";
 
-    public static final String Tag = "FragmentCurrencySelect";
+    private ActivityMain                mActivity;
 
     public interface ISelectCurrency {
         void onCurrencySelected(CurrencyList currency);
@@ -47,6 +49,7 @@ public class FragmentCurrencySelect extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mUsingCurrencyId    = bundle.getInt("Currency", 1);
         mCallback           = (ISelectCurrency) bundle.getSerializable("Callback");
 
@@ -54,32 +57,12 @@ public class FragmentCurrencySelect extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-
-        LayoutInflater mInflater = LayoutInflater.from(getActivity());
-        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
-        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(getResources().getString(R.string.title_account_select_currency));
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
-        return inflater.inflate(R.layout.layout_fragment_listview_only, container, false);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
 
         ListView lvCurrency   = (ListView) getView().findViewById(R.id.listview);
         CurrencyAdapter accountTypeAdapter = new CurrencyAdapter(getActivity(), Arrays.asList(Currency.CurrencyList.values()));
@@ -93,6 +76,34 @@ public class FragmentCurrencySelect extends Fragment {
                 getFragmentManager().popBackStackImmediate();
             }
         });
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logLeaveFunction(Tag, null, null);
+        return inflater.inflate(R.layout.layout_fragment_listview_only, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_account_select_currency));
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

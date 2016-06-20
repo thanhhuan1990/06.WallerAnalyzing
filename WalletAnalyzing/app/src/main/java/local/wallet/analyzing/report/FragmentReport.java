@@ -19,44 +19,28 @@ import java.util.List;
 
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.budget.FragmentBudgetCUD;
 import local.wallet.analyzing.main.ActivityMain;
 
 /**
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentReport extends Fragment {
+    public static final int         mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---Report";
 
-    public static final String Tag = "Report";
+    private ActivityMain            mActivity;
 
-    private View                mActionBar;
-    private Spinner             spReportType;
-    private int                 mCurrentReportType = 0;
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.trace(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
-        }
-
-        if(mActionBar == null) {
-            initActionBar();
-        }
-
-        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
+    private View                    mActionBar;
+    private Spinner                 spReportType;
+    private int                     mCurrentReportType = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -72,6 +56,9 @@ public class FragmentReport extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -121,6 +108,26 @@ public class FragmentReport extends Fragment {
                     break;
             }
         }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        if(mActionBar == null) {
+            initActionBar();
+        }
+
+        ((ActivityMain)getActivity()).updateActionBar(mActionBar);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }
@@ -183,9 +190,10 @@ public class FragmentReport extends Fragment {
         }
 
         FragmentReportEVI nextFrag = new FragmentReportEVI();
-        FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, FragmentReportEVI.Tag)
-                .commit();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        nextFrag.setArguments(bundle);
+        mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVI.Tag, false);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -201,9 +209,10 @@ public class FragmentReport extends Fragment {
         }
 
         FragmentReportExpenseAnalysis nextFrag = new FragmentReportExpenseAnalysis();
-        FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysis.Tag)
-                .commit();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        nextFrag.setArguments(bundle);
+        mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportExpenseAnalysis.Tag, false);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -219,9 +228,10 @@ public class FragmentReport extends Fragment {
         }
 
         FragmentReportFinancialStatement nextFrag = new FragmentReportFinancialStatement();
-        FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, FragmentReportFinancialStatement.Tag)
-                .commit();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        nextFrag.setArguments(bundle);
+        mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportFinancialStatement.Tag, false);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -237,9 +247,10 @@ public class FragmentReport extends Fragment {
         }
 
         FragmentReportLentBorrowed nextFrag = new FragmentReportLentBorrowed();
-        FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, FragmentReportLentBorrowed.Tag)
-                .commit();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        nextFrag.setArguments(bundle);
+        mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportLentBorrowed.Tag, false);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -255,9 +266,10 @@ public class FragmentReport extends Fragment {
         }
 
         FragmentReportEvent nextFrag = new FragmentReportEvent();
-        FragmentReport.this.getFragmentManager().beginTransaction()
-                .replace(R.id.ll_report, nextFrag, FragmentReportEvent.Tag)
-                .commit();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        nextFrag.setArguments(bundle);
+        mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEvent.Tag, false);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 

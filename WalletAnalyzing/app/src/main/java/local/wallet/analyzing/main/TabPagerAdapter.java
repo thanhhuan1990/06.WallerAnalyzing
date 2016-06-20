@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import local.wallet.analyzing.account.FragmentListAccount;
 import local.wallet.analyzing.budget.FragmentListBudget;
 import local.wallet.analyzing.transactions.FragmentListTransaction;
@@ -20,7 +23,7 @@ import local.wallet.analyzing.model.Transaction;
  */
 public class TabPagerAdapter extends FragmentPagerAdapter {
 
-    SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+    List<List<Fragment>>    registeredFragment  = new ArrayList<>();
 
     private int mNumOfTabs;
 
@@ -60,13 +63,14 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         Fragment fragment = (Fragment) super.instantiateItem(container, position);
-        registeredFragments.put(position, fragment);
+        registeredFragment.add(position, new ArrayList<Fragment>());
+        registeredFragment.get(position).add(fragment);
         return fragment;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        registeredFragments.remove(position);
+        registeredFragment.remove(position);
         super.destroyItem(container, position, object);
     }
 
@@ -75,7 +79,32 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
         return mNumOfTabs;
     }
 
+    public int getBackStackCount(int tab) {
+        return registeredFragment.get(tab).size();
+    }
+
+    public void popBackStack(int tab) {
+        registeredFragment.get(tab).get(registeredFragment.get(tab).size() - 1).getFragmentManager().popBackStackImmediate();
+    }
+
+    public void resumeTopFragment(int tab) {
+        registeredFragment.get(tab).get(registeredFragment.get(tab).size() - 1).onResume();
+    }
+
+    public void removeTopFragment(int tab) {
+        registeredFragment.get(tab).remove(registeredFragment.get(tab).size() - 1);
+    }
+
+    public void addFragment(int tab, Fragment fragment) {
+        registeredFragment.get(tab).add(fragment);
+    }
+
+    public void replaceFragment(int tab, Fragment fragment) {
+        registeredFragment.get(tab).remove(registeredFragment.get(tab).size() - 1);
+        registeredFragment.get(tab).add(fragment);
+    }
+
     public Fragment getRegisteredFragment(int position) {
-        return registeredFragments.get(position);
+        return registeredFragment.get(position).get(0);
     }
 }

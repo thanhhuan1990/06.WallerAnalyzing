@@ -57,7 +57,10 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEVI extends Fragment implements View.OnClickListener, FragmentReportEVISelectTime.ISelectReportEVITime, FragmentReportSelectAccount.ISelectReportAccount {
-    public static final String Tag = "ReportEVI";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".5]---ReportEVI";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
     private Configurations mConfigs;
@@ -85,6 +88,8 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
@@ -121,12 +126,16 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
+
         LogUtils.logLeaveFunction(Tag, null, null);
-        super.onCreateOptionsMenu(menu, inflater);
     } // End onCreateOptionsMenu
 
     @Override
@@ -342,14 +351,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
             public void onClick(View v) {
                 FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putIntArray("Accounts", mAccountId);
                 bundle.putLong("FromDate", today.getTimeInMillis());
                 bundle.putLong("ToDate", tomorrow.getTimeInMillis());
                 nextFrag.setArguments(bundle);
-                FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
             }
         });
 
@@ -405,14 +412,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
             public void onClick(View v) {
                 FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putIntArray("Accounts", mAccountId);
                 bundle.putLong("FromDate", calStartOfWeek.getTimeInMillis());
                 bundle.putLong("ToDate", calStartOfNextWeek.getTimeInMillis());
                 nextFrag.setArguments(bundle);
-                FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
             }
         });
         //endregion
@@ -466,14 +471,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
             public void onClick(View v) {
                 FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putIntArray("Accounts", mAccountId);
                 bundle.putLong("FromDate", calStartOfMonth.getTimeInMillis());
                 bundle.putLong("ToDate", calStartOfNextMonth.getTimeInMillis());
                 nextFrag.setArguments(bundle);
-                FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
             }
         });
         //endregion
@@ -526,14 +529,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
             public void onClick(View v) {
                 FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putIntArray("Accounts", mAccountId);
                 bundle.putLong("FromDate", calStartOfYear.getTimeInMillis());
                 bundle.putLong("ToDate", calStartOfNextYear.getTimeInMillis());
                 nextFrag.setArguments(bundle);
-                FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
             }
         });
         //endregion
@@ -663,14 +664,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
                         public void onClick(View v) {
                             FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                             Bundle bundle = new Bundle();
+                            bundle.putInt("Tab", mTab);
                             bundle.putIntArray("Accounts", mAccountId);
                             bundle.putLong("FromDate", fStartDate);
                             bundle.putLong("ToDate", fEndDate);
                             nextFrag.setArguments(bundle);
-                            FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                                    .addToBackStack(null)
-                                    .commit();
+                            mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
                         }
                     });
 
@@ -779,14 +778,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
                         public void onClick(View v) {
                             FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                             Bundle bundle = new Bundle();
+                            bundle.putInt("Tab", mTab);
                             bundle.putIntArray("Accounts", mAccountId);
                             bundle.putLong("FromDate", fStartDate);
                             bundle.putLong("ToDate", fEndDate);
                             nextFrag.setArguments(bundle);
-                            FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                                    .addToBackStack(null)
-                                    .commit();
+                            mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
                         }
                     });
 
@@ -884,14 +881,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
                     public void onClick(View v) {
                         FragmentReportEVITransactions nextFrag = new FragmentReportEVITransactions();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putIntArray("Accounts", mAccountId);
                         bundle.putLong("FromDate", fStartDate);
                         bundle.putLong("ToDate", fEndDate);
                         nextFrag.setArguments(bundle);
-                        FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVITransactions.Tag, true);
                     }
                 });
 
@@ -1409,24 +1404,12 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
                 transactionView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        /*FragmentTransactionUpdate nextFrag = new FragmentTransactionUpdate();
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("Transaction", transaction);
-                        bundle.putInt("ContainerViewId", R.id.layout_account);
-                        nextFrag.setArguments(bundle);
-                        FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, "FragmentTransactionUpdate")
-                                .addToBackStack(null)
-                                .commit();*/
-
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
 
@@ -1456,13 +1439,11 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putString("Fragment", Tag);
         bundle.putIntArray("Accounts", mAccountId);
         nextFrag.setArguments(bundle);
-        FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag, true);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -1473,15 +1454,13 @@ public class FragmentReportEVI extends Fragment implements View.OnClickListener,
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportEVISelectTime nextFrag = new FragmentReportEVISelectTime();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putInt("Time", mTime);
         bundle.putLong("FromDate", mFromDate.getTimeInMillis());
         bundle.putLong("ToDate", mToDate.getTimeInMillis());
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentReportEVI.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, FragmentReportEVISelectTime.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVISelectTime.Tag, true);
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End showListTime
 

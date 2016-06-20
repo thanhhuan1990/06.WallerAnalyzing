@@ -23,6 +23,7 @@ import java.util.Map;
 
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.account.FragmentAccountTransactions;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.main.Configurations;
 import local.wallet.analyzing.model.Category;
@@ -36,10 +37,13 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 04/04/2016.
  */
 public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
-    public static final String Tag = "ReportFinancialStatementLentBorrowed";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---ReportFinancialStatementLentBorrowed";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper      mDbHelper;
-    private Configurations mConfigs;
+    private Configurations      mConfigs;
 
     private boolean             isLent  = true;
     private TextView            tvBorrowing;
@@ -55,46 +59,13 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
     private List<Map.Entry<String, Double>> arBorrowed = new ArrayList<Map.Entry<String, Double>>();
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.warn(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
-        }
-
-        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mActionBar             = mInflater.inflate(R.layout.action_bar_only_title, null);
-        if(isLent) {
-            ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.title_report_financial_statement_lent));
-        } else {
-            ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.title_report_financial_statement_Borrow));
-        }
-
-        ((ActivityMain) getActivity()).updateActionBar(mActionBar);
-
-        initDataSource();
-
-        if(isLent) {
-            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
-            mLendingAdapter.notifyDataSetChanged();
-        } else {
-            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
-            mBorrowingAdapter.notifyDataSetChanged();
-        }
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
         Bundle bundle   = this.getArguments();
+        mTab            = bundle.getInt("Tab", mTab);
         isLent          = bundle.getBoolean("Lent");
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -131,6 +102,50 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
 
         LogUtils.logLeaveFunction(Tag, null, null);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mActionBar             = mInflater.inflate(R.layout.action_bar_only_title, null);
+        if(isLent) {
+            ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.title_report_financial_statement_lent));
+        } else {
+            ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(getResources().getString(R.string.title_report_financial_statement_Borrow));
+        }
+
+        ((ActivityMain) getActivity()).updateActionBar(mActionBar);
+
+        initDataSource();
+
+        if(isLent) {
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            mLendingAdapter.notifyDataSetChanged();
+        } else {
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            mBorrowingAdapter.notifyDataSetChanged();
+        }
+
+        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     @Override
@@ -264,13 +279,11 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
                     LogUtils.info(Tag, Tag + " ---> ReportLentBorrowedDetail" );
                     FragmentReportLentBorrowedDetail nextFrag = new FragmentReportLentBorrowedDetail();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putString("People", entry.getKey());
                     bundle.putBoolean("Lent", isLent);
                     nextFrag.setArguments(bundle);
-                    FragmentReportFinancialStatementLentBorrowed.this.getFragmentManager().beginTransaction()
-                            .add(R.id.ll_report, nextFrag, FragmentReportLentBorrowedDetail.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportLentBorrowedDetail.Tag, true);
                 }
             });
 
@@ -289,12 +302,10 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
 
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportFinancialStatementLentBorrowed.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
             } else if(entry.getValue() > 0) {
@@ -312,12 +323,10 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
 
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportFinancialStatementLentBorrowed.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
             }

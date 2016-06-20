@@ -33,7 +33,10 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEventTransactions extends Fragment implements View.OnClickListener {
-    public static final String Tag = "ReportEventTransactions";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".5]---ReportEventTransactions";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
     private Configurations mConfigs;
@@ -48,34 +51,6 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     private LinearLayout    llIncomes;
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.warn(Tag, "Wrong Tab, RETURN");
-            LogUtils.logLeaveFunction(Tag, null, null);
-            return;
-        }
-
-        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_update_export, null);
-        TextView  tvTitle           = (TextView) mCustomView.findViewById(R.id.tvTitle);
-        tvTitle.setText(mEvent.getName());
-        ImageView ivUpdate          = (ImageView) mCustomView.findViewById(R.id.ivUpdate);
-        ivUpdate.setOnClickListener(this);
-        ImageView ivExport          = (ImageView) mCustomView.findViewById(R.id.ivExport);
-        ivExport.setOnClickListener(this);
-
-        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        // Todo: Update view by data from mDbHelper
-        updateListTransactions();
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    } // End onCreateOptionsMenu
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
@@ -86,7 +61,8 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
         Bundle bundle = this.getArguments();
         if(bundle != null) {
-            mEvent = mDbHelper.getEvent(bundle.getInt("EventID", 0));
+            mTab    = bundle.getInt("Tab", mTab);
+            mEvent  = mDbHelper.getEvent(bundle.getInt("EventID", 0));
 
             if(mEvent == null) {
                 LogUtils.warn(Tag, "Event is null, RETURN");
@@ -125,17 +101,53 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     } // End onCreateView
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mCustomView            = mInflater.inflate(R.layout.action_bar_with_button_update_export, null);
+        TextView  tvTitle           = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(mEvent.getName());
+        ImageView ivUpdate          = (ImageView) mCustomView.findViewById(R.id.ivUpdate);
+        ivUpdate.setOnClickListener(this);
+        ImageView ivExport          = (ImageView) mCustomView.findViewById(R.id.ivExport);
+        ivExport.setOnClickListener(this);
+
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        // Todo: Update view by data from mDbHelper
+        updateListTransactions();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    } // End onCreateOptionsMenu
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivUpdate:
                 FragmentReportEventUpdate nextFrag = new FragmentReportEventUpdate();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putSerializable("EventID", mEvent.getId());
                 nextFrag.setArguments(bundle);
-                FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
-                        .replace(R.id.ll_report, nextFrag, FragmentReportEventUpdate.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEventUpdate.Tag, true);
             break;
             case R.id.ivExport:
                 break;
@@ -273,12 +285,10 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
                     FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putSerializable("Transaction", transaction);
                     nextFrag.setArguments(bundle);
-                    FragmentReportEventTransactions.this.getFragmentManager().beginTransaction()
-                            .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                 }
             });
 

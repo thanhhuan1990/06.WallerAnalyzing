@@ -36,15 +36,18 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 3/28/2016.
  */
 public class FragmentReportLentBorrowed extends Fragment {
-    public static final String Tag = "ReportLentBorrowed";
+    public static final int         mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".4]---LentBorrowed";
 
-    private DatabaseHelper      mDbHelper;
-    private Configurations mConfigs;
+    private ActivityMain            mActivity;
 
-    private TextView            tvBorrowing;
-    private ListView            lvBorrowing;
-    private TextView            tvLending;
-    private ListView            lvLending;
+    private DatabaseHelper          mDbHelper;
+    private Configurations          mConfigs;
+
+    private TextView                tvBorrowing;
+    private ListView                lvBorrowing;
+    private TextView                tvLending;
+    private ListView                lvLending;
 
     private LentBorrowedAdapter mLendingAdapter;
     private LentBorrowedAdapter mBorrowingAdapter;
@@ -78,6 +81,8 @@ public class FragmentReportLentBorrowed extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mActivity       = (ActivityMain) getActivity();
+
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
@@ -110,8 +115,8 @@ public class FragmentReportLentBorrowed extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            LogUtils.trace(Tag, "CurrentVisibleItem is NOT TAB_POSITION_REPORTS");
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
             LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
@@ -240,13 +245,11 @@ public class FragmentReportLentBorrowed extends Fragment {
                     LogUtils.info(Tag, Tag + " ---> ReportLentBorrowedDetail" );
                     FragmentReportLentBorrowedDetail nextFrag = new FragmentReportLentBorrowedDetail();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putString("People", entry.getKey());
                     bundle.putBoolean("Lent", isLent);
                     nextFrag.setArguments(bundle);
-                    FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
-                            .add(R.id.ll_report, nextFrag, FragmentReportLentBorrowedDetail.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportLentBorrowedDetail.Tag, true);
                 }
             });
             viewHolder.tvPeople.setText(entry.getKey());
@@ -266,12 +269,10 @@ public class FragmentReportLentBorrowed extends Fragment {
 
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
             } else {
@@ -289,12 +290,10 @@ public class FragmentReportLentBorrowed extends Fragment {
 
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportLentBorrowed.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
             }

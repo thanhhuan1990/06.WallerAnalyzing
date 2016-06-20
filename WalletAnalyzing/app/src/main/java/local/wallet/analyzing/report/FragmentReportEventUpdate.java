@@ -31,10 +31,13 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportEventUpdate extends Fragment implements View.OnClickListener {
-    public static final String Tag = "ReportEventUpdate";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".5]---ReportEventUpdate";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper      mDbHelper;
-    private Configurations mConfigs;
+    private Configurations      mConfigs;
     private Calendar            mCal;
 
     private int                 mEventId;
@@ -53,8 +56,9 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        Bundle bundle = this.getArguments();
-        mEventId      = bundle.getInt("EventID", 0);
+        Bundle bundle   = this.getArguments();
+        mTab            = bundle.getInt("Tab", mTab);
+        mEventId        = bundle.getInt("EventID", 0);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End onCreate
@@ -71,6 +75,8 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mCal            = Calendar.getInstance();
         mConfigs        = new Configurations(getContext());
@@ -114,12 +120,14 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
-            return;
-        }
-
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());
         View mCustomView            = mInflater.inflate(R.layout.action_bar_only_title, null);

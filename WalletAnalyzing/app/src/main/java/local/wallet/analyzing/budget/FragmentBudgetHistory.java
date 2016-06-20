@@ -31,11 +31,12 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentBudgetHistory extends Fragment {
-
-    public static final String Tag = "BudgetHistory";
+    public static int               mTab = 3;
+    public static final String      Tag = "---[" + mTab + "]---BudgetHistory";
+    private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations mConfigs;
+    private Configurations          mConfigs;
     private Budget                  mBudget;
     private TextView                tvDescription;
     private ListView                lvHistory;
@@ -69,15 +70,17 @@ public class FragmentBudgetHistory extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
-        mDbHelper = new DatabaseHelper(getActivity());
-        mConfigs    = new Configurations(getActivity());
+        mActivity       = (ActivityMain) getActivity();
+
+        mDbHelper       = new DatabaseHelper(getActivity());
+        mConfigs        = new Configurations(getActivity());
 
         tvDescription   = (TextView) getView().findViewById(R.id.tvDescription);
         tvDescription.setText(String.format(getResources().getString(R.string.budget_history_description),
                                             mBudget.getName()));
 
-        lvHistory = (ListView) getView().findViewById(R.id.lvHistory);
-        adapter = new Adapter(getContext(), arHistories);
+        lvHistory       = (ListView) getView().findViewById(R.id.lvHistory);
+        adapter         = new Adapter(getContext(), arHistories);
         lvHistory.setAdapter(adapter);
 
         LogUtils.logLeaveFunction(Tag, null, null);
@@ -85,11 +88,14 @@ public class FragmentBudgetHistory extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
-            return;
-        }
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);

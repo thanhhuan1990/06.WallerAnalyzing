@@ -35,10 +35,13 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 04/04/2016.
  */
 public class FragmentReportLentBorrowedDetail extends Fragment {
-    public static final String Tag = "ReportLentBorrowedDetail";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---ReportLentBorrowedDetail";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations mConfigs;
+    private Configurations          mConfigs;
 
     private boolean                 isLent      = false;
     private String                  strPeople   = "";
@@ -49,28 +52,13 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
     private Double starting_balance = 0.0, finish = 0.0;
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
-        View mActionBar             = mInflater.inflate(R.layout.action_bar_only_title, null);
-        ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(strPeople);
-
-        ((ActivityMain) getActivity()).updateActionBar(mActionBar);
-
-        updateDataSource();
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         isLent              = bundle.getBoolean("Lent");
         strPeople           = bundle.getString("People");
 
@@ -101,6 +89,8 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mActivity   = (ActivityMain) getActivity();
+
         if(getView() != null) {
             updateDataSource();
         }
@@ -114,6 +104,28 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
         if(getView() != null) {
             updateDataSource();
         }
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater    = LayoutInflater.from(getActivity());
+        View mActionBar             = mInflater.inflate(R.layout.action_bar_only_title, null);
+        ((TextView) mActionBar.findViewById(R.id.tvTitle)).setText(strPeople);
+
+        ((ActivityMain) getActivity()).updateActionBar(mActionBar);
+
+        updateDataSource();
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -262,12 +274,10 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
                 public void onClick(View v) {
                     FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                     Bundle bundle = new Bundle();
+                    bundle.putInt("Tab", mTab);
                     bundle.putSerializable("Transaction", transaction);
                     nextFrag.setArguments(bundle);
-                    FragmentReportLentBorrowedDetail.this.getFragmentManager().beginTransaction()
-                            .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                            .addToBackStack(null)
-                            .commit();
+                    mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                 }
             });
 

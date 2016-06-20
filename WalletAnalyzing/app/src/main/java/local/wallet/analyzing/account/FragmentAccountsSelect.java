@@ -34,8 +34,10 @@ import local.wallet.analyzing.model.Transaction.TransactionEnum;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentAccountsSelect extends Fragment {
+    public static int                   mTab = 2;
+    public static final String          Tag = "---[" + mTab + "]---AccountsSelect";
 
-    public static final String Tag = "FragmentAccountsSelect";
+    private ActivityMain                mActivity;
 
     public interface ISelectAccount extends Serializable {
         void onAccountSelected(TransactionEnum type, int accountId);
@@ -64,10 +66,11 @@ public class FragmentAccountsSelect extends Fragment {
         setHasOptionsMenu(true);
 
         /* Get data from Bundle */
-        Bundle bundle                   = this.getArguments();
-        mUsingAccountId                 = bundle.getInt("AccountID", 0);
-        mTransactionType                = (TransactionEnum) bundle.get("TransactionType");
-        mCallback                       = (ISelectAccount) bundle.get("Callback");
+        Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
+        mUsingAccountId     = bundle.getInt("AccountID", 0);
+        mTransactionType    = (TransactionEnum) bundle.get("TransactionType");
+        mCallback           = (ISelectAccount) bundle.get("Callback");
 
         LogUtils.trace(Tag, "mUsingAccountId = " + mUsingAccountId);
         LogUtils.trace(Tag, "mTransactionType = " + mTransactionType.name());
@@ -88,6 +91,8 @@ public class FragmentAccountsSelect extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
 
         super.onActivityCreated(savedInstanceState);
+
+        mActivity           = (ActivityMain) getActivity();
 
         /* Initialize Database, insert default category */
         mDbHelper       = new DatabaseHelper(getActivity());
@@ -123,20 +128,27 @@ public class FragmentAccountsSelect extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
-            return;
-        }
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
 
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        initActionBar();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    private void initActionBar() {
         /* Init ActionBar */
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
         TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
         tvTitle.setText(getResources().getString(R.string.title_account));
         ((ActivityMain)getActivity()).updateActionBar(mCustomView);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
     }
 
     /**

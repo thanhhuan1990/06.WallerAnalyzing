@@ -31,8 +31,10 @@ import local.wallet.analyzing.main.ActivityMain;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentReportEVISelectTime extends Fragment implements View.OnClickListener {
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".5]---ReportEVISelectTime";
 
-    public static final String Tag = "ReportEVITimeSelect";
+    private ActivityMain            mActivity;
 
     public interface ISelectReportEVITime extends Serializable {
         void onReportEVITimeSelected(int time);
@@ -64,6 +66,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mCurrentTime        = bundle.getInt("Time", 1);
         mFromDate.setTimeInMillis(bundle.getLong("FromDate"));
         mToDate.setTimeInMillis(bundle.getLong("ToDate"));
@@ -83,8 +86,9 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mTimes          = getResources().getStringArray(R.array.report_evi_ar_viewedby);
 
@@ -132,6 +136,13 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -143,7 +154,6 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
             updateViewForPeriod();
         }
 
-        super.onCreateOptionsMenu(menu, inflater);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 

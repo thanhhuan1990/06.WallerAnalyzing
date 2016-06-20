@@ -34,8 +34,9 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 3/4/2016.
  */
 public class FragmentBudgetDetailTransactions extends Fragment {
-
-    public static final String Tag = "BudgetDetailTransactions";
+    public static int               mTab = 3;
+    public static final String      Tag = "---[" + mTab + "]---BudgetDetailTransactions";
+    private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
     private Configurations mConfigs;
@@ -73,6 +74,8 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mActivity                   = (ActivityMain) getActivity();
+
         mDbHelper                   = new DatabaseHelper(getActivity());
         mConfigs                    = new Configurations(getActivity());
 
@@ -85,11 +88,14 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
-            return;
-        }
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView    = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -268,12 +274,10 @@ public class FragmentBudgetDetailTransactions extends Fragment {
                     public void onClick(View v) {
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentBudgetDetailTransactions.this.getFragmentManager().beginTransaction()
-                                .add(R.id.layout_budget, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
 

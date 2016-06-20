@@ -39,10 +39,13 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportExpenseAnalysis extends Fragment implements View.OnClickListener, FragmentReportExpenseAnalysisCategory.ISelectReportExpenseAnalysisCategory, FragmentReportExpenseAnalysisTime.ISelectReportExpenseAnalysisTime, FragmentReportSelectAccount.ISelectReportAccount {
-    public static final String Tag = "ReportExpenseAnalysis";
+    public static final int         mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".2]---ReportExpenseAnalysis";
+
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configurations  mConfigs;
 
     private int[]           mCategoryId = new int[0];   // All Categories
     private int[]           mAccountId  = new int[0];   // All Accounts
@@ -69,6 +72,8 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mConfigs        = new Configurations(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
@@ -114,13 +119,16 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
 
         LogUtils.logLeaveFunction(Tag, null, null);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -410,14 +418,12 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportExpenseAnalysisCategory nextFrag = new FragmentReportExpenseAnalysisCategory();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putString("Fragment", Tag);
         bundle.putIntArray("Categories", mCategoryId);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisCategory.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisCategory.Tag, true);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -428,13 +434,11 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportSelectAccount nextFrag = new FragmentReportSelectAccount();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putIntArray("Accounts", mAccountId);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportSelectAccount.Tag, true);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -445,13 +449,11 @@ public class FragmentReportExpenseAnalysis extends Fragment implements View.OnCl
         LogUtils.logEnterFunction(Tag, null);
         FragmentReportExpenseAnalysisTime nextFrag = new FragmentReportExpenseAnalysisTime();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putInt("Time", mViewedBy);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-       FragmentReportExpenseAnalysis.this.getFragmentManager().beginTransaction()
-                .add(R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisTime.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportExpenseAnalysisTime.Tag, true);
         LogUtils.logLeaveFunction(Tag, null, null);
     } // End showListTime
 

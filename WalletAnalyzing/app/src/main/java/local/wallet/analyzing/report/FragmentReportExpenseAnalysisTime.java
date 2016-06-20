@@ -27,8 +27,10 @@ import local.wallet.analyzing.main.ActivityMain;
  * Created by huynh.thanh.huan on 3/21/2016.
  */
 public class FragmentReportExpenseAnalysisTime extends Fragment {
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---ReportExpenseAnalysisTime";
 
-    public static final String Tag = "ReportExpenseAnalysisTime";
+    private ActivityMain            mActivity;
 
     public interface ISelectReportExpenseAnalysisTime extends Serializable {
         void onReportExpenseAnalysisTimeSelected(int time);
@@ -51,6 +53,7 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
+        mTab                = bundle.getInt("Tab", mTab);
         mCurrentTime        = bundle.getInt("Time", 1);
         mCallback           = (ISelectReportExpenseAnalysisTime) bundle.getSerializable("Callback");
 
@@ -68,8 +71,9 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mTimes          = getResources().getStringArray(R.array.report_expense_analysis_ar_viewedby);
 
@@ -93,6 +97,13 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -100,7 +111,6 @@ public class FragmentReportExpenseAnalysisTime extends Fragment {
         tvTitle.setText(getResources().getString(R.string.title_report_evi_time));
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        super.onCreateOptionsMenu(menu, inflater);
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 

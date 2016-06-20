@@ -44,9 +44,14 @@ import local.wallet.analyzing.transaction.FragmentLenderBorrower.IUpdateLenderBo
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentTransactionCUDIncome extends Fragment implements View.OnClickListener, FragmentTransactionSelectCategory.ISelectCategory, ISelectAccount, IUpdateDescription, IUpdateEvent, IUpdateLenderBorrower {
-    public static final String Tag = "TransactionCUDIncome";
+    private int                 mTab = 1;
+    private String              Tag = "---[" + mTab + "]---TransactionCUDIncome";
 
-    private Configurations mConfigs;
+    private ActivityMain        mActivity;
+
+    private int                 mContainerViewId = -1;
+
+    private Configurations      mConfigs;
     private DatabaseHelper      mDbHelper;
 
     private Category            mCategory;
@@ -85,9 +90,18 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            mTransaction = (Transaction) bundle.get("Transaction");
 
+            mTab = bundle.getInt("Tab", mTab);
+            Tag = "---[" + mTab + ".2]---" + "FragmentTransactionCUD";
+
+            mTransaction = (Transaction) bundle.get("Transaction");
             LogUtils.trace(Tag, "mTransaction = " + mTransaction.toString());
+            // Retry ContainerViewId from bundle
+            if(bundle.getInt("ContainerViewId") != 0) {
+                mContainerViewId = bundle.getInt("ContainerViewId");
+            } else {
+                mContainerViewId    = mTransaction.getId() != 0 ? R.id.ll_transaction_update : R.id.ll_transaction_create;
+            }
 
             mCategory       = mDbHelper.getCategory(mTransaction.getCategoryId());
             if(mTransaction.getToAccountId() != 0) {
@@ -183,6 +197,9 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -190,31 +207,31 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.llCategory:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 startFragmentSelectCategory(mCategory != null ? mCategory.getId() : 0);
                 break;
             case R.id.llPeople:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 startFragmentLenderBorrower(tvPeople.getText().toString());
                 break;
             case R.id.llDescription:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 startFragmentDescription(tvDescription.getText().toString());
                 break;
             case R.id.llAccount:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 startFragmentSelectAccount(TransactionEnum.Income, mAccount != null ? mAccount.getId() : 0);
                 break;
             case R.id.llDate:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 showDialogTime();
                 break;
             case R.id.llEvent:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 startFragmentEvent(tvEvent.getText().toString());
                 break;
             case R.id.llSave:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 if (mTransaction.getId() != 0) {
                     updateTransaction();
                 } else {
@@ -222,7 +239,7 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
                 }
                 break;
             case R.id.llDelete:
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 deleteTransaction();
                 break;
             default:
@@ -703,14 +720,12 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
         LogUtils.logEnterFunction(Tag, "OldCategoryId = " + oldCategoryId);
         FragmentTransactionSelectCategory nextFrag = new FragmentTransactionSelectCategory();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putBoolean("CategoryType", false);
         bundle.putInt("CategoryID", oldCategoryId);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentTransactionCUDIncome.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentTransactionSelectCategory.Tag)
-                .addToBackStack(null)
-                .commit();
+        mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionSelectCategory", true);
     } // End startFragmentSelectCategory
 
     /**
@@ -720,14 +735,12 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
     private void startFragmentLenderBorrower(String oldPeople) {
         FragmentLenderBorrower nextFrag = new FragmentLenderBorrower();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putSerializable("Category", mCategory);
         bundle.putString("People", oldPeople);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentTransactionCUDIncome.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, FragmentLenderBorrower.Tag)
-                .addToBackStack(Tag)
-                .commit();
+        mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentLenderBorrower", true);
     }
 
     /**
@@ -736,15 +749,13 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
      * @param oldDescription
      */
     private void startFragmentDescription(String oldDescription) {
-        FragmentDescription fragmentDescription = new FragmentDescription();
+        FragmentDescription nextFrag = new FragmentDescription();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putString("Description", oldDescription);
         bundle.putSerializable("Callback", this);
-        fragmentDescription.setArguments(bundle);
-        FragmentTransactionCUDIncome.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, fragmentDescription, FragmentDescription.Tag)
-                .addToBackStack(Tag)
-                .commit();
+        nextFrag.setArguments(bundle);
+        mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentDescription.Tag, true);
     } // End startFragmentDescription
 
     /**
@@ -755,16 +766,14 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
      */
     private void startFragmentSelectAccount(TransactionEnum transactionType, int oldAccountId) {
         LogUtils.logEnterFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId);
-        FragmentAccountsSelect fragment = new FragmentAccountsSelect();
+        FragmentAccountsSelect nextFrag = new FragmentAccountsSelect();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putInt("AccountID", oldAccountId);
         bundle.putSerializable("TransactionType", transactionType);
         bundle.putSerializable("Callback", this);
-        fragment.setArguments(bundle);
-        FragmentTransactionCUDIncome.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, fragment, FragmentAccountsSelect.Tag)
-                .addToBackStack(null)
-                .commit();
+        nextFrag.setArguments(bundle);
+        mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentAccountsSelect.Tag, true);
 
         LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
     } // End startFragmentSelectAccount
@@ -776,13 +785,11 @@ public class FragmentTransactionCUDIncome extends Fragment implements View.OnCli
     private void startFragmentEvent(String oldEvent) {
         FragmentEvent nextFrag = new FragmentEvent();
         Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
         bundle.putString("Event", oldEvent);
         bundle.putSerializable("Callback", this);
         nextFrag.setArguments(bundle);
-        FragmentTransactionCUDIncome.this.getFragmentManager().beginTransaction()
-                .add(mTransaction.getId() == 0 ? R.id.ll_transaction_create : R.id.ll_transaction_update, nextFrag, "FragmentEvent")
-                .addToBackStack(Tag)
-                .commit();
+        mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentEvent", true);
     } // End startFragmentEvent
 
     /**

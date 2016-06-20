@@ -31,8 +31,10 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 1/6/2016.
  */
 public class FragmentPayee extends Fragment {
+    private int                     mTab = 1;
+    public final String             Tag = "---[" + mTab + "]---Payee";
 
-    public static final String     Tag                     = "FragmentPayee";
+    private ActivityMain            mActivity;
 
     public interface IUpdatePayee extends Serializable {
         void onPayeeUpdated(String payee);
@@ -58,6 +60,7 @@ public class FragmentPayee extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle                   = this.getArguments();
+        mTab                            = bundle.getInt("Tab", mTab);
         mPayee                          = bundle.getString("Payee", "");
         mCallback                       = (IUpdatePayee) bundle.get("Callback");
 
@@ -77,8 +80,9 @@ public class FragmentPayee extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
 
         mDbHelper = new DatabaseHelper(getActivity());
 
@@ -97,7 +101,7 @@ public class FragmentPayee extends Fragment {
         lvPayee.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
                 etPayee.setText(payees.get(position));
             }
         });
@@ -108,6 +112,13 @@ public class FragmentPayee extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_done, null);
@@ -117,7 +128,7 @@ public class FragmentPayee extends Fragment {
         ivDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ActivityMain) getActivity()).hideKeyboard(getActivity());
+                ((ActivityMain) getActivity()).hideKeyboard();
 
                 mCallback.onPayeeUpdated(etPayee.getText().toString());
                 // Back
@@ -125,8 +136,6 @@ public class FragmentPayee extends Fragment {
             }
         });
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         LogUtils.logLeaveFunction(Tag, null, null);
     }

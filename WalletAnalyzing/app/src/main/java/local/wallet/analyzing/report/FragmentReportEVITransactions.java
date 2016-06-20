@@ -39,6 +39,7 @@ import java.util.List;
 
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.main.Configurations;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
@@ -51,11 +52,13 @@ import local.wallet.analyzing.transaction.FragmentTransactionCUD;
  * Created by huynh.thanh.huan on 3/19/2016.
  */
 public class FragmentReportEVITransactions extends Fragment {
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---ReportEVITransactions";
 
-    public static final String Tag = "ReportEVITransactions";
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configurations  mConfigs;
     private Calendar        mFromDate   = Calendar.getInstance();
     private Calendar        mToDate     = Calendar.getInstance();
 
@@ -71,25 +74,6 @@ public class FragmentReportEVITransactions extends Fragment {
     private ArrayList<CategoryEVI> arData = new ArrayList<CategoryEVI>();
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        super.onActivityCreated(savedInstanceState);
-
-        mConfigs                = new Configurations(getContext());
-        mDbHelper               = new DatabaseHelper(getActivity());
-
-        llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
-        chartExpense            = (PieChart) getView().findViewById(R.id.chartExpense);
-        llExpenseTransactions   = (LinearLayout) getView().findViewById(R.id.llExpenseTransactions);
-
-        llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
-        mChartIncome             = (PieChart) getView().findViewById(R.id.chartIncome);
-        llIncomeTransactions    = (LinearLayout) getView().findViewById(R.id.llIncomeTransactions);
-
-        LogUtils.logLeaveFunction(Tag, null, null);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
 
@@ -98,7 +82,8 @@ public class FragmentReportEVITransactions extends Fragment {
         setHasOptionsMenu(true);
 
         Bundle bundle       = this.getArguments();
-        mAccountId = bundle.getIntArray("Accounts");
+        mTab                = bundle.getInt("Tab", mTab);
+        mAccountId          = bundle.getIntArray("Accounts");
         mFromDate.setTimeInMillis(bundle.getLong("FromDate"));
         mToDate.setTimeInMillis(bundle.getLong("ToDate"));
 
@@ -123,9 +108,36 @@ public class FragmentReportEVITransactions extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onActivityCreated(savedInstanceState);
+
+        mActivity               = (ActivityMain) getActivity();
+
+        mConfigs                = new Configurations(getContext());
+        mDbHelper               = new DatabaseHelper(getActivity());
+
+        llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
+        chartExpense            = (PieChart) getView().findViewById(R.id.chartExpense);
+        llExpenseTransactions   = (LinearLayout) getView().findViewById(R.id.llExpenseTransactions);
+
+        llIncome                = (LinearLayout) getView().findViewById(R.id.llIncome);
+        mChartIncome             = (PieChart) getView().findViewById(R.id.chartIncome);
+        llIncomeTransactions    = (LinearLayout) getView().findViewById(R.id.llIncomeTransactions);
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
 
         updateChartExpense();
         llExpenseTransactions.removeAllViews();
@@ -638,12 +650,10 @@ public class FragmentReportEVITransactions extends Fragment {
                         LogUtils.trace(Tag, "ReportEVITransactions -> TransactionCUD");
                         FragmentTransactionCUD nextFrag = new FragmentTransactionCUD();
                         Bundle bundle = new Bundle();
+                        bundle.putInt("Tab", mTab);
                         bundle.putSerializable("Transaction", transaction);
                         nextFrag.setArguments(bundle);
-                        FragmentReportEVITransactions.this.getFragmentManager().beginTransaction()
-                                .add(R.id.ll_report, nextFrag, FragmentTransactionCUD.Tag)
-                                .addToBackStack(null)
-                                .commit();
+                        mActivity.addFragment(mTab, R.id.ll_report, nextFrag, "FragmentTransactionCUD", true);
                     }
                 });
 

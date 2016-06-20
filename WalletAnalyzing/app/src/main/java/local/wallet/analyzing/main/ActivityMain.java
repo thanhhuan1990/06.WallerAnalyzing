@@ -1,6 +1,5 @@
 package local.wallet.analyzing.main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,16 +7,13 @@ import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.R;
@@ -29,7 +25,7 @@ import local.wallet.analyzing.report.FragmentReport;
 import local.wallet.analyzing.transaction.FragmentTransactionCUD;
 import local.wallet.analyzing.transactions.FragmentListTransaction;
 
-public class ActivityMain extends AppCompatActivity {
+public class ActivityMain extends BaseActivity {
 
     private static final String TAG = "ActivityMain";
 
@@ -42,12 +38,10 @@ public class ActivityMain extends AppCompatActivity {
     public static final int TAB_POSITION_REPORTS = 4;
     public static final int TAB_POSITION_UTILITIES = 5;
 
-    private TabLayout tabLayout;
-    private CustomViewPager viewPager;
-    private TabPagerAdapter adapter;
-    private int lastTabPosition = 0;
-
-    private String fragmentTransactionUpdate;
+    private TabLayout           tabLayout;
+    private CustomViewPager     viewPager;
+    private TabPagerAdapter     adapter;
+    private int                 lastTabPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +49,6 @@ public class ActivityMain extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_activity_main);
-
-        getSupportFragmentManager().addOnBackStackChangedListener(getListener());
 
         /* Todo: Update Locale */
         Configurations config   = new Configurations(getApplicationContext());
@@ -89,10 +81,11 @@ public class ActivityMain extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 LogUtils.trace(TAG, "Selected Tab: " + tab.getPosition());
 
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(tabLayout.getApplicationWindowToken(), 0);
+                hideKeyboard();
 
                 viewPager.setCurrentItem(tab.getPosition());
+
+                doubleBackToExitPressedOnce = false;
 
                 // Todo: Update TabLayout Follow Current Position
                 if (tab.getPosition() == TAB_POSITION_TRANSACTIONS) {                       //  TRANSACTION is showing, hide TRANSACTION, show NEW_TRANSACTION
@@ -116,63 +109,7 @@ public class ActivityMain extends AppCompatActivity {
                     }
                 }
 
-                android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-                if (manager != null) {
-                    int backStackEntryCount = manager.getBackStackEntryCount();
-
-                    int index = getCurrentVisibleItem();
-                    switch (index) {
-                        case TAB_POSITION_TRANSACTIONS:
-                            if(backStackEntryCount == 0) {
-                                FragmentListTransaction listTransaction = (FragmentListTransaction)adapter.getRegisteredFragment(index);
-                                listTransaction.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_TRANSACTION_CREATE:
-                            if(backStackEntryCount == 0) {
-                                FragmentTransactionCUD transactionCreate = (FragmentTransactionCUD)adapter.getRegisteredFragment(index);
-                                transactionCreate.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_LIST_ACCOUNT:
-                            if(backStackEntryCount == 0) {
-                                FragmentListAccount listAccounts = (FragmentListAccount)adapter.getRegisteredFragment(index);
-                                listAccounts.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_LIST_BUDGET:
-                            if(backStackEntryCount == 0) {
-                                FragmentListBudget listBudgets = (FragmentListBudget)adapter.getRegisteredFragment(index);
-                                listBudgets.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_REPORTS:
-                            if(backStackEntryCount == 0) {
-                                FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
-                                fragment.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_UTILITIES:
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                adapter.resumeTopFragment(getCurrentVisibleItem());
 
             }
 
@@ -202,9 +139,8 @@ public class ActivityMain extends AppCompatActivity {
             finish();
         }
 
-        int count = getSupportFragmentManager().getBackStackEntryCount();
-
-        if (count == 0) {
+        int count = adapter.getBackStackCount(getCurrentVisibleItem());
+        if (count == 1) {
             this.doubleBackToExitPressedOnce = true;
             showError(getResources().getString(R.string.click_back_to_exist));
 
@@ -216,72 +152,22 @@ public class ActivityMain extends AppCompatActivity {
                 }
             }, 2000);
         } else {
-            getSupportFragmentManager().popBackStack();
+            adapter.popBackStack(getCurrentVisibleItem());
+            adapter.removeTopFragment(getCurrentVisibleItem());
         }
 
     }
 
-    /**
-     * Listener to resume fragment when click button BACK
-     * @return
-     */
-    private android.support.v4.app.FragmentManager.OnBackStackChangedListener getListener() {
-        android.support.v4.app.FragmentManager.OnBackStackChangedListener result = new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
-            public void onBackStackChanged() {
-                android.support.v4.app.FragmentManager manager = getSupportFragmentManager();
-                if (manager != null) {
-                    int backStackEntryCount = manager.getBackStackEntryCount();
-                    int index = getCurrentVisibleItem();
-                    LogUtils.info(TAG, "Tab " + index + " backStack: " + backStackEntryCount);
-                    switch (index) {
-                        case TAB_POSITION_TRANSACTIONS:
-                            if(backStackEntryCount == 0) {
-                                FragmentListTransaction listTransaction = (FragmentListTransaction)adapter.getRegisteredFragment(index);
-                                listTransaction.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_TRANSACTION_CREATE:
-                            if(backStackEntryCount == 0) {
-                                FragmentTransactionCUD transactionCreate = (FragmentTransactionCUD)adapter.getRegisteredFragment(index);
-                                transactionCreate.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_LIST_ACCOUNT:
-                            if(backStackEntryCount == 0) {
-                                FragmentListAccount listAccounts = (FragmentListAccount)adapter.getRegisteredFragment(index);
-                                listAccounts.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_LIST_BUDGET:
-                            if(backStackEntryCount == 0) {
-                                FragmentListBudget listBudgets = (FragmentListBudget)adapter.getRegisteredFragment(index);
-                                listBudgets.onResume();
-                            } else {
-                                Fragment fragment = manager.getFragments().get(backStackEntryCount - 1);
-                                fragment.onResume();
-                            }
-                            break;
-                        case TAB_POSITION_REPORTS:
-                            if(backStackEntryCount == 1) {
-                                FragmentReport fragment = (FragmentReport)adapter.getRegisteredFragment(index);
-                                fragment.onResume();
-                            } else if(backStackEntryCount > 1) {
-                                manager.getFragments().get(backStackEntryCount).onResume();
-                            }
-                            break;
-                        case TAB_POSITION_UTILITIES:
-                            break;
-                        default:
-                            break;
-                    }
+    @Override
+    public void addFragment(int tab, int containViewId, Fragment fragment, String tag, boolean addToBackStack) {
+        super.addFragment(tab, containViewId, fragment, tag, addToBackStack);
+        adapter.addFragment(tab, fragment);
 
-                }
-            }
-        };
-        return result;
+    }
+
+    public void replaceFragment(int tab, int containViewId, Fragment fragment, String tag, boolean addToBackStack) {
+        super.replaceFragment(tab, containViewId, fragment, tag, addToBackStack);
+        adapter.replaceFragment(tab, fragment);
     }
 
     /**
@@ -293,19 +179,11 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     /**
-     * Update current visible tab
-     * @param page
-     */
-    public void setCurrentVisibleItem(int page) {
-        viewPager.setCurrentItem(page);
-    }
-
-    /**
      * Update ActionBar by layout's ID
      * @param view
      */
     public void updateActionBar(View view) {
-        LogUtils.logEnterFunction(TAG, null);
+//        LogUtils.logEnterFunction(TAG, null);
         ActionBar mActionBar = getSupportActionBar();
         mActionBar.setDisplayShowHomeEnabled(false);
         mActionBar.setDisplayShowTitleEnabled(false);
@@ -313,61 +191,7 @@ public class ActivityMain extends AppCompatActivity {
         mActionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mActionBar.setCustomView(view, lp);
-        LogUtils.logLeaveFunction(TAG, null, null);
-    }
-
-    public static void hideKeyboard(Context ctx) {
-        InputMethodManager inputManager = (InputMethodManager) ctx
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        // check if no view has focus:
-        View v = ((Activity) ctx).getCurrentFocus();
-        if (v == null)
-            return;
-
-        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
-
-    /**
-     * Show customize Toast
-     * @param error
-     */
-    public void showError(String error) {
-        LayoutInflater inflater = getLayoutInflater();
-
-        View layout = inflater.inflate(R.layout.layout_toast_error, (ViewGroup) findViewById(R.id.llCustomToast));
-
-        // set a message
-        TextView text = (TextView) layout.findViewById(R.id.tvError);
-        text.setText(error);
-
-        // Toast...
-        Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(layout);
-        toast.show();
-    }
-
-    /**
-     * Show customize Toast
-     * @param message
-     */
-    public void showToastSuccessful(String message) {
-        LayoutInflater inflater = getLayoutInflater();
-
-        View layout = inflater.inflate(R.layout.layout_toast_successful, (ViewGroup) findViewById(R.id.llCustomToast));
-
-        // set a message
-        TextView text = (TextView) layout.findViewById(R.id.tvMessage);
-        text.setText(message);
-
-        // Toast...
-        Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(layout);
-        toast.show();
+//        LogUtils.logLeaveFunction(TAG, null, null);
     }
 
     /**
@@ -381,36 +205,5 @@ public class ActivityMain extends AppCompatActivity {
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(show).setVisibility(View.VISIBLE);
         LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
     }
-
-    //region RETRY FRAGMENT from FragmentManager
-    /**
-     * Retrieve fragment from FragmentPagerAdapter
-     *
-     * @param position
-     * @return
-     */
-    public Fragment getFragment(int position) {
-        LogUtils.logEnterFunction(TAG, "position = " + position);
-        Fragment fragment = adapter.getRegisteredFragment(position);
-        if (fragment != null) {
-            LogUtils.logLeaveFunction(TAG, "position = " + position, "OK");
-        } else {
-            LogUtils.logLeaveFunction(TAG, "position = " + position, "NULL");
-        }
-        return fragment;
-    }
-
-    public void setFragmentTransactionUpdate(String tag) {
-        LogUtils.logEnterFunction(TAG, "tag = " + tag);
-        fragmentTransactionUpdate = tag;
-        LogUtils.logLeaveFunction(TAG, "tag = " + tag, null);
-    }
-
-    public String getFragmentTransactionUpdate() {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, fragmentTransactionUpdate);
-        return fragmentTransactionUpdate;
-    }
-
     //endregion
 }

@@ -1,87 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/layout_account"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_main_frame"
-    android:clickable="true"
-    android:scrollbars="none">
+    android:background="@color/background_main_frame">
 
-    <LinearLayout
-        android:id="@+id/layout_account"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@color/background_main_frame"
+        android:clickable="true"
+        android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/listview_account_transactions_parent_background"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:text="@string/account_list_remain"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            <TextView
-                android:id="@+id/tvAccountRemain"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:gravity="right"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.2dp"
-            android:background="@color/listview_divider" />
-
-        <LinearLayout
-            android:id="@+id/llTransactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.2dp"
-            android:background="@color/listview_divider" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/listview_account_transactions_parent_background"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/listview_account_transactions_parent_background"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:text="@string/account_list_remain"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
 
-            <TextView
-                android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tvAccountRemain"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6"
+                    android:gravity="right"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.2dp"
+                android:background="@color/listview_divider"/>
+
+            <LinearLayout
+                android:id="@+id/llTransactions"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:text="@string/account_list_init_balance"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:orientation="vertical"/>
 
-            <TextView
-                android:id="@+id/tvAccountInitBalance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:gravity="right"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.2dp"
+                android:background="@color/listview_divider"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/listview_account_transactions_parent_background"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:text="@string/account_list_init_balance"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvAccountInitBalance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6"
+                    android:gravity="right"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</FrameLayout>

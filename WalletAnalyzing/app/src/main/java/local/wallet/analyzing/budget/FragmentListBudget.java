@@ -33,10 +33,12 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  */
 public class FragmentListBudget extends ListFragment {
 
-    public static final String Tag = "ListBudget";
+    public static int               mTab = 3;
+    public static final String      Tag = "---[" + mTab + "]---ListBudget";
+    private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configurations  mConfigs;
     private BudgetAdapter   mAdapter;
     private List<Budget>    arBudgets = new ArrayList<>();
 
@@ -45,6 +47,11 @@ public class FragmentListBudget extends ListFragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        Bundle bundle       = this.getArguments();
+        if (bundle != null) {
+            mTab                = bundle.getInt("Tab", mTab);
+        }
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -61,6 +68,8 @@ public class FragmentListBudget extends ListFragment {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
 
+        mActivity   = (ActivityMain) getActivity();
+
         mDbHelper   = new DatabaseHelper(getActivity());
         mConfigs    = new Configurations(getActivity());
 
@@ -72,25 +81,15 @@ public class FragmentListBudget extends ListFragment {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        FragmentBudgetDetail nextFrag = new FragmentBudgetDetail();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("Budget", arBudgets.get(position));
-        nextFrag.setArguments(bundle);
-        FragmentListBudget.this.getFragmentManager().beginTransaction()
-                .add(R.id.layout_budget, nextFrag, FragmentBudgetDetail.Tag)
-                .addToBackStack(null)
-                .commit();
-    }
+    public void onResume() {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onResume();
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_LIST_BUDGET) {
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
-        super.onCreateOptionsMenu(menu, inflater);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_add, null);
@@ -103,10 +102,10 @@ public class FragmentListBudget extends ListFragment {
             public void onClick(View v) {
                 LogUtils.trace(Tag, "Click Menu Action Add Budget.");
                 FragmentBudgetCUD nextFrag = new FragmentBudgetCUD();
-                FragmentListBudget.this.getFragmentManager().beginTransaction()
-                                                            .add(R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag)
-                                                            .addToBackStack(null)
-                                                            .commit();
+                Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
+                nextFrag.setArguments(bundle);
+                mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag, true);
             }
         });
 
@@ -115,6 +114,53 @@ public class FragmentListBudget extends ListFragment {
         updateListBudget();
 
         LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
+            return;
+        }
+
+        LayoutInflater mInflater = LayoutInflater.from(getActivity());
+        View mCustomView = mInflater.inflate(R.layout.action_bar_with_button_add, null);
+        TextView tvTitle = (TextView) mCustomView.findViewById(R.id.tvTitle);
+        tvTitle.setText(getResources().getString(R.string.title_budget));
+
+        ImageView ivAdd = (ImageView) mCustomView.findViewById(R.id.ivAdd);
+        ivAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtils.trace(Tag, "Click Menu Action Add Budget.");
+                FragmentBudgetCUD nextFrag = new FragmentBudgetCUD();
+                Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
+                nextFrag.setArguments(bundle);
+                mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetCUD.Tag, true);
+            }
+        });
+
+        ((ActivityMain) getActivity()).updateActionBar(mCustomView);
+
+        updateListBudget();
+
+        LogUtils.logLeaveFunction(Tag, null, null);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        FragmentBudgetDetail nextFrag = new FragmentBudgetDetail();
+        Bundle bundle = new Bundle();
+        bundle.putInt("Tab", mTab);
+        bundle.putSerializable("Budget", arBudgets.get(position));
+        nextFrag.setArguments(bundle);
+        mActivity.addFragment(mTab, R.id.layout_budget, nextFrag, FragmentBudgetDetail.Tag, true);
     }
 
     /**

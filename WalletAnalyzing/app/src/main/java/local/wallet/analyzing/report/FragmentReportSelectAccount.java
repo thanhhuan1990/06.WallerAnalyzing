@@ -36,14 +36,17 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 12/30/2015.
  */
 public class FragmentReportSelectAccount extends Fragment implements View.OnClickListener {
-    public static final String Tag = "ReportEVIAccount";
+    public static int               mTab = 4;
+    public static final String      Tag = "---[" + mTab + "]---ReportSelectAccount";
+
+    private ActivityMain            mActivity;
 
     public interface ISelectReportAccount extends Serializable {
         void onReportAccountSelected(int[] accountId);
     }
 
     private DatabaseHelper          mDbHelper;
-    private Configurations mConfigs;
+    private Configurations          mConfigs;
 
     // List of selected Account from ReportEVI
     private int[]                   currentAccounts;
@@ -64,6 +67,7 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
         setHasOptionsMenu(true);
 
         Bundle bundle   = this.getArguments();
+        mTab            = bundle.getInt("Tab", mTab);
         currentAccounts = bundle.getIntArray("Accounts");
         mCallback       = (ISelectReportAccount) bundle.getSerializable("Callback");
 
@@ -83,8 +87,9 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
-
         super.onActivityCreated(savedInstanceState);
+
+        mActivity       = (ActivityMain) getActivity();
 
         mDbHelper       = new DatabaseHelper(getActivity());
         mConfigs        = new Configurations(getActivity());
@@ -162,12 +167,14 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_REPORTS) {
+        LogUtils.logEnterFunction(Tag, null);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        if(mTab != mActivity.getCurrentVisibleItem()) {
+            LogUtils.error(Tag, "Wrong Tab. Return");
+            LogUtils.logLeaveFunction(Tag, null, null);
             return;
         }
-        LogUtils.logEnterFunction(Tag, null);
-
-        super.onCreateOptionsMenu(menu, inflater);
 
         // Init ActionBar
         LayoutInflater mInflater    = LayoutInflater.from(getActivity());

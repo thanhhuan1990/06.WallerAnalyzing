@@ -33,7 +33,8 @@ import local.wallet.analyzing.model.Category;
  */
 public class FragmentUtilities extends Fragment {
 
-    public static final String Tag = "FragmentUtilities";
+    public static final int     mTab = 5;
+    public static final String  Tag = "---[" + mTab + "]---Utilities";
 
     private ImageButton         btnFileBrowser;
 

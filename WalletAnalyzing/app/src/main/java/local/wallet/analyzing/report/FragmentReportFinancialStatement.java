@@ -19,6 +19,7 @@ import java.util.Map;
 
 import local.wallet.analyzing.R;
 import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.main.Configurations;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
@@ -31,22 +32,25 @@ import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
  * Created by huynh.thanh.huan on 2/22/2016.
  */
 public class FragmentReportFinancialStatement extends Fragment implements View.OnClickListener {
-    public static final String Tag = "ReportFinancialStatement";
+    public static final int         mTab = 4;
+    public static final String      Tag = "---[" + mTab + ".3]---ReportExpenseAnalysisTime";
 
-    private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private ActivityMain            mActivity;
 
-    private TextView        tvAsset;
-    private ListView        lvAssets;
-    private LinearLayout    llLent;
-    private TextView        tvLent;
-    private TextView        tvLiabilities;
-    private LinearLayout    llBorrowed;
-    private TextView        tvBorrowed;
-    private TextView        tvNetWorth;
+    private DatabaseHelper          mDbHelper;
+    private Configurations          mConfigs;
 
-    private Double          assets = 0.0, lent = 0.0, borrowed = 0.0;
-    private AssetAdapter    mAdapter;
+    private TextView                tvAsset;
+    private ListView                lvAssets;
+    private LinearLayout            llLent;
+    private TextView                tvLent;
+    private TextView                tvLiabilities;
+    private LinearLayout            llBorrowed;
+    private TextView                tvBorrowed;
+    private TextView                tvNetWorth;
+
+    private Double                  assets = 0.0, lent = 0.0, borrowed = 0.0;
+    private AssetAdapter            mAdapter;
     private List<Map.Entry<String, Double>> arAssets = new ArrayList<Map.Entry<String, Double>>();
 
    @Nullable
@@ -92,6 +96,9 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         LogUtils.logEnterFunction(Tag, null);
         super.onActivityCreated(savedInstanceState);
+
+        mActivity   = (ActivityMain) getActivity();
+
         LogUtils.logLeaveFunction(Tag, null, null);
     }
 
@@ -101,23 +108,19 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
             case R.id.llLent: {
                 FragmentReportFinancialStatementLentBorrowed nextFrag = new FragmentReportFinancialStatementLentBorrowed();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putBoolean("Lent", true);
                 nextFrag.setArguments(bundle);
-                FragmentReportFinancialStatement.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportFinancialStatementLentBorrowed.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportFinancialStatementLentBorrowed.Tag, true);
                 break;
             }
             case R.id.llBorrowed: {
                 FragmentReportFinancialStatementLentBorrowed nextFrag = new FragmentReportFinancialStatementLentBorrowed();
                 Bundle bundle = new Bundle();
+                bundle.putInt("Tab", mTab);
                 bundle.putBoolean("Lent", false);
                 nextFrag.setArguments(bundle);
-                FragmentReportFinancialStatement.this.getFragmentManager().beginTransaction()
-                        .add(R.id.ll_report, nextFrag, FragmentReportFinancialStatementLentBorrowed.Tag)
-                        .addToBackStack(null)
-                        .commit();
+                mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportFinancialStatementLentBorrowed.Tag, true);
                 break;
             }
             default:
@@ -259,12 +262,10 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
                         if (entry.getKey().equals(getResources().getString(accType.getName()))) {
                             FragmentReportFinancialStatementAccounts nextFrag = new FragmentReportFinancialStatementAccounts();
                             Bundle bundle = new Bundle();
+                            bundle.putInt("Tab", mTab);
                             bundle.putInt("AccountType", accType.getId());
                             nextFrag.setArguments(bundle);
-                            FragmentReportFinancialStatement.this.getFragmentManager().beginTransaction()
-                                    .add(R.id.ll_report, nextFrag, FragmentReportFinancialStatementAccounts.Tag)
-                                    .addToBackStack(null)
-                                    .commit();
+                            mActivity.addFragment(mTab, R.id.ll_report, nextFrag, FragmentReportFinancialStatementAccounts.Tag, true);
                         }
                     }
                 }
