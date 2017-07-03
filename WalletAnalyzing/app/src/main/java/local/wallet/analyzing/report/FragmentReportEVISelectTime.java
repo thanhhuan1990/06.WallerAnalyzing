@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 
 /**
@@ -59,7 +59,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -72,20 +72,20 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
         mToDate.setTimeInMillis(bundle.getLong("ToDate"));
         mCallback           = (ISelectReportEVITime) bundle.getSerializable("Callback");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_report_evi_select_time, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
@@ -130,17 +130,17 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
                 mToDate.get(Calendar.MONTH) + 1,
                 mToDate.get(Calendar.YEAR)));
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -154,7 +154,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
             updateViewForPeriod();
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
      * 2. Update ActionBar
      */
     private void updateViewForPeriod() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         llOtherSetting.setVisibility(View.VISIBLE);
 
@@ -196,7 +196,7 @@ public class FragmentReportEVISelectTime extends Fragment implements View.OnClic
         });
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

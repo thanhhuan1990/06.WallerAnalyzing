@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
@@ -47,7 +47,7 @@ public class FragmentAccountsSelect extends Fragment {
     private TransactionEnum mTransactionType;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configs mConfigs;
 
     private List<Account>   arAccounts = new ArrayList<Account>();
     private AccountAdapter  accountAdapter;
@@ -59,7 +59,7 @@ public class FragmentAccountsSelect extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -75,20 +75,20 @@ public class FragmentAccountsSelect extends Fragment {
         LogUtils.trace(Tag, "mUsingAccountId = " + mUsingAccountId);
         LogUtils.trace(Tag, "mTransactionType = " + mTransactionType.name());
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_account_select, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -96,7 +96,7 @@ public class FragmentAccountsSelect extends Fragment {
 
         /* Initialize Database, insert default category */
         mDbHelper       = new DatabaseHelper(getActivity());
-        mConfigs        = new Configurations(getActivity());
+        mConfigs        = new Configs(getActivity());
 
         tvEmpty         = (TextView) getView().findViewById(R.id.tvEmpty);
         lvAccount       = (ListView) getView().findViewById(R.id.lvAccount);
@@ -123,23 +123,23 @@ public class FragmentAccountsSelect extends Fragment {
         } else {
             tvEmpty.setVisibility(View.VISIBLE);
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
         initActionBar();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void initActionBar() {
@@ -196,7 +196,7 @@ public class FragmentAccountsSelect extends Fragment {
             viewHolder.tvAccount.setText(arAccounts.get(position).getName());
 
             Double remain = mDbHelper.getAccountRemain(arAccounts.get(position).getId());
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), remain));
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), remain));
 
             if(mUsingAccountId == arAccounts.get(position).getId()) {
                 viewHolder.ivUsing.setVisibility(View.VISIBLE);

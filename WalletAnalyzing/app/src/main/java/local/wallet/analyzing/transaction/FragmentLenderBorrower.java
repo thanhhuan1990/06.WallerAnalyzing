@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -55,7 +55,7 @@ public class FragmentLenderBorrower extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -69,20 +69,20 @@ public class FragmentLenderBorrower extends Fragment {
 
         LogUtils.trace(Tag, "mPeople = " + mPeople);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_lender_borrower, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
@@ -113,17 +113,17 @@ public class FragmentLenderBorrower extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -149,7 +149,7 @@ public class FragmentLenderBorrower extends Fragment {
         });
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -165,7 +165,7 @@ public class FragmentLenderBorrower extends Fragment {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(Tag, null);
+            LogUtils.logEnterFunction(Tag);
 
             if(!s.toString().trim().equals(current)){
                 peoples.clear();
@@ -178,7 +178,7 @@ public class FragmentLenderBorrower extends Fragment {
                 current = s.toString().trim();
             }
 
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
 
     }

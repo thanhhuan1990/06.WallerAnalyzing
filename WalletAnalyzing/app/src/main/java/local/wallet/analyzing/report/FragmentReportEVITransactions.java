@@ -38,9 +38,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
@@ -58,7 +58,7 @@ public class FragmentReportEVITransactions extends Fragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations  mConfigs;
+    private Configs mConfigs;
     private Calendar        mFromDate   = Calendar.getInstance();
     private Calendar        mToDate     = Calendar.getInstance();
 
@@ -75,7 +75,7 @@ public class FragmentReportEVITransactions extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -96,25 +96,25 @@ public class FragmentReportEVITransactions extends Fragment {
                 mToDate.get(Calendar.MONTH) + 1,
                 mToDate.get(Calendar.YEAR)));
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_report_evi_detail_period, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity               = (ActivityMain) getActivity();
 
-        mConfigs                = new Configurations(getContext());
+        mConfigs                = new Configs(getContext());
         mDbHelper               = new DatabaseHelper(getActivity());
 
         llExpense               = (LinearLayout) getView().findViewById(R.id.llExpense);
@@ -125,17 +125,17 @@ public class FragmentReportEVITransactions extends Fragment {
         mChartIncome             = (PieChart) getView().findViewById(R.id.chartIncome);
         llIncomeTransactions    = (LinearLayout) getView().findViewById(R.id.llIncomeTransactions);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -143,11 +143,11 @@ public class FragmentReportEVITransactions extends Fragment {
         llExpenseTransactions.removeAllViews();
         updateIncomeChart();
         llIncomeTransactions.removeAllViews();
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateChartExpense() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         //region CHART EXPENSE
         //region get expense data from Database
         final ArrayList<CategoryEVI> arData = new ArrayList<CategoryEVI>();
@@ -223,7 +223,7 @@ public class FragmentReportEVITransactions extends Fragment {
             chartExpense.setDragDecelerationFrictionCoef(0.95f);
 
             chartExpense.setCenterTextTypeface(Typeface.createFromAsset(getActivity().getAssets(), "OpenSans-Light.ttf"));
-            chartExpense.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), expenseAmount)));
+            chartExpense.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), expenseAmount)));
             chartExpense.setDrawCenterText(true);
 
             chartExpense.setDrawHoleEnabled(true);
@@ -245,7 +245,7 @@ public class FragmentReportEVITransactions extends Fragment {
             chartExpense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                 @Override
                 public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-                    chartExpense.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(Float.toString(e.getVal())))));
+                    chartExpense.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), Double.parseDouble(Float.toString(e.getVal())))));
                     chartExpense.invalidate();
 
                     List<CategoryTransaction> arCategoryTransaction = new ArrayList<CategoryTransaction>();
@@ -270,7 +270,7 @@ public class FragmentReportEVITransactions extends Fragment {
 
                 @Override
                 public void onNothingSelected() {
-                    chartExpense.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), fExpenseAmount)));
+                    chartExpense.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), fExpenseAmount)));
                     chartExpense.invalidate();
                     llExpenseTransactions.removeAllViews();
                 }
@@ -331,11 +331,11 @@ public class FragmentReportEVITransactions extends Fragment {
         }
         //endregion Setup Chart Expense
         //endregion CHART EXPENSE
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateIncomeChart() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         //region CHART INCOME
         //region get income data from Database
         final ArrayList<CategoryEVI> arDataIncome = new ArrayList<CategoryEVI>();
@@ -401,7 +401,7 @@ public class FragmentReportEVITransactions extends Fragment {
             mChartIncome.setDragDecelerationFrictionCoef(0.95f);
 
             mChartIncome.setCenterTextTypeface(Typeface.createFromAsset(getActivity().getAssets(), "OpenSans-Light.ttf"));
-            mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), incomeAmount)));
+            mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), incomeAmount)));
             mChartIncome.setDrawCenterText(true);
 
             mChartIncome.setDrawHoleEnabled(true);
@@ -423,7 +423,7 @@ public class FragmentReportEVITransactions extends Fragment {
             mChartIncome.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                 @Override
                 public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-                    mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(Float.toString(e.getVal())))));
+                    mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), Double.parseDouble(Float.toString(e.getVal())))));
                     mChartIncome.invalidate();
 
                     List<CategoryTransaction> arCategoryTransaction = new ArrayList<CategoryTransaction>();
@@ -448,7 +448,7 @@ public class FragmentReportEVITransactions extends Fragment {
 
                 @Override
                 public void onNothingSelected() {
-                    mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), fIncomeAmount)));
+                    mChartIncome.setCenterText(generateCenterSpannableText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), fIncomeAmount)));
                     mChartIncome.invalidate();
                     llIncomeTransactions.removeAllViews();
                 }
@@ -508,7 +508,7 @@ public class FragmentReportEVITransactions extends Fragment {
         }
         //endregion Setup View Chart Income
         //endregion CHART INCOME
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private SpannableString generateCenterSpannableText(String amount) {
@@ -550,7 +550,7 @@ public class FragmentReportEVITransactions extends Fragment {
      * Update list Transactions
      */
     private void updateListTransactions(LinearLayout layout, List<CategoryTransaction> arTransactions) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         layout.removeAllViews();
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
@@ -611,7 +611,7 @@ public class FragmentReportEVITransactions extends Fragment {
                 expensed += tran.getAmount();
             }
 
-            tvAmount.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), expensed));
+            tvAmount.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), expensed));
 
             /* Todo: Add list of transaction for category */
             for(final Transaction transaction : category.arTransactions) {
@@ -625,7 +625,7 @@ public class FragmentReportEVITransactions extends Fragment {
 
                 tvTranCategory.setText(String.format(getResources().getString(R.string.content_expense),
                         mDbHelper.getCategory(transaction.getCategoryId()).getName()));
-                tvTranAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), transaction.getAmount()));
+                tvTranAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), transaction.getAmount()));
                 if(!transaction.getDescription().equals("")) {
                     tvDescription.setText(transaction.getDescription());
                 } else {
@@ -663,7 +663,7 @@ public class FragmentReportEVITransactions extends Fragment {
             layout.addView(categoryView);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End updateListTransactions
 
 }

@@ -17,9 +17,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Currency;
@@ -35,7 +35,7 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
     private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations  mConfigs;
+    private Configs mConfigs;
     private Budget          mBudget;
 
     private TextView        tvDescription;
@@ -51,12 +51,12 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
         mDbHelper       = new DatabaseHelper(getActivity());
-        mConfigs        = new Configurations(getActivity());
+        mConfigs        = new Configs(getActivity());
 
         Bundle bundle   = this.getArguments();
         mTab            = bundle.getInt("Tab", mTab);
@@ -64,13 +64,13 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
 
         LogUtils.trace(Tag, "Budget: " + mBudget.toString());
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View    view                = inflater.inflate(R.layout.layout_fragment_budget_detail, container, false);
 
@@ -93,28 +93,28 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
             llHistory.setVisibility(View.GONE);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -130,7 +130,7 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
 
         setViewData();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     @Override
@@ -172,7 +172,7 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
     }
 
     private void setViewData() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if(mBudget == null) {
             LogUtils.trace(Tag, "mBudget is NULL");
             return;
@@ -432,7 +432,7 @@ public class FragmentBudgetDetail extends Fragment implements View.OnClickListen
             tvBalance.setTextColor(getResources().getColor(R.color.budget_background_progress_over));
             sbExpensed.setProgressDrawable(getResources().getDrawable(R.drawable.budget_progress_over));
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
     } // End setViewData
 

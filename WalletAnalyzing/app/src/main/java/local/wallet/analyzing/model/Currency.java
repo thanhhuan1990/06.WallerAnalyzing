@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.text.DecimalFormat;
 
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.R;
 
 /**
@@ -51,8 +51,8 @@ public class Currency {
 
     public static int getDefaultCurrencyIcon(Context context) {
         int strResource = -1;
-        Configurations mConfigs        = new Configurations(context);
-        CurrencyList currency = getCurrencyById(mConfigs.getInt(Configurations.Key.Currency));
+        Configs mConfigs        = new Configs(context);
+        CurrencyList currency = getCurrencyById(mConfigs.getInt(Configs.Key.Currency));
         switch (currency) {
             case VND:
                 strResource = R.string.currency_icon_vietnam;

@@ -22,10 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.account.FragmentAccountTransactions;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Debt;
@@ -43,7 +42,7 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper      mDbHelper;
-    private Configurations      mConfigs;
+    private Configs mConfigs;
 
     private boolean             isLent  = true;
     private TextView            tvBorrowing;
@@ -60,7 +59,7 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -68,22 +67,22 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
         mTab            = bundle.getInt("Tab", mTab);
         isLent          = bundle.getBoolean("Lent");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View view = inflater.inflate(R.layout.layout_fragment_report_financial_statement_lent_borrow, container, false);
 
-        mConfigs        = new Configurations(getContext());
+        mConfigs        = new Configs(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
         if(isLent) {
             tvLending           = (TextView) view.findViewById(R.id.tvLending);
-            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), lending));
             lvLending           = (ListView) view.findViewById(R.id.lvLending);
             mLendingAdapter     = new LentBorrowedAdapter(getActivity(), arLent);
             lvLending.setAdapter(mLendingAdapter);
@@ -92,7 +91,7 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
 
         } else {
             tvBorrowing         = (TextView) view.findViewById(R.id.tvBorrowing);
-            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowing));
             lvBorrowing         = (ListView) view.findViewById(R.id.lvBorrowing);
             mBorrowingAdapter   = new LentBorrowedAdapter(getActivity(), arBorrowed);
             lvBorrowing.setAdapter(mBorrowingAdapter);
@@ -100,28 +99,28 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
             view.findViewById(R.id.llLent).setVisibility(View.GONE);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -138,38 +137,38 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
         initDataSource();
 
         if(isLent) {
-            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), lending));
             mLendingAdapter.notifyDataSetChanged();
         } else {
-            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowing));
             mBorrowingAdapter.notifyDataSetChanged();
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
         initDataSource();
 
         if(isLent) {
-            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lending));
+            tvLending.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), lending));
             mLendingAdapter.notifyDataSetChanged();
         } else {
-            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowing));
+            tvBorrowing.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowing));
             mBorrowingAdapter.notifyDataSetChanged();
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Update data source from Database
      */
     private void initDataSource() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         // Reset data
         Map<String, Double> hmLent          = new HashMap<>();
@@ -234,7 +233,7 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
         arLent.addAll(hmLent.entrySet());
         arBorrowed.clear();
         arBorrowed.addAll(hmBorrowed.entrySet());
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -288,7 +287,7 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
             });
 
             if (entry.getValue() < 0) {
-                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue() * -1));
+                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), entry.getValue() * -1));
                 viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_repay));
                 viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -309,7 +308,7 @@ public class FragmentReportFinancialStatementLentBorrowed extends Fragment {
                     }
                 });
             } else if(entry.getValue() > 0) {
-                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
+                viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), entry.getValue()));
                 viewHolder.btnRepay.setText(getResources().getString(R.string.report_Lent_borrow_collect));
                 viewHolder.btnRepay.setOnClickListener(new View.OnClickListener() {
                     @Override

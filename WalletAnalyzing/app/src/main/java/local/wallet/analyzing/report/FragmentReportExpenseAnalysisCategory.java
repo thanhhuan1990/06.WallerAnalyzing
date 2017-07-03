@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -59,7 +59,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -71,22 +71,22 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
         LogUtils.trace(Tag, "Categories = " + arCategories != null ? Arrays.toString(arCategories) : "''");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
         return inflater.inflate(R.layout.layout_fragment_report_expense_analysis_category, container, false);
     } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
@@ -104,17 +104,17 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
             tbAllCategory.setChecked(false);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onActivityCreated
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -161,7 +161,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     @Override
@@ -188,7 +188,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
                 break;
         }
 
-        LogUtils.logLeaveFunction(Tag, "isChecked = " + isChecked, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCheckedChanged
 
     private void initIncomeView() {
@@ -380,7 +380,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
      * Update list of Category
      */
     private void updateListCategories(final LinearLayout layout, final List<CategoryView>  arCategoriesView) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         layout.removeAllViews();
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
@@ -529,7 +529,7 @@ public class FragmentReportExpenseAnalysisCategory extends Fragment implements C
             layout.addView(cateView);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
     } // End updateListCategories
 

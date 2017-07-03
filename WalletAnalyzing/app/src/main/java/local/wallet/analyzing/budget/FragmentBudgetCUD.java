@@ -31,10 +31,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.account.FragmentAccountTransactions;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category.EnumDebt;
 import local.wallet.analyzing.model.Currency;
@@ -51,7 +50,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
     private Calendar            mStartCal;
     private Calendar            mEndCal;
-    private Configurations mConfigs;
+    private Configs mConfigs;
     private DatabaseHelper      mDbHelper;
 
     private ClearableEditText   etName;
@@ -78,7 +77,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -91,20 +90,20 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
                 LogUtils.trace(Tag, mBudget.toString());
             }
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_budget_create, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
@@ -121,7 +120,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
         mEndCal.clear(Calendar.SECOND);
         mEndCal.clear(Calendar.MILLISECOND);
 
-        mConfigs        = new Configurations(getActivity());
+        mConfigs        = new Configs(getActivity());
         mDbHelper       = new DatabaseHelper(getActivity());
 
         String[] arTemp = getResources().getStringArray(R.array.budget_repeat_type);
@@ -131,7 +130,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
         etAmount        = (EditText) getView().findViewById(R.id.etAmount);
         etAmount.addTextChangedListener(new CurrencyTextWatcher());
         tvCurrencyIcon  = (TextView) getView().findViewById(R.id.tvCurrencyIcon);
-        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mConfigs.getInt(Configurations.Key.Currency)));
+        tvCurrencyIcon.setText(Currency.getCurrencyIcon(mConfigs.getInt(Configs.Key.Currency)));
         llCategory      = (LinearLayout) getView().findViewById(R.id.llCategory);
         llCategory.setOnClickListener(this);
         tvCategory      = (TextView) getView().findViewById(R.id.tvCategory);
@@ -163,17 +162,17 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         setViewData();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -192,7 +191,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -241,7 +240,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
     }
 
     private void setViewData() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if(mBudget == null) {
             LogUtils.trace(Tag, "Create Budget");
             return;
@@ -252,7 +251,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         etName.setText(mBudget.getName());
 
-        String formatted = Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mBudget.getAmount());
+        String formatted = Currency.formatCurrencyDouble(mConfigs.getInt(Configs.Key.Currency), mBudget.getAmount());
         etAmount.setText(formatted);
 
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(mBudget.getCurrency()));
@@ -275,7 +274,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         cbIncremental.setChecked(mBudget.isIncremental());
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -305,7 +304,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
                                     name,
                                     amount,
                                     arCategories,
-                                    mConfigs.getInt(Configurations.Key.Currency),
+                                    mConfigs.getInt(Configs.Key.Currency),
                                     repeatType,
                                     mStartCal,
                                     mEndCal,
@@ -315,7 +314,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
         if(budgetId != 0) {
             getFragmentManager().popBackStackImmediate();
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -353,7 +352,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         getFragmentManager().popBackStackImmediate();
 
-        LogUtils.logLeaveFunction(Tag, null, "Result = " + result);
+        LogUtils.logLeaveFunction(Tag, "Result = " + result);
 
     }
 
@@ -367,7 +366,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
         getFragmentManager().popBackStackImmediate();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -483,7 +482,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
 
             tvCategory.setText(category);
         }
-        LogUtils.logLeaveFunction(Tag, Arrays.toString(categories), null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -514,7 +513,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(Tag, null);
+            LogUtils.logEnterFunction(Tag);
 
             if(!s.toString().equals(current)){
                 etAmount.removeTextChangedListener(this);
@@ -523,7 +522,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
                 if(inputted.equals("")) {
                     return;
                 }
-                String formatted = Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(inputted));
+                String formatted = Currency.formatCurrencyDouble(mConfigs.getInt(Configs.Key.Currency), Double.parseDouble(inputted));
 
                 current = formatted;
                 etAmount.setText(formatted);
@@ -532,7 +531,7 @@ public class FragmentBudgetCUD extends Fragment implements CompoundButton.OnChec
                 etAmount.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
     } // End CurrencyTextWatcher
 

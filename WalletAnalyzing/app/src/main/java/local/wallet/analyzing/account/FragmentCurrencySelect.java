@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Currency.CurrencyList;
@@ -42,7 +42,7 @@ public class FragmentCurrencySelect extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -53,12 +53,12 @@ public class FragmentCurrencySelect extends Fragment {
         mUsingCurrencyId    = bundle.getInt("Currency", 1);
         mCallback           = (ISelectCurrency) bundle.getSerializable("Callback");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -77,25 +77,25 @@ public class FragmentCurrencySelect extends Fragment {
             }
         });
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_listview_only, container, false);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -105,7 +105,7 @@ public class FragmentCurrencySelect extends Fragment {
         tvTitle.setText(getResources().getString(R.string.title_account_select_currency));
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

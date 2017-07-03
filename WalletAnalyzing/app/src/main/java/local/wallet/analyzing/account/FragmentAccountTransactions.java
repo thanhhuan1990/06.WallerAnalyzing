@@ -17,10 +17,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import local.wallet.analyzing.transaction.FragmentDescription;
 import local.wallet.analyzing.transaction.FragmentTransactionCUD;
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
@@ -49,7 +48,7 @@ public class FragmentAccountTransactions extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -71,41 +70,41 @@ public class FragmentAccountTransactions extends Fragment {
             ((ActivityMain) getActivity()).showError("Bundle is NULL!");
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View view           = inflater.inflate(R.layout.layout_fragment_account_transactions, container, false);
 
         tvInitBalance       = (TextView) view.findViewById(R.id.tvAccountInitBalance);
         tvBalance           = (TextView) view.findViewById(R.id.tvAccountRemain);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -114,7 +113,7 @@ public class FragmentAccountTransactions extends Fragment {
         // Update list Transactions
         updateListTransactions();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateActionBar() {
@@ -146,7 +145,7 @@ public class FragmentAccountTransactions extends Fragment {
     }
 
     private void updateListTransactions() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         Account account = mDbHelper.getAccount(mAccountId);
         tvInitBalance.setText(Currency.formatCurrency(getContext(), account.getCurrencyId(), mDbHelper.getAccount(mAccountId).getInitBalance()));
@@ -306,6 +305,6 @@ public class FragmentAccountTransactions extends Fragment {
             position++;
         } // End loop arTransactions
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End updateTransactionList
 }

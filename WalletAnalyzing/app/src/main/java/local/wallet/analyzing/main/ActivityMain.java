@@ -1,33 +1,24 @@
 package local.wallet.analyzing.main;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
-import java.util.List;
 import java.util.Locale;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.account.FragmentListAccount;
-import local.wallet.analyzing.budget.FragmentListBudget;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.view.CustomViewPager;
-import local.wallet.analyzing.report.FragmentReport;
-import local.wallet.analyzing.transaction.FragmentTransactionCUD;
-import local.wallet.analyzing.transactions.FragmentListTransaction;
 
 public class ActivityMain extends BaseActivity {
 
-    private static final String TAG = "ActivityMain";
+    private static final String Tag = "ActivityMain";
 
     boolean doubleBackToExitPressedOnce = false;
 
@@ -45,14 +36,14 @@ public class ActivityMain extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_activity_main);
 
         /* Todo: Update Locale */
-        Configurations config   = new Configurations(getApplicationContext());
-        String languageToLoad   = config.getString(Configurations.Key.Locale);
+        Configs config   = new Configs(getApplicationContext());
+        String languageToLoad   = config.getString(Configs.Key.Locale);
         Locale locale           = new Locale(languageToLoad);
         Locale.setDefault(locale);
         Configuration androidConfigs = new Configuration();
@@ -124,7 +115,7 @@ public class ActivityMain extends BaseActivity {
 
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(TAB_POSITION_TRANSACTIONS).setVisibility(View.GONE);
 
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(TAG);
     }
 
     @Override
@@ -183,7 +174,7 @@ public class ActivityMain extends BaseActivity {
      * @param view
      */
     public void updateActionBar(View view) {
-//        LogUtils.logEnterFunction(TAG, null);
+//        LogUtils.logEnterFunction(Tag);
         ActionBar mActionBar = getSupportActionBar();
         mActionBar.setDisplayShowHomeEnabled(false);
         mActionBar.setDisplayShowTitleEnabled(false);
@@ -191,7 +182,7 @@ public class ActivityMain extends BaseActivity {
         mActionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         mActionBar.setCustomView(view, lp);
-//        LogUtils.logLeaveFunction(TAG, null, null);
+//        LogUtils.logLeaveFunction(TAG);
     }
 
     /**
@@ -203,7 +194,7 @@ public class ActivityMain extends BaseActivity {
         LogUtils.logEnterFunction(TAG, "Hide " + hide + ", Show " + show);
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(hide).setVisibility(View.GONE);
         ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(show).setVisibility(View.VISIBLE);
-        LogUtils.logLeaveFunction(TAG, "Hide " + hide + ", Show " + show, null);
+        LogUtils.logLeaveFunction(TAG);
     }
     //endregion
 }

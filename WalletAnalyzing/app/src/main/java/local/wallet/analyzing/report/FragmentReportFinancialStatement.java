@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
@@ -38,7 +38,7 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
     private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations          mConfigs;
+    private Configs mConfigs;
 
     private TextView                tvAsset;
     private ListView                lvAssets;
@@ -56,17 +56,17 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View view = inflater.inflate(R.layout.layout_fragment_report_financial_statement, container, false);
 
-        mConfigs        = new Configurations(getContext());
+        mConfigs        = new Configs(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
         initDataSource();
 
         tvAsset         = (TextView) view.findViewById(R.id.tvAsset);
-        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), assets));
+        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), assets));
 
         lvAssets        = (ListView) view.findViewById(R.id.lvAssets);
         mAdapter        = new AssetAdapter(getActivity(), arAssets);
@@ -75,31 +75,31 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
         llLent          = (LinearLayout) view.findViewById(R.id.llLent);
         llLent.setOnClickListener(this);
         tvLent          = (TextView) view.findViewById(R.id.tvLent);
-        tvLent.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lent));
+        tvLent.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), lent));
 
         tvLiabilities   = (TextView) view.findViewById(R.id.tvLiabilities);
-        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
+        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowed));
 
         llBorrowed      = (LinearLayout) view.findViewById(R.id.llBorrowed);
         llBorrowed.setOnClickListener(this);
         tvBorrowed      = (TextView) view.findViewById(R.id.tvBorrowed);
-        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
+        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowed));
 
         tvNetWorth      = (TextView) view.findViewById(R.id.tvNetWorth);
-        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), (assets - borrowed)));
+        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), (assets - borrowed)));
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -130,26 +130,26 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
         initDataSource();
 
-        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), assets));
-        tvLent.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), lent));
+        tvAsset.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), assets));
+        tvLent.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), lent));
         mAdapter.notifyDataSetChanged();
-        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
-        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), borrowed));
-        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), (assets - borrowed))); // Borrowed < 0 => - Borrowed
+        tvLiabilities.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowed));
+        tvBorrowed.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), borrowed));
+        tvNetWorth.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), (assets - borrowed))); // Borrowed < 0 => - Borrowed
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Update Data From Database
      */
     private void initDataSource() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         // Re-initialize old data
         arAssets.clear();
@@ -220,7 +220,7 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
 
         assets += lent;
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private class AssetAdapter extends ArrayAdapter {
@@ -254,7 +254,7 @@ public class FragmentReportFinancialStatement extends Fragment implements View.O
             final Map.Entry<String, Double> entry = (Map.Entry<String, Double>) this.getItem(position);
 
             viewHolder.tvName.setText(entry.getKey());
-            viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), entry.getValue()));
+            viewHolder.tvAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), entry.getValue()));
             viewHolder.llMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

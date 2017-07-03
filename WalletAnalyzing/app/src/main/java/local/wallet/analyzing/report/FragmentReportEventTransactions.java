@@ -18,9 +18,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
@@ -39,7 +39,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
     private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations mConfigs;
+    private Configs mConfigs;
 
     private Event           mEvent;
 
@@ -52,11 +52,11 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mConfigs        = new Configurations(getContext());
+        mConfigs        = new Configs(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
         Bundle bundle = this.getArguments();
@@ -66,7 +66,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
 
             if(mEvent == null) {
                 LogUtils.warn(Tag, "Event is null, RETURN");
-                LogUtils.logLeaveFunction(Tag, null, null);
+                LogUtils.logLeaveFunction(Tag);
                 getFragmentManager().popBackStackImmediate();
                 return;
             }
@@ -74,13 +74,13 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
             LogUtils.trace(Tag, "Event: " + mEvent.toString());
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View view   = inflater.inflate(R.layout.layout_fragment_report_event_transactions, container, false);
 
@@ -96,28 +96,28 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
         // Todo: Update view by data from mDbHelper
         updateListTransactions();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -135,7 +135,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
         // Todo: Update view by data from mDbHelper
         updateListTransactions();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     @Override
@@ -236,7 +236,7 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
      * Update list Transactions
      */
     private void updateListTransactions() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         llExpenses.removeAllViews();
         llIncomes.removeAllViews();
 
@@ -331,10 +331,10 @@ public class FragmentReportEventTransactions extends Fragment implements View.On
         } // End for(final Transaction transaction : arTransactions)
 
         tvTotalExpense.setText(String.format(getResources().getString(R.string.content_expense,
-                Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), expense))));
+                Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), expense))));
         tvTotalIncome.setText(String.format(getResources().getString(R.string.content_income,
-                Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), income))));
+                Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), income))));
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End updateListTransactions
 } // End class FragmentReportEventTransactions

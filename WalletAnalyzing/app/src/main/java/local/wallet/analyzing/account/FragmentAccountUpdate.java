@@ -18,7 +18,7 @@ import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.transaction.FragmentDescription;
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Account.IAccountCallback;
@@ -59,27 +59,27 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
         mDbHelper           = new DatabaseHelper(getActivity());
-        mAccount            = mDbHelper.getAccount(mAccountId);
 
         Bundle bundle       = this.getArguments();
         mTab                = bundle.getInt("Tab", mTab);
         mAccountId          = bundle.getInt("AccountID", 0);
+		mAccount            = mDbHelper.getAccount(mAccountId);
         mCallback           = (IAccountCallback) bundle.getSerializable("Callback");
         mContainerViewId    = bundle.getInt("ContainerViewId");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View    view        = inflater.inflate(R.layout.layout_fragment_account_update, container, false);
 
@@ -110,29 +110,29 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
         llSave.setOnClickListener(this);
         llDelete.setOnClickListener(this);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -143,7 +143,7 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
         mAccount.setTypeId(accountTypeId);
         tvType.setText(AccountType.getAccountTypeById(accountTypeId).getName());
 
-        LogUtils.logLeaveFunction(Tag, "accountTypeId = " + accountTypeId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
         tvCurrency.setText(Currency.getCurrencyName(Currency.getCurrencyById(mAccount.getCurrencyId())));
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(mAccount.getCurrencyId()));
 
-        LogUtils.logLeaveFunction(Tag, "currency = " + currency, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
 
         tvDescription.setText(description);
 
-        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(Tag, null);
+            LogUtils.logEnterFunction(Tag);
 
             if(!s.toString().equals(current)){
                 etInitialBalance.removeTextChangedListener(this);
@@ -283,7 +283,7 @@ public class FragmentAccountUpdate extends Fragment implements View.OnClickListe
                 etInitialBalance.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
 
     }

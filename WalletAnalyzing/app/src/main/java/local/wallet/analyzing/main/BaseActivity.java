@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 
 /**
  * Created by huynh.thanh.huan on 6/8/2016.

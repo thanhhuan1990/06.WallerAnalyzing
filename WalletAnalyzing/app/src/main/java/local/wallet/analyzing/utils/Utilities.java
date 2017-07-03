@@ -1,7 +1,5 @@
-package local.wallet.analyzing.Utils;
+package local.wallet.analyzing.utils;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,7 +30,7 @@ public class Utilities {
      * @return
      */
     public static int parseInt(String string) {
-        //LogUtils.logEnterFunction(Tag, null);
+        //LogUtils.logEnterFunction(Tag);
         //LogUtils.trace(Tag, "String: " + string);
         int number = 0;
         try {

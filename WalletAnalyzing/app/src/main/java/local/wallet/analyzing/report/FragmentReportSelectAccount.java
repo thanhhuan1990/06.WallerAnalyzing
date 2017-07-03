@@ -24,9 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Currency;
@@ -46,7 +46,7 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
     }
 
     private DatabaseHelper          mDbHelper;
-    private Configurations          mConfigs;
+    private Configs mConfigs;
 
     // List of selected Account from ReportEVI
     private int[]                   currentAccounts;
@@ -62,7 +62,7 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -73,26 +73,26 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
 
         LogUtils.trace(Tag, "currentAccounts = " + Arrays.toString(currentAccounts));
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_report_select_accounts, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
         mDbHelper       = new DatabaseHelper(getActivity());
-        mConfigs        = new Configurations(getActivity());
+        mConfigs        = new Configs(getActivity());
 
         lvAccount       = (ListView) getView().findViewById(R.id.lvAccount);
         tvEmpty         = (TextView) getView().findViewById(R.id.tvEmpty);
@@ -162,17 +162,17 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
             tbAllAccount.setChecked(false);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -187,7 +187,7 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     @Override
@@ -281,7 +281,7 @@ public class FragmentReportSelectAccount extends Fragment implements View.OnClic
             viewHolder.tvAccount.setText(arAccounts.get(position).account.getName());
 
             Double remain = mDbHelper.getAccountRemain(arAccounts.get(position).account.getId());
-            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), remain));
+            viewHolder.tvRemain.setText(Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), remain));
 
             if(arAccounts.get(position).isChecked) {
                 viewHolder.ivUsing.setVisibility(View.VISIBLE);

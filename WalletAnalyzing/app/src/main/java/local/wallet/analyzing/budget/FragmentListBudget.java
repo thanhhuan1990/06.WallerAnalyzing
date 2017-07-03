@@ -20,9 +20,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
@@ -38,13 +38,13 @@ public class FragmentListBudget extends ListFragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations  mConfigs;
+    private Configs mConfigs;
     private BudgetAdapter   mAdapter;
     private List<Budget>    arBudgets = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -52,42 +52,42 @@ public class FragmentListBudget extends ListFragment {
         if (bundle != null) {
             mTab                = bundle.getInt("Tab", mTab);
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_list_budget, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
         mDbHelper   = new DatabaseHelper(getActivity());
-        mConfigs    = new Configurations(getActivity());
+        mConfigs    = new Configs(getActivity());
 
         arBudgets   = mDbHelper.getAllBudgets();
         mAdapter = new BudgetAdapter(getContext(), arBudgets);
         setListAdapter(mAdapter);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -113,17 +113,17 @@ public class FragmentListBudget extends ListFragment {
 
         updateListBudget();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -149,7 +149,7 @@ public class FragmentListBudget extends ListFragment {
 
         updateListBudget();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class FragmentListBudget extends ListFragment {
      * Update Data Source
      */
     private void updateListBudget() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         arBudgets.clear();
 
@@ -179,7 +179,7 @@ public class FragmentListBudget extends ListFragment {
 
         mAdapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private class BudgetAdapter extends ArrayAdapter<Budget> {

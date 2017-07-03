@@ -21,8 +21,8 @@ public class ActivityEnter extends Activity implements IPasscodeEnter {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_activity_enter);
 
-        Configurations config = new Configurations(getApplicationContext());
-        String passCode = config.getString(Configurations.Key.Passcode);
+        Configs config = new Configs(getApplicationContext());
+        String passCode = config.getString(Configs.Key.PassCode);
 
         mPasscode   = new PasscodeText(this, this, passCode);
 

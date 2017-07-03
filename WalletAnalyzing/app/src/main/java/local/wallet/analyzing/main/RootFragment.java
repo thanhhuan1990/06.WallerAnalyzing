@@ -11,7 +11,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 
 /**
  * Created by huynh.thanh.huan on 6/20/2016.
@@ -27,93 +27,93 @@ public class RootFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onAttach(context);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(TAG);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onCreate(savedInstanceState);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logLeaveFunction(TAG);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
+        LogUtils.logLeaveFunction(TAG);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onActivityCreated(savedInstanceState);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onStart() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onStart();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onResume();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onCreateOptionsMenu(menu, inflater);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onConfigurationChanged(newConfig);
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onDestroyView() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onDestroyView();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onPause() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onPause();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onStop() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onStop();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onDestroy() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onDestroy();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 
     @Override
     public void onDetach() {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(TAG);
         super.onDetach();
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.logEnterFunction(TAG);
     }
 }

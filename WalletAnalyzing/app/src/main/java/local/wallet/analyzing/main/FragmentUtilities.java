@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
@@ -60,7 +60,7 @@ public class FragmentUtilities extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
         View mCustomView = mInflater.inflate(R.layout.action_bar_only_title, null);
@@ -70,7 +70,7 @@ public class FragmentUtilities extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class FragmentUtilities extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         db = new DatabaseHelper(getActivity());
 
@@ -127,7 +127,7 @@ public class FragmentUtilities extends Fragment {
 //        categoryAdapter = new CategoryAdapter(getActivity(), R.layout.listview_item_category, listCategory);
 //        lvCategory.setAdapter(categoryAdapter);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override

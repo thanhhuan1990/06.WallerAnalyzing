@@ -19,9 +19,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Transaction;
@@ -36,7 +36,7 @@ public class FragmentBudgetHistory extends Fragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations          mConfigs;
+    private Configs 				mConfigs;
     private Budget                  mBudget;
     private TextView                tvDescription;
     private ListView                lvHistory;
@@ -45,7 +45,7 @@ public class FragmentBudgetHistory extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -54,26 +54,26 @@ public class FragmentBudgetHistory extends Fragment {
 
         LogUtils.trace(Tag, mBudget.toString());
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_budget_history, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
         mDbHelper       = new DatabaseHelper(getActivity());
-        mConfigs        = new Configurations(getActivity());
+        mConfigs        = new Configs(getActivity());
 
         tvDescription   = (TextView) getView().findViewById(R.id.tvDescription);
         tvDescription.setText(String.format(getResources().getString(R.string.budget_history_description),
@@ -83,17 +83,17 @@ public class FragmentBudgetHistory extends Fragment {
         adapter         = new Adapter(getContext(), arHistories);
         lvHistory.setAdapter(adapter);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -106,11 +106,11 @@ public class FragmentBudgetHistory extends Fragment {
 
         updateListHistory();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateListHistory() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         arHistories.clear();
 
@@ -210,7 +210,7 @@ public class FragmentBudgetHistory extends Fragment {
 
         adapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private class BudgetHistory {

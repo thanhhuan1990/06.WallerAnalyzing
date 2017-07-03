@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.account.FragmentAccountTransactions;
 import local.wallet.analyzing.account.FragmentAccountUpdate;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Account.IAccountCallback;
 import local.wallet.analyzing.model.AccountType;
@@ -40,7 +40,7 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
     private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations          mConfigs;
+    private Configs mConfigs;
 
     private AccountType             mAccount;
     private ListView                lvAccount;
@@ -51,7 +51,7 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -65,15 +65,15 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
                 }
             }
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
-        mConfigs    = new Configurations(getContext());
+        mConfigs    = new Configs(getContext());
         mDbHelper   = new DatabaseHelper(getActivity());
 
         View view = inflater.inflate(R.layout.layout_fragment_list_account, container, false);
@@ -107,28 +107,28 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
             tvEmpty.setVisibility(View.GONE);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -142,7 +142,7 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
         // Update List Account
         this.onListAccountUpdated();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
 
     @Override
     public void onListAccountUpdated() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         List<Account> arTemp = mDbHelper.getAllAccountsByTypeId(mAccount.getId());
         listAccount.clear();
 
@@ -171,7 +171,7 @@ public class FragmentReportFinancialStatementAccounts extends Fragment implement
             tvEmpty.setVisibility(View.VISIBLE);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

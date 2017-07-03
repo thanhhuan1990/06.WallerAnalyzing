@@ -25,9 +25,9 @@ import local.wallet.analyzing.R;
 import local.wallet.analyzing.account.FragmentAccountsSelect;
 import local.wallet.analyzing.account.FragmentAccountsSelect.ISelectAccount;
 import local.wallet.analyzing.transaction.FragmentDescription.IUpdateDescription;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
@@ -46,7 +46,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
 
     private int                 mContainerViewId = -1;
 
-    private Configurations      mConfigs;
+    private Configs mConfigs;
     private DatabaseHelper      mDbHelper;
 
     private Category            mCategory;
@@ -77,10 +77,10 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
 
-        mConfigs = new Configurations(getActivity());
+        mConfigs = new Configs(getActivity());
         mDbHelper = new DatabaseHelper(getActivity());
 
         Bundle bundle = this.getArguments();
@@ -117,13 +117,13 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
             ((ActivityMain) getActivity()).showError("Bundle is NULL!");
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View view           = inflater.inflate(R.layout.layout_fragment_transaction_cud_transfer, container, false);
 
@@ -165,7 +165,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         tvCategory          = (TextView) view.findViewById(R.id.tvCategory);
 
         // Setup View by Data from Transaction
-        etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configurations.Key.Currency), mTransaction.getAmount()));
+        etAmount.setText(Currency.formatCurrencyDouble(mConfigs.getInt(Configs.Key.Currency), mTransaction.getAmount()));
         tvCurrencyIcon.setText(Currency.getDefaultCurrencyIcon(getContext()));
         tvFromAccount.setText(mFromAccount != null ? mFromAccount.getName() : "");
         tvToAccount.setText(mToAccount != null ? mToAccount.getName() : "");
@@ -173,18 +173,18 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         tvDate.setText(getDateString(mCal));
         tvCategory.setText(mCategory != null ? mCategory.getName() : "");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -244,7 +244,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
             tvCategory.setText("");
         }
 
-        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -253,7 +253,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
 
         tvDescription.setText(description);
 
-        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -271,7 +271,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
             tvFeeCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mToAccount.getCurrencyId())));
         }
 
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -293,7 +293,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(Tag, null);
+            LogUtils.logEnterFunction(Tag);
 
             if (!s.toString().equals(current)) {
                 mEdittext.removeTextChangedListener(this);
@@ -302,7 +302,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
                 if (!inputted.equals("")) {
                     String formatted = Currency.formatCurrencyDouble(mToAccount != null ?
                                     mToAccount.getCurrencyId()
-                                    : mConfigs.getInt(Configurations.Key.Currency),
+                                    : mConfigs.getInt(Configs.Key.Currency),
                             Double.parseDouble(inputted));
 
                     current = formatted;
@@ -314,7 +314,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
                 mEdittext.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
 
     } // End CurrencyTextWatcher
@@ -378,7 +378,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
      * Update Transaction
      */
     private void updateTransaction() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         String inputtedAmount = etAmount.getText().toString().trim().replaceAll(",", "");
 
@@ -427,7 +427,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
             cleanup();
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         // Return to last fragment
         getFragmentManager().popBackStackImmediate();
     } // End Update Transaction
@@ -481,7 +481,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         nextFrag.setArguments(bundle);
         mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionSelectCategory", true);
 
-        LogUtils.logLeaveFunction(Tag, "OldCategoryId = " + oldCategoryId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -516,7 +516,7 @@ public class FragmentTransactionCUDTransfer extends Fragment implements View.OnC
         nextFrag.setArguments(bundle);
         mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentAccountsSelect.Tag, true);
 
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

@@ -18,9 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.RootFragment;
 import local.wallet.analyzing.model.Transaction;
 import local.wallet.analyzing.model.Transaction.TransactionEnum;
 
@@ -45,7 +44,7 @@ public class FragmentTransactionCUD extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -64,13 +63,13 @@ public class FragmentTransactionCUD extends Fragment {
             }
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         View view;
         if(mTransaction.getId() == 0) {
             LogUtils.trace(Tag, "View: Create");
@@ -80,33 +79,33 @@ public class FragmentTransactionCUD extends Fragment {
             view = inflater.inflate(R.layout.layout_fragment_transaction_update_delete, container, false);
         }
         LogUtils.trace(Tag, "MainView: " + view.toString());
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity               = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
 //        if(mTransaction.getId() == 0 && ((ActivityMain) getActivity()).getCurrentVisibleItem() != ActivityMain.TAB_POSITION_TRANSACTION_CREATE) {
 //            LogUtils.error(Tag, "Wrong Tab. Return");
-//            LogUtils.logLeaveFunction(Tag, null, null);
+//            LogUtils.logLeaveFunction(Tag);
 //            return;
 //        }
         if(mTab  != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem() + ". Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -147,17 +146,17 @@ public class FragmentTransactionCUD extends Fragment {
             }
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem() + ". Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -167,14 +166,14 @@ public class FragmentTransactionCUD extends Fragment {
 
         ((ActivityMain)getActivity()).updateActionBar(mActionBar);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment Expense
      */
     private void showExpense() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         Bundle bundle = new Bundle();
         bundle.putInt("Tab", mTab);
@@ -183,14 +182,14 @@ public class FragmentTransactionCUD extends Fragment {
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionCUDExpense", false);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment Income
      */
     private void showIncome() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         Bundle bundle = new Bundle();
         bundle.putInt("Tab", mTab);
@@ -199,14 +198,14 @@ public class FragmentTransactionCUD extends Fragment {
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionCUDIncome", false);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment Transfer
      */
     private void showTransfer() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         Bundle bundle = new Bundle();
         bundle.putInt("Tab", mTab);
@@ -215,14 +214,14 @@ public class FragmentTransactionCUD extends Fragment {
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionCUDTransfer", false);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment Adjustment
      */
     private void showAdjustment() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         Bundle bundle = new Bundle();
         bundle.putInt("Tab", mTab);
@@ -231,7 +230,7 @@ public class FragmentTransactionCUD extends Fragment {
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionCUDIncome", false);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

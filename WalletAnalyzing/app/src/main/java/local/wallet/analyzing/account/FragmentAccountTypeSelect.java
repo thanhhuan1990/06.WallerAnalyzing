@@ -3,7 +3,6 @@ package local.wallet.analyzing.account;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +18,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.main.RootFragment;
 import local.wallet.analyzing.model.AccountType;
@@ -43,7 +42,7 @@ public class FragmentAccountTypeSelect extends RootFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onCreate(savedInstanceState);
 
@@ -54,20 +53,20 @@ public class FragmentAccountTypeSelect extends RootFragment {
         mUsingAccountTypeId = bundle.getInt("AccountType", 1);
         mCallback           = (ISelectAccountType) bundle.getSerializable("Callback");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(TAG);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(TAG);
         return inflater.inflate(R.layout.layout_fragment_accounttype, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -87,17 +86,17 @@ public class FragmentAccountTypeSelect extends RootFragment {
             }
         });
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(TAG);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(TAG);
             return;
         }
 
@@ -107,7 +106,7 @@ public class FragmentAccountTypeSelect extends RootFragment {
         tvTitle.setText(getResources().getString(R.string.title_account_select_type));
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(TAG);
     }
 
     /**

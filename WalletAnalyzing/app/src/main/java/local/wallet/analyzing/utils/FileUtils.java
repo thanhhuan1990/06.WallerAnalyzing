@@ -1,4 +1,4 @@
-package local.wallet.analyzing.Utils;
+package local.wallet.analyzing.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

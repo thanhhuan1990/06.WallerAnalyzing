@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Category.EnumDebt;
@@ -53,7 +53,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -65,22 +65,22 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         LogUtils.trace(Tag, "Categories = " + arCategories != null ? Arrays.toString(arCategories) : "''");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
         return inflater.inflate(R.layout.layout_fragment_budget_category, container, false);
     } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
@@ -113,17 +113,17 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
             tbAllCategory.setChecked(false);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onActivityCreated
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -165,7 +165,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     @Override
@@ -176,14 +176,14 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
         }
 
         updateListCategories();
-        LogUtils.logLeaveFunction(Tag, "isChecked = " + isChecked, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCheckedChanged
 
     /**
      * Update list of Category
      */
     private void updateListCategories() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         llCategories.removeAllViews();
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
@@ -330,7 +330,7 @@ public class FragmentBudgetCategory extends Fragment implements CompoundButton.O
             llCategories.addView(cateView);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
     } // End updateListCategories
 

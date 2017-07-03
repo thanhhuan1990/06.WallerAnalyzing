@@ -2,7 +2,6 @@ package local.wallet.analyzing.main;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -31,8 +30,8 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.FileUtils;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.FileUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
 /**
@@ -59,7 +58,7 @@ public class DialogFragmentFileBrowser extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View rootView = inflater.inflate(R.layout.file_browser_layout, container, false);
 
@@ -116,24 +115,24 @@ public class DialogFragmentFileBrowser extends DialogFragment {
             }
         });
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return rootView;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return dialog;
     }
 
     @Override
     public void onStart() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onStart();
 
         Dialog dialog = getDialog();
@@ -141,11 +140,11 @@ public class DialogFragmentFileBrowser extends DialogFragment {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     public void read(String key) throws IOException {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         class Data {
             String date = "";
@@ -215,7 +214,7 @@ public class DialogFragmentFileBrowser extends DialogFragment {
 
         dismiss();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

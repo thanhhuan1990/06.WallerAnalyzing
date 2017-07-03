@@ -1,28 +1,27 @@
-package local.wallet.analyzing.Utils;
+package local.wallet.analyzing.utils;
 
 import android.util.Log;
 
-import local.wallet.analyzing.BuildConfig;
-
 /**
- * This class provide the method to print out the log for VoipTester The tag log
- * is define {@link #TAG}
+ * This class provide the method to print out the log for WalletAnalyzing
  */
 public class LogUtils {
 
 	/****************************************************************************************************
-	 * Public members
-	 ***************************************************************************************************/
-	public enum LogModule {
-		SUPREE, AudioEngine
-	}
-
-	/****************************************************************************************************
 	 * Private members
 	 ***************************************************************************************************/
-    private static int MAX_TAG  = 40;
+	private static int MAX_TAG  = 30;
 	private static final String PADDING_STRING = " ";
-	private static int sMethodStackLevel = 0;
+
+	private static int LOG_LEVEL   = Log.INFO;
+	/****************************************************************************************************
+	 * Public method
+	 ***************************************************************************************************/
+	public static void setLogLevel(int level) {
+		LOG_LEVEL   = level;
+	}
+
+	// ------------------------------------------------------------------------------------------------
 
 	/****************************************************************************************************
 	 * Public method
@@ -35,8 +34,8 @@ public class LogUtils {
 	 * @param message
 	 */
 	public static void trace(String tag, String message) {
-		if (BuildConfig.DEBUG) {
-            String strTid = String.valueOf(Thread.currentThread().getId());
+		if (LOG_LEVEL <= Log.DEBUG) {
+			String strTid = String.valueOf(Thread.currentThread().getId());
 			Log.d(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
 		}
 	}
@@ -48,10 +47,10 @@ public class LogUtils {
      * @param message
      */
     public static void info(String tag, String message) {
-        if (BuildConfig.DEBUG) {
-            String strTid = String.valueOf(Thread.currentThread().getId());
-            Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
-        }
+		if (LOG_LEVEL <= Log.INFO) {
+			String strTid = String.valueOf(Thread.currentThread().getId());
+			Log.i(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
+		}
     }
 
     /**
@@ -61,10 +60,10 @@ public class LogUtils {
      * @param message
      */
     public static void warn(String tag, String message) {
-        if (BuildConfig.DEBUG) {
-            String strTid = String.valueOf(Thread.currentThread().getId());
-            Log.w(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
-        }
+		if (LOG_LEVEL <= Log.WARN) {
+			String strTid = String.valueOf(Thread.currentThread().getId());
+			Log.w(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
+		}
     }
 	// ------------------------------------------------------------------------------------------------
 	/**
@@ -73,8 +72,8 @@ public class LogUtils {
 	 * @param message
 	 */
 	public static void error(String tag, String message) {
-		if (BuildConfig.DEBUG) {
-            String strTid = String.valueOf(Thread.currentThread().getId());
+		if (LOG_LEVEL <= Log.ERROR) {
+			String strTid = String.valueOf(Thread.currentThread().getId());
 			Log.e(tag,getPaddingString(tag) + "=[Thread_id:" + strTid + "]  " + message);
 		}
 	}
@@ -86,10 +85,20 @@ public class LogUtils {
 	 * @param throwable
 	 */
 	public static void error(String tag, Throwable throwable) {
-		if (BuildConfig.DEBUG) {
+		if (LOG_LEVEL <= Log.ERROR) {
 			Log.e(tag, " ", throwable);
-
 			throwable.printStackTrace();
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------------
+	/**
+	 * Print the log when enter the function
+	 *
+	 */
+	public static void logEnterFunction(String tag) {
+		if (LOG_LEVEL <= Log.INFO) {
+			Log.i(tag, createEnterMessage(tag, getMethodName()));
 		}
 	}
 
@@ -99,9 +108,31 @@ public class LogUtils {
 	 * 
 	 */
 	public static void logEnterFunction(String tag, String param) {
-		if (BuildConfig.DEBUG) {
-			String strTid = String.valueOf(Thread.currentThread().getId());
-			Log.d(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[ENTER]───── " + getMethodName() + "(" + (param != null ? param : "") + ") ──────────┐");
+		if (LOG_LEVEL <= Log.INFO) {
+			Log.i(tag, createEnterMessage(tag, getMethodName()));
+			if(param != null) {
+				trace(tag, param);
+			}
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------------
+	/**
+	 * Create enter message
+	 *
+	 */
+	private static String createEnterMessage(String tag, String methodName) {
+		String strTid = String.valueOf(Thread.currentThread().getId());
+		return getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[ENTER]───── " + methodName + "() ──────────┐";
+	}
+
+	// ------------------------------------------------------------------------------------------------
+	/**
+	 * Print the log when leave the function
+	 */
+	public static void logLeaveFunction(String tag) {
+		if (LOG_LEVEL <= Log.INFO) {
+			Log.i(tag, createLeaveMessage(tag, getMethodName()));
 		}
 	}
 
@@ -109,26 +140,24 @@ public class LogUtils {
 	/**
 	 * Print the log when leave the function
 	 */
-	public static void logLeaveFunction(String tag, String param, String result) {
-		if (BuildConfig.DEBUG) {
-			String strTid = String.valueOf(Thread.currentThread().getId());
-
-			String temp = "";
-
-			if(param != null) {
-				for(int i = 0; i < param.length(); i++) {
-					temp+= "-";
-				}
-			}
-
-			Log.d(tag, getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[LEAVE]───── " + getMethodName() + "() " + temp + "──────────┘" + (result != null ? "→ return " + result : ""));
+	public static void logLeaveFunction(String tag, String result) {
+		if (LOG_LEVEL <= Log.INFO) {
+			Log.i(tag, createLeaveMessage(tag, getMethodName()) + (result != null ? "→ return " + result : ""));
 		}
 	}
 
 	// ------------------------------------------------------------------------------------------------
 	/**
-	 * Get the current method name Use {@link getStackTrace()} function
-	 * 
+	 * Create leave message
+	 *
+	 */
+	private static String createLeaveMessage(String tag, String methodName) {
+		String strTid = String.valueOf(Thread.currentThread().getId());
+		return getPaddingString(tag) + "=[Thread_id:" + strTid + "]──[LEAVE]───── " + methodName + "() ──────────┘";
+	}
+
+	// ------------------------------------------------------------------------------------------------
+	/**
 	 * @return the name of method that call this method
 	 */
 	private static String getMethodName() {

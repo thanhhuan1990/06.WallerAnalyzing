@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Account.IAccountCallback;
@@ -52,7 +52,7 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -63,25 +63,25 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
         accAdapter  = new AccountAdapter(getActivity(), listAccount);
         setListAdapter(accAdapter);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_list_account, container, false);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -90,7 +90,7 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
         // Update list Accounts
         updateListAccounts();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
 
     @Override
     public void onListAccountUpdated() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         List<Account> arTemp = mDbHelper.getAllAccounts();
         listAccount.clear();
 
@@ -152,7 +152,7 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
 
         accAdapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateActionBar() {

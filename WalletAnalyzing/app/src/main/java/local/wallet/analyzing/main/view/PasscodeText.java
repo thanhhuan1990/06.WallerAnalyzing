@@ -9,13 +9,13 @@ import android.widget.ImageView;
 
 import local.wallet.analyzing.main.listener.IPasscodeEnter;
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 
 /**
  * Created by huynh.thanh.huan on 1/4/2016.
  */
 public class PasscodeText implements View.OnClickListener  {
-    private static final String TAG = "PasscodeText";
+    private static final String Tag = "PasscodeText";
 
     private ImageView mPasscode1;
     private ImageView mPasscode2;
@@ -48,7 +48,7 @@ public class PasscodeText implements View.OnClickListener  {
     }
 
     public PasscodeText(Activity activity, IPasscodeEnter mListener, String passcode) {
-        LogUtils.logEnterFunction(TAG, null);
+        LogUtils.logEnterFunction(Tag);
 
         this.mListener  = mListener;
         mActivity = activity;
@@ -82,8 +82,8 @@ public class PasscodeText implements View.OnClickListener  {
             }
         }
 
-        LogUtils.trace(TAG, "PasscodeText");
-        LogUtils.logLeaveFunction(TAG, null, null);
+        LogUtils.trace(Tag, "PasscodeText");
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override

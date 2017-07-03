@@ -18,9 +18,9 @@ import org.droidparts.widget.ClearableEditText;
 
 import local.wallet.analyzing.transaction.FragmentDescription;
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account.IAccountCallback;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
@@ -36,7 +36,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
     public static final String          Tag = "---[" + mTab + "]---AccountCreate";
 
     private ActivityMain                mActivity;
-    private Configurations              mConfigs;
+    private Configs 					mConfigs;
     private DatabaseHelper              mDbHelper;
     private IAccountCallback            mCallback;
 
@@ -56,7 +56,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -64,27 +64,27 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         mTab                = bundle.getInt("Tab", mTab);
         mCallback           = (IAccountCallback) bundle.getSerializable("Callback");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_account_create, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         super.onActivityCreated(savedInstanceState);
 
         mActivity           = (ActivityMain) getActivity();
 
-        mConfigs            = new Configurations(getActivity());
-        mCurrency           = Currency.getCurrencyById(mConfigs.getInt(Configurations.Key.Currency));
+        mConfigs            = new Configs(getActivity());
+        mCurrency           = Currency.getCurrencyById(mConfigs.getInt(Configs.Key.Currency));
         mDbHelper           = new DatabaseHelper(getActivity());
 
         // Initialize View
@@ -176,21 +176,21 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
                 }
             }
         });
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -200,7 +200,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         mAccountType = AccountType.getAccountTypeById(accountTypeId);
         tvType.setText(mAccountType.getName());
 
-        LogUtils.logLeaveFunction(Tag, "accountTypeId = " + accountTypeId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -211,7 +211,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         tvCurrency.setText(Currency.getCurrencyName(mCurrency));
         tvCurrencyIcon.setText(Currency.getCurrencyIcon(mCurrency.getValue()));
 
-        LogUtils.logLeaveFunction(Tag, "currencyId = " + currency.name(), null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -220,7 +220,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
 
         tvDescription.setText(description);
 
-        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void initActionBar() {
@@ -244,7 +244,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(Tag, null);
+            LogUtils.logEnterFunction(Tag);
 
             if(!s.toString().equals(current)){
                 etInitialBalance.removeTextChangedListener(this);
@@ -263,7 +263,7 @@ public class FragmentAccountCreate extends Fragment implements IUpdateDescriptio
                 etInitialBalance.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
 
     }

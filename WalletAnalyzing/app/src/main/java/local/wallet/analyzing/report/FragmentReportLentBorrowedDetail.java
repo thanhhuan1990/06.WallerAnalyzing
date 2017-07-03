@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
@@ -41,7 +41,7 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations          mConfigs;
+    private Configs mConfigs;
 
     private boolean                 isLent      = false;
     private String                  strPeople   = "";
@@ -53,7 +53,7 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -62,15 +62,15 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
         isLent              = bundle.getBoolean("Lent");
         strPeople           = bundle.getString("People");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
-        mConfigs            = new Configurations(getContext());
+        mConfigs            = new Configs(getContext());
         mDbHelper           = new DatabaseHelper(getActivity());
 
         View view = inflater.inflate(R.layout.layout_fragment_report_lent_borrowed_detail, container, false);
@@ -79,14 +79,14 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
         mAdapter            = new TransactionAdapter(getActivity(), arTransactions);
         lvTransaction.setAdapter(mAdapter);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
@@ -94,27 +94,27 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
         if(getView() != null) {
             updateDataSource();
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
         if(getView() != null) {
             updateDataSource();
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -126,11 +126,11 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
 
         updateDataSource();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateDataSource() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         List<Debt> arDebt = mDbHelper.getAllDebtByPeople(strPeople);
 
@@ -175,17 +175,17 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
         }
 
         TextView tvStartingBalance      = (TextView) getView().findViewById(R.id.tvStartingBalance);
-        tvStartingBalance.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), starting_balance));
+        tvStartingBalance.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), starting_balance));
 
         TextView tvFinish               = (TextView) getView().findViewById(R.id.tvFinish);
-        tvFinish.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), finish));
+        tvFinish.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), finish));
 
         TextView tvRemaining            = (TextView) getView().findViewById(R.id.tvRemaining);
-        tvRemaining.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), (starting_balance - finish)));
+        tvRemaining.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), (starting_balance - finish)));
 
         mAdapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private class TransactionAdapter extends ArrayAdapter<Transaction> {
@@ -248,7 +248,7 @@ public class FragmentReportLentBorrowedDetail extends Fragment {
                 viewHolder.tvTranCategory.setText(String.format(getResources().getString(R.string.content_income), category.getName()));
             }
 
-            viewHolder.tvTranAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configurations.Key.Currency), transaction.getAmount()));
+            viewHolder.tvTranAmount.setText(Currency.formatCurrency(getActivity(), mConfigs.getInt(Configs.Key.Currency), transaction.getAmount()));
 
             if(!transaction.getDescription().equals("")) {
                 viewHolder.tvDescription.setText(transaction.getDescription());

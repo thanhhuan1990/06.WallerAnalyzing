@@ -24,16 +24,17 @@ import local.wallet.analyzing.model.Debt;
 import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Kind;
 import local.wallet.analyzing.model.Transaction;
+import local.wallet.analyzing.utils.LogUtils;
+
+import static local.wallet.analyzing.utils.LogUtils.trace;
 
 /**
  * Created by huynh.thanh.huan on 11/24/2015.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    // Logcat tag
-    private static final String TAG = "DatabaseHelper";
-
-    private final boolean trace = false;
+    // Logcat Tag
+    private static final String Tag = "DatabaseHelper";
 
     // Database Version
     private static final int DATABASE_VERSION                   = 2;
@@ -93,26 +94,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_DEBT_TRANSACTION            = "transaction_id";
     private static final String KEY_DEBT_AMOUNT                 = "amount";
     private static final String KEY_DEBT_PEOPLE                 = "people";
-
-    //region LogUtils
-    private void enter(String tag, String param) {
-        if(trace) {
-            enter(tag, param);
-        }
-    }
-
-    private void leave(String tag, String param, String result) {
-        if(trace) {
-            leave(tag, param, result);
-        }
-    }
-
-    private void trace(String tag, String param) {
-        if(trace) {
-            trace(tag, param);
-        }
-    }
-    //endregion LogUtils
 
     //region DATABASE's method
     // Table Create Statements
@@ -198,35 +179,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        enter(TAG, "onCreate");
+        LogUtils.logEnterFunction(Tag);
         // creating required tables
-        trace(TAG, CREATE_TABLE_KIND);
+        trace(Tag, CREATE_TABLE_KIND);
         db.execSQL(CREATE_TABLE_KIND);
 
-        trace(TAG, CREATE_TABLE_CATEGORY);
+        trace(Tag, CREATE_TABLE_CATEGORY);
         db.execSQL(CREATE_TABLE_CATEGORY);
 
-        trace(TAG, CREATE_TABLE_ACCOUNT);
+        trace(Tag, CREATE_TABLE_ACCOUNT);
         db.execSQL(CREATE_TABLE_ACCOUNT);
 
-        trace(TAG, CREATE_TABLE_TRANSACTION);
+        trace(Tag, CREATE_TABLE_TRANSACTION);
         db.execSQL(CREATE_TABLE_TRANSACTION);
 
-        trace(TAG, CREATE_TABLE_BUDGET);
+        trace(Tag, CREATE_TABLE_BUDGET);
         db.execSQL(CREATE_TABLE_BUDGET);
 
-        trace(TAG, CREATE_TABLE_EVENT);
+        trace(Tag, CREATE_TABLE_EVENT);
         db.execSQL(CREATE_TABLE_EVENT);
 
-        trace(TAG, CREATE_TABLE_DEBT);
+        trace(Tag, CREATE_TABLE_DEBT);
         db.execSQL(CREATE_TABLE_DEBT);
 
-        leave(TAG, "onCreate", null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        enter(TAG, "onUpgrade");
+		LogUtils.logEnterFunction(Tag);
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_KIND);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
@@ -238,7 +219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // create new tables
         onCreate(db);
-        leave(TAG, "onUpgrade", null);
+		LogUtils.logLeaveFunction(Tag);
     }
     //endregion
 
@@ -267,7 +248,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT  * FROM " + TABLE_KIND + " WHERE " + KEY_ID + " = " + kind_id;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -289,7 +270,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Kind> kinds = new ArrayList<Kind>();
         String selectQuery = "SELECT  * FROM " + TABLE_KIND;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -356,15 +337,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a CATEGORY
      */
     public long createCategory(int parentId, String name, boolean expense, EnumDebt debt) {
-        enter(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt );
+		LogUtils.logEnterFunction(Tag, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt );
         SQLiteDatabase db = this.getWritableDatabase();
 
         List<Category> categories = getAllCategories(expense, debt);
 
         for(Category category : categories) {
             if(name.equals(category.getName())) {
-                trace(TAG, "Category " + name + " is existed!");
-                leave(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt, ERROR_DB_EXISTED + "");
+                trace(Tag, "Category " + name + " is existed!");
+				LogUtils.logLeaveFunction(Tag);
                 return ERROR_DB_EXISTED;
             }
         }
@@ -378,7 +359,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // insert row
         long category_id = db.insert(TABLE_CATEGORY, null, values);
 
-        leave(TAG, "ParentId = " + parentId + ", Name = " + name + ", expense = " + expense + ", debt = " + debt, "New Category's id: " + category_id);
+		LogUtils.logLeaveFunction(Tag);
         return category_id;
     }
 
@@ -388,13 +369,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return Category
      */
     public Category getCategory(long category_id) {
-        enter(TAG, "Id " + category_id);
+		LogUtils.logEnterFunction(Tag, "Id " + category_id);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_ID + " = " + category_id;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -407,7 +388,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
             category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
-            leave(TAG, "Id " + category_id, category.toString());
+			LogUtils.logLeaveFunction(Tag, category.toString());
 
             return category;
         } else {
@@ -421,13 +402,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return Category
      */
     public Category getCategory(String category_name) {
-        enter(TAG, "Name " + category_name);
+		LogUtils.logEnterFunction(Tag, "Name " + category_name);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_NAME + " like '%" + category_name + "%'";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -442,7 +423,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         category.setExpense(c.getInt(c.getColumnIndex(KEY_CATEGORY_EXPENSE)) == 1 ? true : false);
         category.setDebtType(Category.EnumDebt.getEnumDebt(c.getInt(c.getColumnIndex(KEY_CATEGORY_DEBT))));
 
-        leave(TAG, "Name " + category_name, category.toString());
+		LogUtils.logLeaveFunction(Tag, category.toString());
 
         return category;
     }
@@ -452,12 +433,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Category> getAllParentCategories() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_PARENT_ID + " = 0";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -477,7 +458,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "categories size = " + categories.size());
+		LogUtils.logLeaveFunction(Tag, "categories size = " + categories.size());
 
         return categories;
     }
@@ -488,12 +469,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Category> getAllParentCategories(boolean expense) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_PARENT_ID + " = 0 AND " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0);
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -513,7 +494,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "categories size = " + categories.size());
+		LogUtils.logLeaveFunction(Tag, "categories size = " + categories.size());
 
         return categories;
     }
@@ -525,14 +506,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Category> getAllParentCategories(boolean expense, EnumDebt debt) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0)
                                                                             + " AND " + KEY_CATEGORY_DEBT + " = " + debt.getValue()
                                                                             + " AND " + KEY_CATEGORY_PARENT_ID + " = 0";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -552,7 +533,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "categories size = " + categories.size());
+		LogUtils.logLeaveFunction(Tag, "categories size = " + categories.size());
 
         return categories;
     }
@@ -562,12 +543,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return List<Category>
      */
     public List<Category> getAllCategories() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categorys = new ArrayList<Category>();
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -587,7 +568,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return categorys;
     }
@@ -598,12 +579,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Category> getAllCategories(boolean expense) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0);
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -623,7 +604,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return categories;
     }
@@ -635,12 +616,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Category> getAllCategories(boolean expense, EnumDebt debt) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_EXPENSE + " = " + (expense ? 1 : 0) + " AND " + KEY_CATEGORY_DEBT + " = " + debt.getValue();
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -660,7 +641,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return categories;
     }
@@ -670,12 +651,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Getting all CATEGORIES follow ParentID
      * */
     public List<Category> getCategoriesByParent(int parentId) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY + " WHERE " + KEY_CATEGORY_PARENT_ID + " = " + parentId;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -695,7 +676,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return categories;
     }
@@ -704,7 +685,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Getting CATEGORY count
      */
     public int getCategoryCount() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         String countQuery = "SELECT  * FROM " + TABLE_CATEGORY;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -713,7 +694,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int count = cursor.getCount();
         cursor.close();
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         // return count
         return count;
@@ -723,7 +704,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Updating a CATEGORY
      */
     public int updateCategory(Category category) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -734,7 +715,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_CATEGORY_EXPENSE, category.isExpense() ? 1 : 0);
         values.put(KEY_CATEGORY_DEBT, category.getDebtType().getValue());
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         // updating row
         return db.update(TABLE_CATEGORY, values, KEY_ID + " = ?",
@@ -758,7 +739,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a ACCOUNT
      */
     public long createAccount(String account_name, int type_id, int currency_id, double initial_balance, String description) {
-        enter(TAG, "account_name = " + account_name + ", type_id = " + type_id + ", currency_id = " + currency_id + ", initial_balance = " + initial_balance + ", description = " + description);
+		LogUtils.logEnterFunction(Tag, "account_name = " + account_name
+				+ ", type_id = " + type_id
+				+ ", currency_id = " + currency_id
+				+ ", initial_balance = " + initial_balance
+				+ ", description = " + description);
         SQLiteDatabase db = this.getWritableDatabase();
 
         List<Account> accounts = getAllAccounts();
@@ -779,7 +764,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // insert row
         long account_id = db.insert(TABLE_ACCOUNT, null, values);
 
-        leave(TAG, "account_name = " + account_name + ", type_id = " + type_id + ", currency_id = " + currency_id + ", initial_balance = " + initial_balance + ", description = " + description, "Account id = " + account_id);
+		LogUtils.logLeaveFunction(Tag, "Account id = " + account_id);
 
         return account_id;
     }
@@ -788,13 +773,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * get single ACCOUNT
      */
     public Account getAccount(long account_id) {
-        enter(TAG, "account_id = " + account_id);
+		LogUtils.logEnterFunction(Tag, "account_id = " + account_id);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_ACCOUNT + " WHERE " + KEY_ID + " = " + account_id;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -807,11 +792,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             account.setInitBalance(c.getDouble(c.getColumnIndex(KEY_ACCOUNT_INITIAL_BALANCE)));
             account.setDescription(c.getString(c.getColumnIndex(KEY_ACCOUNT_DESCRIPTION)));
 
-            leave(TAG, "account_id = " + account_id, "Account = " + account.toString());
+			LogUtils.logLeaveFunction(Tag, "Account = " + account.toString());
             return account;
         }
 
-        leave(TAG, "account_id = " + account_id, null);
+		LogUtils.logLeaveFunction(Tag);
         return null;
     }
 
@@ -819,12 +804,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * getting all ACCOUNTs
      * */
     public List<Account> getAllAccounts() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Account> accounts = new ArrayList<Account>();
         String selectQuery = "SELECT  * FROM " + TABLE_ACCOUNT;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -845,7 +830,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
         return accounts;
     }
 
@@ -853,12 +838,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * getting all ACCOUNTs
      * */
     public List<Account> getAllAccountsByTypeId(int typeId) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Account> accounts = new ArrayList<Account>();
         String selectQuery = "SELECT  * FROM " + TABLE_ACCOUNT + " WHERE " + KEY_ACCOUNT_TYPE_ID + " = " + typeId;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -879,7 +864,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
         return accounts;
     }
 
@@ -888,7 +873,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public Double getAccountRemain(int accountId) {
-        enter(TAG, "accountId = " + accountId);
+		LogUtils.logEnterFunction(Tag, "accountId = " + accountId);
 
         Double remain = getAccount(accountId).getInitBalance();
 
@@ -917,12 +902,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        leave(TAG, "accountId = " + accountId, "remain = " + remain);
+		LogUtils.logLeaveFunction(Tag, "remain = " + remain);
         return remain;
     }
 
     public Double getAccountRemainBefore(int accountId, Calendar time) {
-        enter(TAG, "accountId = " + accountId + ", time = "  + time.toString());
+		LogUtils.logEnterFunction(Tag, "accountId = " + accountId + ", time = "  + time.toString());
 
         Double remain = getAccount(accountId).getInitBalance();
 
@@ -956,12 +941,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         }
 
-        leave(TAG, "accountId = " + accountId + ", time = " + time.toString(), "remain = " + remain);
+		LogUtils.logLeaveFunction(Tag, "remain = " + remain);
         return remain;
     }
 
     public Double getAccountRemainAfter(int accountId, Calendar time) {
-        enter(TAG, "accountId = " + accountId + ", time = " + time.toString());
+		LogUtils.logEnterFunction(Tag, "accountId = " + accountId + ", time = " + time.toString());
 
         Double remain = getAccount(accountId).getInitBalance();
 
@@ -996,7 +981,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         }
 
-        leave(TAG, "accountId = " + accountId + ", time = " + time.toString(), "remain = " + remain);
+		LogUtils.logLeaveFunction(Tag, "remain = " + remain);
         return remain;
     }
 
@@ -1048,7 +1033,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a TRANSACTION
      */
     public long createTransaction(Transaction transaction) {
-        enter(TAG, "transaction = " + transaction.toString());
+		LogUtils.logEnterFunction(Tag, "transaction = " + transaction.toString());
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -1067,23 +1052,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // insert row
             long transaction_id = db.insert(TABLE_TRANSACTION, null, values);
 
-            leave(TAG, "transaction = " + transaction.toString(), "transaction_id = " + transaction_id);
+			LogUtils.logLeaveFunction(Tag, "transaction_id = " + transaction_id);
             return transaction_id;
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
-            leave(TAG, "transaction = " + transaction.toString(), "transaction_id = -1");
+			LogUtils.logLeaveFunction(Tag, "transaction_id = -1");
             return -1;
         }
     }
 
     public Transaction getLastTransaction() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC LIMIT 1";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1105,12 +1090,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
             transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
-            leave(TAG, null, transaction.toString());
+			LogUtils.logLeaveFunction(Tag, transaction.toString());
 
             return transaction;
         }
 
-        leave(TAG, null, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return null;
     }
@@ -1119,13 +1104,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * get single TRANSACTION
      */
     public Transaction getTransaction(long transaction_id) {
-        enter(TAG, "transaction_id = " + transaction_id);
+		LogUtils.logEnterFunction(Tag, "transaction_id = " + transaction_id);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_ID + " = " + transaction_id;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1147,12 +1132,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             transaction.setPayee(c.getString(c.getColumnIndex(KEY_TRANSACTION_PAYEE)));
             transaction.setEvent(getEvent(c.getInt(c.getColumnIndex(KEY_TRANSACTION_EVENT))));
 
-            leave(TAG, "transaction_id = " + transaction_id, transaction.toString());
+			LogUtils.logLeaveFunction(Tag, transaction.toString());
 
             return transaction;
         }
 
-        leave(TAG, "transaction_id = " + transaction_id, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return null;
 
@@ -1166,7 +1151,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Transaction> getTransactionsByTimeAndCategory(int[] categories, Calendar startDate, Calendar endDate) {
-        enter(TAG, "categories = " + (categories != null ? categories.toString() : "")
+		LogUtils.logEnterFunction(Tag, "categories = " + (categories != null ? categories.toString() : "")
                 + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "null")
                 + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "null"));
 
@@ -1184,7 +1169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Transaction> transactions = new ArrayList<Transaction>();
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1216,8 +1201,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext()) ;
         }
 
-        leave(TAG, "categories = " + (categories != null ? categories.toString() : "") + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "null")
-                + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "null"), transactions.toString());
+		LogUtils.logLeaveFunction(Tag, transactions.toString());
 
         return transactions;
 
@@ -1231,7 +1215,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Transaction> getTransactionsByTimeAndAccount(int[] accounts, Calendar startDate, Calendar endDate) {
-        enter(TAG, "accounts = " + (accounts != null ? accounts.toString() : "")
+		LogUtils.logEnterFunction(Tag, "accounts = " + (accounts != null ? accounts.toString() : "")
                 + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "0")
                 + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "0"));
 
@@ -1249,7 +1233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Transaction> transactions = new ArrayList<Transaction>();
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1281,9 +1265,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext()) ;
         }
 
-        leave(TAG, "accounts = " + (accounts != null ? accounts.toString() : "")
-                + ", startDate = " + (startDate != null ? startDate.getTimeInMillis() : "0")
-                + ", endDate = " + (endDate != null ? endDate.getTimeInMillis() : "0"), transactions.toString());
+		LogUtils.logLeaveFunction(Tag, transactions.toString());
 
         return transactions;
 
@@ -1298,7 +1280,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Transaction> getTransactionsByTimeCategoryAccount(int[] categories, int[] accounts, Calendar startDate, Calendar endDate) {
-        enter(TAG, "categories = " + (categories != null ? categories.toString() : "")
+		LogUtils.logEnterFunction(Tag, "categories = " + (categories != null ? categories.toString() : "")
                 + "accounts = " + (accounts != null ? accounts.toString() : "")
                 + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate);
 
@@ -1333,7 +1315,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Transaction> transactions = new ArrayList<Transaction>();
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + condition + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1365,7 +1347,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext()) ;
         }
 
-        leave(TAG, "categories = " + (categories != null ? categories.toString() : "") + "startDate = " + startDate.getTimeInMillis() + ", endDate = " + endDate, transactions.toString());
+		LogUtils.logLeaveFunction(Tag, transactions.toString());
 
         return transactions;
 
@@ -1375,12 +1357,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * getting all TRANSACTION follow Account
      * */
     public List<Transaction> getTransactionsByAccount(int accountId) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
-        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_FROM_ACCOUNT_ID + " = " + accountId + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accountId;
+        String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION
+				+ " WHERE " + KEY_TRANSACTION_FROM_ACCOUNT_ID + " = " + accountId + " OR " + KEY_TRANSACTION_TO_ACCOUNT_ID + " = " + accountId;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1409,7 +1392,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, transactions.toString());
+		LogUtils.logLeaveFunction(Tag, transactions.toString());
         return transactions;
     }
 
@@ -1417,12 +1400,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * getting all TRANSACTIONs
      * */
     public List<Transaction> getAllTransactions() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
         String selectQuery = "SELECT  * FROM " + TABLE_TRANSACTION + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1450,7 +1433,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, transactions.toString());
+		LogUtils.logLeaveFunction(Tag, transactions.toString());
         return transactions;
     }
 
@@ -1518,7 +1501,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectQuery += " WHERE " + KEY_TRANSACTION_PAYEE + " LIKE '%" + contain + "%'";
         }
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1542,12 +1525,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public List<Transaction> getTransactionsByEvent(int eventId) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Transaction> transactions = new ArrayList<Transaction>();
         String selectQuery = "SELECT * FROM " + TABLE_TRANSACTION + " WHERE " + KEY_TRANSACTION_EVENT + " = " + eventId + " ORDER BY " + KEY_TRANSACTION_TIME + " DESC";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1576,7 +1559,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, transactions.toString());
+		LogUtils.logLeaveFunction(Tag, transactions.toString());
         return transactions;
     }
 
@@ -1586,12 +1569,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //region Table BUDGET
 
     public List<Budget> getAllBudgets() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Budget> budgets = new ArrayList<Budget>();
         String selectQuery = "SELECT  * FROM " + TABLE_BUDGET;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1631,7 +1614,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "Budgets = " + budgets.toString());
+		LogUtils.logLeaveFunction(Tag, "Budgets = " + budgets.toString());
 
         return budgets;
     }
@@ -1640,7 +1623,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a BUDGET
      */
     public long createBudget(Budget budget) {
-        enter(TAG, budget.toString());
+		LogUtils.logEnterFunction(Tag, budget.toString());
 
         String categories = "[" + budget.getCategories()[0];
 
@@ -1664,12 +1647,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // insert row
             long budget_id = db.insert(TABLE_BUDGET, null, values);
 
-            leave(TAG, "budget = " + budget.toString(), "budget_id = " + budget_id);
+			LogUtils.logLeaveFunction(Tag, "budget_id = " + budget_id);
             return budget_id;
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
-            leave(TAG, "budget = " + budget.toString(), "budget_id = -1");
+			LogUtils.logLeaveFunction(Tag, "budget_id = -1");
             return -1;
         }
     }
@@ -1681,7 +1664,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public int updateBudget(Budget budget) {
-        enter(TAG, "budget = " + budget.toString());
+		LogUtils.logEnterFunction(Tag, "budget = " + budget.toString());
         String categories = "[" + budget.getCategories()[0];
 
         for(int i = 1 ; i < budget.getCategories().length; i++) {
@@ -1704,7 +1687,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // updating row
         int result = db.update(TABLE_BUDGET, values, KEY_ID + " = ?", new String[]{String.valueOf(budget.getId())});
 
-        leave(TAG, "budget = " + budget.toString(), "Result = " + result);
+		LogUtils.logLeaveFunction(Tag, "Result = " + result);
         return result;
     }
 
@@ -1723,13 +1706,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public Budget getBudget(long budget_id) {
-        enter(TAG, "budget_id = " + budget_id);
+		LogUtils.logEnterFunction(Tag, "budget_id = " + budget_id);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_BUDGET + " WHERE " + KEY_ID + " = " + budget_id;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1763,12 +1746,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             budget.setIsIncremental(c.getInt(c.getColumnIndex(KEY_BUDGET_INCREMENTAL)) == 1 ? true : false);
 
-            leave(TAG, "budget_id = " + budget_id, budget.toString());
+			LogUtils.logLeaveFunction(Tag, budget.toString());
 
             return budget;
         }
 
-        leave(TAG, "budget_id = " + budget_id, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return null;
 
@@ -1778,12 +1761,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ------------------------ EVENT table methods ----------------//
     //region Table EVENT
     public List<Event> getAllEvents() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Event> events = new ArrayList<Event>();
         String selectQuery = "SELECT * FROM " + TABLE_EVENT;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1807,18 +1790,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "Events = " + events.toString());
+		LogUtils.logLeaveFunction(Tag, "Events = " + events.toString());
 
         return events;
     }
 
     public List<Event> getRunningEvents() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Event> events = new ArrayList<Event>();
         String selectQuery = "SELECT * FROM " + TABLE_EVENT;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1842,18 +1825,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "Events = " + events.toString());
+		LogUtils.logLeaveFunction(Tag, "Events = " + events.toString());
 
         return events;
     }
 
     public List<Event> getFinishedEvents() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Event> events = new ArrayList<Event>();
         String selectQuery = "SELECT * FROM " + TABLE_EVENT;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1879,7 +1862,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "Events = " + events.toString());
+		LogUtils.logLeaveFunction(Tag, "Events = " + events.toString());
 
         return events;
     }
@@ -1894,7 +1877,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectQuery += " WHERE " + KEY_NAME + " LIKE '%" + contain + "%'";
         }
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -1913,12 +1896,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Event getEventByName(String name) {
-        enter(TAG, "name = " + name);
+		LogUtils.logEnterFunction(Tag, "name = " + name);
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_EVENT + " WHERE " + KEY_NAME + " = '" + name + "'";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -1940,12 +1923,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 event.setEndDate(null);
             }
 
-            leave(TAG, "name = " + name, event.toString());
+			LogUtils.logLeaveFunction(Tag, event.toString());
 
             return event;
         }
 
-        leave(TAG, "name = " + name, null);
+		LogUtils.logLeaveFunction(Tag);
         return null;
     }
 
@@ -1953,7 +1936,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Creating a EVENT
      */
     public long createEvent(Event event) {
-        enter(TAG, event.toString());
+		LogUtils.logEnterFunction(Tag, event.toString());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -1966,12 +1949,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // insert row
             long event_id = db.insert(TABLE_EVENT, null, values);
 
-            leave(TAG, "event = " + event.toString(), "event_id = " + event_id);
+			LogUtils.logLeaveFunction(Tag, "event_id = " + event_id);
             return event_id;
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
-            leave(TAG, "event = " + event.toString(), "event_id = -1");
+			LogUtils.logLeaveFunction(Tag, "event_id = -1");
             return -1;
         }
     }
@@ -1983,7 +1966,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public int updateEvent(Event event) {
-        enter(TAG, "event = " + event.toString());
+		LogUtils.logEnterFunction(Tag, "event = " + event.toString());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -1995,7 +1978,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // updating row
         int result = db.update(TABLE_EVENT, values, KEY_ID + " = ?", new String[]{String.valueOf(event.getId())});
 
-        leave(TAG, "event = " + event.toString(), "Result = " + result);
+		LogUtils.logLeaveFunction(Tag, "Result = " + result);
         return result;
     }
 
@@ -2019,13 +2002,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public Event getEvent(long event_id) {
-        enter(TAG, "event_id = " + event_id);
+		LogUtils.logEnterFunction(Tag, "event_id = " + event_id);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT * FROM " + TABLE_EVENT + " WHERE " + KEY_ID + " = " + event_id;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
 
@@ -2047,12 +2030,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 event.setEndDate(null);
             }
 
-            leave(TAG, "event_id = " + event_id, event.toString());
+			LogUtils.logLeaveFunction(Tag, event.toString());
 
             return event;
         }
 
-        leave(TAG, "event_id = " + event_id, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return null;
 
@@ -2062,7 +2045,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ------------------------ DEBT table methods ----------------//
     //region Table DEBT
     public long createDebt(Debt debt) {
-        enter(TAG, "debt = " + debt.toString());
+		LogUtils.logEnterFunction(Tag, "debt = " + debt.toString());
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -2075,23 +2058,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // insert row
             long debt_id = db.insert(TABLE_DEBTS, null, values);
 
-            leave(TAG, "debt = " + debt.toString(), "debt_id = " + debt_id);
+			LogUtils.logLeaveFunction(Tag, "debt_id = " + debt_id);
             return debt_id;
 
         } catch (android.database.SQLException e) {
             e.printStackTrace();
-            leave(TAG, "debt = " + debt.toString(), "debt_id = -1");
+			LogUtils.logLeaveFunction(Tag, "debt_id = -1");
             return -1;
         }
     }
 
     public List<Debt> getAllDebts() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Debt> debts = new ArrayList<Debt>();
         String selectQuery = "SELECT  * FROM " + TABLE_DEBTS;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -2110,18 +2093,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "debts = " + debts.toString());
+		LogUtils.logLeaveFunction(Tag, "debts = " + debts.toString());
 
         return debts;
     }
 
     public List<Debt> getAllDebtByPeople(String people) {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Debt> debts = new ArrayList<Debt>();
         String selectQuery = "SELECT  * FROM " + TABLE_DEBTS + " WHERE " + KEY_DEBT_PEOPLE + " LIKE '" + people + "'";
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -2140,18 +2123,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "debts = " + debts.toString());
+		LogUtils.logLeaveFunction(Tag, "debts = " + debts.toString());
 
         return debts;
     }
 
     public List<Debt> getAllLent() {
-        enter(TAG, null);
+		LogUtils.logEnterFunction(Tag);
 
         List<Debt> debts = new ArrayList<Debt>();
         String selectQuery = "SELECT  * FROM " + TABLE_DEBTS;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -2174,17 +2157,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (c.moveToNext());
         }
 
-        leave(TAG, null, "debts = " + debts.toString());
+		LogUtils.logLeaveFunction(Tag, "debts = " + debts.toString());
 
         return debts;
     }
 
     public Debt getDebtByTransactionId(int transactionId) {
-        enter(TAG, "transactionId = " + transactionId);
+		LogUtils.logEnterFunction(Tag, "transactionId = " + transactionId);
 
         String selectQuery = "SELECT  * FROM " + TABLE_DEBTS + " WHERE " + KEY_DEBT_TRANSACTION + " = " + transactionId;
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -2198,12 +2181,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             debt.setAmount(c.getDouble(c.getColumnIndex(KEY_BUDGET_AMOUNT)));
             debt.setPeople(c.getString(c.getColumnIndex(KEY_DEBT_PEOPLE)));
 
-            leave(TAG, null, debt.toString());
+			LogUtils.logLeaveFunction(Tag, debt.toString());
             return debt;
 
         }
 
-        leave(TAG, "transactionId = " + transactionId, null);
+		LogUtils.logLeaveFunction(Tag);
 
         return null;
     }
@@ -2242,7 +2225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             selectQuery += " WHERE " + KEY_DEBT_PEOPLE + " LIKE '%" + contain + "%'";
         }
 
-        trace(TAG, selectQuery);
+        trace(Tag, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);

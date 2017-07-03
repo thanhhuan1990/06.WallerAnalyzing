@@ -18,8 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
-import local.wallet.analyzing.budget.FragmentBudgetCUD;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
 
 /**
@@ -37,34 +36,34 @@ public class FragmentReport extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_report, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
         if((getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag) != null &&
@@ -109,17 +108,17 @@ public class FragmentReport extends Fragment {
             }
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -129,7 +128,7 @@ public class FragmentReport extends Fragment {
 
         ((ActivityMain)getActivity()).updateActionBar(mActionBar);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -182,7 +181,7 @@ public class FragmentReport extends Fragment {
      * Start Fragment ExpenseVsIncome (EVI)
      */
     private void showExpenseVsIncome() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if((getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag) != null &&
                 getFragmentManager().findFragmentByTag(FragmentReportEVI.Tag).isVisible())) {
             LogUtils.warn(Tag, "FragmentReportEVI is visible ---> Resume");
@@ -194,14 +193,14 @@ public class FragmentReport extends Fragment {
         bundle.putInt("Tab", mTab);
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEVI.Tag, false);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment ExpenseAnalysis
      */
     private void showExpenseAnalysis() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if((getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag) != null &&
                 getFragmentManager().findFragmentByTag(FragmentReportExpenseAnalysis.Tag).isVisible())) {
             LogUtils.warn(Tag, "FragmentReportExpenseAnalysis is visible ---> Resume");
@@ -213,14 +212,14 @@ public class FragmentReport extends Fragment {
         bundle.putInt("Tab", mTab);
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportExpenseAnalysis.Tag, false);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment FinancialStatement
      */
     private void showFinancialStatement() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if((getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag) != null &&
                 getFragmentManager().findFragmentByTag(FragmentReportFinancialStatement.Tag).isVisible())) {
             LogUtils.warn(Tag, "FragmentReportFinancialStatement is visible ---> Resume");
@@ -232,14 +231,14 @@ public class FragmentReport extends Fragment {
         bundle.putInt("Tab", mTab);
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportFinancialStatement.Tag, false);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment ReportLentBorrowed
      */
     private void showLentBorrowed() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if((getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag) != null &&
                 getFragmentManager().findFragmentByTag(FragmentReportLentBorrowed.Tag).isVisible())) {
             LogUtils.warn(Tag, "FragmentReportLentBorrowed is visible ---> Resume");
@@ -251,14 +250,14 @@ public class FragmentReport extends Fragment {
         bundle.putInt("Tab", mTab);
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportLentBorrowed.Tag, false);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Start Fragment ReportEvent
      */
     private void showListEvents() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if((getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag) != null &&
                 getFragmentManager().findFragmentByTag(FragmentReportEvent.Tag).isVisible())) {
             LogUtils.warn(Tag, "FragmentReportEvent is visible ---> Resume");
@@ -270,7 +269,7 @@ public class FragmentReport extends Fragment {
         bundle.putInt("Tab", mTab);
         nextFrag.setArguments(bundle);
         mActivity.replaceFragment(mTab, R.id.ll_report, nextFrag, FragmentReportEvent.Tag, false);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

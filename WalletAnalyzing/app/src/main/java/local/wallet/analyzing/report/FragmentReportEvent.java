@@ -21,9 +21,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Currency;
 import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.model.Transaction;
@@ -39,7 +39,7 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
     private ActivityMain            mActivity;
 
     private DatabaseHelper  mDbHelper;
-    private Configurations  mConfigs;
+    private Configs mConfigs;
 
     private boolean         isRunning   = true;
     private Button          btnInProgress;
@@ -51,19 +51,19 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_report_event, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
-        mConfigs        = new Configurations(getContext());
+        mConfigs        = new Configs(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
         arEvents        = mDbHelper.getRunningEvents();
@@ -87,17 +87,17 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
             }
         });
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -108,9 +108,9 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
         }
         adapter.notifyDataSetChanged();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -216,13 +216,13 @@ public class FragmentReportEvent extends Fragment implements View.OnClickListene
 
                 if(expense != 0) {
                     viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense,
-                                                                Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), expense))));
+                                                                Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), expense))));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
                 }
                 if(income != 0) {
                     viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income,
-                                                            Currency.formatCurrency(getContext(), mConfigs.getInt(Configurations.Key.Currency), income))));
+                                                            Currency.formatCurrency(getContext(), mConfigs.getInt(Configs.Key.Currency), income))));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);
                 }

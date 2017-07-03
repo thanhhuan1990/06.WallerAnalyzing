@@ -19,9 +19,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Budget;
 import local.wallet.analyzing.model.Category;
@@ -39,7 +39,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations mConfigs;
+    private Configs mConfigs;
     private Budget                  mBudget;
 
     private TextView                tvDescription;
@@ -49,7 +49,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -58,42 +58,42 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
         LogUtils.trace(Tag, mBudget.toString());
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_budget_detail_transactions, container, false);
     } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity                   = (ActivityMain) getActivity();
 
         mDbHelper                   = new DatabaseHelper(getActivity());
-        mConfigs                    = new Configurations(getActivity());
+        mConfigs                    = new Configs(getActivity());
 
         tvDescription               = (TextView) getView().findViewById(R.id.tvDescription);
         llCategoryTransactions      = (LinearLayout) getView().findViewById(R.id.llCategoryTransactions);
         tvAmount                    = (TextView) getView().findViewById(R.id.tvAmount);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onActivityCreated
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -139,7 +139,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
         tvAmount.setText(String.format(getResources().getString(R.string.budget_detail_transaction_total),
                                         Currency.formatCurrency(getContext(), mBudget.getCurrency(), expensed)));
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     private class BudgetTransaction {
@@ -158,7 +158,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
      * Update data from Database
      */
     private void updateDataSource() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         arBudgetTransaction.clear();
         for(int i = 0 ; i < mBudget.getCategories().length; i++) {
             Category category = mDbHelper.getCategory(mBudget.getCategories()[i]);
@@ -173,14 +173,14 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             arBudgetTransaction.add(new BudgetTransaction(category, arTransactions, true));
 
         }
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End updateDataSource
 
     /**
      * Update list Transactions
      */
     private void updateListTransactions() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         llCategoryTransactions.removeAllViews();
 
         LayoutInflater mInflater = LayoutInflater.from(getActivity());
@@ -287,11 +287,11 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             llCategoryTransactions.addView(categoryView);
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End updateListTransactions
 
     private Calendar getStartDate(Budget budget) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         Calendar today      = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
         today.set(Calendar.MINUTE,      today.getActualMinimum(Calendar.MINUTE));
@@ -349,12 +349,12 @@ public class FragmentBudgetDetailTransactions extends Fragment {
             } // end switch
         } // End While endDate < today
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return startDate;
     }
 
     private Calendar getEndDate(Budget budget) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         Calendar today      = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, today.getActualMinimum(Calendar.HOUR_OF_DAY));
         today.set(Calendar.MINUTE,      today.getActualMinimum(Calendar.MINUTE));
@@ -395,7 +395,7 @@ public class FragmentBudgetDetailTransactions extends Fragment {
 
         } // End While endDate < today
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return endDate;
     }
 }

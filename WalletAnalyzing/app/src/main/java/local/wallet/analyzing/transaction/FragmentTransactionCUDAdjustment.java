@@ -30,9 +30,9 @@ import local.wallet.analyzing.transaction.FragmentEvent.IUpdateEvent;
 import local.wallet.analyzing.transaction.FragmentPayee.IUpdatePayee;
 
 import local.wallet.analyzing.transaction.FragmentLenderBorrower.IUpdateLenderBorrower;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.Category;
 import local.wallet.analyzing.model.Currency;
@@ -53,7 +53,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
     private int                 mContainerViewId = -1;
 
-    private Configurations      mConfigs;
+    private Configs mConfigs;
     private DatabaseHelper      mDbHelper;
 
     private Category            mCategory;
@@ -89,10 +89,10 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
 
-        mConfigs    = new Configurations(getActivity());
+        mConfigs    = new Configs(getActivity());
         mDbHelper   = new DatabaseHelper(getActivity());
 
         Bundle bundle           = this.getArguments();
@@ -124,13 +124,13 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
             ((ActivityMain) getActivity()).showError("Bundle is NULL!");
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         View view   = inflater.inflate(R.layout.layout_fragment_transaction_cud_adjustment, container, false);
 
@@ -192,18 +192,18 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         tvPayee.setText(mTransaction.getPayee());
         tvEvent.setText(mTransaction.getEvent() != null ? mTransaction.getEvent().getName() : "");
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity   = (ActivityMain) getActivity();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -304,14 +304,14 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
             }
         }
 
-        LogUtils.logLeaveFunction(Tag, "categoryId = " + categoryId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onLenderBorrowerUpdated(String people) {
         LogUtils.logEnterFunction(Tag, "people = '" + people + "\'");
         tvPeople.setText(people);
-        LogUtils.logLeaveFunction(Tag, "people = '" + people + "\'", null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -320,7 +320,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
         tvDescription.setText(description);
 
-        LogUtils.logLeaveFunction(Tag, "description = " + description, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -333,7 +333,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
             tvCurrencyIcon.setText(getResources().getString(Currency.getCurrencyIcon(mAccount.getCurrencyId())));
         }
 
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + type.name() + ", accountId = " + accountId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -342,7 +342,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
         tvPayee.setText(payee);
 
-        LogUtils.logLeaveFunction(Tag, "payee = " + payee, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
@@ -351,7 +351,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
         tvEvent.setText(event);
 
-        LogUtils.logLeaveFunction(Tag, "event = " + event, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -371,7 +371,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            LogUtils.logEnterFunction(Tag, null);
+            LogUtils.logEnterFunction(Tag);
 
             if(!s.toString().equals(current)) {
                 mEdittext.removeTextChangedListener(this);
@@ -380,7 +380,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
                 String formatted = "";
                 if (!inputted.equals("")) {
-                    formatted = Currency.formatCurrencyDouble(mAccount != null ? mAccount.getCurrencyId() : mConfigs.getInt(Configurations.Key.Currency), Double.parseDouble(inputted));
+                    formatted = Currency.formatCurrencyDouble(mAccount != null ? mAccount.getCurrencyId() : mConfigs.getInt(Configs.Key.Currency), Double.parseDouble(inputted));
                 } else {
                     formatted = "0";
                 }
@@ -448,7 +448,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
                 mEdittext.addTextChangedListener(this);
             }
 
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
 
     } // End CurrencyTextWatcher
@@ -457,7 +457,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
      * Save Transaction to Database
      */
     private void createTransaction() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         if (mAccount == null) {
             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
             return;
@@ -582,14 +582,14 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
             }
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End createTransaction
 
     /**
      * Update transaction
      */
     private void updateTransaction() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         if (mAccount == null) {
             ((ActivityMain) getActivity()).showError(getResources().getString(R.string.Input_Error_Account_Empty));
@@ -743,14 +743,14 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
             getFragmentManager().popBackStackImmediate();
         }
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End Update Transaction
 
     /**
      * Delete current Transaction
      */
     private void deleteTransaction() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         boolean isDebtValid = true;
         if(mCategory.isExpense() && mCategory.getDebtType() == Category.EnumDebt.MORE) { // Lent
@@ -801,7 +801,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
 
             // Return to FragmentListTransaction
             getFragmentManager().popBackStackImmediate();
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
         }
     }
 
@@ -854,7 +854,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         nextFrag.setArguments(bundle);
         mActivity.addFragment(mTab, mContainerViewId, nextFrag, "FragmentTransactionSelectCategory", true);
 
-        LogUtils.logLeaveFunction(Tag, "OldCategoryId = " + oldCategoryId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
@@ -902,7 +902,7 @@ public class FragmentTransactionCUDAdjustment extends Fragment implements  View.
         nextFrag.setArguments(bundle);
         mActivity.addFragment(mTab, mContainerViewId, nextFrag, FragmentAccountsSelect.Tag, true);
 
-        LogUtils.logLeaveFunction(Tag, "TransactionType = " + transactionType.name() + ", oldAccountId = " + oldAccountId, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**

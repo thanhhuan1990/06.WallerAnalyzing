@@ -19,12 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import local.wallet.analyzing.transaction.FragmentCategoryCreate;
 import local.wallet.analyzing.transaction.FragmentTransactionCUD;
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Account;
 import local.wallet.analyzing.model.AccountType;
 import local.wallet.analyzing.model.Category;
@@ -43,37 +42,37 @@ public class FragmentListTransaction extends ListFragment {
     private ActivityMain            mActivity;
 
     private DatabaseHelper          mDbHelper;
-    private Configurations          mConfigs;
+    private Configs mConfigs;
 
     private List<TransactionGroup>  arGroupTrans;
     private TransactionAdapter      mAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_list_transaction, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
         mDbHelper       = new DatabaseHelper(getActivity());
         mDbHelper.insertDefaultCategories();
-        mConfigs        = new Configurations(getActivity());
+        mConfigs        = new Configs(getActivity());
 
         // Get all transaction
         List<Transaction> arTrans = mDbHelper.getAllTransactions();
@@ -89,40 +88,40 @@ public class FragmentListTransaction extends ListFragment {
         updateActionBar();
         updateListTransaction();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onResume() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onResume();
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem());
-            LogUtils.logLeaveFunction(Tag, null ,null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
         updateActionBar();
         updateListTransaction();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong tab: " + mTab + " vs " + mActivity.getCurrentVisibleItem());
-            LogUtils.logLeaveFunction(Tag, null ,null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
         updateActionBar();
         updateListTransaction();
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     private void updateActionBar() {
@@ -215,7 +214,7 @@ public class FragmentListTransaction extends ListFragment {
                     viewHolder.tvExpense.setVisibility(View.VISIBLE);
                     viewHolder.tvExpense.setText(String.format(getResources().getString(R.string.content_expense),
                                                                 Currency.formatCurrency(getContext(),
-                                                                        mConfigs.getInt(Configurations.Key.Currency),
+                                                                        mConfigs.getInt(Configs.Key.Currency),
                                                                         (expense.longValue() == expense ? expense.longValue() : expense))));
                 } else {
                     viewHolder.tvExpense.setVisibility(View.GONE);
@@ -225,7 +224,7 @@ public class FragmentListTransaction extends ListFragment {
                     viewHolder.tvIncome.setVisibility(View.VISIBLE);
                     viewHolder.tvIncome.setText(String.format(getResources().getString(R.string.content_income),
                                                                 Currency.formatCurrency(getContext(),
-                                                                        mConfigs.getInt(Configurations.Key.Currency),
+                                                                        mConfigs.getInt(Configs.Key.Currency),
                                                                         (income.longValue() == income ? income.longValue() :  income))));
                 } else {
                     viewHolder.tvIncome.setVisibility(View.GONE);

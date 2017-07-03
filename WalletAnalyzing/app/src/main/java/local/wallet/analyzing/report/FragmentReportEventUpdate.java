@@ -21,9 +21,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import local.wallet.analyzing.R;
-import local.wallet.analyzing.Utils.LogUtils;
+import local.wallet.analyzing.utils.LogUtils;
 import local.wallet.analyzing.main.ActivityMain;
-import local.wallet.analyzing.main.Configurations;
+import local.wallet.analyzing.main.Configs;
 import local.wallet.analyzing.model.Event;
 import local.wallet.analyzing.sqlite.helper.DatabaseHelper;
 
@@ -37,7 +37,7 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
     private ActivityMain            mActivity;
 
     private DatabaseHelper      mDbHelper;
-    private Configurations      mConfigs;
+    private Configs mConfigs;
     private Calendar            mCal;
 
     private int                 mEventId;
@@ -52,7 +52,7 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
@@ -60,26 +60,26 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
         mTab            = bundle.getInt("Tab", mTab);
         mEventId        = bundle.getInt("EventID", 0);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreate
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logEnterFunction(Tag);
+        LogUtils.logLeaveFunction(Tag);
         return inflater.inflate(R.layout.layout_fragment_report_event_update, container, false);
     } // End onCreateView
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onActivityCreated(savedInstanceState);
 
         mActivity       = (ActivityMain) getActivity();
 
         mCal            = Calendar.getInstance();
-        mConfigs        = new Configurations(getContext());
+        mConfigs        = new Configs(getContext());
         mDbHelper       = new DatabaseHelper(getActivity());
 
         mEvent          = mDbHelper.getEvent(mEventId);
@@ -115,17 +115,17 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
         });
         tbFinished.setChecked(mEvent.getEndDate() != null ? true : false);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onActivityCreated
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
         super.onCreateOptionsMenu(menu, inflater);
 
         if(mTab != mActivity.getCurrentVisibleItem()) {
             LogUtils.error(Tag, "Wrong Tab. Return");
-            LogUtils.logLeaveFunction(Tag, null, null);
+            LogUtils.logLeaveFunction(Tag);
             return;
         }
 
@@ -136,7 +136,7 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
 
         ((ActivityMain) getActivity()).updateActionBar(mCustomView);
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     } // End onCreateOptionsMenu
 
     @Override
@@ -178,7 +178,7 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
      * Update current Event
      */
     private void updateEvent() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         mEvent.setName(etName.getText().toString());
         mEvent.setEndDate(tbFinished.isChecked() ? mCal : null);
@@ -188,21 +188,21 @@ public class FragmentReportEventUpdate extends Fragment implements View.OnClickL
         // Back to EventTransactions
         getFragmentManager().popBackStackImmediate();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
      * Delete Event
      */
     private void deleteEvent() {
-        LogUtils.logEnterFunction(Tag, null);
+        LogUtils.logEnterFunction(Tag);
 
         mDbHelper.deleteEvent(mEventId);
 
         // Back to EventTransactions
         getFragmentManager().popBackStackImmediate();
 
-        LogUtils.logLeaveFunction(Tag, null, null);
+        LogUtils.logLeaveFunction(Tag);
     }
 
     /**
