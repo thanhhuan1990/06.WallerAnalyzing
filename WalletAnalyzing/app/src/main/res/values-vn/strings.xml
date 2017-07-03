@@ -48,7 +48,7 @@
 
     <string name="account_list_remain">Số tiền còn lại</string>
     <string name="account_list_init_balance">Số tiền ban đầu</string>
-    <string name="account_list_balance">Còn: %s</string>
+    <string name="account_list_balance">Còn: %1$s</string>
 
     <string name="account_add_name">Tên</string>
     <string name="account_add_name_hint">Tên tài khoản</string>
@@ -83,23 +83,23 @@
     <!-- 4_BUDGET -->
     <string name="budget_list_empty">Không có dữ liệu.</string>
 
-    <string name="budget_item_total">Hạn mức: %s</string>
-    <string name="budget_item_incremental">Số dư kỳ trước: %s</string>
-    <string name="budget_item_expensed">Đã chi: %s</string>
-    <string name="budget_item_balance">Còn: %s</string>
-    <string name="budget_item_over">Bội chi: %s</string>
+    <string name="budget_item_total">Hạn mức: %1$s</string>
+    <string name="budget_item_incremental">Số dư kỳ trước: %1$s</string>
+    <string name="budget_item_expensed">Đã chi: %1$s</string>
+    <string name="budget_item_balance">Còn: %1$s</string>
+    <string name="budget_item_over">Bội chi: %1$s</string>
     <string name="budget_item_expensed_no_format">Đã chi:</string>
     <string name="budget_item_balance_no_format">Còn:</string>
     <string name="budget_item_over_no_format">Bội chi:</string>
 
-    <string name="budget_detail_description">Hạn mức chi: \%%s \%%s cho hạng mục: \%%s</string>
-    <string name="budget_detail_description_many">Hạn mức chi: \%%s \%%s cho các hạng mục: \%%s</string>
-    <string name="budget_detail_description_all">Hạn mức chi: \%%s %%s cho tất cả các hạng mục</string>
+    <string name="budget_detail_description">Hạn mức chi: \%%1$s \%%2$s cho hạng mục: \%%3$s</string>
+    <string name="budget_detail_description_many">Hạn mức chi: \%%1$s \%%2$s cho các hạng mục: \%%3$s</string>
+    <string name="budget_detail_description_all">Hạn mức chi: \%%1$s %%2$s cho tất cả các hạng mục</string>
     <string name="budget_detail_detail">Chi tiết khoản chi</string>
     <string name="budget_detail_history">Hạn mức chi các kỳ trước</string>
-    <string name="budget_history_description">Hạn mức chi kỳ trước của %s</string>
-    <string name="budget_detail_transaction_description">Kỳ hạn mức \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
-    <string name="budget_detail_transaction_total">Tổng cộng: %s</string>
+    <string name="budget_history_description">Hạn mức chi kỳ trước của %1$s</string>
+    <string name="budget_detail_transaction_description">Kỳ hạn mức \%%1$s/\%%2$s ~ \%%3$s/\%%4$s (\%%5$s)</string>
+    <string name="budget_detail_transaction_total">Tổng cộng: %1$s</string>
 
     <string name="new_budget_name">Tên</string>
     <string name="new_budget_name_hit">Tên hạn mức</string>
@@ -148,13 +148,13 @@
     <string name="Delete">Xóa</string>
 
     <!-- 5_REPORT_2_Expense_Vs_Income Data -->
-    <string name="report_evi_year">Năm %s</string>
-    <string name="report_evi_monthly_balance">Balance: %s</string>
-    <string name="report_evi_quarterly">Quý %%s - Balance: %%s</string>
-    <string name="report_evi_yearly">Năm %%02d - Balance: %%s</string>
+    <string name="report_evi_year">Năm %1$s</string>
+    <string name="report_evi_monthly_balance">Balance: %1$s</string>
+    <string name="report_evi_quarterly">Quý %%1$s - Balance: %%2$s</string>
+    <string name="report_evi_yearly">Năm %%1$d - Balance: %%2$s</string>
     <string name="report_evi_period_expense">Chi</string>
     <string name="report_evi_period_income">Thu</string>
-    <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
+    <string name="report_evi_period_legend_total_expense">%1$s Total Expense</string>
 
     <!-- 5_REPORT_3_Expense_Analysis -->
     <string name="report_expense_analysis_categories">Hạng mục</string>
@@ -189,11 +189,11 @@
 
     <!-- 5_REPORT_4_Financial_Statement_Lent_Borrowed_Detail -->
     <string name="report_lent_borrowed_detail_lent_starting_balance">Tổng cho vay</string>
-    <string name="report_lent_borrowed_detail_lent_collected">Đã thu (%d%%)</string>
-    <string name="report_lent_borrowed_detail_lent_remaining">Phải thu (%d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_collected">Đã thu (%1$d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_remaining">Phải thu (%1$d%%)</string>
     <string name="report_lent_borrowed_detail_borrowed_starting_balance">Tổng đi vay</string>
-    <string name="report_lent_borrowed_detail_borrowed_repaid">Đã trả (%d%%)</string>
-    <string name="report_lent_borrowed_detail_borrowed_remaining">Phải trả (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_repaid">Đã trả (%1$d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_remaining">Phải trả (%1$d%%)</string>
 
     <!-- 5_REPORT_5_LENT_BORROW -->
     <string name="report_Lent_borrow_lent">Money Lent</string>
@@ -206,7 +206,7 @@
     <!-- 5_REPORT_6_EVENT -->
     <string name="report_event_in_progress">Đang diễn ra</string>
     <string name="report_event_completed">Đã kết thúc</string>
-    <string name="event_item_date">Từ %s</string>
+    <string name="event_item_date">Từ %1$s</string>
     <string name="event_total_expense">Σ Tổng chi</string>
     <string name="event_total_income">Σ Tổng thu</string>
     <string name="event_detail_complete">Kết thúc</string>
@@ -240,20 +240,20 @@
     <string name="income_category">Thu Vào</string>
     <string name="expense_category_lent">Vay nợ</string>
 
-    <string name="content_expense">Chi: %s</string>
-    <string name="content_income">Thu: %s</string>
+    <string name="content_expense">Chi: %1$s</string>
+    <string name="content_income">Thu: %1$s</string>
     <string name="content_today">Hôm nay</string>
     <string name="content_yesterday">Hôm qua</string>
     <string name="content_before_yesterday">Hôm kia</string>
-    <string name="content_expensed">Đã chi: %s</string>
-    <string name="content_adjustment_income">Đã thu: %s</string>
-    <string name="content_transfer_to">Chuyển tới %s</string>
-    <string name="content_transfer_from">Chuyển từ %s</string>
-    <string name="content_transfer_fee">Phí chuyển khoản: %s</string>
+    <string name="content_expensed">Đã chi: %1$s</string>
+    <string name="content_adjustment_income">Đã thu: %1$s</string>
+    <string name="content_transfer_to">Chuyển tới %1$s</string>
+    <string name="content_transfer_from">Chuyển từ %1$s</string>
+    <string name="content_transfer_fee">Phí chuyển khoản: %1$s</string>
     <string name="Input_Error_Amount">Bạn chi nhiều hơn số tiền còn lại!</string>
     <string name="Input_Error_todate_invalid">Ngày không hợp lệ!</string>
     <string name="Error_Startup_No_Data">Bạn chưa có ghi chép nào!</string>
-    <string name="budget_detail_transaction_category_sum">Σ %s</string>
+    <string name="budget_detail_transaction_category_sum">Σ %1$s</string>
     <string name="button_delete">Xóa</string>
     <string name="message_transaction_update_fail">Không thể cập nhật ghi chép này!</string>
     <string name="new_transaction_borrower">Người Vay</string>
@@ -265,10 +265,10 @@
     <string name="report_evi_expense">Chi</string>
     <string name="report_evi_income">Thu</string>
     <string name="report_evi_net_income">Số tiền còn lại</string>
-    <string name="report_evi_this_month">Tháng này(%%02d/%%02d)</string>
-    <string name="report_evi_this_week">Tuần này (%%02d/%%02d - %%02d/%%02d)</string>
-    <string name="report_evi_this_year">Năm nay (%02d)</string>
-    <string name="report_evi_today">Hôm nay (%%02d/%%02d/%%02d)</string>
+    <string name="report_evi_this_month">Tháng này(%%1$d/%%2$d)</string>
+    <string name="report_evi_this_week">Tuần này (%%1$d/%%2$d - %%3$d/%%4$d)</string>
+    <string name="report_evi_this_year">Năm nay (%1$d)</string>
+    <string name="report_evi_today">Hôm nay (%%1$d/%%2$d/%%3$d)</string>
     <string name="report_evi_viewedby">Xem theo:</string>
     <string name="report_evi_viewedby_fromdate">Từ ngày:</string>
     <string name="report_evi_viewedby_todate">Tới ngày:</string>

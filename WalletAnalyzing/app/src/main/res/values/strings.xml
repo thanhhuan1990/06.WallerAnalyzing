@@ -30,7 +30,7 @@
     <string name="format_budget_day_month_year" translatable="false">(%1$d/%2$d/%3$d)</string>
     <string name="format_budget_day_month_year_2" translatable="false">%1$d/%2$d/%3$d</string>
     <string name="format_budget_date" translatable="false">(%1$d/%2$d - %3$d/%4$d)</string>
-    <string name="format_budget_date_2" translatable="false">%1$d/%2$d ~ %02d/%02d</string>
+    <string name="format_budget_date_2" translatable="false">%1$d/%2$d ~ %3$d/%4$d</string>
 
     <string name="select_file_title">Select cert. file</string>
     <string name="serializable">Serializable</string>
@@ -113,24 +113,24 @@
     <!-- 4_BUDGET -->
     <string name="budget_list_empty">No data.</string>
 
-    <string name="budget_item_total">Total: %s</string>
-    <string name="budget_item_incremental">Incremental: %s</string>
-    <string name="budget_item_expensed">Expensed: %s</string>
-    <string name="budget_item_balance">Balance: %s</string>
-    <string name="budget_item_over">Over: %s</string>
+    <string name="budget_item_total">Total: %1$s</string>
+    <string name="budget_item_incremental">Incremental: %1$s</string>
+    <string name="budget_item_expensed">Expensed: %1$s</string>
+    <string name="budget_item_balance">Balance: %1$s</string>
+    <string name="budget_item_over">Over: %1$s</string>
     <string name="budget_item_expensed_no_format">Expensed:</string>
     <string name="budget_item_balance_no_format">Balance:</string>
     <string name="budget_item_over_no_format">Over:</string>
 
-    <string name="budget_detail_description">Budget: \%%s \%%s for expense category: \%%s</string>
-    <string name="budget_detail_description_many">Budget: \%%s \%%s for expense categories: \%%s</string>
-    <string name="budget_detail_description_all">Budget: \%%s \%%s for all expense categories</string>
+    <string name="budget_detail_description">Budget: \%%1$s \%%2$s for expense category: \%%3$s</string>
+    <string name="budget_detail_description_many">Budget: \%%1$s \%%2$s for expense categories: \%%3$s</string>
+    <string name="budget_detail_description_all">Budget: \%%1$s \%%2$s for all expense categories</string>
     <string name="budget_detail_detail">Details</string>
     <string name="budget_detail_history">Budget history</string>
-    <string name="budget_history_description">Budget history of %s</string>
-    <string name="budget_detail_transaction_description">Budget \%%s/\%%s ~ \%%s/\%%s (\%%s)</string>
-    <string name="budget_detail_transaction_category_sum">Σ %s</string>
-    <string name="budget_detail_transaction_total">Total: %s</string>
+    <string name="budget_history_description">Budget history of %1$s</string>
+    <string name="budget_detail_transaction_description">Budget \%%1$s/\%%2$s ~ \%%3$s/\%%4$s (\%%5$s)</string>
+    <string name="budget_detail_transaction_category_sum">Σ %1$s</string>
+    <string name="budget_detail_transaction_total">Total: %1$s</string>
 
     <string name="new_budget_name">Name</string>
     <string name="new_budget_name_hit">Name</string>
@@ -175,25 +175,25 @@
     <string name="report_evi_viewedby_fromdate">From Date:</string>
     <string name="report_evi_viewedby_todate">To Date:</string>
 
-    <string name="report_evi_today">Today (%%02d/%%02d/%%02d)</string>
-    <string name="report_evi_this_week">This Week (%%02d/%%02d - %%02d/%%02d)</string>
-    <string name="report_evi_this_month">This Month (%%02d/%%02d)</string>
-    <string name="report_evi_this_year">This Year (%02d)</string>
-    <string name="report_evi_period" translatable="false">%%02d/%%02d/%%02d - %%02d/%%02d/%%02d</string>
+    <string name="report_evi_today">Today (%1$d/%2$d/%3$d)</string>
+    <string name="report_evi_this_week">This Week (%1$d/%2$d - %3$d/%4$d)</string>
+    <string name="report_evi_this_month">This Month (%1$d/%2$d)</string>
+    <string name="report_evi_this_year">This Year (%1$d)</string>
+    <string name="report_evi_period" translatable="false">%1$d/%2$d/%3$d - %4$d/%5$d/%6$d</string>
     <string name="report_evi_income">Income</string>
     <string name="report_evi_expense">Expense</string>
     <string name="report_evi_all">All</string>
     <string name="report_evi_net_income">Net income</string>
 
     <!-- 5_REPORT_2_Expense_Vs_Income Data -->
-    <string name="report_evi_year">Year %s</string>
-    <string name="report_evi_monthly_balance">Balance: %s</string>
-    <string name="report_evi_quarterly">Quarter %%s - Balance: %%s</string>
-    <string name="report_evi_yearly">Year %%02d - Balance: %%s</string>
+    <string name="report_evi_year">Year %1$s</string>
+    <string name="report_evi_monthly_balance">Balance: %1$s</string>
+    <string name="report_evi_quarterly">Quarter %1$s - Balance: %2$s</string>
+    <string name="report_evi_yearly">Year %1$d - Balance: %2$s</string>
     <string name="report_evi_period_expense">Expense</string>
     <string name="report_evi_period_income">Income</string>
-    <string name="report_evi_period_legend_expense">%%s %%s</string>
-    <string name="report_evi_period_legend_total_expense">%s Total Expense</string>
+    <string name="report_evi_period_legend_expense">%1$s %2$s</string>
+    <string name="report_evi_period_legend_total_expense">%1$s Total Expense</string>
 
     <!-- 5_REPORT_3_Expense_Analysis -->
     <string name="report_expense_analysis_categories">Categories</string>
@@ -228,11 +228,11 @@
 
     <!-- 5_REPORT_4_Financial_Statement_Lent_Borrowed_Detail -->
     <string name="report_lent_borrowed_detail_lent_starting_balance">Starting Balance</string>
-    <string name="report_lent_borrowed_detail_lent_collected">Collected (%d%%)</string>
-    <string name="report_lent_borrowed_detail_lent_remaining">Remaining (%d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_collected">Collected (%1$d%%)</string>
+    <string name="report_lent_borrowed_detail_lent_remaining">Remaining (%1$d%%)</string>
     <string name="report_lent_borrowed_detail_borrowed_starting_balance">Starting Balance</string>
-    <string name="report_lent_borrowed_detail_borrowed_repaid">Repaid (%d%%)</string>
-    <string name="report_lent_borrowed_detail_borrowed_remaining">Remaining (%d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_repaid">Repaid (%1$d%%)</string>
+    <string name="report_lent_borrowed_detail_borrowed_remaining">Remaining (%1$d%%)</string>
 
     <!-- 5_REPORT_5_LENT_BORROW -->
     <string name="report_Lent_borrow_lent">Money Lent</string>
@@ -246,7 +246,7 @@
     <string name="report_event_in_progress">In progress</string>
     <string name="report_event_completed">Completed</string>
 
-    <string name="event_item_date">From %s</string>
+    <string name="event_item_date">From %1$s</string>
     <string name="event_total_expense">Σ Total Expense</string>
     <string name="event_total_income">Σ Total Income</string>
     <string name="event_detail_complete">Completed</string>
@@ -295,15 +295,15 @@
     <string name="income_category">Income Category</string>
     <string name="expense_category_lent">Lent/Borrowed</string>
 
-    <string name="content_expense">Expense: %s</string>
-    <string name="content_income">Income: %s</string>
+    <string name="content_expense">Expense: %1$s</string>
+    <string name="content_income">Income: %1$s</string>
     <string name="content_today">Today</string>
     <string name="content_yesterday">Yesterday</string>
-    <string name="content_expensed">Expensed: %s</string>
-    <string name="content_adjustment_income">Income: %s</string>
-    <string name="content_transfer_to">Transfer to %s</string>
-    <string name="content_transfer_from">Transfer from %s</string>
-    <string name="content_transfer_fee">Transfer fee: %s</string>
+    <string name="content_expensed">Expensed: %1$s</string>
+    <string name="content_adjustment_income">Income: %1$s</string>
+    <string name="content_transfer_to">Transfer to %1$s</string>
+    <string name="content_transfer_from">Transfer from %1$s</string>
+    <string name="content_transfer_fee">Transfer fee: %1$s</string>
 
     <string name="currency_icon_vietnam" translatable="false">₫</string>
     <string name="currency_icon_usd" translatable="false">$</string>
