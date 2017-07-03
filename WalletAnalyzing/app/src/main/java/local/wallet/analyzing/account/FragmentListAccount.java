@@ -165,7 +165,7 @@ public class FragmentListAccount extends ListFragment implements View.OnClickLis
         ImageView ivDone    = (ImageView) mCustomView.findViewById(R.id.ivDone);
 
         if (mCurrentMode == NORMAL_MODE) {
-            ivEdit.setVisibility(listAccount.size() > 0 ? View.VISIBLE : View.GONE);
+            ivEdit.setVisibility(listAccount.size() > 0 ? View.VISIBLE : View.INVISIBLE);
             ivAdd.setVisibility(View.VISIBLE);
             ivDone.setVisibility(View.GONE);
         } else if (mCurrentMode == EDIT_MODE) {
